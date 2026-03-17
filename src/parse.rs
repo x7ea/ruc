@@ -28,8 +28,8 @@ impl Expr {
                 $x.strip_prefix($ls).and_then(|x| x.strip_suffix($rs))
             };
             ($x: expr, $ls: literal, $rs: literal) => {
-                $x.strip_suffix($rs).and_then(|x| tokenize(x, &$ls).and_then(|x|Some(x)))
-                    .and_then(|x| Some((x.get(..x.len()-1)?.concat(), x.last()?)))
+                $x.strip_suffix($rs).and_then(|x| tokenize(x, &$ls))
+                    .and_then(|x| Ok((x.get(..x.len()-1)?.concat(), x.last()?)))
             };
         }
         type Operator = (Box<Expr>, String, Box<Expr>);
@@ -152,7 +152,7 @@ impl Expr {
         else if let Some(expr) = surround!("(", x, ")") { 
             Expr::parse(expr)
         } 
-        else if let Some((func, args)) = surround!(x, "(", ")") {
+        else if let Ok((func, args)) = surround!(x, "(", ")") {
             Ok(Expr::Call(
                 Box::new(Expr::parse(&func)?), 
                 tokenize(&args, ",")?
@@ -160,7 +160,7 @@ impl Expr {
                     .collect::<Result<Vec<_>, String>>()?
             ))
         } 
-        else if let Some((arr, idx)) = surround!(x, "[", "]") {
+        else if let Ok((arr, idx)) = surround!(x, "[", "]") {
             let offset = Expr::Mul(
                 Box::new(Expr::parse(idx)?), 
                 Box::new(Expr::Integer(8)
