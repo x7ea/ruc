@@ -162,11 +162,11 @@ impl Expr {
         } 
         else if let Ok((arr, idx)) = surround!(x, "[", "]") {
             let offset = Expr::Mul(
-                Box::new(Expr::parse(idx)?), 
+                Box::new(Expr::parse(&idx)?), 
                 Box::new(Expr::Integer(8)
             ));
             Ok(Expr::Derefer(Box::new(Expr::Add(
-                Box::new(Expr::parse(arr)?),
+                Box::new(Expr::parse(&arr)?),
                 Box::new(offset)
             ))))
         } 
