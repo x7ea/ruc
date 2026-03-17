@@ -26,10 +26,10 @@ impl Expr {
         macro_rules! surround {
             ($ls: literal, $x: expr, $rs: literal) => {
                 $x.strip_prefix($ls).and_then(|x| x.strip_suffix($rs))
-            }
+            };
             ($x: expr, $ls: literal, $rs: literal) => {
                 $x.strip_suffix($rs).and_then(|x| x.rsplit_once($ls)) 
-            }
+            };
         }
         fn is_operator(source: &str) -> Result<(Expr, String, Expr), String>  {
             let tokens: Vec<String> = tokenize(source, SPACE)?;
