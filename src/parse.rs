@@ -28,7 +28,7 @@ impl Expr {
                 $x.strip_prefix($ls).and_then(|x| x.strip_suffix($rs))
             };
             ($x: expr, $ls: literal, $rs: literal) => {{
-                dbg!(&x);
+                dbg!(&source, &x);
                 tokenize(x, &$ls).and_then(|x| {
                       dbg!(&x);
                     let args = ok!(x.last())?.to_string();
