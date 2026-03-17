@@ -89,7 +89,6 @@ pub fn tokenize(input: &str, delimiter: &str) -> Result<Vec<String>, String> {
         index += 1
     }
 
-    // Syntax error check
     if is_escape || in_quote || in_parentheses != 0 {
         return Err(format!("not closed: {current_token}"));
     }
