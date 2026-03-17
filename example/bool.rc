@@ -12,13 +12,13 @@ fn is_prime(n) {
 
 
 fn main(argc, argv) {
-    let value = malloc(8)
+    let value
 
     if argc < 2 then return
-    sscanf(argv[1], "%d", value)
+    sscanf(argv[1], "%d", &value)
 
-    let result = is_prime(*value)
+    let result = is_prime(value)
 
-    printf("prime number? = [%s]\n",
-        if result then "TRUE" else "FALSE")
+    printf("Is %d prime number? [%s]\n",
+        value, if result then "YES" else "NO")
 }
