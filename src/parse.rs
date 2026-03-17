@@ -31,6 +31,18 @@ impl Expr {
                 $x.strip_suffix($rs).and_then(|x| x.rsplit_once($ls)) 
             }
         }
+        fn is_operator(source: &str) -> Result<(Expr, String, Expr), String>  {
+            let tokens: Vec<String> = tokenize(source, SPACE)?;
+
+            let op = ok!(tokens.len().checked_sub(2))?;
+            let lhs = &ok!(tokens.get(..op))?.join(SPACE);
+            let rhs = &ok!(tokens.get(op + 1..))?.join(SPACE);
+
+            let op = ok!(tokens.get(op))?;
+            let lhs = Box::new(Expr::parse(lhs)?);
+            let rhs = Box::new(Expr::parse(rhs)?);
+            Ok((lhs, op, rhs))
+        }
 
         if let Some(x) = x.strip_prefix("let ") {
             if let Ok((name, value)) = once!(x, "=") {
@@ -81,20 +93,44 @@ impl Expr {
                 }
             }
             Ok(Expr::Block(block))
-        } else if x == "break" { 
-            Ok(Expr::Break(Box::new(Expr::Undefined))) 
-        } else if x == "return" { 
-            Ok(Expr::Return(Box::new(Expr::Undefined))) 
-        } else if let Some(x) = x.strip_prefix("break ") { 
-            Ok(Expr::Break(Box::new(Expr::parse(&x)?))) 
-        } else if let Some(x) = x.strip_prefix("return ") { 
-            Ok(Expr::Return(Box::new(Expr::parse(&x)?))) 
         } 
+
+        else if x == "break" { 
+            Ok(Expr::Break(Box::new(Expr::Undefined))) 
+        }
+        else if x == "return" { 
+            Ok(Expr::Return(Box::new(Expr::Undefined))) 
+        }
+        else if let Some(x) = x.strip_prefix("break ") { 
+            Ok(Expr::Break(Box::new(Expr::parse(&x)?))) 
+        } 
+        else if let Some(x) = x.strip_prefix("return ") { 
+            Ok(Expr::Return(Box::new(Expr::parse(&x)?))) 
+        }
         
-        else if let Ok(operator) = parse_oprator(x) { Ok(operator) }
+        else if let Ok((lhs, op, rhs)) = is_oprator(x) { 
+            match op.as_str() {
+                "+" => Ok(Expr::Add(lhs, rhs)),
+                "-" => Ok(Expr::Sub(lhs, rhs)),
+                "*" => Ok(Expr::Mul(lhs, rhs)),
+                "/" => Ok(Expr::Div(lhs, rhs)),
+                "%" => Ok(Expr::Mod(lhs, rhs)),
+                "==" => Ok(Expr::Eql(lhs, rhs)),
+                "!=" => Ok(Expr::NotEq(lhs, rhs)),
+                ">" => Ok(Expr::Gt(lhs, rhs)),
+                "<" => Ok(Expr::Lt(lhs, rhs)),
+                ">=" => Ok(Expr::GtEq(lhs, rhs)),
+                "<=" => Ok(Expr::LtEq(lhs, rhs)),
+                "&" => Ok(Expr::And(lhs, rhs)),
+                "|" => Ok(Expr::Or(lhs, rhs)),
+                "^" => Ok(Expr::Xor(lhs, rhs)),
+                op => Err(format!("unknown operator: {op}")),
+            }
+        } 
         else if let Some(pointer) = x.strip_prefix("*") { 
             Ok(Expr::Derefer(Box::new(Expr::parse(pointer)?))) 
-        } else if let Some(ptr) = x.strip_prefix("&") {
+        } 
+        else if let Some(ptr) = x.strip_prefix("&") {
             if let Ok(name) = Name::new(ptr) { 
                 Ok(Expr::Pointer(name)) 
             } else if let Ok(Expr::Derefer(ptr)) = Expr::parse(ptr) { 
@@ -102,18 +138,22 @@ impl Expr {
             } else { 
                 Err(format!("invalid reference: {ptr}")) 
             }
-        }  else if x.starts_with("\"") && x.ends_with("\"") { 
+        } 
+        else if let Some(_) = surround!("\"", x, "\"") { 
             Ok(Expr::String(x.to_owned())) 
-        } else if let Some(expr) = surround!("(", x, ")") { 
+        } 
+        else if let Some(expr) = surround!("(", x, ")") { 
             Expr::parse(expr)
-        } else if let Some((func, args)) = surround!(x, "(", ")") {
+        } 
+        else if let Some((func, args)) = surround!(x, "(", ")") {
             let args = tokenize(&args, ",")?.
                 iter().map(|x| Expr::parse(x));
             Ok(Expr::Call(
                 Box::new(Expr::parse(&func)?), 
                 args.collect::<Result<Vec<_>, String>>()?
             ))
-        } else if let Some((arr, idx)) = surround!(x, "[", "]") {
+        } 
+        else if let Some((arr, idx)) = surround!(x, "[", "]") {
             let offset = Expr::Mul(
                 Box::new(Expr::parse(idx)?), 
                 Box::new(Expr::Integer(8)
@@ -122,42 +162,15 @@ impl Expr {
                 Box::new(Expr::parse(arr)?),
                 Box::new(offset)
             ))))
-        } else if let Ok(literal) = x.parse::<i64>() { 
+        } 
+        else if let Ok(literal) = x.parse::<i64>() { 
             Ok(Expr::Integer(literal)) 
-        } else if let Ok(literal) = x.parse::<bool>() { 
+        } 
+        else if let Ok(literal) = x.parse::<bool>() { 
             Ok(Expr::Integer(if literal { 1 } else { 0 })) 
-        } else { 
+        } 
+        else { 
             Ok(Expr::Variable(Name::new(x)?))
         }
-    }
-}
-
-fn parse_oprator(source: &str) -> Result<Expr, String> {
-    let xs: Vec<String> = tokenize(source, SPACE)?;
-
-    let op = ok!(xs.len().checked_sub(2))?;
-    let lhs = &ok!(xs.get(..op))?.join(SPACE);
-    let rhs = &ok!(xs.get(op + 1..))?.join(SPACE);
-
-    let op = ok!(xs.get(op))?.as_str();
-    let lhs = Box::new(Expr::parse(lhs)?);
-    let rhs = Box::new(Expr::parse(rhs)?);
-
-    match op {
-        "+" => Ok(Expr::Add(lhs, rhs)),
-        "-" => Ok(Expr::Sub(lhs, rhs)),
-        "*" => Ok(Expr::Mul(lhs, rhs)),
-        "/" => Ok(Expr::Div(lhs, rhs)),
-        "%" => Ok(Expr::Mod(lhs, rhs)),
-        "==" => Ok(Expr::Eql(lhs, rhs)),
-        "!=" => Ok(Expr::NotEq(lhs, rhs)),
-        ">" => Ok(Expr::Gt(lhs, rhs)),
-        "<" => Ok(Expr::Lt(lhs, rhs)),
-        ">=" => Ok(Expr::GtEq(lhs, rhs)),
-        "<=" => Ok(Expr::LtEq(lhs, rhs)),
-        "&" => Ok(Expr::And(lhs, rhs)),
-        "|" => Ok(Expr::Or(lhs, rhs)),
-        "^" => Ok(Expr::Xor(lhs, rhs)),
-        op => Err(format!("unknown operator: {op}")),
     }
 }
