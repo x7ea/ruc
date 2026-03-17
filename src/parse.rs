@@ -30,7 +30,7 @@ impl Expr {
             ($x: expr, $ls: literal, $rs: literal) => {{
                 tokenize(x, &$ls).and_then(|x| Ok((
                     ok!(x.get(..x.len()-1))?.concat(), 
-                    ok!(x.last())?.clone().get(1..x.len()-1)?
+                    ok!(ok!(x.last())?.clone().get(1..x.len()-1))?
                 )))
             }};
         }
