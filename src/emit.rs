@@ -11,8 +11,12 @@ impl Define {
         for func in &defines { text += &func.emit(ctx)?; }
         let data = ctx.global.data.clone();
 
-        for Define(name, _, _) in &defines { ctx.global.func.shift_remove(name); }
-        for symbol in &ctx.global.func { lib += &format!("\textern {symbol}\n"); }
+        for Define(name, _, _) in &defines {
+            ctx.global.func.shift_remove(name); 
+        }
+        for symbol in &ctx.global.func { 
+            lib += &format!("\textern {symbol}\n"); 
+        }
 
         Ok(format!("section .data\n{data}\nsection .text\n\tglobal main\n{lib}\n{text}\n"))
     }
