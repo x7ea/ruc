@@ -57,6 +57,11 @@ pub fn tokenize(input: &str, delimiter: &str) -> Result<Vec<String>, String> {
                 ')' | '}' | ']' if !in_quote => {
                     current_token.push(c);
                     in_parentheses.checked_sub(1).map(|x| in_parentheses = x);
+
+                    if [")", "}", "]"].contains(delimiter) && in_parentheses == 0 {
+                        tokens.push(current_token.clone());
+                        current_token.clear();
+                    }
                 }
                 '"' => {
                     in_quote = !in_quote;
