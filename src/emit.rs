@@ -44,11 +44,11 @@ impl Define {
         ctx.local.var = args.clone();
 
         let body = body.emit(ctx)?;
-        let bytes = ctx.local.var.len() * 8;
+        let size = ctx.local.var.len() * 8;
 
         Ok(format!(
             "{name}:\n\tpush rbp\n\tmov rbp, rsp\n\tsub rsp, {}\n{prologue}{body}\tleave\n\tret\n\n", 
-            if bytes % 16 == 0 { bytes } else { bytes + 8 }
+            if size % 16 == 0 { size } else { size + 8 }
         ))
     }
 }
