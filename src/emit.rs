@@ -80,16 +80,16 @@ impl Expr {
         }
 
         match self {
-            Expr::If(cond, then, els) => {
+            Expr::If(cond, then, r#else) => {
                 let id = label!();
-                if let Some(els) = els {
+                if let Some(r#else) = r#else {
                     Ok(format!(
-                        "if.{id}:\n{}\tcmp rax, 0\n\tje else.{id}\n{}\tjmp end_if.{id}\nelse.{id}:\n{}end_if.{id}:\n",
-                        cond.emit(ctx)?, then.emit(ctx)?, els.emit(ctx)?,
+                        "{}\tcmp rax, 0\n\tje else.{id}\n{}\tjmp if.{id}\nelse.{id}:\n{}if.{id}:\n",
+                        cond.emit(ctx)?, then.emit(ctx)?, r#else.emit(ctx)?,
                     ))
                 } else {
                     Ok(format!(
-                        "if.{id}:\n{}\tcmp rax, 0\n\tje end_if.{id}\n{}end_if.{id}:\n",
+                        "{}\tcmp rax, 0\n\tje if.{id}\n{}if.{id}:\n",
                         cond.emit(ctx)?, then.emit(ctx)?,
                     ))
                 }
@@ -98,7 +98,7 @@ impl Expr {
                 let id = label!();
                 ctx.local.jmp.push(id.clone());
                 let output = format!(
-                    "while.{id}:\n{}\tcmp rax, 0\n\tje end_while.{id}\n{}\tjmp while.{id}\nend_while.{id}:\n",
+                    "while.{id}:\n{}\tcmp rax, 0\n\tje do.{id}\n{}\tjmp while.{id}\ndo.{id}:\n",
                     cond.emit(ctx)?, body.emit(ctx)?,
                 );
                 ctx.local.jmp.pop();
