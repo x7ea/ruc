@@ -1,0 +1,18 @@
+fn main() {
+    printf("command: ")
+    let prompt = malloc(512)
+    scanf("%[^\n]", prompt)
+
+    let pid = fork()
+    if pid < 0 then {
+        perror("fork failed")
+        exit(1)
+    } else if pid == 0 then {
+        execl("/bin/sh", "sh", "-c", prompt, 0)
+    } else {
+        let status = 0
+        waitpid(pid, &status, 0)
+
+        printf("pid = %d, status = %d\n", pid, status)
+    }
+}

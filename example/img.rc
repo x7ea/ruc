@@ -1,0 +1,20 @@
+fn is_file_exist(path) access(path, 0) == 0
+
+fn main(argc, argv) {
+    let path = argv[1]
+
+    if is_file_exist(path) then {
+        printf("Open %s\n", path)
+
+        gtk_init(&argc, &argv)
+        let window = gtk_window_new(0)
+
+        gtk_container_add(window, gtk_image_new_from_file(path))
+        g_signal_connect_object(window, "destroy", gtk_main_quit, 0)
+
+        gtk_widget_show_all(window)
+        gtk_main()
+    } else {
+        printf("Not found: %s\n", path)
+    }
+}

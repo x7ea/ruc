@@ -1,0 +1,18 @@
+fn swap(a, b) {
+    let tmp = *a
+    let *a = *b
+    let *b = tmp
+}
+
+fn main() {
+    let a = malloc(16)
+    let *a = 10
+
+    let b = a + 8
+    let *b = 20
+
+    swap(a, b)
+    printf("a = %ld, b = %ld\n", *a, *b)
+
+    free(a)
+}
