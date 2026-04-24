@@ -1,0 +1,30 @@
+fn compare(a, b) *a > *b
+
+fn show(arr, len) {
+    printf("[ ")
+    let idx = 0
+    while idx < (len - 1) do {
+        printf("%ld, ", arr[idx])
+        let idx = idx + 1
+    }
+    printf("%ld ]\n", arr[idx])
+}
+
+
+fn main() {
+    let len = 3
+    let arr = malloc(8 * len)
+    let arr[0] = 50
+    let arr[1] = 60
+    let arr[2] = 30
+
+    printf("Before: ")
+    show(arr, len)
+
+    qsort(arr, len, 8, compare)
+
+    printf("After: ")
+    show(arr, len)
+
+    free(arr)
+}

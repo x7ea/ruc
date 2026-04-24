@@ -1,0 +1,23 @@
+; Linked List
+; - memory usage: 16 bytes
+; - layout: [ CAR | &CDR ]
+
+fn node(value) {
+    let heap = malloc(16)
+    let heap[0] = value
+    let heap[1] = 0
+    heap
+}
+
+fn link(self, other) {
+    while self[1] != 0 do let self = self[1]
+    let self[1] = other
+}
+
+fn main() {
+    let a = node(100)
+    let b = node("Hello")
+    link(a, b)
+
+    printf("[%ld, %s]\n", a[0], a[1][0])
+}

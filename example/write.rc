@@ -1,0 +1,9 @@
+fn main() {
+    let message = "Hello, world!\n"
+
+    let fp = fopen("./file.txt", "a")
+    if fp != 0 then {
+        fwrite(message, 1, strlen(message), fp)
+        fclose(fp)
+    }
+}

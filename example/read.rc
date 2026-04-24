@@ -1,0 +1,16 @@
+fn main() {
+    let size = 2048
+    let buf = malloc(size)
+    let fp = fopen("./README.md", "r")
+
+    if fp != 0 then {
+        let n = fread(buf, 1, size, fp)
+        let *(buf + n) = 0
+
+        printf("%s\n", buf)
+        printf("Length = %ld\n", strlen(buf))
+
+        fclose(fp)
+        free(buf)
+    }
+}

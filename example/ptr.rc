@@ -1,0 +1,9 @@
+fn inc(n) n + 1
+fn double(n) n * 2
+fn compose(f, g, x) f(g(x))
+
+fn main() {
+    let x = 3
+    let y = compose(double, inc, x)
+    printf("y = %d\n", y)
+}
