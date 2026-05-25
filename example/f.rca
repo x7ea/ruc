@@ -1,0 +1,11 @@
+fn inc(n: Int) n + 1
+fn double(n: Int) n * 2
+
+fn apply(f: Int(Int), x: Int) f(x)
+
+fn main() {
+    let x = 5
+    let y = apply(inc, x)       ; 6
+    let z = apply(double, y)    ; 12
+    print z
+}

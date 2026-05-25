@@ -1,0 +1,7 @@
+/target
+main.o
+main
+main.asm
+/linux
+.DS_Store
+metadata.txt

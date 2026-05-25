@@ -1,0 +1,23 @@
+fn reduce(
+    this: [Float],
+    lambda: Float(Float, Float)
+) {
+    let index = 1
+    while index < this.len do {
+        let this[0] = lambda(this[0], this[index])
+        let index = index + 1
+    }
+    this[0]
+}
+
+fn add(a: Float, b: Float) a + b
+
+fn main() {
+    let seq = [Float; 3]
+    let seq[0] = 1.2
+    let seq[1] = 2.3
+    let seq[2] = 4.0
+
+    let sum = reduce(seq, add)  ; 7.5
+    print sum
+}

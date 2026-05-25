@@ -1,0 +1,29 @@
+struct List {
+    car: Int,
+    cdr: List
+}
+
+fn node(value: Int) {
+    let this = new List
+    let this.car = value
+    this
+}
+
+fn link(this: List, other: List) {
+    while this.cdr? do {
+        let this = this.cdr
+    }
+    let this.cdr = other
+    this
+}
+
+fn main() {
+    let a = node(100)
+    let b = node(200)
+    let c = node(300)
+    link(link(a, b), c)
+
+    print a.cdr.car     ; 200
+    print b.cdr.car     ; 300
+    print c.cdr.car     ; null
+}

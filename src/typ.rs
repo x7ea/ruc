@@ -1,0 +1,362 @@
+use crate::*;
+
+impl Define {
+    pub fn infer(&self, ctx: &mut Context) -> Result<Type, String> {
+        match self {
+            Define::Function(name, args, body) => {
+                ctx.local = Function::default();
+                ctx.local.scope = args.clone();
+                let ret = body.infer(ctx)?;
+                let sig = Type::Function(
+                    Box::new(ret.clone()),
+                    Some(args.values().cloned().collect::<Vec<Type>>()),
+                );
+                ctx.table.insert(name.clone(), ctx.local.clone());
+                ctx.global.lib.insert(name.clone(), sig);
+                Ok(ret)
+            }
+            Define::Class(name, layout) => {
+                ctx.global.table.insert(name.clone(), layout.clone());
+                Ok(Type::None)
+            }
+        }
+    }
+}
+
+impl Expr {
+    pub fn infer(&self, ctx: &mut Context) -> Result<Type, String> {
+        macro_rules! typing {
+            ($typ: expr) => {{
+                let typ = $typ;
+                ctx.local.typed.insert(self.clone(), typ.clone());
+                Ok::<Type, String>(typ)
+            }};
+        }
+        macro_rules! expand {
+            ($expr: expr) => {{
+                #![allow(unused_must_use)]
+                let expr = $expr.clone();
+                let typ = expr.infer(ctx)?;
+                ctx.local.expand.insert(self.clone(), expr.clone());
+                typ.clone()
+            }};
+        }
+        macro_rules! initializer {
+            ($layout: expr) => {
+                Expr::Call(
+                    Box::new(Expr::Variable(Name::new("calloc")?)),
+                    vec![Expr::Integer($layout as i64), Expr::Integer(8)],
+                )
+            };
+        }
+        macro_rules! array {
+            ($arr: expr, $idx: expr) => {
+                Box::new(Expr::Add(
+                    Box::new(Expr::Mod($idx.clone(), Box::new(Expr::Len($arr.clone())))),
+                    Box::new(Expr::Integer(1)),
+                ))
+            };
+        }
+        macro_rules! op {
+            ($typ: pat, $lhs: expr, $rhs: expr, $($ret: expr)?) => {{
+                let [lt, rt] =[$lhs.infer(ctx)?, $rhs.infer(ctx)?];
+                if lt == rt {
+                    #[allow(warnings)]
+                    if let $typ = lt {
+                        $( return typing!($ret); )?
+                        typing!(lt.clone())
+                    } else {
+                        Err(format!("no operation: {lt:?}"))
+                    }
+                } else {
+                    Err(format!("term: {lt:?} != {rt:?}"))
+                }
+            }};
+        }
+        macro_rules! get {
+            ($name:ident, $obj: expr) => {{
+                let Type::$name(class) = $obj else { panic!() };
+                class.clone()
+            }};
+        }
+        match self {
+            Expr::Print(values) => {
+                let mut fmt = String::new();
+                for i in values.iter() {
+                    let typ = i.infer(ctx)?;
+                    fmt += match typ {
+                        Type::Integer => "%ld",
+                        Type::Float => "%g",
+                        Type::String => "%s",
+                        _ => return Err(format!("can't print: {typ:?}")),
+                    }
+                }
+                expand!(Expr::Call(
+                    Box::new(Expr::Variable(Name::new("printf")?)),
+                    [vec![Expr::String(fmt + "\\n")], values.to_vec()].concat(),
+                ));
+                typing!(Type::None)
+            }
+            Expr::If(cond, then, els) => {
+                if let Expr::Let(bind, check) = &**cond {
+                    return Ok(expand!(Expr::If(
+                        Box::new(Expr::Check(check.clone())),
+                        Box::new(Expr::Block(vec![
+                            Expr::Let(bind.clone(), check.clone()),
+                            *then.clone(),
+                        ])),
+                        els.clone(),
+                    )));
+                }
+                if cond.infer(ctx)? != Type::Bool {
+                    return Err(format!("if-else test: Bool != {cond:?}"));
+                }
+                if let Some(els) = els {
+                    op!(_, then, els,)
+                } else {
+                    then.infer(ctx)?;
+                    Ok(Type::None)
+                }
+            }
+            Expr::While(cond, body) => {
+                let cond = cond.infer(ctx)?;
+                if cond != Type::Bool {
+                    return Err(format!("while-do test: Bool != {cond:?}"));
+                }
+                body.infer(ctx)
+            }
+            Expr::Block(lines) => {
+                let mut ret = Type::None;
+                let parent = ctx.local.scope.clone();
+                for line in lines {
+                    ret = line.infer(ctx)?;
+                }
+                for (name, value) in &ctx.local.scope {
+                    if let Some(typ) = ctx.local.var.get(name) {
+                        if typ != value {
+                            return Err(format!("duplicated: {name}"));
+                        }
+                    }
+                    ctx.local.var.insert(name.clone(), value.clone());
+                }
+                ctx.local.scope = parent;
+                typing!(ret.clone())
+            }
+            Expr::Call(calee, args) => {
+                let typ = calee.infer(ctx)?;
+                if let Type::Function(ret, params) = typ {
+                    let Some(params) = params else {
+                        map!(args, |x| x.infer(ctx));
+                        return typing!(*ret.clone());
+                    };
+                    let (pl, al) = (params.len(), args.len());
+                    if pl != al {
+                        return Err(format!("parameter: {pl} != {al}",));
+                    }
+                    for (param, arg) in params.iter().zip(args) {
+                        let arg = arg.infer(ctx)?;
+                        if arg != *param {
+                            return Err(format!("arguments: {param:?} != {arg:?}"));
+                        }
+                    }
+                    typing!(*ret.clone())
+                } else {
+                    Err(format!("not callee: {typ:?}"))
+                }
+            }
+            Expr::Variable(name) => {
+                let env = &ctx.local.scope;
+                if let Some(typ) = env.get(name) {
+                    typing!(typ.clone())
+                } else if let Some(typ) = ctx.global.lib.get(name) {
+                    typing!(typ.clone())
+                } else {
+                    Err(format!("undefined: {name}"))
+                }
+            }
+            Expr::Let(name, value) => match &**name {
+                Expr::Variable(name) => {
+                    let val = value.infer(ctx)?;
+                    let env = &mut ctx.local.scope;
+                    if let Some(typ) = env.get(name) {
+                        if val != *typ {
+                            return Err(format!("{name} == {typ:?} != {val:?}"));
+                        }
+                    } else {
+                        env.insert(name.clone(), val.clone());
+                    }
+                    typing!(Type::None)
+                }
+                accessor @ Expr::Index(arr, idx) => {
+                    let val = value.infer(ctx)?;
+                    let typ = accessor.infer(ctx)?;
+                    if typ.clone() != val {
+                        return Err(format!("array: {typ:?} != {val:?}"));
+                    }
+                    expand!(Expr::Write(array!(arr, idx), value.clone(), arr.clone()));
+                    typing!(Type::None)
+                }
+                accessor @ Expr::Member(obj, key) => {
+                    let val = value.infer(ctx)?;
+                    let typ = accessor.infer(ctx)?;
+                    if &typ != &val {
+                        return Err(format!("object.{key} == {typ:?} != {val:?}"));
+                    }
+                    let class_name = get!(Class, obj.infer(ctx)?);
+                    match ctx.global.table.get(&class_name).unwrap().clone() {
+                        Object::Struct(layout) => {
+                            let offset = layout.get_index_of(key).unwrap();
+                            let offset = Box::new(Expr::Integer(offset as i64));
+                            expand!(Expr::Write(offset, value.clone(), obj.clone()));
+                        }
+                        Object::Enum(layout) => {
+                            let tag = layout.get_index_of(key).unwrap() as i64;
+                            let offset = |x| Box::new(Expr::Integer(x));
+                            expand!(Expr::Block(vec![
+                                Expr::Write(offset(0), offset(tag), obj.clone()),
+                                Expr::Write(offset(8), value.clone(), obj.clone()),
+                            ]));
+                        }
+                    }
+                    typing!(Type::None)
+                }
+                _ => Err(format!("assign target")),
+            },
+            Expr::Array(typ, len) => {
+                expand!(initializer!(*len + 1));
+                typing!(Type::Array(Box::new(typ.clone())))
+            }
+            Expr::New(typ) => {
+                if let Type::Class(class_name) = typ {
+                    match ctx.global.table.get(class_name) {
+                        Some(Object::Struct(layout)) => {
+                            expand!(initializer!(layout.len()));
+                            typing!(typ.clone())
+                        }
+                        Some(Object::Enum(_)) => {
+                            expand!(initializer!(2));
+                            typing!(typ.clone())
+                        }
+                        _ => Err(format!("undefined: {class_name}")),
+                    }
+                } else {
+                    Err(format!("not constructor: {typ:?}"))
+                }
+            }
+            Expr::Len(arr) => {
+                let typ = arr.infer(ctx)?;
+                let Type::Array(_) = typ else {
+                    return Err(format!("not length: {typ:?}"));
+                };
+                let head = Box::new(Expr::Integer(0));
+                expand!(Expr::Read(head, Type::Integer, arr.clone()));
+                typing!(Type::Integer)
+            }
+            Expr::Index(arr, idx) => {
+                let typ = arr.infer(ctx)?;
+                let Type::Array(typ) = typ else {
+                    return Err(format!("not array: {typ:?}"));
+                };
+                let idx_t = idx.infer(ctx)?;
+                let Type::Integer = idx_t else {
+                    return Err(format!("not index: {idx_t:?}"));
+                };
+                expand!(Expr::Read(array!(arr, idx), *typ.clone(), arr.clone()));
+                typing!(*typ.clone())
+            }
+            Expr::Member(obj, key) => {
+                let typ = obj.infer(ctx)?;
+                let Type::Class(class_name) = typ else {
+                    return Err(format!("not class: {typ:?}"));
+                };
+                let Some(class) = ctx.global.table.get(&class_name) else {
+                    return Err(format!("undefined: {class_name}"));
+                };
+                match class {
+                    Object::Struct(layout) => {
+                        let Some(typ) = layout.get(key).cloned() else {
+                            return Err(format!("undefined: {class_name}.{key}"));
+                        };
+                        let offset = Expr::Integer(layout.get_index_of(key).unwrap() as i64);
+                        expand!(Expr::Read(Box::new(offset), typ.clone(), obj.clone()));
+                        typing!(typ)
+                    }
+                    Object::Enum(layout) => {
+                        let Some(typ) = layout.get(key).cloned() else {
+                            return Err(format!("undefined: {class_name}.{key}"));
+                        };
+                        let offset = Box::new(Expr::Integer(8));
+                        expand!(Expr::Read(offset, typ.clone(), obj.clone()));
+                        typing!(typ)
+                    }
+                }
+            }
+            Expr::Check(expr) => {
+                if let Expr::Member(obj, key) = &**expr {
+                    let typ = obj.infer(ctx)?;
+                    if let Type::Class(class_name) = typ {
+                        if let Some(Object::Enum(layout)) = ctx.global.table.get(&class_name) {
+                            let tag = layout.get_index_of(key).unwrap();
+                            let offset = Box::new(Expr::Integer(0));
+                            expand!(Expr::Eql(
+                                Box::new(Expr::Read(offset, Type::Integer, obj.clone())),
+                                Box::new(Expr::Integer(tag as i64)),
+                            ));
+                            return typing!(Type::Bool);
+                        }
+                    }
+                }
+                let typ = expr.infer(ctx)?;
+                if !matches!(typ, Type::Class(_)) {
+                    return Err(format!("not nullable: {typ:?}"));
+                }
+                typing!(Type::Bool)
+            }
+            Expr::Read(addr, typ, offset) => {
+                let offset = offset.infer(ctx)?;
+                if let Type::Integer = offset {
+                    return Err(format!("not address: {offset:?}"));
+                }
+                addr.infer(ctx)?;
+                typing!(typ.clone())
+            }
+            Expr::Write(addr, value, offset) => {
+                let offset = offset.infer(ctx)?;
+                if let Type::Integer = offset {
+                    return Err(format!("not address: {offset:?}"));
+                }
+                addr.infer(ctx)?;
+                typing!(value.infer(ctx)?)
+            }
+            Expr::Mod(lhs, rhs) => {
+                expand!(Expr::Div(lhs.clone(), rhs.clone()));
+                op!(Type::Integer, lhs, rhs,)
+            }
+            Expr::Null(typ) => {
+                if let Type::Float = typ {
+                    expand!(Expr::Float(Float::from(0.0)));
+                } else {
+                    expand!(Expr::Integer(0));
+                }
+                typing!(typ.clone())
+            }
+            Expr::Integer(_) => typing!(Type::Integer),
+            Expr::Float(_) => typing!(Type::Float),
+            Expr::String(_) => typing!(Type::String),
+            Expr::Bool(_) => typing!(Type::Bool),
+            Expr::Add(lhs, rhs) => op!(Type::Integer | Type::Float, lhs, rhs,),
+            Expr::Sub(lhs, rhs) => op!(Type::Integer | Type::Float, lhs, rhs,),
+            Expr::Mul(lhs, rhs) => op!(Type::Integer | Type::Float, lhs, rhs,),
+            Expr::Div(lhs, rhs) => op!(Type::Integer | Type::Float, lhs, rhs,),
+            Expr::Eql(lhs, rhs) => op!(Type::Integer, lhs, rhs, Type::Bool),
+            Expr::NotEq(lhs, rhs) => op!(Type::Integer, lhs, rhs, Type::Bool),
+            Expr::Gt(lhs, rhs) => op!(Type::Integer, lhs, rhs, Type::Bool),
+            Expr::Lt(lhs, rhs) => op!(Type::Integer, lhs, rhs, Type::Bool),
+            Expr::GtEq(lhs, rhs) => op!(Type::Integer, lhs, rhs, Type::Bool),
+            Expr::LtEq(lhs, rhs) => op!(Type::Integer, lhs, rhs, Type::Bool),
+            Expr::And(lhs, rhs) => op!(Type::Bool, lhs, rhs,),
+            Expr::Or(lhs, rhs) => op!(Type::Bool, lhs, rhs,),
+            Expr::Xor(lhs, rhs) => op!(Type::Bool, lhs, rhs,),
+        }
+    }
+}
