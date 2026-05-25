@@ -1,2 +1,2 @@
 # Ruca BASIC
-Typed programming language on Linux
+Statically typed programming language on Linux 
