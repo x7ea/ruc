@@ -175,7 +175,7 @@ pub struct Global {
     lib: IndexMap<Name, Type>,
     table: IndexMap<Name, (Args, Object)>,
     def: IndexMap<Name, Define>,
-    pol: IndexSet<Name>,
+    poly: IndexSet<Name>,
 }
 
 #[derive(Default, Debug, Clone)]
