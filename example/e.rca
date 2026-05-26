@@ -3,7 +3,7 @@ struct List<T> {
     cdr: List<T>
 }
 
-List<T> link<T>(this: List<T>, other: List<T>) {
+fn link<T>(this: List<T>, other: List<T>) {
     while this.cdr? do {
         let this = this.cdr
     }
@@ -11,13 +11,13 @@ List<T> link<T>(this: List<T>, other: List<T>) {
     this
 }
 
-List<Int> node(value: Int) {
+fn node(value: Int) {
     let this = new List<Int>
     let this.car = value
     this
 }
 
-() main() {
+fn main() {
     let a = node(100)
     let b = node(200)
     let c = node(300)
