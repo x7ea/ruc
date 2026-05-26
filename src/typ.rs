@@ -206,7 +206,6 @@ impl Expr {
                     }
                     typing!(typ.clone())
                 } else {
-                    dbg!(&name);
                     Err(format!("undefined: {name}"))
                 }
             }
@@ -329,8 +328,6 @@ impl Expr {
                     return Err(format!("not class: {typ}"));
                 };
                 let Some((_, class)) = ctx.global.table.get(name) else {
-                    dbg!(ctx.global.table.keys(), &class.generics());
-
                     return Err(format!("undefined: {name}"));
                 };
                 match class {
