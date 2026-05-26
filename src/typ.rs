@@ -233,11 +233,11 @@ impl Expr {
                 }
                 acc @ Expr::Member(obj, key) => {
                     let [val, typ] = [value.infer(ctx)?, acc.infer(ctx)?];
-                    let Generics(name, _) = &get!(Class, obj.infer(ctx)?);
+                    let class @ Generics(name, _) = &get!(Class, obj.infer(ctx)?);
                     if &typ != &val {
                         return Err(format!("{name}.{key}: {typ} != {val}"));
                     }
-                    match ctx.global.table.get(name).unwrap().clone().1 {
+                    match ctx.global.table.get(&class.generics()).unwrap().clone().1 {
                         Object::Struct(layout) => {
                             let offset = layout.get_index_of(key).unwrap();
                             let offset = Box::new(Expr::Integer(offset as i64));
@@ -264,7 +264,7 @@ impl Expr {
                 let Type::Class(class @ Generics(name, args)) = typ else {
                     return Err(format!("not constructor: {typ}"));
                 };
-                match ctx.global.table.get(name).cloned() {
+                match ctx.global.table.get(&class.generics()).cloned() {
                     Some((params, Object::Struct(layout))) => {
                         let mut layout = layout.clone();
                         expand!(initializer!(layout.len()));
