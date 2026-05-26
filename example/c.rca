@@ -11,8 +11,8 @@ fn add<T>(a: T, b: T) a + b
 
 fn main() {
     let x = [Int; 3]
-    let x[0] = 1
-    let x[1] = 2
+    let x[0] = 8
+    let x[1] = 5
     let x[2] = 4
 
     print reduce<Int>(x, add<Int>)
