@@ -175,7 +175,7 @@ impl Expr {
                     let typ = &mut typ.clone();
                     if let Type::Function(params, _, _) = typ.clone() {
                         if params.len() != args.len() {
-                            dbg!(params, args);
+                            dbg!(&params, &args);
                             return Err(format!("generics: {typ}"));
                         }
                         for (arg, param) in args.iter().zip(params) {
