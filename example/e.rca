@@ -1,15 +1,15 @@
-struct List<T> {
+struct List {
     car: Int,
     cdr: List
 }
 
-fn node<T>(value: T) {
-    let this = new List<T>
+fn node(value: Int) {
+    let this = new List
     let this.car = value
     this
 }
 
-fn link<T>(this: List<T>, other: List) {
+fn link(this: List, other: List) {
     while this.cdr? do {
         let this = this.cdr
     }
@@ -18,10 +18,10 @@ fn link<T>(this: List<T>, other: List) {
 }
 
 fn main() {
-    let a = node<Int>(100)
-    let b = node<Int>(200)
-    let c = node<Int>(300)
-    link<Int>(link<Int>(a, b), c)
+    let a = node(100)
+    let b = node(200)
+    let c = node(300)
+    link(link(a, b), c)
 
     print a.cdr.car     ; 200
     print b.cdr.car     ; 300
