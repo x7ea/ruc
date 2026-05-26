@@ -22,11 +22,13 @@ impl Define {
             }
             if let Some(func) = line.strip_prefix("fn ") {
                 let (head, body) = once!(func, SPACE)?;
-                let (name, args) = ok!(ok!(head.strip_suffix(")"))?.split_once("("))?;
+                let (head, ret) = once!(&head, ":")?;
+                let (name, args) = surround!(&head, "(", ")")?;
                 let func = Define::Function(
-                    Generics::parse(name)?,
-                    args!(args),
+                    Generics::parse(&name)?,
+                    args!(&args),
                     Expr::Block(vec![Expr::parse(&body)?]),
+                    Type::parse(&ret)?,
                 );
                 result.push(func);
             } else if let Some(head) = line.strip_prefix("struct ") {
@@ -45,27 +47,6 @@ impl Define {
         }
         Ok(result)
     }
-}
-
-macro_rules! surround {
-    ($ls: literal, $x: expr, $rs: literal) => {
-        $x.strip_prefix($ls).and_then(|x| x.strip_suffix($rs))
-    };
-    ($ls: literal, $rs: literal,$x: expr) => {
-        $x.strip_suffix($rs).and_then(|x| x.split_once($ls))
-    };
-    ($x: expr, $ls: literal, $rs: literal) => {
-        tokenize($x, &$ls).and_then(|x| {
-            if x.len() < 2 {
-                return Err(String::new());
-            }
-            let args = ok!(x.last())?.to_string();
-            let func = ok!(x.get(..x.len() - 1))?.concat();
-
-            let args = ok!(args.get(1..args.len() - 1))?.to_string();
-            Ok((func, args))
-        })
-    };
 }
 
 impl Expr {
