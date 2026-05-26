@@ -179,7 +179,7 @@ impl Expr {
                             typ.rewrite(&param, arg);
                         }
                     }
-                    ctx.table.insert(func.generics(), typ.clone());
+                    ctx.global.lib.insert(func.generics(), typ.clone());
                     typing!(typ.clone())
                 } else {
                     Err(format!("undefined: {name}"))
