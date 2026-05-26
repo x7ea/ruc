@@ -32,7 +32,6 @@ impl Define {
                     map
                 }};
             }
-
             if let Some(func) = line.strip_prefix("fn ") {
                 let (head, body) = once!(func, SPACE)?;
                 let (name, args) = surround!(&head, "(", ")")?;
