@@ -49,10 +49,10 @@ impl Define {
             }
             map
         };
-        for define in defines.iter_mut() {
+        for define in &ctx.global.def {
             define.infer(ctx)?;
         }
-        for define in defines.iter_mut() {
+        for define in &ctx.global.def {
             text += &define.emit(ctx)?;
         }
         let data = ctx.global.data.clone();
