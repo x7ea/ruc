@@ -200,7 +200,7 @@ impl Expr {
                     let [val, typ] = [value.infer(ctx)?, acc.infer(ctx)?];
                     let name = get!(Class, obj.infer(ctx)?);
                     if &typ != &val {
-                        return Err(format!("{name}.{key} == {typ} != {val}"));
+                        return Err(format!("{name}.{key}: {typ} != {val}"));
                     }
                     match ctx.global.table.get(&name).unwrap().clone() {
                         Object::Struct(layout) => {
