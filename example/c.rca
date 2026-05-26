@@ -18,6 +18,6 @@ fn main() {
     let seq[1] = 2.3
     let seq[2] = 4.0
 
-    let sum = reduce(seq, add)  ; 7.5
+    let sum = reduce(seq, seq)  ; 7.5
     print sum
 }
