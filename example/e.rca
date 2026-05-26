@@ -1,6 +1,6 @@
 struct List<T> {
     car: T,
-    cdr: List
+    cdr: List<T>
 }
 
 fn node(value: Int) {
@@ -21,7 +21,8 @@ fn main() {
     let a = node(100)
     let b = node(200)
     let c = node(300)
-    link<Int>(link<Int>(a, b), c)
+    link<Int>(a, b)
+    link<Int>(b, c)
 
     print a.cdr.car     ; 200
     print b.cdr.car     ; 300
