@@ -169,9 +169,11 @@ impl Expr {
                 let env = &ctx.local.scope;
                 if let Some(typ) = env.get(name) {
                     typing!(typ.clone())
-                } else if let Some(typ) = ctx.global.lib.get(generic) {
-                    if let Type::Function(ret, Some(param)) = typ {
-                        for arg in args {}
+                } else if let Some(mut typ) = ctx.global.lib.get(generic) {
+                    if let Type::Function(ret, Some(params)) = typ {
+                        for (arg, param) in args.iter().zip(params) {
+                            typ.rewrite(param, arg);
+                        }
                     }
                     typing!(typ.clone())
                 } else {
