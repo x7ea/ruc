@@ -94,7 +94,7 @@ pub enum Expr {
     String(String),
     Null(Type),
     // Reference
-    Variable(Name),
+    Variable(Generics),
     Let(Box<Expr>, Box<Expr>),
     Call(Box<Expr>, Vec<Expr>),
     // Memory
