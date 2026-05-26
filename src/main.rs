@@ -78,8 +78,8 @@ pub enum Object {
 
 #[derive(Clone, PartialEq)]
 pub enum Define {
-    Function(Name, IndexMap<Name, Type>, Expr),
-    Class(Name, Object),
+    Function(Generics, IndexMap<Name, Type>, Expr),
+    Class(Generics, Object),
 }
 
 #[derive(Clone, Hash, PartialEq, Eq)]
@@ -154,8 +154,8 @@ pub struct Context {
 pub struct Global {
     idx: usize,
     data: String,
-    lib: IndexMap<Name, Type>,
-    table: IndexMap<Name, Object>,
+    lib: IndexMap<Generics, Type>,
+    table: IndexMap<Generics, Object>,
 }
 
 #[derive(Default, Clone)]
