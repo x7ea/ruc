@@ -182,9 +182,20 @@ impl Expr {
                             typ.rewrite(&param, arg);
                         }
                         let mangle = func.generics();
-                        ctx.global.lib.insert(mangle, typ.clone());
-                        let unify = ctx.global.def.get(name);
-                        ctx.global.def.insert(mangle);
+                        ctx.global.lib.insert(mangle.clone(), typ.clone());
+
+                        let mut unify = ctx.global.def.get(name).unwrap().clone();
+                        if let Type::Function(_, ret, Some(args)) = typ.clone() {
+                            if let Define::Function(Generics(_, _), params, body) = &unify {
+                                let mut map = IndexMap::new();
+                                for (param, arg) in params.keys().zip(args) {
+                                    map.insert(param.clone(), arg);
+                                }
+                                let name = Generics(mangle.clone(), vec![]);
+                                unify = Define::Function(name, map, body.clone());
+                            }
+                        };
+                        ctx.global.def.insert(mangle, unify.clone());
                     }
                     typing!(typ.clone())
                 } else {
