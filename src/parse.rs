@@ -175,8 +175,13 @@ impl Expr {
             Ok(Expr::Member(Box::new(Expr::parse(obj)?), Name::new(key)?))
         } else if let Some(class) = x.strip_prefix("new ") {
             Ok(Expr::New(Type::parse(&class)?))
+        } else if let Ok((var, args)) = surround!(x, "<", ">") {
+            Ok(Expr::Variable(Generics(
+                Name::new(&var)?,
+                map!(tokenize(&args, ",")?, |x| Type::parse(x)),
+            )))
         } else {
-            Ok(Expr::Variable(Name::new(x)?))
+            Ok(Expr::Variable(Generics(Name::new(x)?, vec![])))
         }
     }
 }
@@ -189,16 +194,21 @@ impl Type {
             "Bool" => Ok(Type::Bool),
             "Float" => Ok(Type::Float),
             "()" => Ok(Type::None),
-            name => {
-                if let Ok((func, args)) = surround!(name, "(", ")") {
+            x => {
+                if let Ok((func, args)) = surround!(x, "(", ")") {
                     Ok(Type::Function(
                         Box::new(Type::parse(&func)?),
                         Some(map!(tokenize(&args, ",")?, |x| Type::parse(&x))),
                     ))
-                } else if let Some(arr) = surround!("[", name, "]") {
+                } else if let Some(arr) = surround!("[", x, "]") {
                     Ok(Type::Array(Box::new(Type::parse(&arr)?)))
+                } else if let Ok((var, args)) = surround!(x, "<", ">") {
+                    Ok(Type::Class(Generics(
+                        Name::new(&var)?,
+                        map!(tokenize(&args, ",")?, |x| Type::parse(x)),
+                    )))
                 } else {
-                    Ok(Type::Class(Name::new(name)?))
+                    Ok(Type::Class(Generics(Name::new(x)?, vec![])))
                 }
             }
         }
