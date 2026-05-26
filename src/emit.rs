@@ -161,7 +161,7 @@ impl Expr {
                     callee.emit(ctx)?
                 ))
             }
-            Expr::Variable(name) => {
+            Expr::Variable(Generics(name, args)) => {
                 let env = &ctx.local.var;
                 if let Some(i) = env.get_index_of(name) {
                     let typ = env.get(name).unwrap();
