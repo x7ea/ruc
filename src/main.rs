@@ -40,7 +40,7 @@ impl Define {
     pub fn compile(defines: &mut Vec<Self>) -> Result<String, String> {
         let mut text = String::new();
         let ctx = &mut Context::default();
-        ctx.global.def = define.clone();
+        ctx.global.def = defines.clone();
         ctx.global.lib = {
             let mut map = IndexMap::new();
             for line in Self::LIB {
