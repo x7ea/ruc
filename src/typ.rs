@@ -17,7 +17,7 @@ impl Define {
                 Ok(ret)
             }
             Define::Class(Generics(name, args), layout) => {
-                let value = (args, layout.clone());
+                let value = (args.clone(), layout.clone());
                 ctx.global.table.insert(name.clone(), value);
                 Ok(Type::None)
             }
