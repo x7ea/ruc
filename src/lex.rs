@@ -112,7 +112,6 @@ pub fn tokenize(input: &str, delimiter: &str) -> Result<Vec<String>, String> {
 }
 
 #[macro_export]
-
 macro_rules! surround {
     ($ls: literal, $x: expr, $rs: literal) => {
         $x.strip_prefix($ls).and_then(|x| x.strip_suffix($rs))
@@ -131,6 +130,18 @@ macro_rules! surround {
             let args = ok!(args.get(1..args.len() - 1))?.to_string();
             Ok((func, args))
         })
+    };
+}
+
+#[macro_export]
+macro_rules! prohibit {
+    () => {
+        indexmap! {
+            " > "  => " <gt> ",
+            " < "  => " <lt> ",
+            " >= " => " <ge> ",
+            " <= " => " <le> "
+        }
     };
 }
 
