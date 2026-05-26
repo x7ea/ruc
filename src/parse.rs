@@ -197,6 +197,7 @@ impl Type {
             x => {
                 if let Ok((func, args)) = surround!(x, "(", ")") {
                     Ok(Type::Function(
+                        vec![],
                         Box::new(Type::parse(&func)?),
                         Some(map!(tokenize(&args, ",")?, |x| Type::parse(&x))),
                     ))
@@ -229,11 +230,11 @@ impl Display for Type {
                 let args = map!(args).join(", ");
                 write!(f, "{name}<{args}>")
             }
-            Type::Function(ret, Some(args)) => {
+            Type::Function(_, ret, Some(args)) => {
                 let args = map!(args).join(", ");
                 write!(f, "{ret}({args})")
             }
-            Type::Function(ret, None) => write!(f, "{ret}(...)"),
+            Type::Function(_, ret, None) => write!(f, "{ret}()"),
         }
     }
 }
