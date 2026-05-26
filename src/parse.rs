@@ -1,3 +1,5 @@
+use indexmap::indexmap;
+
 use crate::*;
 use std::fmt::{self, Display};
 
@@ -5,13 +7,8 @@ pub const SPACE: &str = " ";
 
 impl Define {
     pub fn parse(source: &str) -> Result<Vec<Define>, String> {
-        let source = source
-            .replace(" > ", " <gt> ")
-            .replace(" < ", " <lt> ")
-            .replace(" >= ", " <ge> ")
-            .replace(" <= ", " <le> ");
         let mut result = Vec::new();
-        for line in tokenize(&source, "\n")? {
+        for mut line in tokenize(&source, "\n")? {
             macro_rules! args {
                 ($args: expr) => {{
                     let mut map = IndexMap::new();
@@ -25,6 +22,17 @@ impl Define {
                     map
                 }};
             }
+
+            let prohibit = indexmap! {
+                " > "  => " <gt> ",
+                " < "  => " <lt> ",
+                " >= " => " <ge> ",
+                " <= " => " <le> "
+            };
+            for (k, v) in prohibit {
+                line = line.replace(k, v);
+            }
+
             if let Some(func) = line.strip_prefix("fn ") {
                 let (head, body) = once!(func, SPACE)?;
                 let (name, args) = surround!(&head, "(", ")")?;
