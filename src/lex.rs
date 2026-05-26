@@ -112,37 +112,14 @@ pub fn tokenize(input: &str, delimiter: &str) -> Result<Vec<String>, String> {
 }
 
 #[macro_export]
-macro_rules! surround {
-    ($ls: literal, $x: expr, $rs: literal) => {
-        $x.strip_prefix($ls).and_then(|x| x.strip_suffix($rs))
-    };
-    ($ls: literal, $rs: literal, $x: expr) => {
-        $x.strip_suffix($rs).and_then(|x| x.split_once($ls))
-    };
-    ($x: expr, $ls: literal, $rs: literal) => {
-        tokenize($x, &$ls).and_then(|x| {
-            if x.len() < 2 {
-                return Err(String::new());
-            }
-            let args = ok!(x.last())?.to_string();
-            let func = ok!(x.get(..x.len() - 1))?.concat();
-
-            let args = ok!(args.get(1..args.len() - 1))?.to_string();
-            Ok((func, args))
-        })
-    };
-}
-
-#[macro_export]
 macro_rules! ok {
-    ($v: expr) => {{
-        dbg!();
+    ($v: expr) => {
         if let Some(v) = $v {
             Ok(v)
         } else {
             Err(String::new())
         }
-    }};
+    };
 }
 
 #[macro_export]
