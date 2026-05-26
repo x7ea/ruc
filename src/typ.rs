@@ -324,7 +324,7 @@ impl Expr {
             }
             Expr::Member(obj, key) => {
                 let typ = obj.infer(ctx)?;
-                let Type::Class(class @ Generics(name, _)) = &typ else {
+                let Type::Class(Generics(name, _)) = &typ else {
                     return Err(format!("not class: {typ}"));
                 };
                 let Some((_, class)) = ctx.global.table.get(name) else {
