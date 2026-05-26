@@ -70,19 +70,19 @@ impl Define {
 
 // Abstract Syntax Tree (AST)
 
-#[derive(Clone, PartialEq, Debug)]
+#[derive(Clone, PartialEq)]
 pub enum Object {
     Struct(IndexMap<Name, Type>),
     Enum(IndexMap<Name, Type>),
 }
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, PartialEq)]
 pub enum Define {
     Function(Name, IndexMap<Name, Type>, Expr),
     Class(Name, Object),
 }
 
-#[derive(Clone, Hash, PartialEq, Eq, Debug)]
+#[derive(Clone, Hash, PartialEq, Eq)]
 pub enum Expr {
     // Literal
     Integer(i64),
@@ -127,7 +127,7 @@ pub enum Expr {
     Xor(Box<Expr>, Box<Expr>),
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+#[derive(Clone, PartialEq, Eq, Hash)]
 pub enum Type {
     String,
     Integer,
@@ -139,14 +139,14 @@ pub enum Type {
     None,
 }
 
-#[derive(Default, Debug)]
+#[derive(Default)]
 pub struct Context {
     global: Global,
     local: Function,
     table: IndexMap<Name, Function>,
 }
 
-#[derive(Default, Debug)]
+#[derive(Default)]
 pub struct Global {
     idx: usize,
     data: String,
@@ -154,7 +154,7 @@ pub struct Global {
     table: IndexMap<Name, Object>,
 }
 
-#[derive(Default, Clone, Debug)]
+#[derive(Default, Clone)]
 pub struct Function {
     var: IndexMap<Name, Type>,
     scope: IndexMap<Name, Type>,
