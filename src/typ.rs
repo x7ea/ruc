@@ -239,27 +239,26 @@ impl Expr {
             }
             Expr::New(typ) => {
                 let typ = &mut typ.clone();
-                if let Type::Class(class @ Generics(name, args)) = typ {
-                    match ctx.global.table.get(name) {
-                        Some(mono @ (params, Object::Struct(layout))) => {
-                            expand!(initializer!(layout.len()));
-                            if params.len() != args.len() {
-                                return Err(format!("generics: {typ}"));
-                            }
-                            for (arg, param) in args.iter().zip(params) {
-                                typ.rewrite(&param, arg);
-                            }
-                            ctx.global.table.insert(class.generics(), mono.clone());
-                            typing!(typ.clone())
+                let Type::Class(class @ Generics(name, args)) = typ else {
+                    return Err(format!("not constructor: {typ}"));
+                };
+                match ctx.global.table.get(name) {
+                    Some(mono @ (params, Object::Struct(layout))) => {
+                        expand!(initializer!(layout.len()));
+                        if params.len() != args.len() {
+                            return Err(format!("generics: {typ}"));
                         }
-                        Some((param, Object::Enum(_))) => {
-                            expand!(initializer!(2));
-                            typing!(typ.clone())
+                        for (arg, param) in args.iter().zip(params) {
+                            typ.rewrite(&param, arg);
                         }
-                        _ => Err(format!("undefined: {name}")),
+                        ctx.global.table.insert(class.generics(), mono.clone());
+                        typing!(typ.clone())
                     }
-                } else {
-                    Err(format!("not constructor: {typ}"))
+                    Some((param, Object::Enum(_))) => {
+                        expand!(initializer!(2));
+                        typing!(typ.clone())
+                    }
+                    _ => Err(format!("undefined: {name}")),
                 }
             }
             Expr::Len(arr) => {
