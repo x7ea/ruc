@@ -3,20 +3,16 @@ use crate::*;
 impl Define {
     pub fn infer(&self, ctx: &mut Context) -> Result<Type, String> {
         match self {
-            Define::Function(Generics(name, param), args, body) => {
+            Define::Function(Generics(name, params), args, body) => {
+                if !params.is_empty() {
+                    return Ok(Type::None);
+                }
                 let parent = ctx.local.clone();
                 ctx.local = Function::default();
                 ctx.local.scope = args.clone();
-                let ret = body.infer(ctx).or_else(|err| {
-                    if !param.is_empty() {
-                        ctx.global.meta.insert(name.clone());
-                        Ok(Type::None)
-                    } else {
-                        Err(err)
-                    }
-                })?;
+                let ret = body.infer(ctx)?;
                 let sig = Type::Function(
-                    param.clone(),
+                    params.clone(),
                     Box::new(ret.clone()),
                     Some(args.values().cloned().collect::<Vec<Type>>()),
                 );
