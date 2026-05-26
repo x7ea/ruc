@@ -64,7 +64,7 @@ impl Define {
             text += &define.emit(ctx)?;
         }
         let data = ctx.global.data.clone();
-        for define in ctx.global.def.clone() {
+        for (_, define) in ctx.global.def.clone() {
             if let Define::Function(Generics(func, _), _, _) = define {
                 ctx.global.lib.shift_remove(&func);
             }
