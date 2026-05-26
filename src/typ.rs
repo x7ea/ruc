@@ -3,17 +3,20 @@ use crate::*;
 impl Define {
     pub fn infer(&self, ctx: &mut Context) -> Result<Type, String> {
         match self {
-            Define::Function(Generics(name, params), args, body, ret) => {
+            Define::Function(Generics(name, param), args, body) => {
                 let parent = ctx.local.clone();
                 ctx.local = Function::default();
                 ctx.local.scope = args.clone();
-                if let Ok(typ) = body.infer(ctx) {
-                    if typ != *ret {
-                        return Err(format!("return: {ret} != {typ}"));
+                let ret = body.infer(ctx).or_else(|err| {
+                    if !param.is_empty() {
+                        ctx.global.meta.insert(name.clone());
+                        Ok(Type::None)
+                    } else {
+                        Err(err)
                     }
-                }
+                })?;
                 let sig = Type::Function(
-                    params.clone(),
+                    param.clone(),
                     Box::new(ret.clone()),
                     Some(args.values().cloned().collect::<Vec<Type>>()),
                 );
@@ -179,7 +182,7 @@ impl Expr {
                     typing!(typ.clone())
                 } else if let Some(typ) = ctx.global.lib.get(name) {
                     let typ = &mut typ.clone();
-                    if let Type::Function(params, ret, Some(_)) = typ.clone() {
+                    if let Type::Function(params, _, Some(_)) = typ.clone() {
                         if params.len() != args.len() {
                             return Err(format!("generics: {typ}"));
                         }
@@ -189,13 +192,13 @@ impl Expr {
                         let mangle = func.generics();
                         let mut unify = ctx.global.def.get(name).unwrap().clone();
                         if let Type::Function(_, _, Some(args)) = typ.clone() {
-                            if let Define::Function(Generics(_, _), params, body, _) = &unify {
+                            if let Define::Function(Generics(_, _), params, body) = &unify {
                                 let mut map = IndexMap::new();
                                 for (param, arg) in params.keys().zip(args) {
                                     map.insert(param.clone(), arg);
                                 }
                                 let name = Generics(mangle.clone(), vec![]);
-                                unify = Define::Function(name, map, body.clone(), *ret);
+                                unify = Define::Function(name, map, body.clone());
                             }
                         };
                         *typ = unify.infer(ctx)?;
