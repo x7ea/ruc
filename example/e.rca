@@ -10,15 +10,18 @@ fn node(value: Int) {
 }
 
 fn link<T>(this: List<T>, other: List<T>) {
+    while this.cdr? do {
+        let this = this.cdr
+    }
     let this.cdr = other
+    this
 }
 
 fn main() {
     let a = node(100)
     let b = node(200)
     let c = node(300)
-    link<Int>(a, b)
-    link<Int>(b, c)
+    link<Int>(a, link<Int>(b, c))
 
     print a.cdr.car     ; 200
     print b.cdr.car     ; 300
