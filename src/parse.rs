@@ -7,8 +7,18 @@ pub const SPACE: &str = " ";
 
 impl Define {
     pub fn parse(source: &str) -> Result<Vec<Define>, String> {
+        let mut source = source.trim().to_string();
+        let prohibit = indexmap! {
+            " > "  => " <gt> ",
+            " < "  => " <lt> ",
+            " >= " => " <ge> ",
+            " <= " => " <le> "
+        };
+        for (k, v) in prohibit {
+            source = source.replace(k, v);
+        }
         let mut result = Vec::new();
-        for mut line in tokenize(&source, "\n")? {
+        for line in tokenize(&source, "\n")? {
             macro_rules! args {
                 ($args: expr) => {{
                     let mut map = IndexMap::new();
@@ -21,16 +31,6 @@ impl Define {
                     }
                     map
                 }};
-            }
-
-            let prohibit = indexmap! {
-                " > "  => " <gt> ",
-                " < "  => " <lt> ",
-                " >= " => " <ge> ",
-                " <= " => " <le> "
-            };
-            for (k, v) in prohibit {
-                line = line.replace(k, v);
             }
 
             if let Some(func) = line.strip_prefix("fn ") {
