@@ -171,7 +171,7 @@ impl Expr {
                     typing!(typ.clone())
                 } else if let Some(typ) = ctx.global.lib.get(name) {
                     let typ = &mut typ.clone();
-                    if let Type::Function(ret, Some(params)) = typ.clone() {
+                    if let Type::Function(params, ret, Some(_)) = typ.clone() {
                         if params.len() != args.len() {
                             return Err(format!("generics: {typ}"));
                         }
@@ -185,7 +185,7 @@ impl Expr {
                 }
             }
             Expr::Let(name, value) => match &**name {
-                Expr::Variable(Generics(name, arg)) => {
+                Expr::Variable(Generics(name, _)) => {
                     let val = value.infer(ctx)?;
                     let env = &mut ctx.local.scope;
                     if let Some(typ) = env.get(name) {
@@ -274,7 +274,7 @@ impl Expr {
             }
             Expr::Member(obj, key) => {
                 let typ = obj.infer(ctx)?;
-                let Type::Class(Generics(name, args)) = &typ else {
+                let Type::Class(Generics(name, _)) = &typ else {
                     return Err(format!("not class: {typ}"));
                 };
                 let Some(class) = ctx.global.table.get(name) else {
@@ -302,7 +302,7 @@ impl Expr {
             Expr::Check(expr) => {
                 if let Expr::Member(obj, key) = &**expr {
                     let typ = obj.infer(ctx)?;
-                    if let Type::Class(Generics(name, args)) = &typ {
+                    if let Type::Class(Generics(name, _)) = &typ {
                         if let Some(Object::Enum(layout)) = ctx.global.table.get(name) {
                             let tag = layout.get_index_of(key).unwrap();
                             let offset = Box::new(Expr::Integer(0));
