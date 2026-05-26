@@ -1,5 +1,3 @@
-use indexmap::indexmap;
-
 use crate::*;
 use std::fmt::{self, Display};
 
@@ -8,13 +6,7 @@ pub const SPACE: &str = " ";
 impl Define {
     pub fn parse(source: &str) -> Result<Vec<Define>, String> {
         let mut source = source.trim().to_string();
-        let prohibit = indexmap! {
-            " > "  => " <gt> ",
-            " < "  => " <lt> ",
-            " >= " => " <ge> ",
-            " <= " => " <le> "
-        };
-        for (k, v) in prohibit {
+        for (k, v) in prohibit!() {
             source = source.replace(k, v);
         }
         let mut result = Vec::new();
