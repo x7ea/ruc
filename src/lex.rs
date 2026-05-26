@@ -116,7 +116,7 @@ macro_rules! surround {
     ($ls: literal, $x: expr, $rs: literal) => {
         $x.strip_prefix($ls).and_then(|x| x.strip_suffix($rs))
     };
-    ($ls: literal, $rs: literal,$x: expr) => {
+    ($ls: literal, $rs: literal, $x: expr) => {
         $x.strip_suffix($rs).and_then(|x| x.split_once($ls))
     };
     ($x: expr, $ls: literal, $rs: literal) => {
@@ -135,13 +135,14 @@ macro_rules! surround {
 
 #[macro_export]
 macro_rules! ok {
-    ($v: expr) => {
+    ($v: expr) => {{
+        dbg!();
         if let Some(v) = $v {
             Ok(v)
         } else {
             Err(String::new())
         }
-    };
+    }};
 }
 
 #[macro_export]
