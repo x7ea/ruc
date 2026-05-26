@@ -238,7 +238,7 @@ impl Expr {
                 typing!(Type::Array(Box::new(typ.clone())))
             }
             Expr::New(typ) => {
-                if let Type::Class(Generics(name, args)) = typ {
+                if let Type::Class(Generics(name, _)) = typ {
                     match ctx.global.table.get(name) {
                         Some((_, Object::Struct(layout))) => {
                             expand!(initializer!(layout.len()));
