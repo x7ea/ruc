@@ -11,9 +11,9 @@ impl Define {
                 if !param.is_empty() && ret.is_err() {
                     return Ok(Type::None);
                 }
+                let ret = ret?;
                 let sig = Type::Function(
                     param.clone(),
-                    Box::new(ret?.clone()),
                     Some(args.values().cloned().collect::<Vec<Type>>()),
                 );
                 ctx.table.insert(name.clone(), ctx.local.clone());
