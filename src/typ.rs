@@ -324,17 +324,23 @@ impl Expr {
             }
             Expr::Member(obj, key) => {
                 let typ = obj.infer(ctx)?;
-                let Type::Class(Generics(name, _)) = &typ else {
+                let Type::Class(Generics(name, args)) = &typ else {
                     return Err(format!("not class: {typ}"));
                 };
-                let Some((_, class)) = ctx.global.table.get(name) else {
+                let Some((params, class)) = ctx.global.table.get(name) else {
                     return Err(format!("undefined: {name}"));
                 };
                 match class {
                     Object::Struct(layout) => {
-                        let Some(typ) = layout.get(key).cloned() else {
+                        let Some(mut typ) = layout.get(key).cloned() else {
                             return Err(format!("undefined: {name}.{key}"));
                         };
+                        if params.len() != args.len() {
+                            return Err(format!("generics: {typ}"));
+                        }
+                        for (arg, param) in args.iter().zip(params) {
+                            typ.rewrite(&param, arg);
+                        }
                         let offset = Expr::Integer(layout.get_index_of(key).unwrap() as i64);
                         expand!(Expr::Read(Box::new(offset), typ.clone(), obj.clone()));
                         typing!(typ)
