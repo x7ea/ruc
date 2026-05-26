@@ -214,7 +214,7 @@ impl Expr {
                     if &typ != &val {
                         return Err(format!("{name}.{key}: {typ} != {val}"));
                     }
-                    match ctx.global.table.get(name).unwrap().clone() {
+                    match ctx.global.table.get(name).unwrap().clone().1 {
                         Object::Struct(layout) => {
                             let offset = layout.get_index_of(key).unwrap();
                             let offset = Box::new(Expr::Integer(offset as i64));
