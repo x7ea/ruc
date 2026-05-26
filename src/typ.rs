@@ -152,7 +152,7 @@ impl Expr {
                     };
                     let (pl, al) = (params.len(), args.len());
                     if pl != al {
-                        return Err(format!("parameter: {pl} != {al}",));
+                        return Err(format!("length: {pl} != {al}",));
                     }
                     for (param, arg) in params.iter().zip(args) {
                         let arg = arg.infer(ctx)?;
