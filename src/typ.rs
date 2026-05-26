@@ -7,6 +7,7 @@ impl Define {
                 ctx.local = Function::default();
                 ctx.local.scope = args.clone();
                 let ret = body.infer(ctx)?;
+                dbg!(&param);
                 let sig = Type::Function(
                     param.clone(),
                     Box::new(ret.clone()),
