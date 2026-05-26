@@ -20,10 +20,23 @@ impl Define {
                     map
                 }};
             }
-            if let Some(func) = line.strip_prefix("fn ") {
-                let (head, body) = once!(func, SPACE)?;
-                let (head, ret) = once!(&head, ":")?;
+            if let Some(head) = line.strip_prefix("struct ") {
+                dbg!(head);
+                let (name, args) = ok!(surround!("{", "}", &head))?;
+                result.push(Define::Class(
+                    Generics::parse(&name)?,
+                    Object::Struct(args!(&args)),
+                ));
+            } else if let Some(head) = line.strip_prefix("enum ") {
+                let (name, args) = ok!(surround!("{", "}", &head))?;
+                result.push(Define::Class(
+                    Generics::parse(&name)?,
+                    Object::Enum(args!(&args)),
+                ));
+            } else {
+                let (head, body) = once!(&line, SPACE)?;
                 let (name, args) = surround!(&head, "(", ")")?;
+                let (name, ret) = once!(&name, SPACE)?;
                 let func = Define::Function(
                     Generics::parse(&name)?,
                     args!(&args),
@@ -31,18 +44,6 @@ impl Define {
                     Type::parse(&ret)?,
                 );
                 result.push(func);
-            } else if let Some(head) = line.strip_prefix("struct ") {
-                let (name, args) = ok!(ok!(head.trim().strip_suffix("}"))?.split_once("{"))?;
-                result.push(Define::Class(
-                    Generics::parse(name)?,
-                    Object::Struct(args!(args)),
-                ));
-            } else if let Some(head) = line.strip_prefix("enum ") {
-                let (name, args) = ok!(ok!(head.trim().strip_suffix("}"))?.split_once("{"))?;
-                result.push(Define::Class(
-                    Generics::parse(name)?,
-                    Object::Enum(args!(args)),
-                ));
             }
         }
         Ok(result)
