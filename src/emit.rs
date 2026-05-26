@@ -8,6 +8,7 @@ impl Define {
             return Ok(String::new());
         };
         let name = &name.generics();
+        dbg!(name);
         ctx.local = ctx.table.get(name).unwrap().clone();
 
         let (mut addr, mut alloc) = (8usize, String::new());
