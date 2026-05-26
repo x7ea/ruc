@@ -237,13 +237,13 @@ impl Expr {
                     if &typ != &val {
                         return Err(format!("{name}.{key}: {typ} != {val}"));
                     }
-                    match ctx.global.table.get(&class.generics()).unwrap().clone().1 {
-                        Object::Struct(layout) => {
+                    match ok!(ctx.global.table.get(&class.generics()))? {
+                        (_, Object::Struct(layout)) => {
                             let offset = layout.get_index_of(key).unwrap();
                             let offset = Box::new(Expr::Integer(offset as i64));
                             expand!(Expr::Write(offset, value.clone(), obj.clone()));
                         }
-                        Object::Enum(layout) => {
+                        (_, Object::Enum(layout)) => {
                             let tag = layout.get_index_of(key).unwrap() as i64;
                             let offset = |x| Box::new(Expr::Integer(x));
                             expand!(Expr::Block(vec![
@@ -264,7 +264,7 @@ impl Expr {
                 let Type::Class(class @ Generics(name, args)) = typ else {
                     return Err(format!("not constructor: {typ}"));
                 };
-                match ctx.global.table.get(&class.generics()).cloned() {
+                match ctx.global.table.get(name).cloned() {
                     Some((params, Object::Struct(layout))) => {
                         let mut layout = layout.clone();
                         expand!(initializer!(layout.len()));
