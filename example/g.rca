@@ -11,7 +11,7 @@ fn circle(this: Number) {
 fn main() {
     let value = new Number
 
-    let value.digit = 3.3
+    let value.digit = 3
     circle(value)
 
     let value.real = 5.0
