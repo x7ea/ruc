@@ -86,7 +86,7 @@ pub enum Define {
 #[derive(Clone, Hash, Debug, PartialEq, Eq)]
 pub struct Generics(Name, Args);
 
-#[derive(Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Debug, Hash, PartialEq, Eq)]
 pub enum Expr {
     Integer(i64),
     Float(Float<f64>),
@@ -153,7 +153,7 @@ pub struct Global {
     def: Vec<Define>,
 }
 
-#[derive(Default, Clone)]
+#[derive(Default, Debug, Clone)]
 pub struct Function {
     var: IndexMap<Name, Type>,
     scope: IndexMap<Name, Type>,
