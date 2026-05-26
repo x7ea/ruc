@@ -133,7 +133,6 @@ impl Expr {
             }
             Expr::Call(callee, args) => {
                 let mut push = String::new();
-                let mut mov = String::new();
                 for arg in args.iter().rev() {
                     push += &arg.emit(ctx)?;
                     if typ!(arg) == Type::Float {
@@ -142,6 +141,7 @@ impl Expr {
                         push += "\tpush rax\n"
                     };
                 }
+                let mut mov = String::new();
                 let (mut idx, mut xmm) = (0, 0);
                 for arg in args.iter() {
                     if typ!(arg) == Type::Float {
