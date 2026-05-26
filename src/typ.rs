@@ -327,6 +327,7 @@ impl Expr {
                 let Type::Class(class @ Generics(name, _)) = &typ else {
                     return Err(format!("not class: {typ}"));
                 };
+                dbg!(&ctx.global.table.keys());
                 let Some((_, class)) = ctx.global.table.get(&class.generics()) else {
                     return Err(format!("undefined: {name}"));
                 };
