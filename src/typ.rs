@@ -173,7 +173,7 @@ impl Expr {
                     typing!(typ.clone())
                 } else if let Some(typ) = ctx.global.lib.get(name) {
                     let typ = &mut typ.clone();
-                    if let Type::Function(params, _, _) = typ.clone() {
+                    if let Type::Function(params, _, Some(_)) = typ.clone() {
                         if params.len() != args.len() {
                             dbg!(params, args);
                             return Err(format!("generics: {typ}"));
@@ -183,7 +183,6 @@ impl Expr {
                         }
                         let mangle = func.generics();
                         ctx.global.lib.insert(mangle.clone(), typ.clone());
-
                         let mut unify = ctx.global.def.get(name).unwrap().clone();
                         if let Type::Function(_, _, Some(args)) = typ.clone() {
                             if let Define::Function(Generics(_, _), params, body) = &unify {
