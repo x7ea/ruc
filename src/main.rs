@@ -40,10 +40,20 @@ impl Define {
     pub fn compile(defines: &mut Vec<Self>) -> Result<String, String> {
         let mut text = String::new();
         let ctx = &mut Context::default();
+
+        macro_rules! name {
+            ($define: expr) => {
+                if let Define::Function(Generics(func, _), _, _) = $define.clone() {
+                    Some(func.clone())
+                } else {
+                    None
+                }
+            };
+        }
         ctx.global.def = {
             let mut map = IndexMap::new();
             for define in defines.clone() {
-                if let Define::Function(Generics(name, _), _, _) = &define {
+                if let Some(name) = &name!(define) {
                     map.insert(name.clone(), define.clone());
                 }
             }
@@ -61,11 +71,15 @@ impl Define {
             define.infer(ctx)?;
         }
         for (_, define) in ctx.global.def.clone() {
-            text += &define.emit(ctx)?;
+            if Some(Name::new("main")?) == name!(define) {
+                text = define.emit(ctx)? + &text;
+            } else {
+                text += &define.emit(ctx)?;
+            }
         }
         let data = ctx.global.data.clone();
         for (_, define) in ctx.global.def.clone() {
-            if let Define::Function(Generics(func, _), _, _) = define {
+            if let Some(func) = name!(define) {
                 ctx.global.lib.shift_remove(&func);
             }
         }
