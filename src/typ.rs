@@ -4,6 +4,7 @@ impl Define {
     pub fn infer(&self, ctx: &mut Context) -> Result<Type, String> {
         match self {
             Define::Function(Generics(name, param), args, body) => {
+                let parent = ctx.local.clone();
                 ctx.local = Function::default();
                 ctx.local.scope = args.clone();
                 let ret = body.infer(ctx)?;
@@ -14,6 +15,7 @@ impl Define {
                 );
                 ctx.table.insert(name.clone(), ctx.local.clone());
                 ctx.global.lib.insert(name.clone(), sig);
+                ctx.local = parent;
                 Ok(ret)
             }
             Define::Class(Generics(name, args), layout) => {
@@ -170,6 +172,7 @@ impl Expr {
             Expr::Variable(func @ Generics(name, args)) => {
                 let env = &ctx.local.scope;
                 if let Some(typ) = env.get(name) {
+                    dbg!(env);
                     typing!(typ.clone())
                 } else if let Some(typ) = ctx.global.lib.get(name) {
                     let typ = &mut typ.clone();
