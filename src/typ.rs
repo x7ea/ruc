@@ -66,10 +66,10 @@ impl Expr {
                         $( return typing!($ret); )?
                         typing!(lt.clone())
                     } else {
-                        Err(format!("no operation: {lt:?}"))
+                        Err(format!("no operation: {lt}"))
                     }
                 } else {
-                    Err(format!("term: {lt:?} != {rt:?}"))
+                    Err(format!("term: {lt} != {rt}"))
                 }
             }};
         }
@@ -88,7 +88,7 @@ impl Expr {
                         Type::Integer => "%ld",
                         Type::Float => "%g",
                         Type::String => "%s",
-                        _ => return Err(format!("can't print: {typ:?}")),
+                        _ => return Err(format!("can't print: {typ}")),
                     }
                 }
                 expand!(Expr::Call(
@@ -109,7 +109,7 @@ impl Expr {
                     )));
                 }
                 if cond.infer(ctx)? != Type::Bool {
-                    return Err(format!("if-else test: Bool != {cond:?}"));
+                    return Err(format!("if-else test: Bool != {cond}"));
                 }
                 if let Some(els) = els {
                     op!(_, then, els,)
@@ -121,7 +121,7 @@ impl Expr {
             Expr::While(cond, body) => {
                 let cond = cond.infer(ctx)?;
                 if cond != Type::Bool {
-                    return Err(format!("while-do test: Bool != {cond:?}"));
+                    return Err(format!("while-do test: Bool != {cond}"));
                 }
                 body.infer(ctx)
             }
@@ -156,12 +156,12 @@ impl Expr {
                     for (param, arg) in params.iter().zip(args) {
                         let arg = arg.infer(ctx)?;
                         if arg != *param {
-                            return Err(format!("arguments: {param:?} != {arg:?}"));
+                            return Err(format!("arguments: {param} != {arg}"));
                         }
                     }
                     typing!(*ret.clone())
                 } else {
-                    Err(format!("not callee: {typ:?}"))
+                    Err(format!("not callee: {typ}"))
                 }
             }
             Expr::Variable(name) => {
@@ -180,7 +180,7 @@ impl Expr {
                     let env = &mut ctx.local.scope;
                     if let Some(typ) = env.get(name) {
                         if val != *typ {
-                            return Err(format!("{name} == {typ:?} != {val:?}"));
+                            return Err(format!("{name} == {typ} != {val}"));
                         }
                     } else {
                         env.insert(name.clone(), val.clone());
@@ -191,7 +191,7 @@ impl Expr {
                     let val = value.infer(ctx)?;
                     let typ = accessor.infer(ctx)?;
                     if typ.clone() != val {
-                        return Err(format!("array: {typ:?} != {val:?}"));
+                        return Err(format!("array: {typ} != {val}"));
                     }
                     expand!(Expr::Write(array!(arr, idx), value.clone(), arr.clone()));
                     typing!(Type::None)
@@ -200,7 +200,7 @@ impl Expr {
                     let val = value.infer(ctx)?;
                     let typ = accessor.infer(ctx)?;
                     if &typ != &val {
-                        return Err(format!("object.{key} == {typ:?} != {val:?}"));
+                        return Err(format!("object.{key} == {typ} != {val}"));
                     }
                     let class_name = get!(Class, obj.infer(ctx)?);
                     match ctx.global.table.get(&class_name).unwrap().clone() {
@@ -240,13 +240,13 @@ impl Expr {
                         _ => Err(format!("undefined: {class_name}")),
                     }
                 } else {
-                    Err(format!("not constructor: {typ:?}"))
+                    Err(format!("not constructor: {typ}"))
                 }
             }
             Expr::Len(arr) => {
                 let typ = arr.infer(ctx)?;
                 let Type::Array(_) = typ else {
-                    return Err(format!("not length: {typ:?}"));
+                    return Err(format!("not length: {typ}"));
                 };
                 let head = Box::new(Expr::Integer(0));
                 expand!(Expr::Read(head, Type::Integer, arr.clone()));
@@ -255,11 +255,11 @@ impl Expr {
             Expr::Index(arr, idx) => {
                 let typ = arr.infer(ctx)?;
                 let Type::Array(typ) = typ else {
-                    return Err(format!("not array: {typ:?}"));
+                    return Err(format!("not array: {typ}"));
                 };
                 let idx_t = idx.infer(ctx)?;
                 let Type::Integer = idx_t else {
-                    return Err(format!("not index: {idx_t:?}"));
+                    return Err(format!("not index: {idx_t}"));
                 };
                 expand!(Expr::Read(array!(arr, idx), *typ.clone(), arr.clone()));
                 typing!(*typ.clone())
@@ -267,7 +267,7 @@ impl Expr {
             Expr::Member(obj, key) => {
                 let typ = obj.infer(ctx)?;
                 let Type::Class(class_name) = typ else {
-                    return Err(format!("not class: {typ:?}"));
+                    return Err(format!("not class: {typ}"));
                 };
                 let Some(class) = ctx.global.table.get(&class_name) else {
                     return Err(format!("undefined: {class_name}"));
@@ -308,14 +308,14 @@ impl Expr {
                 }
                 let typ = expr.infer(ctx)?;
                 if !matches!(typ, Type::Class(_)) {
-                    return Err(format!("not nullable: {typ:?}"));
+                    return Err(format!("not nullable: {typ}"));
                 }
                 typing!(Type::Bool)
             }
             Expr::Read(addr, typ, offset) => {
                 let offset = offset.infer(ctx)?;
                 if let Type::Integer = offset {
-                    return Err(format!("not address: {offset:?}"));
+                    return Err(format!("not address: {offset}"));
                 }
                 addr.infer(ctx)?;
                 typing!(typ.clone())
@@ -323,7 +323,7 @@ impl Expr {
             Expr::Write(addr, value, offset) => {
                 let offset = offset.infer(ctx)?;
                 if let Type::Integer = offset {
-                    return Err(format!("not address: {offset:?}"));
+                    return Err(format!("not address: {offset}"));
                 }
                 addr.infer(ctx)?;
                 typing!(value.infer(ctx)?)
