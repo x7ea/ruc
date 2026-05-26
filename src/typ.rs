@@ -145,7 +145,7 @@ impl Expr {
             }
             Expr::Call(calee, args) => {
                 let typ = calee.infer(ctx)?;
-                if let Type::Function(ret, params) = typ {
+                if let Type::Function(_, ret, params) = typ {
                     let Some(params) = params else {
                         map!(args, |x| x.infer(ctx));
                         return typing!(*ret.clone());
