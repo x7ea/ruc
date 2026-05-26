@@ -200,7 +200,9 @@ impl Expr {
                         };
                         let parent = ctx.global.alias.clone();
                         ctx.global.alias = alias.clone();
-                        *typ = unify.infer(ctx)?;
+                        {
+                            *typ = unify.infer(ctx)?;
+                        }
                         ctx.global.alias = parent;
                         ctx.global.def.insert(mangle, unify.clone());
                     }
