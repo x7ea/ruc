@@ -19,9 +19,9 @@ impl Define {
                     Some(args.values().cloned().collect::<Vec<Type>>()),
                 );
                 ctx.table.insert(name.clone(), ctx.local.clone());
-                ctx.global.lib.insert(name.clone(), sig);
+                ctx.global.lib.insert(name.clone(), sig.clone());
                 ctx.local = parent;
-                Ok(ret)
+                Ok(sig)
             }
             Define::Class(Generics(name, args), layout) => {
                 let value = (args.clone(), layout.clone());
@@ -180,7 +180,7 @@ impl Expr {
                     typing!(typ.clone())
                 } else if let Some(typ) = ctx.global.lib.get(name) {
                     let typ = &mut typ.clone();
-                    if let Type::Function(params, ret, Some(_)) = typ.clone() {
+                    if let Type::Function(params, _, Some(_)) = typ.clone() {
                         if params.len() != args.len() {
                             return Err(format!("generics: {typ}"));
                         }
@@ -189,8 +189,7 @@ impl Expr {
                         }
                         let mangle = func.generics();
                         let mut unify = ctx.global.def.get(name).unwrap().clone();
-                        if let Type::Function(_, ret, Some(args)) = typ.clone() {
-                            dbg!(&ret);
+                        if let Type::Function(_, _, Some(args)) = typ.clone() {
                             if let Define::Function(Generics(_, _), params, body) = &unify {
                                 let mut map = IndexMap::new();
                                 for (param, arg) in params.keys().zip(args) {
@@ -201,6 +200,7 @@ impl Expr {
                             }
                         };
                         *typ = unify.infer(ctx)?;
+                        dbg!(&typ);
                         ctx.global.def.insert(mangle, unify.clone());
                     }
                     typing!(typ.clone())
