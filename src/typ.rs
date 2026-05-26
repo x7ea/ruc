@@ -7,13 +7,17 @@ impl Define {
                 let parent = ctx.local.clone();
                 ctx.local = Function::default();
                 ctx.local.scope = args.clone();
-                let ret = body.infer(ctx);
-                if !param.is_empty() && ret.is_err() {
-                    return Ok(Type::None);
-                }
-                let ret = ret?;
-                let args = Some(args.values().cloned().collect::<Vec<Type>>());
-                let sig = Type::Function(param.clone(), Box::new(ret.clone()), args);
+                let body = body.infer(ctx);
+                let ret = if !param.is_empty() && body.is_err() {
+                    Type::None
+                } else {
+                    body?
+                };
+                let sig = Type::Function(
+                    param.clone(),
+                    Box::new(ret.clone()),
+                    Some(args.values().cloned().collect::<Vec<Type>>()),
+                );
                 ctx.table.insert(name.clone(), ctx.local.clone());
                 ctx.global.lib.insert(name.clone(), sig);
                 ctx.local = parent;
