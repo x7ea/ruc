@@ -162,7 +162,7 @@ impl Expr {
                     callee.emit(ctx)?
                 ))
             }
-            Expr::Variable(Generics(name, _)) => {
+            Expr::Variable(var @ Generics(name, _)) => {
                 let env = &ctx.local.var;
                 if let Some(i) = env.get_index_of(name) {
                     let typ = env.get(name).unwrap();
@@ -173,6 +173,7 @@ impl Expr {
                         Ok(format!("\tmov rax, [rbp-{addr}]\n"))
                     }
                 } else {
+                    let name = var.generics();
                     Ok(format!("\tlea rax, [{name}]\n"))
                 }
             }
