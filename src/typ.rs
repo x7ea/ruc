@@ -162,7 +162,7 @@ impl Expr {
                     }
                     for (param, arg) in params.iter().zip(args) {
                         let arg = arg.infer(ctx)?;
-                        if arg != *param {
+                        if arg.solve(ctx) != param.solve(ctx) {
                             return Err(format!("arguments: {param} != {arg}"));
                         }
                     }
@@ -459,6 +459,17 @@ impl Type {
         if let Some(typ) = ctx.global.alias.get(self) {
             return typ.clone();
         }
-        self.clone()
+        match self {
+            Type::Function(poly, ret, Some(args)) => Type::Function(
+                poly.clone(),
+                Box::new(ret.solve(ctx)),
+                Some(map!(args, |x| x.solve(ctx))),
+            ),
+            Type::Class(Generics(name, args)) => {
+                Type::Class(Generics(name.clone(), map!(args, |x| x.solve(ctx))))
+            }
+            Type::Array(typ) => Type::Array(Box::new(typ.solve(ctx))),
+            _ => self.clone(),
+        }
     }
 }
