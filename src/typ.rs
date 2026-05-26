@@ -7,12 +7,14 @@ impl Define {
                 let parent = ctx.local.clone();
                 ctx.local = Function::default();
                 ctx.local.scope = args.clone();
-                let body = body.infer(ctx);
-                let ret = if !param.is_empty() && body.is_err() {
-                    Type::None
-                } else {
-                    body?
-                };
+                let ret = body.infer(ctx).or_else(|err| {
+                    if !param.is_empty() {
+                        ctx.global.meta.insert(name.clone());
+                        Ok(Type::None)
+                    } else {
+                        Err(err)
+                    }
+                })?;
                 let sig = Type::Function(
                     param.clone(),
                     Box::new(ret.clone()),
