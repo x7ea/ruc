@@ -12,8 +12,8 @@ fn main() {
     let alt = 5
 
     let value.ok = 3
-    print unwrap_or(value, alt)
+    print unwrap_or<Int, Str>(value, alt)
 
     let value.err = "Err"
-    print unwrap_or(value, alt)
+    print unwrap_or<Int, Str>(value, alt)
 }
