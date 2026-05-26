@@ -1,7 +1,4 @@
-fn reduce(
-    this: [Float],
-    lambda: Float(Float, Float)
-) {
+fn reduce<T>(this: [T], lambda: T(T, T)) {
     let index = 1
     while index < this.len do {
         let this[0] = lambda(this[0], this[index])
@@ -18,6 +15,6 @@ fn main() {
     let seq[1] = 2.3
     let seq[2] = 4.0
 
-    let sum = reduce(seq, add)  ; 7.5
+    let sum = reduce<Float>(seq, add)  ; 7.5
     print sum
 }
