@@ -8,14 +8,15 @@ impl Define {
             return Ok(String::new());
         };
         ctx.local = ctx.table.get(name).unwrap().clone();
-        let (mut addr, mut prologue) = (8usize, String::new());
+
+        let (mut addr, mut pro) = (8usize, String::new());
         let (mut idx, mut xmm) = (0, 0);
         for (count, (_, typ)) in args.iter().enumerate() {
             if let Type::Float = typ {
                 if xmm < 8 {
-                    prologue += &format!("\tmovsd [rbp-{addr}], xmm{xmm}\n")
+                    pro += &format!("\tmovsd [rbp-{addr}], xmm{xmm}\n")
                 } else {
-                    prologue += &format!(
+                    pro += &format!(
                         "\tmovsd xmm0, [rbp+{}]\n\tmovsd [rbp-{addr}], xmm0\n",
                         (count - 4) * 8
                     )
@@ -23,9 +24,9 @@ impl Define {
                 xmm += 1;
             } else {
                 if let Some(reg) = ABI.get(idx) {
-                    prologue += &format!("\tmov [rbp-{addr}], {reg}\n")
+                    pro += &format!("\tmov [rbp-{addr}], {reg}\n")
                 } else {
-                    prologue += &format!(
+                    pro += &format!(
                         "\tmov rax, [rbp+{}]\n\tmov [rbp-{addr}], rax\n",
                         (count - 4) * 8
                     )
@@ -35,12 +36,14 @@ impl Define {
             addr += 8;
         }
         let body = body.emit(ctx)?;
-        let size = ctx.local.var.len() * 8;
         ctx.table.insert(name.clone(), ctx.local.clone());
-        Ok(format!(
-            "{name}:\n\tpush rbp\n\tmov rbp, rsp\n\tsub rsp, {}\n{prologue}{body}\tleave\n\tret\n\n",
-            if size % 16 == 0 { size } else { size + 8 }
-        ))
+
+        let stack = ctx.local.var.len() * 8;
+        pro = format!(
+            "\tpush rbp\n\tmov rbp, rsp\n\tsub rsp, {}\n",
+            if stack % 16 == 0 { stack } else { stack + 8 }
+        );
+        Ok(format!("{name}:\n{pro}{body}\tleave\n\tret\n\n",))
     }
 }
 
