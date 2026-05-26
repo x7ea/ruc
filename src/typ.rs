@@ -165,7 +165,7 @@ impl Expr {
                     Err(format!("not callee: {typ}"))
                 }
             }
-            Expr::Variable(Generics(name, args)) => {
+            Expr::Variable(func @ Generics(name, args)) => {
                 let env = &ctx.local.scope;
                 if let Some(typ) = env.get(name) {
                     typing!(typ.clone())
@@ -179,7 +179,7 @@ impl Expr {
                             typ.rewrite(&param, arg);
                         }
                     }
-
+                    ctx.table.insert(func.generics());
                     typing!(typ.clone())
                 } else {
                     Err(format!("undefined: {name}"))
