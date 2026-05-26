@@ -349,6 +349,12 @@ impl Expr {
                         let Some(typ) = layout.get(key).cloned() else {
                             return Err(format!("undefined: {name}.{key}"));
                         };
+                        if params.len() != args.len() {
+                            return Err(format!("generics: {typ}"));
+                        }
+                        for (arg, param) in args.iter().zip(params) {
+                            typ.rewrite(&param, arg);
+                        }
                         let offset = Box::new(Expr::Integer(8));
                         expand!(Expr::Read(offset, typ.clone(), obj.clone()));
                         typing!(typ)
