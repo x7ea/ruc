@@ -3,11 +3,11 @@ use crate::*;
 impl Define {
     pub fn infer(&self, ctx: &mut Context) -> Result<Type, String> {
         match self {
-            Define::Function(Generics(name, params), args, body) => {
+            Define::Function(Generics(name, params), args, body, ret) => {
                 let parent = ctx.local.clone();
                 ctx.local = Function::default();
                 ctx.local.scope = args.clone();
-                let ret = body.infer(ctx)?;
+                body.infer(ctx)?;
                 let sig = Type::Function(
                     params.clone(),
                     Box::new(ret.clone()),
@@ -175,7 +175,7 @@ impl Expr {
                     typing!(typ.clone())
                 } else if let Some(typ) = ctx.global.lib.get(name) {
                     let typ = &mut typ.clone();
-                    if let Type::Function(params, _, Some(_)) = typ.clone() {
+                    if let Type::Function(params, ret, Some(_)) = typ.clone() {
                         if params.len() != args.len() {
                             return Err(format!("generics: {typ}"));
                         }
@@ -185,13 +185,13 @@ impl Expr {
                         let mangle = func.generics();
                         let mut unify = ctx.global.def.get(name).unwrap().clone();
                         if let Type::Function(_, _, Some(args)) = typ.clone() {
-                            if let Define::Function(Generics(_, _), params, body) = &unify {
+                            if let Define::Function(Generics(_, _), params, body, _) = &unify {
                                 let mut map = IndexMap::new();
                                 for (param, arg) in params.keys().zip(args) {
                                     map.insert(param.clone(), arg);
                                 }
                                 let name = Generics(mangle.clone(), vec![]);
-                                unify = Define::Function(name, map, body.clone());
+                                unify = Define::Function(name, map, body.clone(), *ret);
                             }
                         };
                         *typ = unify.infer(ctx)?;
