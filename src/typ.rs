@@ -3,11 +3,10 @@ use crate::*;
 impl Define {
     pub fn infer(&self, ctx: &mut Context) -> Result<Type, String> {
         match self {
-            Define::Function(Generics(name, param), args, body) => {
+            Define::Function(a @ Generics(name, param), args, body) => {
                 ctx.local = Function::default();
                 ctx.local.scope = args.clone();
                 let ret = body.infer(ctx)?;
-                dbg!(&param);
                 let sig = Type::Function(
                     param.clone(),
                     Box::new(ret.clone()),
