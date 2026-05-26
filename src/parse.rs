@@ -241,7 +241,7 @@ impl Display for Type {
 impl Generics {
     pub fn parse(source: &str) -> Result<Generics, String> {
         let x = source.trim();
-        if let Ok((var, args)) = surround!(x, "<", ">") {
+        if let Some((var, args)) = surround!("<", ">", x) {
             dbg!(&var, &args);
             Ok(Generics(
                 Name::new(&var)?,
