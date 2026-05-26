@@ -57,7 +57,7 @@ impl Define {
         }
         let data = ctx.global.data.clone();
         for define in ctx.global.def.clone() {
-            if let Define::Function(func, _, _) = define {
+            if let Define::Function(Generics(func, _), _, _) = define {
                 ctx.global.lib.shift_remove(&func);
             }
         }
@@ -84,7 +84,7 @@ pub enum Define {
 }
 
 #[derive(Clone, Hash, PartialEq, Eq)]
-pub struct Generics(Name, Vec<Type>);
+pub struct Generics(Name, Args);
 
 #[derive(Clone, Hash, PartialEq, Eq)]
 pub enum Expr {
@@ -131,6 +131,7 @@ pub enum Expr {
     Xor(Box<Expr>, Box<Expr>),
 }
 
+type Args = Vec<Type>;
 #[derive(Clone, PartialEq, Eq, Hash)]
 pub enum Type {
     String,
@@ -139,7 +140,7 @@ pub enum Type {
     Float,
     Array(Box<Type>),
     Class(Generics),
-    Function(Vec<Type>, Box<Type>, Option<Vec<Type>>),
+    Function(Args, Box<Type>, Option<Args>),
     None,
 }
 
@@ -155,7 +156,7 @@ pub struct Global {
     idx: usize,
     data: String,
     lib: IndexMap<Name, Type>,
-    table: IndexMap<Name, Object>,
+    table: IndexMap<Name, (Args, Object)>,
     def: Vec<Define>,
 }
 
