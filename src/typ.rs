@@ -4,9 +4,6 @@ impl Define {
     pub fn infer(&self, ctx: &mut Context) -> Result<Type, String> {
         match self {
             Define::Function(Generics(name, params), args, body) => {
-                if !params.is_empty() {
-                    return Ok(Type::None);
-                }
                 let parent = ctx.local.clone();
                 ctx.local = Function::default();
                 ctx.local.scope = args.clone();
