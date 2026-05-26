@@ -219,7 +219,7 @@ impl Display for Type {
                     let arg = map!(arg).join(", ");
                     write!(f, "{ret}({arg})")
                 } else {
-                    write!(f, "{ret}()")
+                    write!(f, "{ret}(...)")
                 }
             }
         }
