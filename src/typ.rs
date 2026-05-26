@@ -108,7 +108,8 @@ impl Expr {
                         els.clone(),
                     )));
                 }
-                if cond.infer(ctx)? != Type::Bool {
+                let cond = cond.infer(ctx)?;
+                if cond != Type::Bool {
                     return Err(format!("if-else test: Bool != {cond}"));
                 }
                 if let Some(els) = els {
