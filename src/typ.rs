@@ -238,14 +238,21 @@ impl Expr {
                 typing!(Type::Array(Box::new(typ.clone())))
             }
             Expr::New(typ) => {
+                let typ = &mut typ.clone();
                 if let Type::Class(class @ Generics(name, args)) = typ {
                     match ctx.global.table.get(name) {
-                        Some((_, Object::Struct(layout))) => {
+                        mono @ Some((params, Object::Struct(layout))) => {
                             expand!(initializer!(layout.len()));
-                            ctx.global.table.insert(class.generics());
+                            if params.len() != args.len() {
+                                return Err(format!("generics: {typ}"));
+                            }
+                            for (arg, param) in args.iter().zip(params) {
+                                typ.rewrite(&param, arg);
+                            }
+                            ctx.global.table.insert(class.generics(), mono.clone());
                             typing!(typ.clone())
                         }
-                        Some((_, Object::Enum(_))) => {
+                        Some((param, Object::Enum(_))) => {
                             expand!(initializer!(2));
                             typing!(typ.clone())
                         }
