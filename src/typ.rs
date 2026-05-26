@@ -198,11 +198,11 @@ impl Expr {
                 }
                 acc @ Expr::Member(obj, key) => {
                     let [val, typ] = [value.infer(ctx)?, acc.infer(ctx)?];
-                    let generics @ Generics(name, args) = get!(Class, obj.infer(ctx)?);
+                    let gene @ Generics(name, args) = &get!(Class, obj.infer(ctx)?);
                     if &typ != &val {
                         return Err(format!("{name}.{key}: {typ} != {val}"));
                     }
-                    match ctx.global.table.get(&generics).unwrap().clone() {
+                    match ctx.global.table.get(gene).unwrap().clone() {
                         Object::Struct(layout) => {
                             let offset = layout.get_index_of(key).unwrap();
                             let offset = Box::new(Expr::Integer(offset as i64));
