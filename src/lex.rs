@@ -171,12 +171,12 @@ macro_rules! hash {
 
 #[macro_export]
 macro_rules! map {
-    ($arr: expr, $lambda: expr) => {
+    ($arr: expr => $lambda: expr) => {
         $arr.iter()
             .map($lambda)
             .collect::<Result<Vec<_>, String>>()?
     };
-    ($arr: expr) => {
-        $arr.iter().map(|x| x.to_string()).collect::<Vec<_>>()
+    ($arr: expr, $lambda: expr) => {
+        $arr.iter().map($lambda).collect::<Vec<_>>()
     };
 }
