@@ -1,19 +1,19 @@
-enum Number {
-    digit: Int,
-    real: Float
+enum Result<T, E> {
+    ok: T,
+    err: E
 }
 
-fn circle(this: Number) {
-    if let i = this.digit then print i * 3
-    if let n = this.real then print n * 3.14
+fn unwrap_or<T, E>(this: Result<T, E>, alt: T) {
+    if let v = this.ok then v else alt
 }
 
 fn main() {
-    let value = new Number
+    let value = new Result<Int, Str>
+    let alt = 5
 
-    let value.digit = 3
-    circle(value)
+    let value.ok = 3
+    print unwrap_or(value, alt)
 
-    let value.real = 5.0
-    circle(value)
+    let value.err = "Err"
+    print unwrap_or(value, alt)
 }
