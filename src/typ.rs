@@ -297,7 +297,7 @@ impl Expr {
                         let mangle = class.generics();
                         let unify = (vec![], Object::Enum(layout).clone());
                         ctx.global.table.insert(mangle.clone(), unify);
-                        typing!(typ.clone())
+                        typing!(Type::Class(Generics(mangle, vec![])))
                     }
                     _ => Err(format!("undefined: {name}")),
                 }
