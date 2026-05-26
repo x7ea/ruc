@@ -279,7 +279,7 @@ impl Expr {
                         let mangle = class.generics();
                         let unify = (vec![], Object::Struct(layout).clone());
                         ctx.global.table.insert(mangle.clone(), unify);
-                        typing!(typ.clone())
+                        typing!(typ.solve(ctx))
                     }
                     Some((params, Object::Enum(layout))) => {
                         expand!(initializer!(2));
@@ -296,7 +296,7 @@ impl Expr {
                         let mangle = class.generics();
                         let unify = (vec![], Object::Enum(layout).clone());
                         ctx.global.table.insert(mangle.clone(), unify);
-                        typing!(typ.clone())
+                        typing!(typ.solve(ctx))
                     }
                     _ => Err(format!("undefined: {name}")),
                 }
