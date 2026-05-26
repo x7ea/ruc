@@ -44,7 +44,7 @@ impl Expr {
         macro_rules! initializer {
             ($layout: expr) => {
                 Expr::Call(
-                    Box::new(Expr::Variable(Generics(Name::new("calloc")?, None))),
+                    Box::new(Expr::Variable(Generics(Name::new("calloc")?, vec![]))),
                     vec![Expr::Integer($layout as i64), Expr::Integer(8)],
                 )
             };
@@ -92,7 +92,7 @@ impl Expr {
                     }
                 }
                 expand!(Expr::Call(
-                    Box::new(Expr::Variable(Generics(Name::new("printf")?, None))),
+                    Box::new(Expr::Variable(Generics(Name::new("printf")?, vec![]))),
                     [vec![Expr::String(fmt + "\\n")], values.to_vec()].concat(),
                 ));
                 typing!(Type::None)
