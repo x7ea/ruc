@@ -49,7 +49,13 @@ impl Define {
 
 impl Expr {
     pub fn parse(source: &str) -> Result<Expr, String> {
-        let x = source.trim();
+        let source = source.trim();
+        let x = &source
+            .replace(" > ", " <gt> ")
+            .replace(" < ", " <lt> ")
+            .replace(" >= ", " <ge> ")
+            .replace(" <= ", " <le> ");
+
         fn is_operator(source: &str) -> Result<(String, String, String), String> {
             let tokens: Vec<String> = tokenize(source, SPACE)?;
             if tokens.len() >= 3 {
@@ -62,6 +68,7 @@ impl Expr {
                 Err(String::new())
             }
         }
+
         if let Some(x) = x.strip_prefix("print ") {
             Ok(Expr::Print(map!(tokenize(x, ",")? => |i| Expr::parse(&i))))
         } else if let Some(x) = x.strip_prefix("let ") {
@@ -118,13 +125,13 @@ impl Expr {
                 "%" => Expr::Mod(lhs, rhs),
                 "==" => Expr::Eql(lhs, rhs),
                 "!=" => Expr::NotEq(lhs, rhs),
-                ">" => Expr::Gt(lhs, rhs),
-                "<" => Expr::Lt(lhs, rhs),
-                ">=" => Expr::GtEq(lhs, rhs),
-                "<=" => Expr::LtEq(lhs, rhs),
                 "&" => Expr::And(lhs, rhs),
                 "|" => Expr::Or(lhs, rhs),
                 "^" => Expr::Xor(lhs, rhs),
+                "<gt>" => Expr::Gt(lhs, rhs),
+                "<lt>" => Expr::Lt(lhs, rhs),
+                "<ge>" => Expr::GtEq(lhs, rhs),
+                "<le>" => Expr::LtEq(lhs, rhs),
                 op => return Err(format!("unknown operator: {op}")),
             })
         } else if let Some(class) = x.strip_suffix("?") {
