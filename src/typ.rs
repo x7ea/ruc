@@ -179,6 +179,7 @@ impl Expr {
                             typ.rewrite(&param, arg);
                         }
                     }
+
                     typing!(typ.clone())
                 } else {
                     Err(format!("undefined: {name}"))
