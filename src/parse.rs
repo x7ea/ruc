@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 use crate::*;
 
 pub const SPACE: &str = " ";
@@ -201,4 +203,8 @@ impl Type {
             }
         }
     }
+}
+
+impl Display for Type {
+    
 }
