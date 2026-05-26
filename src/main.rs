@@ -88,33 +88,26 @@ pub struct Generics(Name, Args);
 
 #[derive(Clone, Hash, PartialEq, Eq)]
 pub enum Expr {
-    // Literal
     Integer(i64),
     Float(Float<f64>),
     Bool(bool),
     String(String),
     Null(Type),
-    // Reference
     Variable(Generics),
     Let(Box<Expr>, Box<Expr>),
     Call(Box<Expr>, Vec<Expr>),
-    // Memory
     Read(Box<Expr>, Type, Box<Expr>),
     Write(Box<Expr>, Box<Expr>, Box<Expr>),
-    // Array
     Array(Type, usize),
     Index(Box<Expr>, Box<Expr>),
     Len(Box<Expr>),
-    // Object
     New(Type),
     Member(Box<Expr>, Name),
     Check(Box<Expr>),
-    // Structure
     If(Box<Expr>, Box<Expr>, Option<Box<Expr>>),
     While(Box<Expr>, Box<Expr>),
     Print(Vec<Expr>),
     Block(Vec<Expr>),
-    // Operator
     Add(Box<Expr>, Box<Expr>),
     Sub(Box<Expr>, Box<Expr>),
     Mul(Box<Expr>, Box<Expr>),
