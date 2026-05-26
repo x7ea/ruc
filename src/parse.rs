@@ -56,8 +56,9 @@ impl Expr {
             let tokens: Vec<String> = tokenize(source, SPACE)?;
             if tokens.len() >= 3 {
                 let pos: usize = tokens.len() - 2;
+                let lhs = tokens[..pos].join(SPACE);
                 let opr = tokens[pos].to_string();
-                let [lhs, rhs] = [tokens[..pos].join(SPACE), tokens[pos + 1].to_string()];
+                let rhs = tokens[pos + 1].to_string();
                 Ok((lhs, opr, rhs))
             } else {
                 Err(String::new())
