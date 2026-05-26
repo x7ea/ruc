@@ -62,7 +62,7 @@ pub fn tokenize(input: &str, delimiter: &str) -> Result<Vec<String>, String> {
             continue;
         }
         match c {
-            '(' | '{' | '[' if !in_quote => {
+            '<' | '(' | '{' | '[' if !in_quote => {
                 if c.to_string() == delimiter && in_parentheses == 0 {
                     tokens.push(current_token.clone());
                     current_token.clear();
@@ -70,7 +70,7 @@ pub fn tokenize(input: &str, delimiter: &str) -> Result<Vec<String>, String> {
                 current_token.push(c);
                 in_parentheses += 1;
             }
-            ')' | '}' | ']' if !in_quote => {
+            '>' | ')' | '}' | ']' if !in_quote => {
                 current_token.push(c);
                 in_parentheses.checked_sub(1).map(|x| in_parentheses = x);
             }
