@@ -280,7 +280,7 @@ impl Expr {
                 let Type::Class(Generics(name, _)) = &typ else {
                     return Err(format!("not class: {typ}"));
                 };
-                let Some(class) = ctx.global.table.get(name) else {
+                let Some(_, class) = ctx.global.table.get(name) else {
                     return Err(format!("undefined: {name}"));
                 };
                 match class {
