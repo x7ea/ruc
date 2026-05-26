@@ -147,7 +147,7 @@ pub enum Type {
 pub struct Context {
     global: Global,
     local: Function,
-    table: IndexMap<Name, Function>,
+    table: IndexMap<Generics, Function>,
 }
 
 #[derive(Default)]
