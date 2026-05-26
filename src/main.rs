@@ -108,7 +108,7 @@ pub enum Define {
 }
 
 #[derive(Clone, Hash, Debug, PartialEq, Eq)]
-pub struct Generics(Name, Args);
+pub struct Generics(Name, Vec<Type>);
 
 #[derive(Clone, Debug, Hash, PartialEq, Eq)]
 pub enum Expr {
@@ -148,7 +148,6 @@ pub enum Expr {
     Xor(Box<Expr>, Box<Expr>),
 }
 
-type Args = Vec<Type>;
 #[derive(Clone, PartialEq, Eq, Debug, Hash)]
 pub enum Type {
     String,
@@ -157,7 +156,7 @@ pub enum Type {
     Float,
     Array(Box<Type>),
     Class(Generics),
-    Function(Args, Box<Type>, Option<Args>),
+    Function(Vec<Type>, Box<Type>, Option<Vec<Type>>),
     None,
 }
 
@@ -174,7 +173,7 @@ pub struct Global {
     data: String,
     lib: IndexMap<Name, Type>,
     def: IndexMap<Name, Define>,
-    table: IndexMap<Name, (Args, Object)>,
+    table: IndexMap<Name, (Vec<Type>, Object)>,
     meta: IndexSet<Name>,
     alias: IndexMap<Name, Type>,
 }
