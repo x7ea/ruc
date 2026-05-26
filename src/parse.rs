@@ -193,6 +193,7 @@ impl Type {
             "Str" => Ok(Type::String),
             "Bool" => Ok(Type::Bool),
             "Float" => Ok(Type::Float),
+            "T" => Ok(Type::T),
             "()" => Ok(Type::None),
             x => {
                 if let Ok((func, args)) = surround!(x, "(", ")") {
@@ -223,6 +224,7 @@ impl Display for Type {
             Type::Float => write!(f, "Float"),
             Type::Bool => write!(f, "Bool"),
             Type::None => write!(f, "()"),
+            Type::T => write!(f, "T"),
             Type::Array(typ) => write!(f, "[{typ}]"),
             Type::Class(Generics(name, arg)) => write!(f, "{name}"),
             Type::Function(ret, Some(arg)) => {
