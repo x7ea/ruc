@@ -53,11 +53,10 @@ impl Expr {
     pub fn parse(source: &str) -> Result<Expr, String> {
         let x = source.trim();
         fn is_operator(source: &str) -> Result<(String, String, String), String> {
-            let source = &source.replace(">", "@GT").replace("<", "@LT");
             let tokens: Vec<String> = tokenize(source, SPACE)?;
             if tokens.len() >= 3 {
                 let pos: usize = tokens.len() - 2;
-                let opr = tokens[pos].replace("@GT", ">").replace("@LT", "<");
+                let opr = tokens[pos].to_string();
                 let [lhs, rhs] = [tokens[..pos].join(SPACE), tokens[pos + 1].to_string()];
                 Ok((lhs, opr, rhs))
             } else {
