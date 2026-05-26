@@ -36,7 +36,7 @@ impl Define {
                     Object::Struct(args!(&args)),
                 ));
             } else if let Some(head) = line.strip_prefix("enum ") {
-                let (name, args) = surround!(&head, "{", "}")?;
+                let (name, args) = ok!(surround!("{", "}", &head))?;
                 result.push(Define::Class(
                     Generics::parse(&name)?,
                     Object::Enum(args!(&args)),
