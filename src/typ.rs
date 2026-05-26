@@ -165,11 +165,11 @@ impl Expr {
                     Err(format!("not callee: {typ}"))
                 }
             }
-            Expr::Variable(generic @ Generics(name, args)) => {
+            Expr::Variable(Generics(name, args)) => {
                 let env = &ctx.local.scope;
                 if let Some(typ) = env.get(name) {
                     typing!(typ.clone())
-                } else if let Some(typ) = ctx.global.lib.get(generic) {
+                } else if let Some(typ) = ctx.global.lib.get(name) {
                     let typ = &mut typ.clone();
                     if let Type::Function(ret, Some(params)) = typ.clone() {
                         if params.len() != args.len() {
@@ -207,11 +207,11 @@ impl Expr {
                 }
                 acc @ Expr::Member(obj, key) => {
                     let [val, typ] = [value.infer(ctx)?, acc.infer(ctx)?];
-                    let gene @ Generics(name, args) = &get!(Class, obj.infer(ctx)?);
+                    let Generics(name, args) = &get!(Class, obj.infer(ctx)?);
                     if &typ != &val {
                         return Err(format!("{name}.{key}: {typ} != {val}"));
                     }
-                    match ctx.global.table.get(gene).unwrap().clone() {
+                    match ctx.global.table.get(name).unwrap().clone() {
                         Object::Struct(layout) => {
                             let offset = layout.get_index_of(key).unwrap();
                             let offset = Box::new(Expr::Integer(offset as i64));
