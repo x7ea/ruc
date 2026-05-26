@@ -155,6 +155,7 @@ pub struct Global {
     data: String,
     lib: IndexMap<Name, Type>,
     table: IndexMap<Name, Object>,
+    def: Vec<Define>,
 }
 
 #[derive(Default, Clone)]
