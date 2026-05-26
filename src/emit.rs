@@ -4,7 +4,7 @@ pub const ABI: [&str; 6] = ["rdi", "rsi", "rdx", "rcx", "r8", "r9"];
 
 impl Define {
     pub fn emit(&self, ctx: &mut Context) -> Result<String, String> {
-        let Define::Function(Generics(name, params), args, body) = self else {
+        let Define::Function(Generics(name, params), args, body, _) = self else {
             return Ok(String::new());
         };
         if !params.is_empty() {
