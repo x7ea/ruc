@@ -44,7 +44,7 @@ impl Define {
             let mut map = IndexMap::new();
             for line in Self::LIB {
                 let signature = Type::Function(Box::new(Type::None), None);
-                map.insert(Generics::parse(line)?, signature);
+                map.insert(Name::new(line)?, signature);
             }
             map
         };
