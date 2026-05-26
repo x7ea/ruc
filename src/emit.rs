@@ -161,9 +161,9 @@ impl Expr {
                     callee.emit(ctx)?
                 ))
             }
-            Expr::Variable(Generics(name, _)) => {
+            Expr::Variable(name) => {
                 let env = &ctx.local.var;
-                if let Some(i) = env.get_index_of(name) {
+                if let Some(i) = env.get_index_of(&name.generics()) {
                     let typ = env.get(name).unwrap();
                     let addr = (i + 1) * 8;
                     if let Type::Float = typ {
