@@ -221,7 +221,7 @@ impl Expr {
                     }
                     typing!(Type::None)
                 }
-                _ => Err(format!("assign target")),
+                target => Err(format!("cant' assign: {}", target.infer(ctx)?)),
             },
             Expr::Array(typ, len) => {
                 expand!(initializer!(*len + 1));
