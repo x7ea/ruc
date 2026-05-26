@@ -161,7 +161,7 @@ impl Expr {
                     callee.emit(ctx)?
                 ))
             }
-            Expr::Variable(Generics(name, args)) => {
+            Expr::Variable(Generics(name, _)) => {
                 let env = &ctx.local.var;
                 if let Some(i) = env.get_index_of(name) {
                     let typ = env.get(name).unwrap();
@@ -176,7 +176,7 @@ impl Expr {
                 }
             }
             Expr::Let(name, value) => match &**name {
-                Expr::Variable(Generics(name, args)) => {
+                Expr::Variable(Generics(name, _)) => {
                     let env = &ctx.local.var;
                     let idx = env.get_index_of(name).unwrap();
                     let typ = env.get(name).unwrap().clone();
