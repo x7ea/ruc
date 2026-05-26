@@ -299,10 +299,7 @@ impl Expr {
                         ctx.global.table.insert(mangle.clone(), unify);
                         typing!(typ.clone())
                     }
-                    _ => {
-                        dbg!(&name);
-                        Err(format!("undefined: {name}"))
-                    }
+                    _ => Err(format!("undefined: {name}")),
                 }
             }
             Expr::Len(arr) => {
