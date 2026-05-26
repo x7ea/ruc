@@ -37,7 +37,7 @@ pub mod name {
             if self.1.is_empty() {
                 return self.0.clone();
             }
-            Name(format!("{}.{}", self.0, hash!(self.1)))
+            Name(format!("{}.{:x}", self.0, hash!(self.1)))
         }
     }
 }
