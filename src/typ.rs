@@ -172,13 +172,11 @@ impl Expr {
             Expr::Variable(func @ Generics(name, args)) => {
                 let env = &ctx.local.scope;
                 if let Some(typ) = env.get(name) {
-                    dbg!(env);
                     typing!(typ.clone())
                 } else if let Some(typ) = ctx.global.lib.get(name) {
                     let typ = &mut typ.clone();
                     if let Type::Function(params, _, Some(_)) = typ.clone() {
                         if params.len() != args.len() {
-                            dbg!(params, args);
                             return Err(format!("generics: {typ}"));
                         }
                         for (arg, param) in args.iter().zip(params) {
