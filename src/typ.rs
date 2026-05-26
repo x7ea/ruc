@@ -165,11 +165,14 @@ impl Expr {
                     Err(format!("not callee: {typ}"))
                 }
             }
-            Expr::Variable(generic @ Generics(name, arg)) => {
+            Expr::Variable(generic @ Generics(name, args)) => {
                 let env = &ctx.local.scope;
                 if let Some(typ) = env.get(name) {
                     typing!(typ.clone())
                 } else if let Some(typ) = ctx.global.lib.get(generic) {
+                    if let Type::Function(ret, Some(param)) = typ {
+                        for arg in args {}
+                    }
                     typing!(typ.clone())
                 } else {
                     Err(format!("undefined: {name}"))
@@ -356,6 +359,26 @@ impl Expr {
             Expr::And(lhs, rhs) => op!(Type::Bool, lhs, rhs,),
             Expr::Or(lhs, rhs) => op!(Type::Bool, lhs, rhs,),
             Expr::Xor(lhs, rhs) => op!(Type::Bool, lhs, rhs,),
+        }
+    }
+}
+
+impl Type {
+    fn rewrite(&mut self, old: &Type, new: &Type) {
+        if self == old {
+            *self = new.clone()
+        }
+        match self {
+            Type::Function(ret, args) => {
+                ret.rewrite(old, new);
+                if let Some(args) = args {
+                    for arg in args {
+                        arg.rewrite(old, new);
+                    }
+                }
+            }
+            Type::Array(typ) => typ.rewrite(old, new),
+            _ => {}
         }
     }
 }
