@@ -50,12 +50,6 @@ impl Define {
 impl Expr {
     pub fn parse(source: &str) -> Result<Expr, String> {
         let source = source.trim();
-        let x = &source
-            .replace(" > ", " <gt> ")
-            .replace(" < ", " <lt> ")
-            .replace(" >= ", " <ge> ")
-            .replace(" <= ", " <le> ");
-
         fn is_operator(source: &str) -> Result<(String, String, String), String> {
             let tokens: Vec<String> = tokenize(source, SPACE)?;
             if tokens.len() >= 3 {
@@ -69,9 +63,9 @@ impl Expr {
             }
         }
 
-        if let Some(x) = x.strip_prefix("print ") {
+        if let Some(x) = source.strip_prefix("print ") {
             Ok(Expr::Print(map!(tokenize(x, ",")? => |i| Expr::parse(&i))))
-        } else if let Some(x) = x.strip_prefix("let ") {
+        } else if let Some(x) = source.strip_prefix("let ") {
             if let Ok((name, value)) = once!(x, "=") {
                 Ok(Expr::Let(
                     Box::new(Expr::parse(&name)?),
@@ -84,7 +78,7 @@ impl Expr {
                     Box::new(Expr::Null(Type::parse(&typ)?)),
                 ))
             }
-        } else if let Some(x) = x.strip_prefix("if ") {
+        } else if let Some(x) = source.strip_prefix("if ") {
             let (cond, body) = once!(x, "then")?;
             if let Ok((then, r#else)) = once!(&body, "else") {
                 Ok(Expr::If(
@@ -99,13 +93,13 @@ impl Expr {
                     None,
                 ))
             }
-        } else if let Some(x) = x.strip_prefix("while ") {
+        } else if let Some(x) = source.strip_prefix("while ") {
             let (cond, body) = once!(x, "do")?;
             Ok(Expr::While(
                 Box::new(Expr::parse(&cond)?),
                 Box::new(Expr::parse(&body)?),
             ))
-        } else if let Some(x) = surround!("{", x, "}") {
+        } else if let Some(x) = surround!("{", source, "}") {
             let mut block = vec![];
             for line in tokenize(x, "\n")? {
                 let (line, _) = once!(&line, ";").unwrap_or((line, String::new()));
@@ -114,7 +108,7 @@ impl Expr {
                 }
             }
             Ok(Expr::Block(block))
-        } else if let Ok((lhs, op, rhs)) = is_operator(x) {
+        } else if let Ok((lhs, op, rhs)) = is_operator(source) {
             let lhs = Box::new(Expr::parse(&lhs)?);
             let rhs = Box::new(Expr::parse(&rhs)?);
             Ok(match op.as_str() {
@@ -134,46 +128,46 @@ impl Expr {
                 "<le>" => Expr::LtEq(lhs, rhs),
                 op => return Err(format!("unknown operator: {op}")),
             })
-        } else if let Some(class) = x.strip_suffix("?") {
+        } else if let Some(class) = source.strip_suffix("?") {
             Ok(Expr::Check(Box::new(Expr::parse(class)?)))
-        } else if x == "()" {
+        } else if source == "()" {
             Ok(Expr::Null(Type::None))
-        } else if let Some(x) = surround!("\"", x, "\"") {
+        } else if let Some(x) = surround!("\"", source, "\"") {
             Ok(Expr::String(x.to_owned()))
-        } else if let Some(expr) = surround!("(", x, ")") {
+        } else if let Some(expr) = surround!("(", source, ")") {
             Expr::parse(expr)
-        } else if let Some(arr) = surround!("[", x, "]") {
+        } else if let Some(arr) = surround!("[", source, "]") {
             let (typ, len) = ok!(arr.rsplit_once(";"))?;
             let Ok(len) = len.trim().parse::<usize>() else {
                 return Err(format!("not length: {len}"));
             };
             Ok(Expr::Array(Type::parse(&typ)?, len))
-        } else if let Ok((func, args)) = surround!(x, "(", ")") {
+        } else if let Ok((func, args)) = surround!(source, "(", ")") {
             Ok(Expr::Call(
                 Box::new(Expr::parse(&func)?),
                 map!(tokenize(&args, ",")? => |x| Expr::parse(x)),
             ))
-        } else if let Ok((arr, idx)) = surround!(x, "[", "]") {
+        } else if let Ok((arr, idx)) = surround!(source, "[", "]") {
             Ok(Expr::Index(
                 Box::new(Expr::parse(&arr)?),
                 Box::new(Expr::parse(&idx)?),
             ))
-        } else if let Ok(literal) = x.parse::<bool>() {
+        } else if let Ok(literal) = source.parse::<bool>() {
             Ok(Expr::Bool(literal))
-        } else if let Ok(literal) = x.parse::<i64>() {
+        } else if let Ok(literal) = source.parse::<i64>() {
             Ok(Expr::Integer(literal))
-        } else if let Ok(literal) = x.parse::<f64>() {
+        } else if let Ok(literal) = source.parse::<f64>() {
             use ordered_float::OrderedFloat;
             Ok(Expr::Float(OrderedFloat(literal)))
-        } else if let Some((obj, key)) = x.rsplit_once(".") {
+        } else if let Some((obj, key)) = source.rsplit_once(".") {
             if key.trim() == "len" {
                 return Ok(Expr::Len(Box::new(Expr::parse(obj)?)));
             }
             Ok(Expr::Member(Box::new(Expr::parse(obj)?), Name::new(key)?))
-        } else if let Some(class) = x.strip_prefix("new ") {
+        } else if let Some(class) = source.strip_prefix("new ") {
             Ok(Expr::New(Type::parse(&class)?))
         } else {
-            Ok(Expr::Variable(Generics::parse(x)?))
+            Ok(Expr::Variable(Generics::parse(source)?))
         }
     }
 }
