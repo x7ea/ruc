@@ -136,6 +136,7 @@ pub enum Type {
     Integer,
     Bool,
     Float,
+    T,
     Array(Box<Type>),
     Class(Generics),
     Function(Box<Type>, Option<Vec<Type>>),
