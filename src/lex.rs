@@ -4,7 +4,7 @@ pub mod name {
 
     const RESERVED: [&str; 8] = ["let", "if", "then", "else", "while", "do", "new", "len"];
 
-    #[derive(Clone, PartialEq, Hash, Eq)]
+    #[derive(Clone, Debug, PartialEq, Hash, Eq)]
     pub struct Name(String);
 
     impl Name {
