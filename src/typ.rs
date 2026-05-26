@@ -241,7 +241,7 @@ impl Expr {
                 let typ = &mut typ.clone();
                 if let Type::Class(class @ Generics(name, args)) = typ {
                     match ctx.global.table.get(name) {
-                        mono @ Some((params, Object::Struct(layout))) => {
+                        Some(mono @ (params, Object::Struct(layout))) => {
                             expand!(initializer!(layout.len()));
                             if params.len() != args.len() {
                                 return Err(format!("generics: {typ}"));
