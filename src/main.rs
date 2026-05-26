@@ -105,7 +105,7 @@ pub enum Expr {
     Index(Box<Expr>, Box<Expr>),
     Len(Box<Expr>),
     // Object
-    New(Type),
+    New(Generics),
     Member(Box<Expr>, Name),
     Check(Box<Expr>),
     // Structure
