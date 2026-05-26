@@ -194,7 +194,7 @@ impl Expr {
                                 unify = Define::Function(name, map, body.clone());
                             }
                         };
-                        unify.infer(ctx);
+                        unify.infer(ctx)?;
                         ctx.global.def.insert(mangle, unify.clone());
                     }
                     typing!(typ.clone())
