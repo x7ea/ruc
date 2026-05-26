@@ -5,11 +5,17 @@ pub const SPACE: &str = " ";
 
 impl Define {
     pub fn parse(source: &str) -> Result<Vec<Define>, String> {
-        let source = source
-            .replace(" > ", " <gt> ")
-            .replace(" < ", " <lt> ")
-            .replace(" >= ", " <ge> ")
-            .replace(" <= ", " <le> ");
+        macro_rules! replace {
+            ($e: expr, { $($a: literal => $b: literal,)* }) => {
+              $e$( .replace($a, $e) )*
+            };
+        }
+        let source = replace!(source, {
+            " > " => " <gt> ",
+            " < " => " <lt> ",
+            " >= " => " <ge> ",
+            " <= " => " <le> ",
+        });
         let mut result = Vec::new();
         for line in tokenize(&source, "\n")? {
             macro_rules! args {
