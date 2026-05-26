@@ -7,7 +7,7 @@ impl Define {
         let Define::Function(Generics(name, _), args, body) = self else {
             return Ok(String::new());
         };
-        if ctx.global.meta.contains(name) {
+        if ctx.global.no.contains(name) {
             return Ok(String::new());
         }
         ctx.local = ctx.table.get(name).unwrap().clone();
