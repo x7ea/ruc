@@ -178,8 +178,8 @@ impl Expr {
                         for (arg, param) in args.iter().zip(params) {
                             typ.rewrite(&param, arg);
                         }
+                        ctx.global.lib.insert(func.generics(), typ.clone());
                     }
-                    ctx.global.lib.insert(func.generics(), typ.clone());
                     typing!(typ.clone())
                 } else {
                     Err(format!("undefined: {name}"))
