@@ -236,7 +236,7 @@ impl Expr {
             Expr::Bool(value) => Expr::Integer(if *value { 1 } else { 0 }).emit(ctx),
             Expr::Float(value) => {
                 let name = format!("float.{}", label!());
-                ctx.global.data += &format!("\t{name} dq {value}\n");
+                ctx.global.data += &format!("\t{name} dq {value:?}\n");
                 Ok(format!("\tmovsd xmm0, [{name}]\n"))
             }
             Expr::String(value) => {
