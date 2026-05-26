@@ -4,9 +4,10 @@ pub const ABI: [&str; 6] = ["rdi", "rsi", "rdx", "rcx", "r8", "r9"];
 
 impl Define {
     pub fn emit(&self, ctx: &mut Context) -> Result<String, String> {
-        let Define::Function(Generics(name, _), args, body) = self else {
+        let Define::Function(name, args, body) = self else {
             return Ok(String::new());
         };
+        let name = &name.generics();
         ctx.local = ctx.table.get(name).unwrap().clone();
 
         let (mut addr, mut alloc) = (8usize, String::new());
