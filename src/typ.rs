@@ -181,14 +181,16 @@ impl Expr {
                         if params.len() != args.len() {
                             return Err(format!("generics: {typ}"));
                         }
+                        let mut alias = IndexMap::new();
                         for (arg, param) in args.iter().zip(params) {
+                            alias.insert(param.clone(), arg.clone());
                             typ.rewrite(&param, arg);
                         }
                         let mangle = func.generics();
                         let mut unify = ctx.global.def.get(name).unwrap().clone();
-                        let mut map = IndexMap::new();
                         if let Type::Function(_, _, Some(args)) = typ.clone() {
                             if let Define::Function(Generics(_, _), params, body) = &unify {
+                                let mut map = IndexMap::new();
                                 for (param, arg) in params.keys().zip(args) {
                                     map.insert(param.clone(), arg.solve(ctx));
                                 }
@@ -197,7 +199,7 @@ impl Expr {
                             }
                         };
                         let parent = ctx.global.alias.clone();
-                        ctx.global.alias = map.clone();
+                        ctx.global.alias = alias.clone();
                         *typ = unify.infer(ctx)?;
                         ctx.global.alias = parent;
                         ctx.global.def.insert(mangle, unify.clone());
@@ -454,10 +456,8 @@ impl Type {
     }
 
     pub fn solve(&self, ctx: &mut Context) -> Type {
-        if let Self::Class(Generics(name, _)) = self {
-            if let Some(typ) = ctx.global.alias.get(name) {
-                return typ.clone();
-            }
+        if let Some(typ) = ctx.global.alias.get(self) {
+            return typ.clone();
         }
         self.clone()
     }
