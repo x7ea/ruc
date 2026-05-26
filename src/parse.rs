@@ -5,8 +5,13 @@ pub const SPACE: &str = " ";
 
 impl Define {
     pub fn parse(source: &str) -> Result<Vec<Define>, String> {
+        let source = source
+            .replace(" > ", " <gt> ")
+            .replace(" < ", " <lt> ")
+            .replace(" >= ", " <ge> ")
+            .replace(" <= ", " <le> ");
         let mut result = Vec::new();
-        for line in tokenize(source, "\n")? {
+        for line in tokenize(&source, "\n")? {
             macro_rules! args {
                 ($args: expr) => {{
                     let mut map = IndexMap::new();
