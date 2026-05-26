@@ -172,7 +172,7 @@ impl Expr {
                 } else if let Some(mut typ) = ctx.global.lib.get(generic) {
                     if let Type::Function(ret, Some(params)) = typ {
                         if params.len() != args.len() {
-                            return Err(format!("{typ}"));
+                            return Err(format!("generics: {typ}"));
                         }
                         for (arg, param) in args.iter().zip(params) {
                             typ.rewrite(param, arg);
