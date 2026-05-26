@@ -239,3 +239,17 @@ impl Display for Type {
         }
     }
 }
+
+impl Generics {
+    fn parse(source: &str) -> Result<Generics, String> {
+        let x = source.trim();
+        if let Ok((var, args)) = surround!(x, "<", ">") {
+            Ok(Generics(
+                Name::new(&var)?,
+                map!(tokenize(&args, ",")?, |x| Type::parse(x)),
+            ))
+        } else {
+            Ok(Generics(Name::new(x)?, vec![]))
+        }
+    }
+}
