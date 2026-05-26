@@ -51,6 +51,9 @@ macro_rules! surround {
     ($ls: literal, $x: expr, $rs: literal) => {
         $x.strip_prefix($ls).and_then(|x| x.strip_suffix($rs))
     };
+    ($ls: literal, $rs: literal,$x: expr) => {
+        $x.strip_suffix($rs).and_then(|x| x.split_once($ls))
+    };
     ($x: expr, $ls: literal, $rs: literal) => {
         tokenize($x, &$ls).and_then(|x| {
             if x.len() < 2 {
@@ -239,6 +242,7 @@ impl Generics {
     pub fn parse(source: &str) -> Result<Generics, String> {
         let x = source.trim();
         if let Ok((var, args)) = surround!(x, "<", ">") {
+            dbg!(&var, &args);
             Ok(Generics(
                 Name::new(&var)?,
                 map!(tokenize(&args, ",")?, |x| Type::parse(x)),
