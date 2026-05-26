@@ -92,7 +92,7 @@ impl Expr {
                     }
                 }
                 expand!(Expr::Call(
-                    Box::new(Expr::Variable(Name::new("printf")?)),
+                    Box::new(Expr::Variable(Generics(Name::new("printf")?, None))),
                     [vec![Expr::String(fmt + "\\n")], values.to_vec()].concat(),
                 ));
                 typing!(Type::None)
@@ -198,7 +198,7 @@ impl Expr {
                 }
                 acc @ Expr::Member(obj, key) => {
                     let [val, typ] = [value.infer(ctx)?, acc.infer(ctx)?];
-                    let name = get!(Class, obj.infer(ctx)?);
+                    let Generics(name, args) = get!(Class, obj.infer(ctx)?);
                     if &typ != &val {
                         return Err(format!("{name}.{key}: {typ} != {val}"));
                     }
@@ -265,16 +265,16 @@ impl Expr {
             }
             Expr::Member(obj, key) => {
                 let typ = obj.infer(ctx)?;
-                let Type::Class(class_name) = typ else {
+                let Type::Class(Generics(name, args)) = typ else {
                     return Err(format!("not class: {typ}"));
                 };
-                let Some(class) = ctx.global.table.get(&class_name) else {
-                    return Err(format!("undefined: {class_name}"));
+                let Some(class) = ctx.global.table.get(&name) else {
+                    return Err(format!("undefined: {name}"));
                 };
                 match class {
                     Object::Struct(layout) => {
                         let Some(typ) = layout.get(key).cloned() else {
-                            return Err(format!("undefined: {class_name}.{key}"));
+                            return Err(format!("undefined: {name}.{key}"));
                         };
                         let offset = Expr::Integer(layout.get_index_of(key).unwrap() as i64);
                         expand!(Expr::Read(Box::new(offset), typ.clone(), obj.clone()));
@@ -282,7 +282,7 @@ impl Expr {
                     }
                     Object::Enum(layout) => {
                         let Some(typ) = layout.get(key).cloned() else {
-                            return Err(format!("undefined: {class_name}.{key}"));
+                            return Err(format!("undefined: {name}.{key}"));
                         };
                         let offset = Box::new(Expr::Integer(8));
                         expand!(Expr::Read(offset, typ.clone(), obj.clone()));
