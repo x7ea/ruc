@@ -279,7 +279,7 @@ impl Expr {
                         let mangle = class.generics();
                         let unify = (vec![], Object::Struct(layout).clone());
                         ctx.global.table.insert(mangle.clone(), unify);
-                        typing!(Type::Class(Generics(mangle, vec![])))
+                        typing!(typ.clone())
                     }
                     Some((params, Object::Enum(layout))) => {
                         expand!(initializer!(2));
@@ -296,7 +296,7 @@ impl Expr {
                         let mangle = class.generics();
                         let unify = (vec![], Object::Enum(layout).clone());
                         ctx.global.table.insert(mangle.clone(), unify);
-                        typing!(Type::Class(Generics(mangle, vec![])))
+                        typing!(typ.clone())
                     }
                     _ => Err(format!("undefined: {name}")),
                 }
@@ -346,7 +346,7 @@ impl Expr {
                         typing!(typ)
                     }
                     Object::Enum(layout) => {
-                        let Some(typ) = layout.get(key).cloned() else {
+                        let Some(mut typ) = layout.get(key).cloned() else {
                             return Err(format!("undefined: {name}.{key}"));
                         };
                         if params.len() != args.len() {
