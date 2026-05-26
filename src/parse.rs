@@ -47,27 +47,6 @@ impl Define {
     }
 }
 
-macro_rules! surround {
-    ($ls: literal, $x: expr, $rs: literal) => {
-        $x.strip_prefix($ls).and_then(|x| x.strip_suffix($rs))
-    };
-    ($ls: literal, $rs: literal,$x: expr) => {
-        $x.strip_suffix($rs).and_then(|x| x.split_once($ls))
-    };
-    ($x: expr, $ls: literal, $rs: literal) => {
-        tokenize($x, &$ls).and_then(|x| {
-            if x.len() < 2 {
-                return Err(String::new());
-            }
-            let args = ok!(x.last())?.to_string();
-            let func = ok!(x.get(..x.len() - 1))?.concat();
-
-            let args = ok!(args.get(1..args.len() - 1))?.to_string();
-            Ok((func, args))
-        })
-    };
-}
-
 impl Expr {
     pub fn parse(source: &str) -> Result<Expr, String> {
         let x = source.trim();
