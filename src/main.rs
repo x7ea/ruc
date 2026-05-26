@@ -3,7 +3,7 @@ pub mod lex;
 pub mod parse;
 pub mod typ;
 
-use indexmap::IndexMap;
+use indexmap::{IndexMap, IndexSet};
 use lex::name::Name;
 use lex::tokenize;
 use ordered_float::OrderedFloat as Float;
@@ -43,7 +43,7 @@ impl Define {
 
         macro_rules! name {
             ($define: expr) => {
-                if let Define::Function(Generics(func, _), _, _, _) = $define.clone() {
+                if let Define::Function(Generics(func, _), _, _) = $define.clone() {
                     Some(func.clone())
                 } else if let Define::Class(Generics(class, _), _) = $define.clone() {
                     Some(class.clone())
@@ -103,7 +103,7 @@ pub enum Object {
 
 #[derive(Clone, PartialEq)]
 pub enum Define {
-    Function(Generics, IndexMap<Name, Type>, Expr, Type),
+    Function(Generics, IndexMap<Name, Type>, Expr),
     Class(Generics, Object),
 }
 
@@ -175,6 +175,7 @@ pub struct Global {
     lib: IndexMap<Name, Type>,
     table: IndexMap<Name, (Args, Object)>,
     def: IndexMap<Name, Define>,
+    meta: IndexSet<Name>,
 }
 
 #[derive(Default, Debug, Clone)]
