@@ -181,7 +181,10 @@ impl Expr {
                         for (arg, param) in args.iter().zip(params) {
                             typ.rewrite(&param, arg);
                         }
-                        ctx.global.lib.insert(func.generics(), typ.clone());
+                        let mangle = func.generics();
+                        ctx.global.lib.insert(mangle, typ.clone());
+                        let unify = ctx.global.def.get(name);
+                        ctx.global.def.insert(mangle);
                     }
                     typing!(typ.clone())
                 } else {
