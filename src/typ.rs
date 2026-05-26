@@ -7,10 +7,13 @@ impl Define {
                 let parent = ctx.local.clone();
                 ctx.local = Function::default();
                 ctx.local.scope = args.clone();
-                let ret = body.infer(ctx)?;
+                let ret = body.infer(ctx);
+                if !param.is_empty() && ret.is_err() {
+                    return Ok(Type::None);
+                }
                 let sig = Type::Function(
                     param.clone(),
-                    Box::new(ret.clone()),
+                    Box::new(ret?.clone()),
                     Some(args.values().cloned().collect::<Vec<Type>>()),
                 );
                 ctx.table.insert(name.clone(), ctx.local.clone());
