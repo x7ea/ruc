@@ -1,4 +1,5 @@
 pub mod name {
+    use crate::*;
     use std::fmt;
 
     const RESERVED: [&str; 8] = ["let", "if", "then", "else", "while", "do", "new", "len"];
@@ -22,6 +23,10 @@ pub mod name {
                 return Err(format!("reserved: {name}"));
             }
             Ok(Name(name.to_owned()))
+        }
+
+        pub fn generics(&mut self, typ: &Type) {
+            *self = Name(format!("{self}.{}", hash!(typ)))
         }
     }
 
