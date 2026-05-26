@@ -265,10 +265,10 @@ impl Expr {
             }
             Expr::Member(obj, key) => {
                 let typ = obj.infer(ctx)?;
-                let Type::Class(gene @ Generics(name, args)) = typ else {
+                let Type::Class(gene @ Generics(name, args)) = &typ else {
                     return Err(format!("not class: {typ}"));
                 };
-                let Some(class) = ctx.global.table.get(&gene) else {
+                let Some(class) = ctx.global.table.get(gene) else {
                     return Err(format!("undefined: {name}"));
                 };
                 match class {
