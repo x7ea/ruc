@@ -188,23 +188,21 @@ impl Expr {
                     }
                     typing!(Type::None)
                 }
-                accessor @ Expr::Index(arr, idx) => {
-                    let val = value.infer(ctx)?;
-                    let typ = accessor.infer(ctx)?;
+                acc @ Expr::Index(arr, idx) => {
+                    let [val, typ] = [value.infer(ctx)?, acc.infer(ctx)?];
                     if typ.clone() != val {
                         return Err(format!("array: {typ} != {val}"));
                     }
                     expand!(Expr::Write(array!(arr, idx), value.clone(), arr.clone()));
                     typing!(Type::None)
                 }
-                accessor @ Expr::Member(obj, key) => {
-                    let val = value.infer(ctx)?;
-                    let typ = accessor.infer(ctx)?;
+                acc @ Expr::Member(obj, key) => {
+                    let [val, typ] = [value.infer(ctx)?, acc.infer(ctx)?];
+                    let name = get!(Class, obj.infer(ctx)?);
                     if &typ != &val {
-                        return Err(format!("object.{key} == {typ} != {val}"));
+                        return Err(format!("{name}.{key} == {typ} != {val}"));
                     }
-                    let class_name = get!(Class, obj.infer(ctx)?);
-                    match ctx.global.table.get(&class_name).unwrap().clone() {
+                    match ctx.global.table.get(&name).unwrap().clone() {
                         Object::Struct(layout) => {
                             let offset = layout.get_index_of(key).unwrap();
                             let offset = Box::new(Expr::Integer(offset as i64));
