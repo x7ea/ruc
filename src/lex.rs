@@ -24,15 +24,17 @@ pub mod name {
             }
             Ok(Name(name.to_owned()))
         }
-
-        pub fn generics(&mut self, typ: &Type) {
-            *self = Name(format!("{self}.{}", hash!(typ)))
-        }
     }
 
     impl fmt::Display for Name {
         fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
             write!(f, "{}", self.0)
+        }
+    }
+
+    impl fmt::Display for Generics {
+        fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+            write!(f, "{}.{}", self.0, hash!(self.1))
         }
     }
 }
