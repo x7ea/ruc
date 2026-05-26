@@ -254,9 +254,10 @@ impl Expr {
                                 layout.insert(key.clone(), field.clone());
                             }
                         }
-                        let mono = (vec![], Object::Struct(layout).clone());
-                        ctx.global.table.insert(class.generics(), mono);
-                        typing!(typ.clone())
+                        let mangle = class.generics();
+                        let unify = (vec![], Object::Struct(layout).clone());
+                        ctx.global.table.insert(mangle.clone(), unify);
+                        typing!(Type::Class(Generics(mangle, vec![])))
                     }
                     Some((param, Object::Enum(_))) => {
                         expand!(initializer!(2));
