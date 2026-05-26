@@ -7,7 +7,11 @@ impl Define {
                 let parent = ctx.local.clone();
                 ctx.local = Function::default();
                 ctx.local.scope = args.clone();
-                body.infer(ctx)?;
+                if let Ok(typ) = body.infer(ctx) {
+                    if typ != *ret {
+                        return Err(format!("return: {ret} != {typ}"));
+                    }
+                }
                 let sig = Type::Function(
                     params.clone(),
                     Box::new(ret.clone()),
