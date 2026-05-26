@@ -224,7 +224,7 @@ impl Display for Type {
             Type::Bool => write!(f, "Bool"),
             Type::None => write!(f, "()"),
             Type::Array(typ) => write!(f, "[{typ}]"),
-            Type::Class(name) => write!(f, "{name}"),
+            Type::Class(Generics(name, arg)) => write!(f, "{name}"),
             Type::Function(ret, Some(arg)) => {
                 let arg = map!(arg).join(", ");
                 write!(f, "{ret}({arg})")
