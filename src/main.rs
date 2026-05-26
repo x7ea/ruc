@@ -176,6 +176,7 @@ pub struct Global {
     def: IndexMap<Name, Define>,
     table: IndexMap<Name, (Args, Object)>,
     meta: IndexSet<Name>,
+    alias: IndexMap<Name, Type>,
 }
 
 #[derive(Default, Debug, Clone)]
