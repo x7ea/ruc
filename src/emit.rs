@@ -42,7 +42,7 @@ impl Define {
         pro = format!(
             "\tpush rbp\n\tmov rbp, rsp\n\tsub rsp, {}\n",
             if stack % 16 == 0 { stack } else { stack + 8 }
-        );
+        ) + &pro;
         Ok(format!("{name}:\n{pro}{body}\tleave\n\tret\n\n",))
     }
 }
