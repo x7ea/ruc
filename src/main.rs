@@ -45,6 +45,8 @@ impl Define {
             ($define: expr) => {
                 if let Define::Function(Generics(func, _), _, _) = $define.clone() {
                     Some(func.clone())
+                } else if let Define::Class(Generics(class, _), _) = $define.clone() {
+                    Some(class.clone())
                 } else {
                     None
                 }
@@ -93,7 +95,7 @@ impl Define {
 
 // Abstract Syntax Tree (AST)
 
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum Object {
     Struct(IndexMap<Name, Type>),
     Enum(IndexMap<Name, Type>),
