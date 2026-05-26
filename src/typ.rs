@@ -306,7 +306,7 @@ impl Expr {
                 if let Expr::Member(obj, key) = &**expr {
                     let typ = obj.infer(ctx)?;
                     if let Type::Class(Generics(name, _)) = &typ {
-                        if let Some(_, Object::Enum(layout)) = ctx.global.table.get(name) {
+                        if let Some((_, Object::Enum(layout))) = ctx.global.table.get(name) {
                             let tag = layout.get_index_of(key).unwrap();
                             let offset = Box::new(Expr::Integer(0));
                             expand!(Expr::Eql(
