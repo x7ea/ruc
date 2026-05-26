@@ -142,4 +142,7 @@ macro_rules! map {
             .map($lambda)
             .collect::<Result<Vec<_>, String>>()?
     };
+    ($arr: expr) => {
+        $arr.iter().map(|x| x.to_string()).collect::<Vec<_>>()
+    };
 }
