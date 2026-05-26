@@ -176,7 +176,7 @@ impl Expr {
                 if let Some(typ) = env.get(name) {
                     typing!(typ.clone())
                 } else if let Some(typ) = ctx.global.lib.get(name) {
-                    let typ = &mut typ.clone();
+                    let typ = &mut typ.clone().solve(ctx);
                     if let Type::Function(params, _, Some(_)) = typ.clone() {
                         if params.len() != args.len() {
                             return Err(format!("generics: {typ}"));
@@ -190,7 +190,7 @@ impl Expr {
                             if let Define::Function(Generics(_, _), params, body) = &unify {
                                 let mut map = IndexMap::new();
                                 for (param, arg) in params.keys().zip(args) {
-                                    map.insert(param.clone(), arg);
+                                    map.insert(param.clone(), arg.solve(ctx));
                                 }
                                 let name = Generics(mangle.clone(), vec![]);
                                 unify = Define::Function(name, map, body.clone());
