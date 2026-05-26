@@ -449,4 +449,13 @@ impl Type {
             _ => {}
         }
     }
+
+    pub fn solve(&self, ctx: &mut Context) -> Type {
+        if let Self::Class(Generics(name, _)) = self {
+            if let Some(typ) = ctx.global.alias.get(name) {
+                return typ.clone();
+            }
+        }
+        self.clone()
+    }
 }
