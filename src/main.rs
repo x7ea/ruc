@@ -138,7 +138,7 @@ pub enum Type {
     Float,
     Array(Box<Type>),
     Class(Generics),
-    Function(Box<Type>, Option<Vec<Type>>),
+    Function(Vec<Type>, Box<Type>, Option<Vec<Type>>),
     None,
 }
 
