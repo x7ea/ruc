@@ -210,7 +210,7 @@ impl Expr {
                 }
                 acc @ Expr::Member(obj, key) => {
                     let [val, typ] = [value.infer(ctx)?, acc.infer(ctx)?];
-                    let Generics(name, args) = &get!(Class, obj.infer(ctx)?);
+                    let Generics(name, _) = &get!(Class, obj.infer(ctx)?);
                     if &typ != &val {
                         return Err(format!("{name}.{key}: {typ} != {val}"));
                     }
