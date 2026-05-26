@@ -82,8 +82,8 @@ pub enum Define {
     Class(Name, Object),
 }
 
-#[derive(Clone, PartialEq)]
-pub struct Generics(Name, Option<Type>);
+#[derive(Clone, Hash, PartialEq, Eq)]
+pub struct Generics(Name, Option<Box<Type>>);
 
 #[derive(Clone, Hash, PartialEq, Eq)]
 pub enum Expr {
@@ -105,7 +105,7 @@ pub enum Expr {
     Index(Box<Expr>, Box<Expr>),
     Len(Box<Expr>),
     // Object
-    New(Generics),
+    New(Type),
     Member(Box<Expr>, Name),
     Check(Box<Expr>),
     // Structure
@@ -137,7 +137,7 @@ pub enum Type {
     Bool,
     Float,
     Array(Box<Type>),
-    Class(Name),
+    Class(Generics),
     Function(Box<Type>, Option<Vec<Type>>),
     None,
 }
