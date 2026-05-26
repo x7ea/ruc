@@ -34,6 +34,9 @@ pub mod name {
 
     impl Generics {
         pub fn generics(&self) -> Name {
+            if self.1.is_empty() {
+                return self.0.clone();
+            }
             Name(format!("{}.{}", self.0, hash!(self.1)))
         }
     }
