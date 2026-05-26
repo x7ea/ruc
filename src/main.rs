@@ -43,8 +43,8 @@ impl Define {
         ctx.global.def = {
             let mut map = IndexMap::new();
             for define in defines.clone() {
-                if let Define::Function(Generics(name, _), _, _) = define {
-                    map.insert(name, define);
+                if let Define::Function(Generics(name, _), _, _) = &define {
+                    map.insert(name.clone(), define.clone());
                 }
             }
             map
