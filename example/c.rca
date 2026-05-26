@@ -15,13 +15,13 @@ fn main() {
     let seq[1] = 2
     let seq[2] = 4
 
-    let sum = reduce<Int>(seq, add<Int>)  ; 7
+    let sum = reduce<Int>(seq, add<Int>)
     print sum
 
-    let seq = [Float; 2]
-    let seq[0] = 1.2
-    let seq[1] = 2.3
+    let b = [Float; 2]
+    let b[0] = 1.2
+    let b[1] = 2.3
 
-    let sum = reduce<Float>(seq, add<Float>)  ; 3.5
-    print sum
+    let sum1 = reduce<Float>(b, add<Float>)
+    print sum1
 }
