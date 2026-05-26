@@ -247,7 +247,7 @@ impl Display for Type {
 }
 
 impl Generics {
-    fn parse(source: &str) -> Result<Generics, String> {
+    pub fn parse(source: &str) -> Result<Generics, String> {
         let x = source.trim();
         if let Ok((var, args)) = surround!(x, "<", ">") {
             Ok(Generics(
