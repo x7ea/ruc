@@ -226,8 +226,8 @@ impl Expr {
                 typing!(Type::Array(Box::new(typ.clone())))
             }
             Expr::New(typ) => {
-                if let Type::Class(class_name) = typ {
-                    match ctx.global.table.get(class_name) {
+                if let Type::Class(Generics(name, args)) = typ {
+                    match ctx.global.table.get(name) {
                         Some(Object::Struct(layout)) => {
                             expand!(initializer!(layout.len()));
                             typing!(typ.clone())
@@ -236,7 +236,7 @@ impl Expr {
                             expand!(initializer!(2));
                             typing!(typ.clone())
                         }
-                        _ => Err(format!("undefined: {class_name}")),
+                        _ => Err(format!("undefined: {name}")),
                     }
                 } else {
                     Err(format!("not constructor: {typ}"))
