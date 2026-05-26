@@ -215,7 +215,7 @@ impl Expr {
                     let env = &mut ctx.local.scope;
                     if let Some(typ) = env.get(name) {
                         if val != *typ {
-                            return Err(format!("{name} == {typ} != {val}"));
+                            return Err(format!("{name}: {typ} != {val}"));
                         }
                     } else {
                         env.insert(name.clone(), val.clone());
