@@ -83,7 +83,7 @@ pub enum Define {
 }
 
 #[derive(Clone, Hash, PartialEq, Eq)]
-pub struct Generics(Name, Option<Box<Type>>);
+pub struct Generics(Name, Vec<Type>);
 
 #[derive(Clone, Hash, PartialEq, Eq)]
 pub enum Expr {
