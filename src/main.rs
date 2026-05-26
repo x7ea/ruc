@@ -43,7 +43,7 @@ impl Define {
         ctx.global.lib = {
             let mut map = IndexMap::new();
             for line in Self::LIB {
-                let signature = Type::Function(Box::new(Type::None), None);
+                let signature = Type::Function(vec![], Box::new(Type::None), None);
                 map.insert(Name::new(line)?, signature);
             }
             map
