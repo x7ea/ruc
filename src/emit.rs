@@ -7,7 +7,7 @@ impl Define {
         let Define::Function(Generics(name, _), args, body) = self else {
             return Ok(String::new());
         };
-        if ctx.global.pol.contains(name) {
+        if ctx.global.poly.contains(name) {
             return Ok(String::new());
         }
         ctx.local = ctx.table.get(name).unwrap().clone();
