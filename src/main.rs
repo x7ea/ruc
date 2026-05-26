@@ -40,7 +40,15 @@ impl Define {
     pub fn compile(defines: &mut Vec<Self>) -> Result<String, String> {
         let mut text = String::new();
         let ctx = &mut Context::default();
-        ctx.global.def = defines.clone();
+        ctx.global.def = {
+            let mut map = IndexMap::new();
+            for define in defines.clone() {
+                if let Define::Function(Generics(name, _), _, _) = define {
+                    map.insert(name, define);
+                }
+            }
+            map
+        };
         ctx.global.lib = {
             let mut map = IndexMap::new();
             for line in Self::LIB {
@@ -49,10 +57,10 @@ impl Define {
             }
             map
         };
-        for define in ctx.global.def.clone() {
+        for (_, define) in ctx.global.def.clone() {
             define.infer(ctx)?;
         }
-        for define in ctx.global.def.clone() {
+        for (_, define) in ctx.global.def.clone() {
             text += &define.emit(ctx)?;
         }
         let data = ctx.global.data.clone();
@@ -150,7 +158,7 @@ pub struct Global {
     data: String,
     lib: IndexMap<Name, Type>,
     table: IndexMap<Name, (Args, Object)>,
-    def: Vec<Define>,
+    def: IndexMap<Name, Define>,
 }
 
 #[derive(Default, Debug, Clone)]
