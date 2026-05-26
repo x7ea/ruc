@@ -176,7 +176,7 @@ impl Expr {
                 }
             }
             Expr::Let(name, value) => match &**name {
-                Expr::Variable(name) => {
+                Expr::Variable(Generics(name, args)) => {
                     let env = &ctx.local.var;
                     let idx = env.get_index_of(name).unwrap();
                     let typ = env.get(name).unwrap().clone();
