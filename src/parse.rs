@@ -1,6 +1,5 @@
-use std::fmt::Display;
-
 use crate::*;
+use std::fmt::{self, Display};
 
 pub const SPACE: &str = " ";
 
@@ -206,5 +205,23 @@ impl Type {
 }
 
 impl Display for Type {
-    
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Type::Integer => write!(f, "Int"),
+            Type::String => write!(f, "Str"),
+            Type::Float => write!(f, "Float"),
+            Type::Bool => write!(f, "Bool"),
+            Type::None => write!(f, "()"),
+            Type::Array(typ) => write!(f, "[{typ}]"),
+            Type::Class(name) => write!(f, "{name}"),
+            Type::Function(ret, arg) => {
+                if let Some(arg) = arg {
+                    let arg = map!(arg).join(", ");
+                    write!(f, "{ret}({arg})")
+                } else {
+                    write!(f, "{ret}()")
+                }
+            }
+        }
+    }
 }
