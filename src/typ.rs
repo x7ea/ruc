@@ -44,7 +44,7 @@ impl Expr {
         macro_rules! initializer {
             ($layout: expr) => {
                 Expr::Call(
-                    Box::new(Expr::Variable(Name::new("calloc")?)),
+                    Box::new(Expr::Variable(Generics(Name::new("calloc")?, None))),
                     vec![Expr::Integer($layout as i64), Expr::Integer(8)],
                 )
             };
@@ -165,7 +165,7 @@ impl Expr {
                     Err(format!("not callee: {typ}"))
                 }
             }
-            Expr::Variable(name) => {
+            Expr::Variable(Generics(name, arg)) => {
                 let env = &ctx.local.scope;
                 if let Some(typ) = env.get(name) {
                     typing!(typ.clone())
@@ -176,7 +176,7 @@ impl Expr {
                 }
             }
             Expr::Let(name, value) => match &**name {
-                Expr::Variable(name) => {
+                Expr::Variable(Generics(name, arg)) => {
                     let val = value.infer(ctx)?;
                     let env = &mut ctx.local.scope;
                     if let Some(typ) = env.get(name) {
