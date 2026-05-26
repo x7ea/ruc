@@ -232,11 +232,11 @@ impl Expr {
                 }
                 acc @ Expr::Member(obj, key) => {
                     let [val, typ] = [value.infer(ctx)?, acc.infer(ctx)?];
-                    let class @ Generics(name, _) = &get!(Class, obj.infer(ctx)?);
+                    let Generics(name, _) = &get!(Class, obj.infer(ctx)?);
                     if &typ.solve(ctx) != &val {
                         return Err(format!("{name}.{key}: {typ} != {val}"));
                     }
-                    match ok!(ctx.global.table.get(&class.generics()))? {
+                    match ok!(ctx.global.table.get(name))? {
                         (_, Object::Struct(layout)) => {
                             let offset = layout.get_index_of(key).unwrap();
                             let offset = Box::new(Expr::Integer(offset as i64));
