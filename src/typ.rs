@@ -173,7 +173,7 @@ impl Expr {
                     typing!(typ.clone())
                 } else if let Some(typ) = ctx.global.lib.get(name) {
                     let typ = &mut typ.clone();
-                    if let Type::Function(params, _, Some(_)) = typ.clone() {
+                    if let Type::Function(params, _, _) = typ.clone() {
                         if params.len() != args.len() {
                             return Err(format!("generics: {typ}"));
                         }
@@ -238,10 +238,11 @@ impl Expr {
                 typing!(Type::Array(Box::new(typ.clone())))
             }
             Expr::New(typ) => {
-                if let Type::Class(Generics(name, _)) = typ {
+                if let Type::Class(class @ Generics(name, args)) = typ {
                     match ctx.global.table.get(name) {
                         Some((_, Object::Struct(layout))) => {
                             expand!(initializer!(layout.len()));
+                            ctx.global.table.insert(class.generics());
                             typing!(typ.clone())
                         }
                         Some((_, Object::Enum(_))) => {
