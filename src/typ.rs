@@ -378,7 +378,7 @@ impl Type {
             *self = new.clone()
         }
         match self {
-            Type::Function(ret, args) => {
+            Type::Function(_, ret, args) => {
                 ret.rewrite(old, new);
                 if let Some(args) = args {
                     for arg in args {
