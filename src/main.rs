@@ -43,7 +43,7 @@ impl Define {
 
         macro_rules! name {
             ($define: expr) => {
-                if let Define::Function(Generics(func, _), _, _) = $define.clone() {
+                if let Define::Function(Generics(func, _), _, _, _) = $define.clone() {
                     Some(func.clone())
                 } else if let Define::Class(Generics(class, _), _) = $define.clone() {
                     Some(class.clone())
@@ -103,7 +103,7 @@ pub enum Object {
 
 #[derive(Clone, PartialEq)]
 pub enum Define {
-    Function(Generics, IndexMap<Name, Type>, Expr),
+    Function(Generics, IndexMap<Name, Type>, Expr, Type),
     Class(Generics, Object),
 }
 
