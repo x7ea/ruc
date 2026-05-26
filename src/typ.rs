@@ -260,6 +260,15 @@ impl Expr {
                         typing!(Type::Class(Generics(mangle, vec![])))
                     }
                     Some((param, Object::Enum(_))) => {
+                        if params.len() != args.len() {
+                            return Err(format!("generics: {typ}"));
+                        }
+                        for (key, mut field) in layout.clone() {
+                            for (arg, param) in args.iter().zip(&params) {
+                                field.rewrite(&param, arg);
+                                layout.insert(key.clone(), field.clone());
+                            }
+                        }
                         expand!(initializer!(2));
                         typing!(typ.clone())
                     }
