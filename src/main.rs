@@ -56,9 +56,9 @@ impl Define {
             text += &define.emit(ctx)?;
         }
         let data = ctx.global.data.clone();
-        for define in defines {
+        for define in ctx.global.def.clone() {
             if let Define::Function(func, _, _) = define {
-                ctx.global.lib.shift_remove(func);
+                ctx.global.lib.shift_remove(&func);
             }
         }
         let mut lib = String::from("\nsection .text\n\tglobal main\n");
