@@ -3,11 +3,12 @@ use crate::*;
 impl Define {
     pub fn infer(&self, ctx: &mut Context) -> Result<Type, String> {
         match self {
-            Define::Function(name, args, body) => {
+            Define::Function(Generics(name, args), args, body) => {
                 ctx.local = Function::default();
                 ctx.local.scope = args.clone();
                 let ret = body.infer(ctx)?;
                 let sig = Type::Function(
+                    args,
                     Box::new(ret.clone()),
                     Some(args.values().cloned().collect::<Vec<Type>>()),
                 );
