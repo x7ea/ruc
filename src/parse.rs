@@ -181,13 +181,8 @@ impl Expr {
             Ok(Expr::Member(Box::new(Expr::parse(obj)?), Name::new(key)?))
         } else if let Some(class) = x.strip_prefix("new ") {
             Ok(Expr::New(Type::parse(&class)?))
-        } else if let Ok((var, args)) = surround!(x, "<", ">") {
-            Ok(Expr::Variable(Generics(
-                Name::new(&var)?,
-                map!(tokenize(&args, ",")?, |x| Type::parse(x)),
-            )))
         } else {
-            Ok(Expr::Variable(Generics(Name::new(x)?, vec![])))
+            Ok(Expr::Variable(Generics::parse(x)?))
         }
     }
 }
@@ -209,13 +204,8 @@ impl Type {
                     ))
                 } else if let Some(arr) = surround!("[", x, "]") {
                     Ok(Type::Array(Box::new(Type::parse(&arr)?)))
-                } else if let Ok((var, args)) = surround!(x, "<", ">") {
-                    Ok(Type::Class(Generics(
-                        Name::new(&var)?,
-                        map!(tokenize(&args, ",")?, |x| Type::parse(x)),
-                    )))
                 } else {
-                    Ok(Type::Class(Generics(Name::new(x)?, vec![])))
+                    Ok(Type::Class(Generics::parse(x)?))
                 }
             }
         }
