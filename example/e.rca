@@ -10,11 +10,7 @@ fn node(value: Int) {
 }
 
 fn link<T>(this: List<T>, other: List<T>) {
-    while this.cdr? do {
-        let this = this.cdr
-    }
     let this.cdr = other
-    this
 }
 
 fn main() {
