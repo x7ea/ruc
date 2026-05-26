@@ -240,11 +240,11 @@ impl Expr {
             Expr::New(typ) => {
                 if let Type::Class(Generics(name, args)) = typ {
                     match ctx.global.table.get(name) {
-                        Some(Object::Struct(layout)) => {
+                        Some((_, Object::Struct(layout))) => {
                             expand!(initializer!(layout.len()));
                             typing!(typ.clone())
                         }
-                        Some(Object::Enum(_)) => {
+                        Some((_, Object::Enum(_))) => {
                             expand!(initializer!(2));
                             typing!(typ.clone())
                         }
