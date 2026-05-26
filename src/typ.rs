@@ -10,7 +10,7 @@ impl Define {
                 let ret = body.infer(ctx);
                 let args = Some(args.values().cloned().collect::<Vec<Type>>());
                 let sig = if !param.is_empty() {
-                    ctx.global.pol.insert(name.clone());
+                    ctx.global.poly.insert(name.clone());
                     Type::Function(param.clone(), Box::new(Type::None), args)
                 } else {
                     Type::Function(param.clone(), Box::new(ret?), args)
