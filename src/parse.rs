@@ -214,14 +214,11 @@ impl Display for Type {
             Type::None => write!(f, "()"),
             Type::Array(typ) => write!(f, "[{typ}]"),
             Type::Class(name) => write!(f, "{name}"),
-            Type::Function(ret, arg) => {
-                if let Some(arg) = arg {
-                    let arg = map!(arg).join(", ");
-                    write!(f, "{ret}({arg})")
-                } else {
-                    write!(f, "{ret}(...)")
-                }
+            Type::Function(ret, Some(arg)) => {
+                let arg = map!(arg).join(", ");
+                write!(f, "{ret}({arg})")
             }
+            Type::Function(ret, None) => write!(f, "{ret}(...)"),
         }
     }
 }
