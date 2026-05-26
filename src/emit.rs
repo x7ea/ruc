@@ -4,7 +4,7 @@ pub const ABI: [&str; 6] = ["rdi", "rsi", "rdx", "rcx", "r8", "r9"];
 
 impl Define {
     pub fn emit(&self, ctx: &mut Context) -> Result<String, String> {
-        let Define::Function(Generics(name, _), args, body) = self else {
+        let Define::Function(Generics(name), args, body) = self else {
             return Ok(String::new());
         };
         ctx.local = ctx.table.get(name).unwrap().clone();
@@ -161,9 +161,9 @@ impl Expr {
                     callee.emit(ctx)?
                 ))
             }
-            Expr::Variable(name) => {
+            Expr::Variable(Generics(name, _)) => {
                 let env = &ctx.local.var;
-                if let Some(i) = env.get_index_of(&name.generics()) {
+                if let Some(i) = env.get_index_of(name) {
                     let typ = env.get(name).unwrap();
                     let addr = (i + 1) * 8;
                     if let Type::Float = typ {
