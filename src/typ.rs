@@ -226,8 +226,8 @@ impl Expr {
                 typing!(Type::Array(Box::new(typ.clone())))
             }
             Expr::New(typ) => {
-                if let Type::Class(Generics(name, args)) = typ {
-                    match ctx.global.table.get(name) {
+                if let Type::Class(gene @ Generics(name, args)) = typ {
+                    match ctx.global.table.get(gene) {
                         Some(Object::Struct(layout)) => {
                             expand!(initializer!(layout.len()));
                             typing!(typ.clone())
@@ -265,10 +265,10 @@ impl Expr {
             }
             Expr::Member(obj, key) => {
                 let typ = obj.infer(ctx)?;
-                let Type::Class(Generics(name, args)) = typ else {
+                let Type::Class(gene @ Generics(name, args)) = typ else {
                     return Err(format!("not class: {typ}"));
                 };
-                let Some(class) = ctx.global.table.get(&name) else {
+                let Some(class) = ctx.global.table.get(&gene) else {
                     return Err(format!("undefined: {name}"));
                 };
                 match class {
