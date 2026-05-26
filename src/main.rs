@@ -173,8 +173,8 @@ pub struct Global {
     idx: usize,
     data: String,
     lib: IndexMap<Name, Type>,
-    table: IndexMap<Name, (Args, Object)>,
     def: IndexMap<Name, Define>,
+    table: IndexMap<Name, (Args, Object)>,
     meta: IndexSet<Name>,
 }
 
