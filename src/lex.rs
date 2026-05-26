@@ -32,9 +32,9 @@ pub mod name {
         }
     }
 
-    impl fmt::Display for Generics {
-        fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-            write!(f, "{}.{}", self.0, hash!(self.1))
+    impl Generics {
+        fn fmt(&self) -> Name {
+            Name(format!("{}.{}", self.0, hash!(self.1)))
         }
     }
 }
