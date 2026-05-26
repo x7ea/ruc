@@ -206,6 +206,7 @@ impl Expr {
                     }
                     typing!(typ.clone())
                 } else {
+                    dbg!(&name);
                     Err(format!("undefined: {name}"))
                 }
             }
@@ -298,7 +299,10 @@ impl Expr {
                         ctx.global.table.insert(mangle.clone(), unify);
                         typing!(typ.clone())
                     }
-                    _ => Err(format!("undefined: {name}")),
+                    _ => {
+                        dbg!(&name);
+                        Err(format!("undefined: {name}"))
+                    }
                 }
             }
             Expr::Len(arr) => {
@@ -327,7 +331,9 @@ impl Expr {
                 let Type::Class(class @ Generics(name, _)) = &typ else {
                     return Err(format!("not class: {typ}"));
                 };
-                let Some((_, class)) = ctx.global.table.get(&class.generics()) else {
+                let Some((_, class)) = ctx.global.table.get(name) else {
+                    dbg!(ctx.global.table.keys(), &class.generics());
+
                     return Err(format!("undefined: {name}"));
                 };
                 match class {
@@ -431,6 +437,11 @@ impl Type {
                     for arg in args {
                         arg.rewrite(old, new);
                     }
+                }
+            }
+            Type::Class(Generics(_, args)) => {
+                for arg in args {
+                    arg.rewrite(old, new);
                 }
             }
             Type::Array(typ) => typ.rewrite(old, new),
