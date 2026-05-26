@@ -63,7 +63,7 @@ impl Expr {
             }
         }
         if let Some(x) = x.strip_prefix("print ") {
-            Ok(Expr::Print(map!(tokenize(x, ",")?, |i| Expr::parse(&i))))
+            Ok(Expr::Print(map!(tokenize(x, ",")? => |i| Expr::parse(&i))))
         } else if let Some(x) = x.strip_prefix("let ") {
             if let Ok((name, value)) = once!(x, "=") {
                 Ok(Expr::Let(
@@ -142,7 +142,7 @@ impl Expr {
         } else if let Ok((func, args)) = surround!(x, "(", ")") {
             Ok(Expr::Call(
                 Box::new(Expr::parse(&func)?),
-                map!(tokenize(&args, ",")?, |x| Expr::parse(x)),
+                map!(tokenize(&args, ",")? => |x| Expr::parse(x)),
             ))
         } else if let Ok((arr, idx)) = surround!(x, "[", "]") {
             Ok(Expr::Index(
@@ -182,7 +182,7 @@ impl Type {
                     Ok(Type::Function(
                         vec![],
                         Box::new(Type::parse(&func)?),
-                        Some(map!(tokenize(&args, ",")?, |x| Type::parse(&x))),
+                        Some(map!(tokenize(&args, ",")? => |x| Type::parse(&x))),
                     ))
                 } else if let Some(arr) = surround!("[", x, "]") {
                     Ok(Type::Array(Box::new(Type::parse(&arr)?)))
@@ -205,11 +205,11 @@ impl Display for Type {
             Type::Array(typ) => write!(f, "[{typ}]"),
             Type::Class(Generics(name, args)) if args.is_empty() => write!(f, "{name}"),
             Type::Class(Generics(name, args)) => {
-                let args = map!(args).join(", ");
+                let args = map!(args, |x| x.to_string()).join(", ");
                 write!(f, "{name}<{args}>")
             }
             Type::Function(_, ret, Some(args)) => {
-                let args = map!(args).join(", ");
+                let args = map!(args, |x| x.to_string()).join(", ");
                 write!(f, "{ret}({args})")
             }
             Type::Function(_, ret, None) => write!(f, "{ret}()"),
@@ -223,7 +223,7 @@ impl Generics {
         if let Some((var, args)) = surround!("<", ">", x) {
             Ok(Generics(
                 Name::new(&var)?,
-                map!(tokenize(&args, ",")?, |x| Type::parse(x)),
+                map!(tokenize(&args, ",")? => |x| Type::parse(x)),
             ))
         } else {
             Ok(Generics(Name::new(x)?, vec![]))
