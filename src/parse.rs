@@ -24,17 +24,23 @@ impl Define {
                 let (head, body) = once!(func, SPACE)?;
                 let (name, args) = ok!(ok!(head.strip_suffix(")"))?.split_once("("))?;
                 let func = Define::Function(
-                    Name::new(name)?,
+                    Generics::parse(name)?,
                     args!(args),
                     Expr::Block(vec![Expr::parse(&body)?]),
                 );
                 result.push(func);
             } else if let Some(head) = line.strip_prefix("struct ") {
                 let (name, args) = ok!(ok!(head.trim().strip_suffix("}"))?.split_once("{"))?;
-                result.push(Define::Class(Name::new(name)?, Object::Struct(args!(args))));
+                result.push(Define::Class(
+                    Generics::parse(name)?,
+                    Object::Struct(args!(args)),
+                ));
             } else if let Some(head) = line.strip_prefix("enum ") {
                 let (name, args) = ok!(ok!(head.trim().strip_suffix("}"))?.split_once("{"))?;
-                result.push(Define::Class(Name::new(name)?, Object::Enum(args!(args))));
+                result.push(Define::Class(
+                    Generics::parse(name)?,
+                    Object::Enum(args!(args)),
+                ));
             }
         }
         Ok(result)
