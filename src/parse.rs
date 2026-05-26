@@ -108,21 +108,23 @@ impl Expr {
             }
             Ok(Expr::Block(block))
         } else if let Ok((lhs, op, rhs)) = is_operator(x) {
+            let lhs = Box::new(Expr::parse(&lhs)?);
+            let rhs = Box::new(Expr::parse(&rhs)?);
             Ok(match op.as_str() {
-                "+" => Expr::Add(Box::new(Expr::parse(&lhs)?), Box::new(Expr::parse(&rhs)?)),
-                "-" => Expr::Sub(Box::new(Expr::parse(&lhs)?), Box::new(Expr::parse(&rhs)?)),
-                "*" => Expr::Mul(Box::new(Expr::parse(&lhs)?), Box::new(Expr::parse(&rhs)?)),
-                "/" => Expr::Div(Box::new(Expr::parse(&lhs)?), Box::new(Expr::parse(&rhs)?)),
-                "%" => Expr::Mod(Box::new(Expr::parse(&lhs)?), Box::new(Expr::parse(&rhs)?)),
-                "==" => Expr::Eql(Box::new(Expr::parse(&lhs)?), Box::new(Expr::parse(&rhs)?)),
-                "!=" => Expr::NotEq(Box::new(Expr::parse(&lhs)?), Box::new(Expr::parse(&rhs)?)),
-                ">" => Expr::Gt(Box::new(Expr::parse(&lhs)?), Box::new(Expr::parse(&rhs)?)),
-                "<" => Expr::Lt(Box::new(Expr::parse(&lhs)?), Box::new(Expr::parse(&rhs)?)),
-                ">=" => Expr::GtEq(Box::new(Expr::parse(&lhs)?), Box::new(Expr::parse(&rhs)?)),
-                "<=" => Expr::LtEq(Box::new(Expr::parse(&lhs)?), Box::new(Expr::parse(&rhs)?)),
-                "&" => Expr::And(Box::new(Expr::parse(&lhs)?), Box::new(Expr::parse(&rhs)?)),
-                "|" => Expr::Or(Box::new(Expr::parse(&lhs)?), Box::new(Expr::parse(&rhs)?)),
-                "^" => Expr::Xor(Box::new(Expr::parse(&lhs)?), Box::new(Expr::parse(&rhs)?)),
+                "+" => Expr::Add(lhs, rhs),
+                "-" => Expr::Sub(lhs, rhs),
+                "*" => Expr::Mul(lhs, rhs),
+                "/" => Expr::Div(lhs, rhs),
+                "%" => Expr::Mod(lhs, rhs),
+                "==" => Expr::Eql(lhs, rhs),
+                "!=" => Expr::NotEq(lhs, rhs),
+                ">" => Expr::Gt(lhs, rhs),
+                "<" => Expr::Lt(lhs, rhs),
+                ">=" => Expr::GtEq(lhs, rhs),
+                "<=" => Expr::LtEq(lhs, rhs),
+                "&" => Expr::And(lhs, rhs),
+                "|" => Expr::Or(lhs, rhs),
+                "^" => Expr::Xor(lhs, rhs),
                 op => return Err(format!("unknown operator: {op}")),
             })
         } else if let Some(class) = x.strip_suffix("?") {
