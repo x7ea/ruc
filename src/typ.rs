@@ -267,7 +267,7 @@ impl Expr {
                         }
                         for (key, mut field) in layout.clone() {
                             for (arg, param) in args.iter().zip(&params) {
-                                field.rewrite(&param, arg);
+                                field.rewrite(&param, &arg.solve(ctx));
                                 layout.insert(key.clone(), field.clone());
                             }
                         }
@@ -284,7 +284,7 @@ impl Expr {
                         }
                         for (key, mut field) in layout.clone() {
                             for (arg, param) in args.iter().zip(&params) {
-                                field.rewrite(&param, arg);
+                                field.rewrite(&param, &arg.solve(ctx));
                                 layout.insert(key.clone(), field.clone());
                             }
                         }
