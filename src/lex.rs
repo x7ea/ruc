@@ -33,7 +33,7 @@ pub mod name {
     }
 
     impl Generics {
-        fn fmt(&self) -> Name {
+        fn generics(&self) -> Name {
             Name(format!("{}.{}", self.0, hash!(self.1)))
         }
     }
