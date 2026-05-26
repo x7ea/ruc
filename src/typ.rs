@@ -202,7 +202,6 @@ impl Expr {
                             }
                         };
                         *typ = unify.infer(ctx)?;
-                        dbg!(&typ);
                         ctx.global.def.insert(mangle, unify.clone());
                     }
                     typing!(typ.clone())
