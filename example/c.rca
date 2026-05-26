@@ -9,19 +9,25 @@ fn reduce<T>(this: [T], lambda: T(T, T)) {
 
 fn add<T>(a: T, b: T) a + b
 
-fn main() {
+fn sum_int() {
     let seq = [Int; 3]
     let seq[0] = 1
     let seq[1] = 2
     let seq[2] = 4
 
-    let sum = reduce<Int>(seq, add<Int>)
-    print sum
+    reduce<Int>(seq, add<Int>)
+}
 
-    let b = [Float; 2]
-    let b[0] = 1.2
-    let b[1] = 2.3
+fn sum_float() {
+    let seq = [Float; 2]
+    let seq[0] = 1.2
+    let seq[1] = 2.3
 
-    let sum1 = reduce<Float>(b, add<Float>)
-    print sum1
+    reduce<Float>(seq, add<Float>)
+}
+
+
+fn main() {
+    print sum_int()
+    print sum_float()
 }
