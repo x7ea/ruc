@@ -12,10 +12,8 @@ impl Define {
                     return Ok(Type::None);
                 }
                 let ret = ret?;
-                let sig = Type::Function(
-                    param.clone(),
-                    Some(args.values().cloned().collect::<Vec<Type>>()),
-                );
+                let args = Some(args.values().cloned().collect::<Vec<Type>>());
+                let sig = Type::Function(param.clone(), Box::new(ret.clone()), args);
                 ctx.table.insert(name.clone(), ctx.local.clone());
                 ctx.global.lib.insert(name.clone(), sig);
                 ctx.local = parent;
