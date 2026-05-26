@@ -7,7 +7,6 @@ impl Define {
         let Define::Function(Generics(name, _), args, body) = self else {
             return Ok(String::new());
         };
-        dbg!(&ctx.table.keys());
         ctx.local = ctx.table.get(name).unwrap().clone();
 
         let (mut addr, mut alloc) = (8usize, String::new());
