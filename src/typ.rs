@@ -69,7 +69,7 @@ impl Expr {
             };
         }
         macro_rules! op {
-            ($typ: pat, $lhs: expr, $rhs: expr, $($ret: expr)?) => {{
+            ($typ: pat, $lhs: expr, $rhs: expr $(, $ret: expr)?) => {{
                 let [lt, rt] =[$lhs.infer(ctx)?, $rhs.infer(ctx)?];
                 if lt == rt {
                     #[allow(warnings)]
@@ -124,7 +124,7 @@ impl Expr {
                     return Err(format!("if-else test: Bool != {cond}"));
                 }
                 if let Some(els) = els {
-                    op!(_, then, els,)
+                    op!(_, then, els)
                 } else {
                     then.infer(ctx)?;
                     Ok(Type::None)
@@ -408,7 +408,7 @@ impl Expr {
             }
             Expr::Mod(lhs, rhs) => {
                 expand!(Expr::Div(lhs.clone(), rhs.clone()));
-                op!(Type::Integer, lhs, rhs,)
+                op!(Type::Integer, lhs, rhs)
             }
             Expr::Null(typ) => {
                 if let Type::Float = typ {
@@ -422,19 +422,19 @@ impl Expr {
             Expr::Float(_) => typing!(Type::Float),
             Expr::String(_) => typing!(Type::String),
             Expr::Bool(_) => typing!(Type::Bool),
-            Expr::Add(lhs, rhs) => op!(Type::Integer | Type::Float, lhs, rhs,),
-            Expr::Sub(lhs, rhs) => op!(Type::Integer | Type::Float, lhs, rhs,),
-            Expr::Mul(lhs, rhs) => op!(Type::Integer | Type::Float, lhs, rhs,),
-            Expr::Div(lhs, rhs) => op!(Type::Integer | Type::Float, lhs, rhs,),
+            Expr::Add(lhs, rhs) => op!(Type::Integer | Type::Float, lhs, rhs),
+            Expr::Sub(lhs, rhs) => op!(Type::Integer | Type::Float, lhs, rhs),
+            Expr::Mul(lhs, rhs) => op!(Type::Integer | Type::Float, lhs, rhs),
+            Expr::Div(lhs, rhs) => op!(Type::Integer | Type::Float, lhs, rhs),
             Expr::Eql(lhs, rhs) => op!(Type::Integer, lhs, rhs, Type::Bool),
             Expr::NotEq(lhs, rhs) => op!(Type::Integer, lhs, rhs, Type::Bool),
             Expr::Gt(lhs, rhs) => op!(Type::Integer, lhs, rhs, Type::Bool),
             Expr::Lt(lhs, rhs) => op!(Type::Integer, lhs, rhs, Type::Bool),
             Expr::GtEq(lhs, rhs) => op!(Type::Integer, lhs, rhs, Type::Bool),
             Expr::LtEq(lhs, rhs) => op!(Type::Integer, lhs, rhs, Type::Bool),
-            Expr::And(lhs, rhs) => op!(Type::Bool, lhs, rhs,),
-            Expr::Or(lhs, rhs) => op!(Type::Bool, lhs, rhs,),
-            Expr::Xor(lhs, rhs) => op!(Type::Bool, lhs, rhs,),
+            Expr::And(lhs, rhs) => op!(Type::Bool, lhs, rhs),
+            Expr::Or(lhs, rhs) => op!(Type::Bool, lhs, rhs),
+            Expr::Xor(lhs, rhs) => op!(Type::Bool, lhs, rhs),
         }
     }
 }
