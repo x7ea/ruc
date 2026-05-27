@@ -42,7 +42,7 @@ impl Define {
             } else if let Some(head) = line.strip_prefix("enum ") {
                 let (name, args) = ok!(surround!("{", "}", &head))?;
                 result.push(Define::Class(
-                    Generics::parse(&name)?,
+                    Generics::parse(name)?,
                     Object::Enum(args!(&args)),
                 ));
             }
@@ -68,7 +68,7 @@ impl Expr {
         }
 
         if let Some(x) = source.strip_prefix("print ") {
-            Ok(Expr::Print(map!(tokenize(x, ",")? => |i| Expr::parse(&i))))
+            Ok(Expr::Print(map!(tokenize(x, ",")? => |i| Expr::parse(i))))
         } else if let Some(x) = source.strip_prefix("let ") {
             if let Ok((name, value)) = once!(x, "=") {
                 Ok(Expr::Let(
@@ -141,7 +141,7 @@ impl Expr {
         } else if let Some(expr) = surround!("(", source, ")") {
             Expr::parse(expr)
         } else if let Some(arr) = surround!("[", source, "]") {
-            let arr = map!(tokenize(&arr, ",")? => |x| Expr::parse(x));
+            let arr = map!(tokenize(arr, ",")? => |x| Expr::parse(x));
             Ok(Expr::Sequence(arr))
         } else if let Ok((func, args)) = surround!(source, "(", ")") {
             Ok(Expr::Call(
@@ -163,7 +163,7 @@ impl Expr {
         } else if let Some((obj, key)) = source.rsplit_once(".") {
             Ok(Expr::Member(Box::new(Expr::parse(obj)?), Name::new(key)?))
         } else if let Some(class) = source.strip_prefix("new ") {
-            Ok(Expr::New(Type::parse(&class)?))
+            Ok(Expr::New(Type::parse(class)?))
         } else {
             Ok(Expr::Variable(Generics::parse(source)?))
         }
@@ -183,10 +183,10 @@ impl Type {
                     Ok(Type::Function(
                         vec![],
                         Box::new(Type::parse(&func)?),
-                        Some(map!(tokenize(&args, ",")? => |x| Type::parse(&x))),
+                        Some(map!(tokenize(&args, ",")? => |x| Type::parse(x))),
                     ))
                 } else if let Some(arr) = surround!("[", x, "]") {
-                    Ok(Type::Array(Box::new(Type::parse(&arr)?)))
+                    Ok(Type::Array(Box::new(Type::parse(arr)?)))
                 } else {
                     Ok(Type::Class(Generics::parse(x)?))
                 }
@@ -223,8 +223,8 @@ impl Generics {
         let x = source.trim();
         if let Some((var, args)) = surround!("<", ">", x) {
             Ok(Generics(
-                Name::new(&var)?,
-                map!(tokenize(&args, ",")? => |x| Type::parse(x)),
+                Name::new(var)?,
+                map!(tokenize(args, ",")? => |x| Type::parse(x)),
             ))
         } else {
             Ok(Generics(Name::new(x)?, vec![]))
