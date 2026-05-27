@@ -173,18 +173,6 @@ macro_rules! surround {
 }
 
 #[macro_export]
-macro_rules! prohibit {
-    () => {
-        indexmap! {
-            " > "  => " <gt> ",
-            " < "  => " <lt> ",
-            " >= " => " <ge> ",
-            " <= " => " <le> "
-        }
-    };
-}
-
-#[macro_export]
 macro_rules! ok {
     ($v: expr) => {
         if let Some(v) = $v {
