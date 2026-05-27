@@ -16,5 +16,6 @@ fn main() {
     print proc(value, alt)
 
     let value.err = "Err"
+    print value.ok
     print proc(value, alt)
 }
