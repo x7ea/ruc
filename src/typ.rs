@@ -60,7 +60,10 @@ impl Expr {
         macro_rules! array {
             ($arr: expr, $idx: expr) => {
                 Box::new(Expr::Add(
-                    Box::new(Expr::Mod($idx.clone(), Box::new(Expr::Len($arr.clone())))),
+                    Box::new(Expr::Mod(
+                        $idx.clone(),
+                        Box::new(Expr::Member($arr.clone(), Name::new("len")?)),
+                    )),
                     Box::new(Expr::Integer(1)),
                 ))
             };
