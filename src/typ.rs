@@ -151,8 +151,8 @@ impl Expr {
                 ctx.local.scope = parent;
                 typing!(ret.clone())
             }
-            Expr::Call(calee, args) => {
-                let typ = calee.infer(ctx)?;
+            Expr::Call(callee, args) => {
+                let typ = callee.infer(ctx)?;
                 if let Type::Function(_, ret, params) = typ {
                     let Some(params) = params else {
                         map!(args => |x| x.infer(ctx));
