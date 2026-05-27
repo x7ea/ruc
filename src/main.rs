@@ -52,7 +52,7 @@ impl Define {
         }
         ctx.global.def = {
             let mut map = IndexMap::new();
-            for define in defines.to_vec() {
+            for define in defines {
                 map.insert(name!(define), define.clone());
             }
             map
