@@ -13,6 +13,6 @@ fn main() {
     let x = [8, 5, 4]
     print reduce<Int>(x, add<Int>)
 
-    let y = [1.2, 2.3]
+    let y = [1.2, 2.3, 3.3,3.3]
     print reduce<Float>(y, add<Float>)
 }
