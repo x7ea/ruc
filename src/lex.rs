@@ -1,3 +1,5 @@
+use crate::parse::SPACE;
+
 pub mod name {
     use crate::*;
     use std::fmt;
@@ -84,6 +86,19 @@ pub fn tokenize(input: &str, delimiter: &str) -> Result<Vec<String>, String> {
             is_escape = false;
             index += 1;
             continue;
+        }
+        if let Some(op) = input.get(index..index + 3) {
+            if [" < ", " > "].contains(&op) {
+                if delimiter == SPACE {
+                    tokens.push(current_token.clone());
+                    tokens.push(op.trim().to_string());
+                    current_token.clear();
+                } else {
+                    current_token += op;
+                }
+                index += 3;
+                continue;
+            }
         }
         match c {
             '<' | '(' | '{' | '[' if !in_quote => {
