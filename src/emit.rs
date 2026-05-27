@@ -197,6 +197,7 @@ impl Expr {
                 Ok(expr!(self).emit(ctx)? + setlen)
             }
             Expr::New(_) => expr!(self).emit(ctx),
+            Expr::Sequence(_) => expr!(self).emit(ctx),
             Expr::Index(_, _) => expr!(self).emit(ctx),
             Expr::Member(_, _) => expr!(self).emit(ctx),
             Expr::Check(expr) => {
