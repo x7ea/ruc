@@ -347,7 +347,11 @@ impl Expr {
                     }
                     Object::Enum(_) => {
                         let offset = Box::new(Expr::Integer(8));
-                        expand!(Expr::Read(offset, typ.clone(), obj.clone()));
+                        expand!(Expr::If(
+                            Box::new(Expr::Check(obj.clone())),
+                            Box::new(Expr::Read(offset, typ.clone(), obj.clone())),
+                            Some(Box::new(Expr::Null(typ.clone())))
+                        ));
                     }
                 }
                 typing!(typ)
