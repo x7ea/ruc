@@ -331,10 +331,10 @@ impl Expr {
                         return typing!(Type::Integer);
                     }
                 }
-                let Type::Class(class @ Generics(name, _)) = &typ else {
+                let Type::Class(name) = &typ else {
                     return Err(format!("not class: {typ}"));
                 };
-                let Some((_, class)) = ctx.global.table.get(&class.generics()) else {
+                let Some((_, class)) = ctx.global.table.get(&name.generics()) else {
                     return Err(format!("undefined: {name}"));
                 };
                 let (Object::Struct(layout) | Object::Enum(layout)) = class;
