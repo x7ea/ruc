@@ -165,8 +165,8 @@ impl Expr {
                         return Err(format!("length: {pl} != {al}",));
                     }
                     for (param, arg) in params.iter().zip(args) {
-                        let arg = arg.infer(ctx)?;
-                        if arg.solve(ctx) != param.solve(ctx) {
+                        let arg = arg.infer(ctx)?.solve(ctx);
+                        if param.solve(ctx) != arg {
                             return Err(format!("arguments: {param} != {arg}"));
                         }
                     }
