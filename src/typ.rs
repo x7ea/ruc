@@ -200,7 +200,7 @@ impl Expr {
                             if let Define::Function(Generics(_, _), params, body) = &unify {
                                 let mut map = IndexMap::new();
                                 for (param, arg) in params.keys().zip(args) {
-                                    map.insert(param.clone(), arg.solve(ctx));
+                                    map.insert(param.clone(), arg);
                                 }
                                 let name = Generics(mangle.clone(), vec![]);
                                 unify = Define::Function(name, map.clone(), body.clone());
