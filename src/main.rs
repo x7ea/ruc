@@ -43,21 +43,17 @@ impl Define {
 
         macro_rules! name {
             ($define: expr) => {
-                if let Define::Function(Generics(func, _), _, _) = $define.clone() {
-                    Some(func.clone())
-                } else if let Define::Class(Generics(class, _), _) = $define.clone() {
-                    Some(class.clone())
-                } else {
-                    None
+                match $define.clone() {
+                    Define::Function(Generics(func, _), _, _) => func,
+                    Define::Class(Generics(class, _), _) => class,
                 }
+                .clone()
             };
         }
         ctx.global.def = {
             let mut map = IndexMap::new();
             for define in defines.clone() {
-                if let Some(name) = &name!(define) {
-                    map.insert(name.clone(), define.clone());
-                }
+                map.insert(name!(define), define.clone());
             }
             map
         };
@@ -73,7 +69,7 @@ impl Define {
             define.infer(ctx)?;
         }
         for (_, define) in ctx.global.def.clone() {
-            if Some(Name::new("main")?) == name!(define) {
+            if name!(define).to_string() == "main" {
                 text = define.emit(ctx)? + &text;
             } else {
                 text += &define.emit(ctx)?;
@@ -81,9 +77,7 @@ impl Define {
         }
         let data = ctx.global.data.clone();
         for (_, define) in ctx.global.def.clone() {
-            if let Some(func) = name!(define) {
-                ctx.global.lib.shift_remove(&func);
-            }
+            ctx.global.lib.shift_remove(&name!(define));
         }
         let mut lib = String::from("\nsection .text\n\tglobal main\n");
         for symbol in ctx.global.lib.keys() {
