@@ -267,7 +267,7 @@ impl Expr {
             }
             Expr::New(typ) => {
                 let Type::Class(class @ Generics(name, args)) = typ else {
-                    return Err(format!("not constructor: {typ}"));
+                    return Err(format!("no constructor: {typ}"));
                 };
                 match ctx.global.table.get(name).cloned() {
                     Some((params, Object::Struct(layout))) => {
