@@ -270,7 +270,6 @@ impl Expr {
                 typing!(Type::Array(Box::new(typ.clone())))
             }
             Expr::Sequence(array) => {
-                let expr = vec![];
                 let mut typ = None;
                 for val in array {
                     if let Some(typ) = typ.clone() {
@@ -285,10 +284,14 @@ impl Expr {
                 let Some(typ) = typ else {
                     return Err(format!("empty: {array:?}"));
                 };
-                let temp = Expr::Variable(Generics(
-                    Generics(Name::new("temp")?, vec![typ]).generics(),
+                let temp = Box::new(Expr::Variable(Generics(
+                    Generics(Name::new("temp")?, vec![typ.clone()]).generics(),
                     vec![],
-                ));
+                )));
+                let mut expr = vec![Expr::Let(
+                    temp.clone(),
+                    Box::new(Expr::Array(typ.clone(), array.len())),
+                )];
                 for (idx, val) in array.iter().enumerate() {
                     expr.push(Expr::Let(
                         Box::new(Expr::Index(
@@ -298,7 +301,6 @@ impl Expr {
                         Box::new(val.clone()),
                     ));
                 }
-
                 expand!(Expr::Block(expr));
                 typing!(Type::Array(Box::new(typ)))
             }
