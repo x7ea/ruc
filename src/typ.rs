@@ -177,6 +177,7 @@ impl Expr {
             }
             Expr::Variable(func @ Generics(name, args)) => {
                 let env = &ctx.local.scope;
+                let mut args = args.clone();
                 if let Some(typ) = env.get(name) {
                     typing!(typ.clone())
                 } else if let Some(typ) = ctx.global.lib.get(name) {
@@ -186,6 +187,9 @@ impl Expr {
                             return Err(format!("generics: {typ}"));
                         }
                         let mut alias = IndexMap::new();
+                        for arg in args.iter_mut() {
+                            *arg = arg.solve(ctx);
+                        }
                         for (arg, param) in args.iter().zip(params) {
                             alias.insert(param.clone(), arg.clone());
                             typ.rewrite(&param, arg);
