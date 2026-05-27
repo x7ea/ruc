@@ -50,7 +50,7 @@ pub mod name {
                         let args = map!(args, |x| mangle(x)).join(".");
                         format!("L.{}.{args}", mangle(ret))
                     }
-                    Type::Function(_, ret, None) => format!("F.{ret}.{typ}"),
+                    Type::Function(_, ret, None) => format!("L.{}", mangle(ret)),
                 }
             }
             Name(format!("{}.{:x}", mangle(self.0)))
