@@ -37,7 +37,7 @@ fn main() {
 impl Define {
     const LIB: [&str; 3] = ["calloc", "printf", "free"];
 
-    pub fn compile(defines: &mut Vec<Self>) -> Result<String, String> {
+    pub fn compile(defines: &mut [Self]) -> Result<String, String> {
         let mut text = String::new();
         let ctx = &mut Context::default();
 
@@ -52,7 +52,7 @@ impl Define {
         }
         ctx.global.def = {
             let mut map = IndexMap::new();
-            for define in defines.clone() {
+            for define in defines.to_vec() {
                 map.insert(name!(define), define.clone());
             }
             map
