@@ -145,7 +145,7 @@ impl Expr {
                 for (name, value) in &ctx.local.scope {
                     if let Some(typ) = ctx.local.var.get(name) {
                         if typ != value {
-                            return Err(format!("duplicated: {name}"));
+                            return Err(format!("duplicated {name}: {typ} != {value}"));
                         }
                     }
                     ctx.local.var.insert(name.clone(), value.clone());
