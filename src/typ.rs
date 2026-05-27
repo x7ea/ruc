@@ -345,7 +345,7 @@ impl Expr {
                         let offset = Expr::Integer(layout.get_index_of(key).unwrap() as i64);
                         expand!(Expr::Read(Box::new(offset), typ.clone(), obj.clone()));
                     }
-                    Object::Enum(layout) => {
+                    Object::Enum(_) => {
                         let offset = Box::new(Expr::Integer(8));
                         expand!(Expr::Read(offset, typ.clone(), obj.clone()));
                     }
