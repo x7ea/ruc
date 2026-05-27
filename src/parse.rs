@@ -100,15 +100,16 @@ impl Expr {
                 Box::new(Expr::parse(&cond)?),
                 Box::new(Expr::parse(&body)?),
             ))
-        } else if let Some(x) = surround!("{", source, "}") {
-            let mut block = vec![];
-            for line in tokenize(x, "\n")? {
-                let (line, _) = once!(&line, ";").unwrap_or((line, String::new()));
-                if !line.trim().is_empty() {
-                    block.push(Expr::parse(&line)?);
-                }
+        } else if let Some(class) = source.strip_prefix("new ") {
+            if let Some(arr) = surround!("[", class, "]") {
+                let (typ, len) = ok!(arr.rsplit_once(";"))?;
+                let Ok(len) = len.trim().parse::<usize>() else {
+                    return Err(format!("not length: {len}"));
+                };
+                Ok(Expr::Array(Type::parse(typ)?, len))
+            } else {
+                Ok(Expr::New(Type::parse(class)?))
             }
-            Ok(Expr::Block(block))
         } else if let Ok((lhs, op, rhs)) = is_operator(source) {
             let lhs = Box::new(Expr::parse(&lhs)?);
             let rhs = Box::new(Expr::parse(&rhs)?);
@@ -129,8 +130,15 @@ impl Expr {
                 "<=" => Expr::LtEq(lhs, rhs),
                 op => return Err(format!("unknown operator: {op}")),
             })
-        } else if let Some(class) = source.strip_suffix("?") {
-            Ok(Expr::Check(Box::new(Expr::parse(class)?)))
+        } else if let Some(x) = surround!("{", source, "}") {
+            let mut block = vec![];
+            for line in tokenize(x, "\n")? {
+                let (line, _) = once!(&line, ";").unwrap_or((line, String::new()));
+                if !line.trim().is_empty() {
+                    block.push(Expr::parse(&line)?);
+                }
+            }
+            Ok(Expr::Block(block))
         } else if source == "()" {
             Ok(Expr::Null(Type::None))
         } else if let Some(x) = surround!("\"", source, "\"") {
@@ -157,18 +165,10 @@ impl Expr {
         } else if let Ok(literal) = source.parse::<f64>() {
             use ordered_float::OrderedFloat;
             Ok(Expr::Float(OrderedFloat(literal)))
+        } else if let Some(class) = source.strip_suffix("?") {
+            Ok(Expr::Check(Box::new(Expr::parse(class)?)))
         } else if let Some((obj, key)) = source.rsplit_once(".") {
             Ok(Expr::Member(Box::new(Expr::parse(obj)?), Name::new(key)?))
-        } else if let Some(class) = source.strip_prefix("new ") {
-            if let Some(arr) = surround!("[", class, "]") {
-                let (typ, len) = ok!(arr.rsplit_once(";"))?;
-                let Ok(len) = len.trim().parse::<usize>() else {
-                    return Err(format!("not length: {len}"));
-                };
-                Ok(Expr::Array(Type::parse(typ)?, len))
-            } else {
-                Ok(Expr::New(Type::parse(class)?))
-            }
         } else {
             Ok(Expr::Variable(Generics::parse(source)?))
         }
