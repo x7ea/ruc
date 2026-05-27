@@ -124,11 +124,10 @@ impl Expr {
                     return Err(format!("if-else test: Bool != {cond}"));
                 }
                 if let Some(els) = els {
-                    op!(_, then, els)
-                } else {
-                    then.infer(ctx)?;
-                    Ok(Type::None)
+                    return op!(_, then, els);
                 }
+                then.infer(ctx)?;
+                Ok(Type::None)
             }
             Expr::While(cond, body) => {
                 let cond = cond.infer(ctx)?;
