@@ -327,13 +327,11 @@ impl Expr {
                 let Type::Class(class @ Generics(name, u)) = &typ else {
                     return Err(format!("not class: {typ}"));
                 };
-                dbg!(&u);
-                dbg!(&ctx.global.table);
-                let Some((params, class)) = ctx.global.table.get(&class.generics()) else {
+                let Some((_, class)) = ctx.global.table.get(&class.generics()) else {
                     return Err(format!("undefined: {name}"));
                 };
                 let (Object::Struct(layout) | Object::Enum(layout)) = class;
-                let Some(mut typ) = layout.get(key).cloned() else {
+                let Some(typ) = layout.get(key).cloned() else {
                     return Err(format!("undefined: {name}.{key}"));
                 };
                 match class {
