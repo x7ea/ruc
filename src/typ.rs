@@ -283,8 +283,22 @@ impl Expr {
                     }
                 }
                 let Some(typ) = typ else {
-                    return Err(format!("empty"));
+                    return Err(format!("empty: {array:?}"));
                 };
+                let temp = Expr::Variable(Generics(
+                    Generics(Name::new("temp")?, vec![typ]).generics(),
+                    vec![],
+                ));
+                for (idx, val) in array.iter().enumerate() {
+                    expr.push(Expr::Let(
+                        Box::new(Expr::Index(
+                            temp.clone(),
+                            Box::new(Expr::Integer(idx as i64)),
+                        )),
+                        Box::new(val.clone()),
+                    ));
+                }
+
                 expand!(Expr::Block(expr));
                 typing!(Type::Array(Box::new(typ)))
             }
