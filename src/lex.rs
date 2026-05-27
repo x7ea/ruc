@@ -96,9 +96,7 @@ pub fn tokenize(input: &str, delimiter: &str) -> Result<Vec<String>, String> {
             }
             '>' | ')' | '}' | ']' if !in_quote => {
                 current_token.push(c);
-                if in_parentheses > 0 {
-                    in_parentheses -= 1;
-                }
+                in_parentheses = in_parentheses.saturating_sub(1);
             }
             '"' => {
                 in_quote = !in_quote;
