@@ -11,31 +11,31 @@ impl Define {
             return Ok(String::new());
         }
         ctx.local = ctx.table.get(name).unwrap().clone();
-        let (mut addr, mut alloc) = (8usize, String::new());
+        let (mut ptr, mut alloc) = (8usize, String::new());
         let (mut idx, mut xmm) = (0, 0);
         for (count, (_, typ)) in args.iter().enumerate() {
             if let Type::Float = typ {
                 if xmm < 8 {
-                    alloc += &format!("\tmovsd [rbp-{addr}], xmm{xmm}\n")
+                    alloc += &format!("\tmovsd [rbp-{ptr}], xmm{xmm}\n")
                 } else {
                     alloc += &format!(
-                        "\tmovsd xmm0, [rbp+{}]\n\tmovsd [rbp-{addr}], xmm0\n",
+                        "\tmovsd xmm0, [rbp+{}]\n\tmovsd [rbp-{ptr}], xmm0\n",
                         (count - 4) * 8
                     )
                 };
                 xmm += 1;
             } else {
                 if let Some(reg) = ABI.get(idx) {
-                    alloc += &format!("\tmov [rbp-{addr}], {reg}\n")
+                    alloc += &format!("\tmov [rbp-{ptr}], {reg}\n")
                 } else {
                     alloc += &format!(
-                        "\tmov rax, [rbp+{}]\n\tmov [rbp-{addr}], rax\n",
+                        "\tmov rax, [rbp+{}]\n\tmov [rbp-{ptr}], rax\n",
                         (count - 4) * 8
                     )
                 }
                 idx += 1;
             }
-            addr += 8;
+            ptr += 8;
         }
         let body = body.emit(ctx)?;
         ctx.table.insert(name.clone(), ctx.local.clone());
