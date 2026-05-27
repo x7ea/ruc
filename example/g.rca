@@ -8,11 +8,11 @@ fn unwrap_or<T, E>(this: Result<T, E>, alt: T) {
 }
 
 fn main() {
-    let value = new Result<Int, Str>
-    let proc = unwrap_or<Int, Str>
-    let alt = -1
+    let value = new Result<Float, Str>
+    let proc = unwrap_or<Float, Str>
+    let alt = -1.0
 
-    let value.ok = 3
+    let value.ok = 3.0
     print proc(value, alt)
 
     let value.err = "Err"
