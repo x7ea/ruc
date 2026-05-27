@@ -164,9 +164,6 @@ impl Expr {
             use ordered_float::OrderedFloat;
             Ok(Expr::Float(OrderedFloat(literal)))
         } else if let Some((obj, key)) = source.rsplit_once(".") {
-            if key.trim() == "len" {
-                return Ok(Expr::Len(Box::new(Expr::parse(obj)?)));
-            }
             Ok(Expr::Member(Box::new(Expr::parse(obj)?), Name::new(key)?))
         } else if let Some(class) = source.strip_prefix("new ") {
             Ok(Expr::New(Type::parse(&class)?))
