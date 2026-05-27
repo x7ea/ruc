@@ -269,10 +269,9 @@ impl Expr {
                 let Type::Class(class @ Generics(name, args)) = typ else {
                     return Err(format!("no constructor: {typ}"));
                 };
-                let Some((params, table)) = ctx.global.table.get(name) else {
+                let Some((params, table)) = ctx.global.table.get(name).cloned() else {
                     return Err(format!("undefined: {name}"));
                 };
-                let table = table.clone();
                 let layout = {
                     let (Object::Enum(layout) | Object::Struct(layout)) = &table;
                     let mut layout = layout.clone();
@@ -280,7 +279,7 @@ impl Expr {
                         return Err(format!("generics: {typ}"));
                     }
                     for (key, mut field) in layout.clone() {
-                        for (arg, param) in args.iter().zip(params) {
+                        for (arg, param) in args.iter().zip(&params) {
                             field.rewrite(&param, &arg.solve(ctx));
                             layout.insert(key.clone(), field.clone());
                         }
