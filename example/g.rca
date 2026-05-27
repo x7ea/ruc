@@ -10,11 +10,10 @@ fn unwrap_or<T, E>(this: Result<T, E>, alt: T) {
 fn main() {
     let value = new Result<Int, Str>
     let proc = unwrap_or<Int, Str>
-    let alt = -1
 
     let value.ok = 3
-    print proc(value, alt)
+    print proc(value, -1)
 
     let value.err = "Err"
-    print proc(value, alt)
+    print proc(value, -1)
 }
