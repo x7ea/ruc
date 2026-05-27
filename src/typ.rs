@@ -196,8 +196,8 @@ impl Expr {
                         }
                         let mangle = func.generics();
                         let mut unify = ctx.global.def.get(name).unwrap().clone();
-                        if let Type::Function(_, _, Some(args)) = typ.clone()
-                            && let Define::Function(Generics(_, _), params, body) = &unify
+                        if let Define::Function(Generics(_, _), params, body) = &unify
+                            && let Type::Function(_, _, Some(args)) = typ.clone()
                         {
                             let mut map = IndexMap::new();
                             for (param, arg) in params.keys().zip(args) {
