@@ -266,12 +266,15 @@ impl Expr {
                 typing!(Type::Array(Box::new(typ.clone())))
             }
             Expr::New(typ) => {
-                let Type::Class(class @ Generics(name, args)) = typ else {
+                let Type::Class(class @ Generics(name, mut args)) = typ.clone() else {
                     return Err(format!("no constructor: {typ}"));
                 };
-                let Some((params, table)) = ctx.global.table.get(name).cloned() else {
+                let Some((params, table)) = ctx.global.table.get(&name).cloned() else {
                     return Err(format!("undefined: {name}"));
                 };
+                for arg in args.iter_mut() {
+                    *arg = arg.solve(ctx);
+                }
                 let layout = {
                     let (Object::Enum(layout) | Object::Struct(layout)) = &table;
                     let mut layout = layout.clone();
@@ -296,7 +299,7 @@ impl Expr {
                         Object::Struct(layout).clone()
                     }
                 };
-                let mangle = class.generics();
+                let mangle = Generics(name.clone(), args).generics();
                 ctx.global.table.insert(mangle.clone(), (vec![], unify));
                 typing!(typ.solve(ctx))
             }
