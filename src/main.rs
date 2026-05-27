@@ -167,8 +167,8 @@ pub struct Global {
     lib: IndexMap<Name, Type>,
     def: IndexMap<Name, Define>,
     table: IndexMap<Name, (Vec<Type>, Object)>,
-    meta: IndexSet<Name>,
     alias: IndexMap<Type, Type>,
+    meta: IndexSet<Name>,
 }
 
 #[derive(Default, Debug, Clone)]
