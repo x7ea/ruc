@@ -43,7 +43,11 @@ impl Define {
         let stack = ctx.local.var.len() * 8;
         let pro = format!(
             "\tpush rbp\n\tmov rbp, rsp\n\tsub rsp, {}\n",
-            if stack.is_multiple_of(16) { stack } else { stack + 8 }
+            if stack.is_multiple_of(16) {
+                stack
+            } else {
+                stack + 8
+            }
         );
         Ok(format!("{name}:\n{pro}{alloc}{body}\tleave\n\tret\n\n"))
     }
@@ -99,7 +103,6 @@ impl Expr {
             };
         }
         match self {
-            Expr::Print(_) => expr!(self).emit(ctx),
             Expr::If(cond, then, els) => {
                 let if_let = ctx.local.expand.get(&self.clone());
                 if let Some(expr) = if_let.cloned() {
@@ -196,10 +199,6 @@ impl Expr {
                 let setlen = &format!("\tmov qword [rax], {len}\n");
                 Ok(expr!(self).emit(ctx)? + setlen)
             }
-            Expr::New(_) => expr!(self).emit(ctx),
-            Expr::Sequence(_) => expr!(self).emit(ctx),
-            Expr::Index(_, _) => expr!(self).emit(ctx),
-            Expr::Member(_, _) => expr!(self).emit(ctx),
             Expr::Check(expr) => {
                 let is_enum = ctx.local.expand.get(&self.clone());
                 if let Some(expr) = is_enum.cloned() {
@@ -281,7 +280,7 @@ impl Expr {
             Expr::And(lhs, rhs) => Ok(op!("and", lhs, rhs)),
             Expr::Or(lhs, rhs) => Ok(op!("or", lhs, rhs)),
             Expr::Xor(lhs, rhs) => Ok(op!("xor", lhs, rhs)),
-            Expr::Null(_) => expr!(self).emit(ctx),
+            _ => expr!(self).emit(ctx),
         }
     }
 }
