@@ -3,7 +3,7 @@ pub mod lex;
 pub mod parse;
 pub mod typ;
 
-use indexmap::{IndexMap, IndexSet, indexmap};
+use indexmap::{IndexMap, IndexSet};
 use lex::name::Name;
 use lex::tokenize;
 use ordered_float::OrderedFloat as Float;
