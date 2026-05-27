@@ -110,6 +110,15 @@ impl Expr {
             } else {
                 Ok(Expr::New(Type::parse(class)?))
             }
+        } else if let Some(x) = surround!("{", source, "}") {
+            let mut block = vec![];
+            for line in tokenize(x, "\n")? {
+                let (line, _) = once!(&line, ";").unwrap_or((line, String::new()));
+                if !line.trim().is_empty() {
+                    block.push(Expr::parse(&line)?);
+                }
+            }
+            Ok(Expr::Block(block))
         } else if let Ok((lhs, op, rhs)) = is_operator(source) {
             let lhs = Box::new(Expr::parse(&lhs)?);
             let rhs = Box::new(Expr::parse(&rhs)?);
@@ -130,15 +139,6 @@ impl Expr {
                 "<=" => Expr::LtEq(lhs, rhs),
                 op => return Err(format!("unknown operator: {op}")),
             })
-        } else if let Some(x) = surround!("{", source, "}") {
-            let mut block = vec![];
-            for line in tokenize(x, "\n")? {
-                let (line, _) = once!(&line, ";").unwrap_or((line, String::new()));
-                if !line.trim().is_empty() {
-                    block.push(Expr::parse(&line)?);
-                }
-            }
-            Ok(Expr::Block(block))
         } else if source == "()" {
             Ok(Expr::Null(Type::None))
         } else if let Some(x) = surround!("\"", source, "\"") {
