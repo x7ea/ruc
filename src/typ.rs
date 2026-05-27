@@ -266,7 +266,7 @@ impl Expr {
                 typing!(Type::Array(Box::new(typ.clone())))
             }
             Expr::New(typ) => {
-                let Type::Class(class @ Generics(name, mut args)) = typ.clone() else {
+                let Type::Class(Generics(name, mut args)) = typ.clone() else {
                     return Err(format!("no constructor: {typ}"));
                 };
                 let Some((params, table)) = ctx.global.table.get(&name).cloned() else {
@@ -327,7 +327,7 @@ impl Expr {
                         return typing!(Type::Integer);
                     }
                 }
-                let Type::Class(class @ Generics(name, u)) = &typ else {
+                let Type::Class(class @ Generics(name, _)) = &typ else {
                     return Err(format!("not class: {typ}"));
                 };
                 let Some((_, class)) = ctx.global.table.get(&class.generics()) else {
