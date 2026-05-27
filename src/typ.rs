@@ -324,22 +324,18 @@ impl Expr {
                         return typing!(Type::Integer);
                     }
                 }
-                let Type::Class(Generics(name, args)) = &typ else {
+                let Type::Class(class @ Generics(name, u)) = &typ else {
                     return Err(format!("not class: {typ}"));
                 };
-                let Some((params, class)) = ctx.global.table.get(name) else {
+                dbg!(&u);
+                dbg!(&ctx.global.table);
+                let Some((params, class)) = ctx.global.table.get(&class.generics()) else {
                     return Err(format!("undefined: {name}"));
                 };
                 let (Object::Struct(layout) | Object::Enum(layout)) = class;
                 let Some(mut typ) = layout.get(key).cloned() else {
                     return Err(format!("undefined: {name}.{key}"));
                 };
-                if params.len() != args.len() {
-                    return Err(format!("generics: {typ}"));
-                }
-                for (arg, param) in args.iter().zip(params) {
-                    typ.rewrite(&param, arg);
-                }
                 match class {
                     Object::Struct(layout) => {
                         let offset = Expr::Integer(layout.get_index_of(key).unwrap() as i64);
