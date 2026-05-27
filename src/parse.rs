@@ -163,7 +163,15 @@ impl Expr {
         } else if let Some((obj, key)) = source.rsplit_once(".") {
             Ok(Expr::Member(Box::new(Expr::parse(obj)?), Name::new(key)?))
         } else if let Some(class) = source.strip_prefix("new ") {
-            Ok(Expr::New(Type::parse(class)?))
+            if let Some(arr) = surround!("[", class, "]") {
+                let (typ, len) = ok!(arr.rsplit_once(";"))?;
+                let Ok(len) = len.trim().parse::<usize>() else {
+                    return Err(format!("not length: {len}"));
+                };
+                Ok(Expr::Array(Type::parse(typ)?, len))
+            } else {
+                Ok(Expr::New(Type::parse(class)?))
+            }
         } else {
             Ok(Expr::Variable(Generics::parse(source)?))
         }
