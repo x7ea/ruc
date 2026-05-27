@@ -37,7 +37,23 @@ pub mod name {
             if self.1.is_empty() {
                 return self.0.clone();
             }
-            Name(format!("{}.{:x}", self.0, hash!(self.1)))
+            fn mangle(typ: &Type) -> String {
+                match typ {
+                    Type::Integer => "I".to_string(),
+                    Type::String => "S".to_string(),
+                    Type::Float => "F".to_string(),
+                    Type::Bool => "B".to_string(),
+                    Type::None => "N".to_string(),
+                    Type::Array(typ) => format!("A.{}", mangle(typ)),
+                    Type::Class(Generics(name, _)) => format!("C.{name}"),
+                    Type::Function(_, ret, Some(args)) => {
+                        let args = map!(args, |x| mangle(x)).join(".");
+                        format!("F.{}.{args}", mangle(ret))
+                    }
+                    Type::Function(_, ret, None) => format!("F.{ret}.{typ}"),
+                }
+            }
+            Name(format!("{}.{:x}", mangle(self.0)))
         }
     }
 }
