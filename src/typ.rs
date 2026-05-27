@@ -288,22 +288,19 @@ impl Expr {
                     }
                     layout
                 };
-                match table.1 {
-                    Object::Enum(layout) => {
+                let unify = match table.1 {
+                    Object::Enum(_) => {
                         expand!(initializer!(2));
-                        let mangle = class.generics();
-                        let unify = (vec![], Object::Enum(layout).clone());
-                        ctx.global.table.insert(mangle.clone(), unify);
-                        typing!(typ.solve(ctx))
+                        (vec![], Object::Enum(layout).clone())
                     }
-                    Object::Struct(layout) => {
+                    Object::Struct(_) => {
                         expand!(initializer!(2));
-                        let mangle = class.generics();
-                        let unify = (vec![], Object::Enum(layout).clone());
-                        ctx.global.table.insert(mangle.clone(), unify);
-                        typing!(typ.solve(ctx))
+                        (vec![], Object::Enum(layout).clone())
                     }
-                }
+                };
+                let mangle = class.generics();
+                ctx.global.table.insert(mangle.clone(), unify);
+                typing!(typ.solve(ctx))
             }
             Expr::Index(arr, idx) => {
                 let typ = arr.infer(ctx)?;
