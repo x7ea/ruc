@@ -124,7 +124,6 @@ pub enum Expr {
     Write(Box<Expr>, Box<Expr>, Box<Expr>),
     Array(Type, usize),
     Index(Box<Expr>, Box<Expr>),
-    Len(Box<Expr>),
     New(Type),
     Member(Box<Expr>, Name),
     Check(Box<Expr>),
