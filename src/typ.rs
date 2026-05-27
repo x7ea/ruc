@@ -269,42 +269,40 @@ impl Expr {
                 let Type::Class(class @ Generics(name, args)) = typ else {
                     return Err(format!("no constructor: {typ}"));
                 };
-                match ctx.global.table.get(name).cloned() {
-                    Some((params, Object::Struct(layout))) => {
-                        let mut layout = layout.clone();
-                        expand!(initializer!(layout.len()));
-                        if params.len() != args.len() {
-                            return Err(format!("generics: {typ}"));
-                        }
-                        for (key, mut field) in layout.clone() {
-                            for (arg, param) in args.iter().zip(&params) {
-                                field.rewrite(&param, &arg.solve(ctx));
-                                layout.insert(key.clone(), field.clone());
-                            }
-                        }
-                        let mangle = class.generics();
-                        let unify = (vec![], Object::Struct(layout).clone());
-                        ctx.global.table.insert(mangle.clone(), unify);
-                        typing!(typ.solve(ctx))
+                let mangle = class.generics();
+                let Some(table) = ctx.global.table.get(name) else {
+                    return Err(format!("undefined: {name}"));
+                };
+                let table = table.clone();
+                let layout = {
+                    let (params, Object::Enum(layout) | Object::Struct(layout)) = &table;
+                    let mut layout = layout.clone();
+                    if params.len() != args.len() {
+                        return Err(format!("generics: {typ}"));
                     }
-                    Some((params, Object::Enum(layout))) => {
+                    for (key, mut field) in layout.clone() {
+                        for (arg, param) in args.iter().zip(params) {
+                            field.rewrite(&param, &arg.solve(ctx));
+                            layout.insert(key.clone(), field.clone());
+                        }
+                    }
+                    layout
+                };
+                match table.1 {
+                    Object::Enum(layout) => {
                         expand!(initializer!(2));
-                        let mut layout = layout.clone();
-                        if params.len() != args.len() {
-                            return Err(format!("generics: {typ}"));
-                        }
-                        for (key, mut field) in layout.clone() {
-                            for (arg, param) in args.iter().zip(&params) {
-                                field.rewrite(&param, &arg.solve(ctx));
-                                layout.insert(key.clone(), field.clone());
-                            }
-                        }
                         let mangle = class.generics();
                         let unify = (vec![], Object::Enum(layout).clone());
                         ctx.global.table.insert(mangle.clone(), unify);
                         typing!(typ.solve(ctx))
                     }
-                    _ => Err(format!("undefined: {name}")),
+                    Object::Struct(layout) => {
+                        expand!(initializer!(2));
+                        let mangle = class.generics();
+                        let unify = (vec![], Object::Enum(layout).clone());
+                        ctx.global.table.insert(mangle.clone(), unify);
+                        typing!(typ.solve(ctx))
+                    }
                 }
             }
             Expr::Index(arr, idx) => {
