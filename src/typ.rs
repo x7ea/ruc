@@ -291,9 +291,9 @@ impl Expr {
                         expand!(initializer!(2));
                         Object::Enum(layout).clone()
                     }
-                    Object::Struct(_) => {
-                        expand!(initializer!(2));
-                        Object::Enum(layout).clone()
+                    Object::Struct(inner) => {
+                        expand!(initializer!(inner.len()));
+                        Object::Struct(layout).clone()
                     }
                 };
                 let mangle = class.generics();
