@@ -11,7 +11,7 @@ impl Define {
             return Ok(String::new());
         }
         ctx.local = ctx.table.get(name).unwrap().clone();
-        let (mut ptr, mut alloc) = (8usize, String::new());
+        let (mut ptr, mut alloc) = (8, String::new());
         let (mut idx, mut xmm) = (0, 0);
         for (count, (_, typ)) in args.iter().enumerate() {
             if let Type::Float = typ {
