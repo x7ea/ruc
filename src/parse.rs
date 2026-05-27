@@ -141,11 +141,8 @@ impl Expr {
         } else if let Some(expr) = surround!("(", source, ")") {
             Expr::parse(expr)
         } else if let Some(arr) = surround!("[", source, "]") {
-            let (typ, len) = ok!(arr.rsplit_once(";"))?;
-            let Ok(len) = len.trim().parse::<usize>() else {
-                return Err(format!("not length: {len}"));
-            };
-            Ok(Expr::Array(Type::parse(&typ)?, len))
+            let arr = map!(tokenize(&arr, ",")? => |x| Expr::parse(x));
+            Ok(Expr::Sequence(arr))
         } else if let Ok((func, args)) = surround!(source, "(", ")") {
             Ok(Expr::Call(
                 Box::new(Expr::parse(&func)?),
