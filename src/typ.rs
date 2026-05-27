@@ -287,7 +287,7 @@ impl Expr {
                     }
                     layout
                 };
-                let unify = match table.1 {
+                let unify = match table {
                     Object::Enum(_) => {
                         expand!(initializer!(2));
                         Object::Enum(layout).clone()
