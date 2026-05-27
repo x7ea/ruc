@@ -142,11 +142,10 @@ impl Expr {
                     ret = line.infer(ctx)?;
                 }
                 for (name, value) in &ctx.local.scope {
-                    if let Some(typ) = ctx.local.var.get(name) {
-                        if typ != value {
+                    if let Some(typ) = ctx.local.var.get(name)
+                        && typ != value {
                             return Err(format!("duplicated {name}: {typ} != {value}"));
                         }
-                    }
                     ctx.local.var.insert(name.clone(), value.clone());
                 }
                 ctx.local.scope = parent;
@@ -195,16 +194,15 @@ impl Expr {
                         }
                         let mangle = func.generics();
                         let mut unify = ctx.global.def.get(name).unwrap().clone();
-                        if let Type::Function(_, _, Some(args)) = typ.clone() {
-                            if let Define::Function(Generics(_, _), params, body) = &unify {
+                        if let Type::Function(_, _, Some(args)) = typ.clone()
+                            && let Define::Function(Generics(_, _), params, body) = &unify {
                                 let mut map = IndexMap::new();
                                 for (param, arg) in params.keys().zip(args) {
                                     map.insert(param.clone(), arg);
                                 }
                                 let name = Generics(mangle.clone(), vec![]);
                                 unify = Define::Function(name, map.clone(), body.clone());
-                            }
-                        };
+                            };
                         let parent = ctx.global.alias.clone();
                         ctx.global.alias = alias.clone();
                         {
@@ -242,7 +240,7 @@ impl Expr {
                 acc @ Expr::Member(obj, key) => {
                     let [val, typ] = [value.infer(ctx)?, acc.infer(ctx)?];
                     let Generics(name, _) = &get!(Class, obj.infer(ctx)?);
-                    if &typ.solve(ctx) != &val {
+                    if typ.solve(ctx) != val {
                         return Err(format!("{name}.{key}: {typ} != {val}"));
                     }
                     match ok!(ctx.global.table.get(name))? {
@@ -321,7 +319,7 @@ impl Expr {
                     }
                     for (key, mut field) in layout.clone() {
                         for (arg, param) in args.iter().zip(&params) {
-                            field.rewrite(&param, &arg);
+                            field.rewrite(param, arg);
                             layout.insert(key.clone(), field.clone());
                         }
                     }
@@ -355,8 +353,8 @@ impl Expr {
             }
             Expr::Member(obj, key) => {
                 let typ = obj.infer(ctx)?;
-                if let Type::Array(_) = typ.clone() {
-                    if key.to_string() == "len" {
+                if let Type::Array(_) = typ.clone()
+                    && key.to_string() == "len" {
                         expand!(Expr::Read(
                             Box::new(Expr::Integer(0)),
                             Type::Integer,
@@ -364,7 +362,6 @@ impl Expr {
                         ));
                         return typing!(Type::Integer);
                     }
-                }
                 let Type::Class(name) = &typ else {
                     return Err(format!("not class: {typ}"));
                 };
@@ -394,8 +391,8 @@ impl Expr {
             Expr::Check(expr) => {
                 if let Expr::Member(obj, key) = &**expr {
                     let typ = obj.infer(ctx)?;
-                    if let Type::Class(Generics(name, _)) = &typ {
-                        if let Some((_, Object::Enum(layout))) = ctx.global.table.get(name) {
+                    if let Type::Class(Generics(name, _)) = &typ
+                        && let Some((_, Object::Enum(layout))) = ctx.global.table.get(name) {
                             let tag = layout.get_index_of(key).unwrap();
                             let offset = Box::new(Expr::Integer(0));
                             expand!(Expr::Eql(
@@ -404,7 +401,6 @@ impl Expr {
                             ));
                             return typing!(Type::Bool);
                         }
-                    }
                 }
                 let typ = expr.infer(ctx)?;
                 if !matches!(typ, Type::Class(_)) {
