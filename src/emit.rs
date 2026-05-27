@@ -43,7 +43,7 @@ impl Define {
         let stack = ctx.local.var.len() * 8;
         let pro = format!(
             "\tpush rbp\n\tmov rbp, rsp\n\tsub rsp, {}\n",
-            if stack % 16 == 0 { stack } else { stack + 8 }
+            if stack.is_multiple_of(16) { stack } else { stack + 8 }
         );
         Ok(format!("{name}:\n{pro}{alloc}{body}\tleave\n\tret\n\n"))
     }
@@ -214,7 +214,7 @@ impl Expr {
                 let id = label!();
                 let [addr, offset] = [addr.emit(ctx)?, offset.emit(ctx)?];
                 let guard = format!("\tpxor xmm0, xmm0\n\tcmp rax, 0\n\tje null.{id}\n");
-                let calc = format!("\tlea rax, [r11+rax*8]\n");
+                let calc = "\tlea rax, [r11+rax*8]\n".to_string();
                 Ok(format!(
                     "{addr}{guard}\tpush rax\n{offset}\tpop r11\n{calc}{}null.{id}:\n",
                     if let Type::Float = typ {
