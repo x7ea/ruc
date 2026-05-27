@@ -32,6 +32,13 @@ pub mod name {
         }
     }
 
+    impl fmt::Display for Generics {
+        fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+            let args = map!(self.1, |x| x.to_string()).join(", ");
+            write!(f, "{}<{}>", self.0, args)
+        }
+    }
+
     impl Generics {
         pub fn generics(&self) -> Name {
             if self.1.is_empty() {
