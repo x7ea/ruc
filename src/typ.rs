@@ -291,15 +291,15 @@ impl Expr {
                 let unify = match table.1 {
                     Object::Enum(_) => {
                         expand!(initializer!(2));
-                        (vec![], Object::Enum(layout).clone())
+                        Object::Enum(layout).clone()
                     }
                     Object::Struct(_) => {
                         expand!(initializer!(2));
-                        (vec![], Object::Enum(layout).clone())
+                        Object::Enum(layout).clone()
                     }
                 };
                 let mangle = class.generics();
-                ctx.global.table.insert(mangle.clone(), unify);
+                ctx.global.table.insert(mangle.clone(), (vec![], unify));
                 typing!(typ.solve(ctx))
             }
             Expr::Index(arr, idx) => {
