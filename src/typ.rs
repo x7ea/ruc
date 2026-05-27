@@ -269,12 +269,12 @@ impl Expr {
                 let Type::Class(class @ Generics(name, args)) = typ else {
                     return Err(format!("no constructor: {typ}"));
                 };
-                let Some(table) = ctx.global.table.get(name) else {
+                let Some((params, table)) = ctx.global.table.get(name) else {
                     return Err(format!("undefined: {name}"));
                 };
                 let table = table.clone();
                 let layout = {
-                    let (params, Object::Enum(layout) | Object::Struct(layout)) = &table;
+                    let (Object::Enum(layout) | Object::Struct(layout)) = &table;
                     let mut layout = layout.clone();
                     if params.len() != args.len() {
                         return Err(format!("generics: {typ}"));
@@ -331,36 +331,27 @@ impl Expr {
                 let Some((params, class)) = ctx.global.table.get(name) else {
                     return Err(format!("undefined: {name}"));
                 };
+                let (Object::Struct(layout) | Object::Enum(layout)) = class;
+                let Some(mut typ) = layout.get(key).cloned() else {
+                    return Err(format!("undefined: {name}.{key}"));
+                };
+                if params.len() != args.len() {
+                    return Err(format!("generics: {typ}"));
+                }
+                for (arg, param) in args.iter().zip(params) {
+                    typ.rewrite(&param, arg);
+                }
                 match class {
                     Object::Struct(layout) => {
-                        let Some(mut typ) = layout.get(key).cloned() else {
-                            return Err(format!("undefined: {name}.{key}"));
-                        };
-                        if params.len() != args.len() {
-                            return Err(format!("generics: {typ}"));
-                        }
-                        for (arg, param) in args.iter().zip(params) {
-                            typ.rewrite(&param, arg);
-                        }
                         let offset = Expr::Integer(layout.get_index_of(key).unwrap() as i64);
                         expand!(Expr::Read(Box::new(offset), typ.clone(), obj.clone()));
-                        typing!(typ)
                     }
                     Object::Enum(layout) => {
-                        let Some(mut typ) = layout.get(key).cloned() else {
-                            return Err(format!("undefined: {name}.{key}"));
-                        };
-                        if params.len() != args.len() {
-                            return Err(format!("generics: {typ}"));
-                        }
-                        for (arg, param) in args.iter().zip(params) {
-                            typ.rewrite(&param, arg);
-                        }
                         let offset = Box::new(Expr::Integer(8));
                         expand!(Expr::Read(offset, typ.clone(), obj.clone()));
-                        typing!(typ)
                     }
                 }
+                typing!(typ)
             }
             Expr::Check(expr) => {
                 if let Expr::Member(obj, key) = &**expr {
