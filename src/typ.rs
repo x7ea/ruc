@@ -42,6 +42,7 @@ impl Expr {
         }
         macro_rules! expand {
             ($expr: expr) => {{
+                #[allow(unused_must_use)]
                 let expr = $expr.clone();
                 let typ = expr.infer(ctx)?;
                 ctx.local.expand.insert(self.clone(), expr.clone());
@@ -301,7 +302,8 @@ impl Expr {
                     ));
                 }
                 expr.push(*temp);
-                typing!(expand!(Expr::Block(expr)))
+                let typ = expand!(Expr::Block(expr));
+                typing!(typ)
             }
             Expr::New(typ) => {
                 let Type::Class(Generics(name, mut args)) = typ.clone() else {
