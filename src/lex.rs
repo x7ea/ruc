@@ -44,16 +44,17 @@ pub mod name {
                     Type::Float => "F".to_string(),
                     Type::Bool => "B".to_string(),
                     Type::None => "N".to_string(),
-                    Type::Array(typ) => format!("A.{}", mangle(typ)),
-                    Type::Class(Generics(name, _)) => format!("C.{name}"),
+                    Type::Array(typ) => format!("A_{}", mangle(typ)),
+                    Type::Class(Generics(name, _)) => format!("C_{name}"),
                     Type::Function(_, ret, Some(args)) => {
-                        let args = map!(args, |x| mangle(x)).join(".");
-                        format!("L.{}.{args}", mangle(ret))
+                        let args = map!(args, |x| mangle(x)).join("_");
+                        format!("L_{}_{args}", mangle(ret))
                     }
-                    Type::Function(_, ret, None) => format!("L.{}", mangle(ret)),
+                    Type::Function(_, ret, None) => format!("L_{}", mangle(ret)),
                 }
             }
-            Name(format!("{}.{:x}", mangle(self.0)))
+            let typ = map!(self.1, |x| mangle(x)).join("__");
+            Name(format!("{}.{typ}", self.0))
         }
     }
 }
