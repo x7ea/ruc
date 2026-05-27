@@ -117,6 +117,7 @@ pub enum Expr {
     Read(Box<Expr>, Type, Box<Expr>),
     Write(Box<Expr>, Box<Expr>, Box<Expr>),
     Array(Type, usize),
+    Sequence(Vec<Expr>),
     Index(Box<Expr>, Box<Expr>),
     New(Type),
     Member(Box<Expr>, Name),
