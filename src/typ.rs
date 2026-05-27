@@ -302,8 +302,7 @@ impl Expr {
                     ));
                 }
                 expr.push(*temp);
-                let typ = expand!(Expr::Block(expr));
-                typing!(typ)
+                typing!(expand!(Expr::Block(expr)))
             }
             Expr::New(typ) => {
                 let Type::Class(Generics(name, mut args)) = typ.clone() else {
