@@ -47,7 +47,7 @@ pub mod name {
                     Type::Array(typ) => format!("A{}", mangle(typ)),
                     Type::Class(Generics(name, _)) => format!("C{name}"),
                     Type::Function(_, ret, Some(args)) => {
-                        let args = map!(args, |x| mangle(x)).join("_");
+                        let args = map!(args, |x| mangle(x)).concat();
                         format!("L{}{args}", mangle(ret))
                     }
                     Type::Function(_, ret, None) => format!("L{}", mangle(ret)),
