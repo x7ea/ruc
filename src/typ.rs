@@ -269,6 +269,25 @@ impl Expr {
                 expand!(initializer!(*len + 1));
                 typing!(Type::Array(Box::new(typ.clone())))
             }
+            Expr::Sequence(array) => {
+                let expr = vec![];
+                let mut typ = None;
+                for val in array {
+                    if let Some(typ) = typ.clone() {
+                        let val = val.infer(ctx)?;
+                        if val != typ {
+                            return Err(format!("sequence: {typ} != {val}"));
+                        }
+                    } else {
+                        typ = Some(val.infer(ctx)?);
+                    }
+                }
+                let Some(typ) = typ else {
+                    return Err(format!("empty"));
+                };
+                expand!(Expr::Block(expr));
+                typing!(Type::Array(Box::new(typ)))
+            }
             Expr::New(typ) => {
                 let Type::Class(Generics(name, mut args)) = typ.clone() else {
                     return Err(format!("no constructor: {typ}"));
