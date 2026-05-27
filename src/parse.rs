@@ -126,10 +126,10 @@ impl Expr {
                 "&" => Expr::And(lhs, rhs),
                 "|" => Expr::Or(lhs, rhs),
                 "^" => Expr::Xor(lhs, rhs),
-                "<gt>" => Expr::Gt(lhs, rhs),
-                "<lt>" => Expr::Lt(lhs, rhs),
-                "<ge>" => Expr::GtEq(lhs, rhs),
-                "<le>" => Expr::LtEq(lhs, rhs),
+                ">" => Expr::Gt(lhs, rhs),
+                "<" => Expr::Lt(lhs, rhs),
+                ">=" => Expr::GtEq(lhs, rhs),
+                "<=" => Expr::LtEq(lhs, rhs),
                 op => return Err(format!("unknown operator: {op}")),
             })
         } else if let Some(class) = source.strip_suffix("?") {
