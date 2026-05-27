@@ -72,6 +72,7 @@ impl Expr {
             ($typ: pat, $lhs: expr, $rhs: expr $(, $ret: expr)?) => {{
                 let [lt, rt] =[$lhs.infer(ctx)?, $rhs.infer(ctx)?];
                 if lt == rt {
+                    #[allow(warnings)]
                     if let $typ = lt {
                         $( return typing!($ret); )?
                         typing!(lt.clone())
