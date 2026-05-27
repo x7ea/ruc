@@ -305,15 +305,6 @@ impl Expr {
                     _ => Err(format!("undefined: {name}")),
                 }
             }
-            Expr::Len(arr) => {
-                let typ = arr.infer(ctx)?;
-                let Type::Array(_) = typ else {
-                    return Err(format!("not length: {typ}"));
-                };
-                let head = Box::new(Expr::Integer(0));
-                expand!(Expr::Read(head, Type::Integer, arr.clone()));
-                typing!(Type::Integer)
-            }
             Expr::Index(arr, idx) => {
                 let typ = arr.infer(ctx)?;
                 let Type::Array(typ) = typ else {
@@ -328,13 +319,15 @@ impl Expr {
             }
             Expr::Member(obj, key) => {
                 let typ = obj.infer(ctx)?;
-                if let (Type::Array(_), "len") = (typ.clone(), key.to_string().as_str()) {
-                    expand!(Expr::Read(
-                        Box::new(Expr::Integer(0)),
-                        Type::Integer,
-                        obj.clone()
-                    ));
-                    return typing!(Type::Integer);
+                if let Type::Array(_) = typ.clone() {
+                    if key.to_string() == "len" {
+                        expand!(Expr::Read(
+                            Box::new(Expr::Integer(0)),
+                            Type::Integer,
+                            obj.clone()
+                        ));
+                        return typing!(Type::Integer);
+                    }
                 }
                 let Type::Class(Generics(name, args)) = &typ else {
                     return Err(format!("not class: {typ}"));
