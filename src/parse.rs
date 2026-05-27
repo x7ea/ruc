@@ -5,10 +5,7 @@ pub const SPACE: &str = " ";
 
 impl Define {
     pub fn parse(source: &str) -> Result<Vec<Define>, String> {
-        let mut source = source.trim().to_string();
-        for (k, v) in prohibit!() {
-            source = source.replace(k, v);
-        }
+        let source = source.trim().to_string();
         let mut result = Vec::new();
         for line in tokenize(&source, "\n")? {
             macro_rules! args {
