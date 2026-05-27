@@ -11,7 +11,7 @@ pub mod name {
         pub fn new(name: &str) -> Result<Name, String> {
             let name = name.trim();
             if name.is_empty() {
-                return Err(format!("empty"));
+                return Err("empty".to_string());
             }
             fn validate(x: char) -> bool {
                 x == '_' || x.is_ascii_alphabetic() || x.is_ascii_digit()
@@ -54,13 +54,13 @@ pub mod name {
                     Type::Array(typ) => format!("A{}", mangle(typ)),
                     Type::Class(Generics(name, _)) => format!("C{name}"),
                     Type::Function(_, ret, Some(args)) => {
-                        let args = map!(args, |x| mangle(x)).concat();
+                        let args = map!(args, mangle).concat();
                         format!("L{}{args}", mangle(ret))
                     }
                     Type::Function(_, ret, None) => format!("L{}", mangle(ret)),
                 }
             }
-            let typ = map!(self.1, |x| mangle(x)).concat();
+            let typ = map!(self.1, mangle).concat();
             Name(format!("{}.{typ}", self.0))
         }
     }
