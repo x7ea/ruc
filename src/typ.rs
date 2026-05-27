@@ -269,7 +269,6 @@ impl Expr {
                 let Type::Class(class @ Generics(name, args)) = typ else {
                     return Err(format!("no constructor: {typ}"));
                 };
-                let mangle = class.generics();
                 let Some(table) = ctx.global.table.get(name) else {
                     return Err(format!("undefined: {name}"));
                 };
