@@ -2,7 +2,7 @@ pub mod name {
     use crate::*;
     use std::fmt;
 
-    const RESERVED: [&str; 8] = ["let", "if", "then", "else", "while", "do", "new", "len"];
+    const RESERVED: [&str; 7] = ["let", "if", "then", "else", "while", "do", "new"];
 
     #[derive(Clone, Debug, PartialEq, Hash, Eq)]
     pub struct Name(String);
