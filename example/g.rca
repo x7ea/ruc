@@ -13,9 +13,9 @@ fn main() {
     let alt = -1.0
 
     let value.ok = 3.0
+    print value.err
     print proc(value, alt)
 
     let value.err = "Err"
-    print value.ok
     print proc(value, alt)
 }
