@@ -68,7 +68,7 @@ pub mod name {
     }
 }
 
-pub fn tokenize(src: &str, del: &str) -> Result<Vec<String>, String> {
+pub fn token(src: &str, del: &str) -> Result<Vec<String>, String> {
     let mut tokens: Vec<String> = Vec::new();
     let mut current = String::new();
 
