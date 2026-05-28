@@ -470,19 +470,19 @@ impl Expr {
             Expr::Float(_) => typing!(Type::Float),
             Expr::String(_) => typing!(Type::String),
             Expr::Bool(_) => typing!(Type::Bool),
-            Expr::Add(lhs, rhs) => op!((Type::Integer | Type::Float), lhs, rhs),
-            Expr::Sub(lhs, rhs) => op!((Type::Integer | Type::Float), lhs, rhs),
-            Expr::Mul(lhs, rhs) => op!((Type::Integer | Type::Float), lhs, rhs),
-            Expr::Div(lhs, rhs) => op!((Type::Integer | Type::Float), lhs, rhs),
-            Expr::Eql(lhs, rhs) => op!(Type::Integer, lhs, rhs, Type::Bool),
-            Expr::NotEq(lhs, rhs) => op!(Type::Integer, lhs, rhs, Type::Bool),
-            Expr::Gt(lhs, rhs) => op!(Type::Integer, lhs, rhs, Type::Bool),
-            Expr::Lt(lhs, rhs) => op!(Type::Integer, lhs, rhs, Type::Bool),
-            Expr::GtEq(lhs, rhs) => op!(Type::Integer, lhs, rhs, Type::Bool),
-            Expr::LtEq(lhs, rhs) => op!(Type::Integer, lhs, rhs, Type::Bool),
-            Expr::And(lhs, rhs) => op!(Type::Bool, lhs, rhs),
-            Expr::Or(lhs, rhs) => op!(Type::Bool, lhs, rhs),
-            Expr::Xor(lhs, rhs) => op!(Type::Bool, lhs, rhs),
+            Expr::Add(lhs, rhs)
+            | Expr::Sub(lhs, rhs)
+            | Expr::Mul(lhs, rhs)
+            | Expr::Div(lhs, rhs) => op!((Type::Integer | Type::Float), lhs, rhs),
+            Expr::Eql(lhs, rhs)
+            | Expr::NotEq(lhs, rhs)
+            | Expr::Gt(lhs, rhs)
+            | Expr::Lt(lhs, rhs)
+            | Expr::GtEq(lhs, rhs)
+            | Expr::LtEq(lhs, rhs) => op!(Type::Integer, lhs, rhs, Type::Bool),
+            Expr::And(lhs, rhs) | Expr::Or(lhs, rhs) | Expr::Xor(lhs, rhs) => {
+                op!(Type::Bool, lhs, rhs)
+            }
         }
     }
 }
