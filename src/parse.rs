@@ -95,20 +95,8 @@ impl Expr {
                 ))
             }
         } else if let Some(src) = src.strip_prefix("match ") {
-            let (cond, body) = once!(src, "then")?;
-            if let Ok((then, r#else)) = once!(&body, "else") {
-                Ok(Expr::If(
-                    Box::new(Expr::parse(&cond)?),
-                    Box::new(Expr::parse(&then)?),
-                    Some(Box::new(Expr::parse(&r#else)?)),
-                ))
-            } else {
-                Ok(Expr::If(
-                    Box::new(Expr::parse(&cond)?),
-                    Box::new(Expr::parse(&body)?),
-                    None,
-                ))
-            }
+            let (expr, pats) = surround!(src, "{", "}")?;
+            Ok(Expr::Match(Box::new(Expr::parse(&expr)?)))
         } else if let Some(src) = src.strip_prefix("while ") {
             let (cond, body) = once!(src, "do")?;
             Ok(Expr::While(
@@ -156,8 +144,8 @@ impl Expr {
             })
         } else if src == "()" {
             Ok(Expr::Null(Type::None))
-        } else if let Some(x) = surround!("\"", src, "\"") {
-            Ok(Expr::String(x.to_owned()))
+        } else if let Some(text) = surround!("\"", src, "\"") {
+            Ok(Expr::String(text.to_owned()))
         } else if let Some(expr) = surround!("(", src, ")") {
             Expr::parse(expr)
         } else if let Some(arr) = surround!("[", src, "]") {
@@ -177,13 +165,13 @@ impl Expr {
                 Box::new(Expr::parse(&arr)?),
                 Box::new(Expr::parse(&idx)?),
             ))
-        } else if let Ok(literal) = src.parse::<bool>() {
-            Ok(Expr::Bool(literal))
-        } else if let Ok(literal) = src.parse::<i64>() {
-            Ok(Expr::Integer(literal))
-        } else if let Ok(literal) = src.parse::<f64>() {
+        } else if let Ok(b) = src.parse::<bool>() {
+            Ok(Expr::Bool(b))
+        } else if let Ok(i) = src.parse::<i64>() {
+            Ok(Expr::Integer(i))
+        } else if let Ok(f) = src.parse::<f64>() {
             use ordered_float::OrderedFloat;
-            Ok(Expr::Float(OrderedFloat(literal)))
+            Ok(Expr::Float(OrderedFloat(f)))
         } else if let Some(class) = src.strip_suffix("?") {
             Ok(Expr::Check(Box::new(Expr::parse(class)?)))
         } else if let Some((obj, key)) = src.rsplit_once(".") {
