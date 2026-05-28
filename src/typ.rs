@@ -42,7 +42,6 @@ impl Expr {
         }
         macro_rules! expand {
             ($expr: expr) => {{
-                #[allow(unused_must_use)]
                 let expr = $expr.clone();
                 let typ = expr.infer(ctx)?;
                 ctx.local.expand.insert(self.clone(), expr.clone());
