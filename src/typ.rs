@@ -405,14 +405,13 @@ impl Expr {
                 let Type::Class(name) = &typ else {
                     return Err(format!("not class: {typ}"));
                 };
-                let Some((_, class)) = ctx.global.table.get(&name.generics()).cloned() else {
+                let Some((_, class)) = ctx.global.table.get(&name.generics()) else {
                     return Err(format!("undefined: {name}"));
                 };
                 let (Object::Struct(layout) | Object::Enum(layout)) = &class;
                 let Some(typ) = layout.get(key).cloned() else {
                     return Err(format!("undefined: {name}.{key}"));
                 };
-                let typ = typ.solve(ctx);
                 match class {
                     Object::Struct(layout) => {
                         let offset = Expr::Integer(layout.get_index_of(key).unwrap() as i64);
