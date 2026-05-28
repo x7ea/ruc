@@ -136,7 +136,7 @@ impl Expr {
                         expr = Some(Box::new(Expr::If(
                             Box::new(Expr::Let(
                                 Box::new(bind.clone()),
-                                Expr::Member(   Box::new(val.clone()),, key),
+                                Expr::Member(Box::new(val.clone()), key),
                             )),
                             Box::new(ret.clone()),
                             expr,
