@@ -23,8 +23,8 @@ impl Define {
                 Ok(sig)
             }
             Define::Class(Generics(name, args), layout) => {
-                let val = (args.clone(), layout.clone());
-                ctx.global.table.insert(name.clone(), val);
+                let value = (args.clone(), layout.clone());
+                ctx.global.table.insert(name.clone(), value);
                 Ok(Type::None)
             }
         }
@@ -49,7 +49,7 @@ impl Expr {
                 typ.clone()
             }};
         }
-        macro_rules! new {
+        macro_rules! initializer {
             ($layout: expr) => {
                 Expr::Call(
                     Box::new(Expr::Variable(Generics(Name::new("calloc")?, vec![]))),
@@ -91,9 +91,9 @@ impl Expr {
             }};
         }
         match self {
-            Expr::Print(vals) => {
+            Expr::Print(values) => {
                 let mut fmt = String::new();
-                for i in vals.iter() {
+                for i in values.iter() {
                     let typ = i.infer(ctx)?;
                     fmt += match typ {
                         Type::Integer => "%ld",
@@ -104,7 +104,7 @@ impl Expr {
                 }
                 let _ = expand!(Expr::Call(
                     Box::new(Expr::Variable(Generics(Name::new("printf")?, vec![]))),
-                    [vec![Expr::String(fmt + "\\n")], vals.to_vec()].concat(),
+                    [vec![Expr::String(fmt + "\\n")], values.to_vec()].concat(),
                 ));
                 typing!(Type::None)
             }
@@ -142,13 +142,13 @@ impl Expr {
                 for line in lines {
                     ret = line.infer(ctx)?;
                 }
-                for (name, val) in &ctx.local.scope {
+                for (name, value) in &ctx.local.scope {
                     if let Some(typ) = ctx.local.var.get(name)
-                        && typ != val
+                        && typ != value
                     {
-                        return Err(format!("duplicated {name}: {typ} != {val}"));
+                        return Err(format!("duplicated {name}: {typ} != {value}"));
                     }
-                    ctx.local.var.insert(name.clone(), val.clone());
+                    ctx.local.var.insert(name.clone(), value.clone());
                 }
                 ctx.local.scope = parent;
                 typing!(ret.clone())
@@ -192,7 +192,7 @@ impl Expr {
                         }
                         for (arg, param) in args.iter().zip(params) {
                             alias.insert(param.clone(), arg.clone());
-                            *typ = typ.rewrite(&param, arg);
+                            typ.rewrite(&param, arg);
                         }
                         let mangle = func.generics();
                         let mut unify = ctx.global.def.get(name).unwrap().clone();
@@ -219,9 +219,9 @@ impl Expr {
                     Err(format!("undefined: {name}"))
                 }
             }
-            Expr::Let(name, val) => match &**name {
+            Expr::Let(name, value) => match &**name {
                 Expr::Variable(Generics(name, _)) => {
-                    let val = val.infer(ctx)?;
+                    let val = value.infer(ctx)?;
                     let env = &mut ctx.local.scope;
                     if let Some(typ) = env.get(name) {
                         if val != *typ {
@@ -233,35 +233,31 @@ impl Expr {
                     typing!(Type::None)
                 }
                 acc @ Expr::Index(arr, idx) => {
-                    {
-                        let [val, typ] = [val.infer(ctx)?, acc.infer(ctx)?];
-                        if typ.clone() != val {
-                            return Err(format!("array: {typ} != {val}"));
-                        }
+                    let [val, typ] = [value.infer(ctx)?, acc.infer(ctx)?];
+                    if typ.clone() != val {
+                        return Err(format!("array: {typ} != {val}"));
                     }
-                    let _ = expand!(Expr::Write(array!(arr, idx), val.clone(), arr.clone()));
+                    let _ = expand!(Expr::Write(array!(arr, idx), value.clone(), arr.clone()));
                     typing!(Type::None)
                 }
                 acc @ Expr::Member(obj, key) => {
+                    let [val, typ] = [value.infer(ctx)?, acc.infer(ctx)?];
                     let Generics(name, _) = &get!(Class, obj.infer(ctx)?);
-                    {
-                        let [val, typ] = [val.infer(ctx)?, acc.infer(ctx)?];
-                        if typ.solve(ctx) != val {
-                            return Err(format!("{name}.{key}: {typ} != {val}"));
-                        }
+                    if typ.solve(ctx) != val {
+                        return Err(format!("{name}.{key}: {typ} != {val}"));
                     }
                     match ok!(ctx.global.table.get(name))? {
                         (_, Object::Struct(layout)) => {
                             let offset = layout.get_index_of(key).unwrap();
                             let offset = Box::new(Expr::Integer(offset as i64));
-                            let _ = expand!(Expr::Write(offset, val.clone(), obj.clone()));
+                            let _ = expand!(Expr::Write(offset, value.clone(), obj.clone()));
                         }
                         (_, Object::Enum(layout)) => {
                             let tag = layout.get_index_of(key).unwrap() as i64;
                             let offset = |x| Box::new(Expr::Integer(x));
                             let _ = expand!(Expr::Block(vec![
                                 Expr::Write(offset(0), offset(tag), obj.clone()),
-                                Expr::Write(offset(8), val.clone(), obj.clone()),
+                                Expr::Write(offset(8), value.clone(), obj.clone()),
                             ]));
                         }
                     }
@@ -269,8 +265,8 @@ impl Expr {
                 }
                 other => Err(format!("not assign target: {}", other.infer(ctx)?)),
             },
-            Expr::Alloc(typ, len) => {
-                let _ = expand!(new!(*len + 1));
+            Expr::Array(typ, len) => {
+                let _ = expand!(initializer!(*len + 1));
                 typing!(Type::Array(Box::new(typ.clone())))
             }
             Expr::Sequence(array) => {
@@ -294,7 +290,7 @@ impl Expr {
                 )));
                 let mut expr = vec![Expr::Let(
                     temp.clone(),
-                    Box::new(Expr::Alloc(typ.clone(), array.len())),
+                    Box::new(Expr::Array(typ.clone(), array.len())),
                 )];
                 for (idx, val) in array.iter().enumerate() {
                     expr.push(Expr::Let(
@@ -308,7 +304,7 @@ impl Expr {
                 expr.push(*temp);
                 typing!(expand!(Expr::Block(expr)))
             }
-            Expr::Constructor(typ) => {
+            Expr::New(typ) => {
                 let Type::Class(Generics(name, mut args)) = typ.clone() else {
                     return Err(format!("no constructor: {typ}"));
                 };
@@ -324,9 +320,9 @@ impl Expr {
                     if params.len() != args.len() {
                         return Err(format!("generics: {typ}"));
                     }
-                    for (key, field) in layout.clone() {
+                    for (key, mut field) in layout.clone() {
                         for (arg, param) in args.iter().zip(&params) {
-                            let field = field.rewrite(param, arg);
+                            field.rewrite(param, arg);
                             layout.insert(key.clone(), field.clone());
                         }
                     }
@@ -334,11 +330,11 @@ impl Expr {
                 };
                 let unify = match table {
                     Object::Enum(_) => {
-                        let _ = expand!(new!(2));
+                        let _ = expand!(initializer!(2));
                         Object::Enum(layout).clone()
                     }
                     Object::Struct(inner) => {
-                        let _ = expand!(new!(inner.len()));
+                        let _ = expand!(initializer!(inner.len()));
                         Object::Struct(layout).clone()
                     }
                 };
@@ -425,13 +421,13 @@ impl Expr {
                 addr.infer(ctx)?;
                 typing!(typ.clone())
             }
-            Expr::Write(addr, val, offset) => {
+            Expr::Write(addr, value, offset) => {
                 let offset = offset.infer(ctx)?;
                 if let Type::Integer = offset {
                     return Err(format!("not address: {offset}"));
                 }
                 addr.infer(ctx)?;
-                typing!(val.infer(ctx)?)
+                typing!(value.infer(ctx)?)
             }
             Expr::Mod(lhs, rhs) => {
                 let _ = expand!(Expr::Div(lhs.clone(), rhs.clone()));
@@ -467,21 +463,26 @@ impl Expr {
 }
 
 impl Type {
-    fn rewrite(&self, old: &Type, new: &Type) -> Type {
+    fn rewrite(&mut self, old: &Type, new: &Type) {
         if self == old {
-            return new.clone();
+            *self = new.clone()
         }
         match self {
-            Type::Function(typ, ret, Some(args)) => Type::Function(
-                typ.clone(),
-                Box::new(ret.rewrite(old, new)),
-                Some(map!(args, |x| x.rewrite(old, new))),
-            ),
-            Type::Class(Generics(name, args)) => {
-                Type::Class(Generics(name.clone(), map!(args, |x| x.rewrite(old, new))))
+            Type::Function(_, ret, args) => {
+                ret.rewrite(old, new);
+                if let Some(args) = args {
+                    for arg in args {
+                        arg.rewrite(old, new);
+                    }
+                }
             }
-            Type::Array(typ) => Type::Array(Box::new(typ.rewrite(old, new))),
-            _ => self.clone(),
+            Type::Class(Generics(_, args)) => {
+                for arg in args {
+                    arg.rewrite(old, new);
+                }
+            }
+            Type::Array(typ) => typ.rewrite(old, new),
+            _ => {}
         }
     }
 
@@ -490,8 +491,8 @@ impl Type {
             return typ.clone();
         }
         match self {
-            Type::Function(typ, ret, Some(args)) => Type::Function(
-                typ.clone(),
+            Type::Function(poly, ret, Some(args)) => Type::Function(
+                poly.clone(),
                 Box::new(ret.solve(ctx)),
                 Some(map!(args, |x| x.solve(ctx))),
             ),
