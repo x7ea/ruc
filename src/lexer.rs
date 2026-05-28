@@ -52,6 +52,9 @@ pub mod name {
                 return self.0.clone();
             }
             fn mangle(typ: &Type) -> String {
+                fn concat(x: &[Type]) -> String {
+                    map!(x, |x| Ok(mangle(x))).unwrap().concat()
+                }
                 match typ {
                     Type::Integer => "I".to_string(),
                     Type::String => "S".to_string(),
@@ -61,13 +64,12 @@ pub mod name {
                     Type::Array(typ) => format!("A{}", mangle(typ)),
                     Type::Class(Generics(name, _)) => format!("C{name}"),
                     Type::Function(_, ret, Some(args)) => {
-                        let args = args.iter().map(mangle).collect::<Vec<_>>().concat();
-                        format!("L{}{args}", mangle(ret))
+                        format!("L{}{}", mangle(ret), concat(&args))
                     }
                     Type::Function(_, ret, None) => format!("L{}", mangle(ret)),
                 }
             }
-            let typ = self.1.iter().map(mangle).collect::<Vec<_>>().concat();
+            let typ = concat(self.1);
             Name(format!("{}.{typ}", self.0))
         }
     }
@@ -214,8 +216,6 @@ macro_rules! hash {
 #[macro_export]
 macro_rules! map {
     ($arr: expr,  $lambda: expr) => {
-        $arr.iter()
-            .map($lambda)
-            .collect::<Result<Vec<_>, String>>()?
+        $arr.iter().map($lambda).collect::<Result<Vec<_>, String>>()
     };
 }
