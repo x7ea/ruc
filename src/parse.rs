@@ -111,7 +111,7 @@ impl Expr {
             if let Ok(pats) = pats.try_into() {
                 Ok(Expr::Match(Box::new(Expr::parse(&expr)?), pats))
             } else {
-                Err(format!("empty: {src}"))
+                Err(format!("empty pattern: {src}"))
             }
         } else if let Some(src) = src.strip_prefix("while ") {
             let (cond, body) = once!(src, "do")?;
