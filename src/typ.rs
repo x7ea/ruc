@@ -495,8 +495,8 @@ impl Type {
             return typ.clone();
         }
         match self {
-            Type::Function(poly, ret, Some(args)) => Type::Function(
-                poly.clone(),
+            Type::Function(typ, ret, Some(args)) => Type::Function(
+                typ.clone(),
                 Box::new(ret.solve(ctx)),
                 Some(map!(args, |x| x.solve(ctx))),
             ),
