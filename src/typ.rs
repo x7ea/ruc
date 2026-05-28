@@ -166,6 +166,32 @@ impl Expr {
                 }
                 body.infer(ctx)
             }
+            Expr::For(cnt, arr, body) => {
+                let temp = Box::new(Expr::Variable(Generics(
+                    Generics(Name::new("temp")?, vec![Type::Integer]).generics(),
+                    vec![],
+                )));
+                typing!(expand!(Expr::Block(vec![
+                    Expr::Let(temp.clone(), Box::new(Expr::Integer(0))),
+                    Expr::While(
+                        Box::new(Expr::Lt(
+                            temp.clone(),
+                            Box::new(Expr::Member(arr.clone(), Name::new("len")?)),
+                        )),
+                        Box::new(Expr::Block(vec![
+                            Expr::Let(
+                                cnt.clone(),
+                                Box::new(Expr::Index(arr.clone(), temp.clone()))
+                            ),
+                            *body.clone(),
+                            Expr::Let(
+                                temp.clone(),
+                                Box::new(Expr::Add(temp, Box::new(Expr::Integer(1)))),
+                            ),
+                        ])),
+                    ),
+                ])))
+            }
             Expr::Block(lines) => {
                 let mut ret = Type::None;
                 let parent = ctx.local.scope.clone();
