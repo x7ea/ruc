@@ -74,7 +74,7 @@ impl Expr {
                 if lt != rt {
                     return Err(format!("operator term: {lt} != {rt}"));
                 }
-                let $typ = lt else {
+                let ($typ) = lt else {
                     return Err(format!("no operation: {lt}"));
                 };
                 typing!(lt.clone())
