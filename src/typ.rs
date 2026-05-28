@@ -74,7 +74,7 @@ impl Expr {
                 if lt != rt {
                     return Err(format!("operator term: {lt} != {rt}"));
                 }
-                let ($typ) = lt else {
+                let $typ = lt else {
                     return Err(format!("no operation: {lt}"));
                 };
                 typing!(lt.clone())
@@ -470,10 +470,10 @@ impl Expr {
             Expr::Float(_) => typing!(Type::Float),
             Expr::String(_) => typing!(Type::String),
             Expr::Bool(_) => typing!(Type::Bool),
-            Expr::Add(lhs, rhs) => op!(Type::Integer | Type::Float, lhs, rhs),
-            Expr::Sub(lhs, rhs) => op!(Type::Integer | Type::Float, lhs, rhs),
-            Expr::Mul(lhs, rhs) => op!(Type::Integer | Type::Float, lhs, rhs),
-            Expr::Div(lhs, rhs) => op!(Type::Integer | Type::Float, lhs, rhs),
+            Expr::Add(lhs, rhs) => op!((Type::Integer | Type::Float), lhs, rhs),
+            Expr::Sub(lhs, rhs) => op!((Type::Integer | Type::Float), lhs, rhs),
+            Expr::Mul(lhs, rhs) => op!((Type::Integer | Type::Float), lhs, rhs),
+            Expr::Div(lhs, rhs) => op!((Type::Integer | Type::Float), lhs, rhs),
             Expr::Eql(lhs, rhs) => op!(Type::Integer, lhs, rhs, Type::Bool),
             Expr::NotEq(lhs, rhs) => op!(Type::Integer, lhs, rhs, Type::Bool),
             Expr::Gt(lhs, rhs) => op!(Type::Integer, lhs, rhs, Type::Bool),
