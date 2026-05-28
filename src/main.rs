@@ -124,7 +124,7 @@ pub enum Expr {
     Constructor(Type),
     Member(Box<Expr>, Name),
     Check(Box<Expr>),
-    Match(Box<Expr>, Vec<(Name, Option<Expr>, Expr)>),
+    Match(Box<Expr>, Vec1<(Name, Option<Expr>, Expr)>),
     // Control
     Print(Vec<Expr>),
     If(Box<Expr>, Box<Expr>, Option<Box<Expr>>),
