@@ -6,3 +6,4 @@ edition = "2024"
 [dependencies]
 indexmap = "2.13.0"
 ordered-float = "5.3.0"
+vec1 = "1.12.1"
