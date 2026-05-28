@@ -54,4 +54,11 @@ version = "0.1.0"
 dependencies = [
  "indexmap",
  "ordered-float",
+ "vec1",
 ]
+
+[[package]]
+name = "vec1"
+version = "1.12.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "eab68b56840f69efb0fefbe3ab6661499217ffdc58e2eef7c3f6f69835386322"
