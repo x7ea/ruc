@@ -146,7 +146,7 @@ impl Expr {
         } else if let Some(expr) = surround!("(", src, ")") {
             Expr::parse(expr)
         } else if let Some(arr) = surround!("[", src, "]") {
-            let arr = map!(lexer(arr, ",")?, |x| Expr::parse(x));
+            let arr = map!(lexer(arr, ",")?, |x| Expr::parse(x))?;
             if let Ok(arr) = arr.try_into() {
                 Ok(Expr::Sequence(arr))
             } else {
@@ -155,7 +155,7 @@ impl Expr {
         } else if let Ok((func, args)) = surround!(src, "(", ")") {
             Ok(Expr::Call(
                 Box::new(Expr::parse(&func)?),
-                map!(lexer(&args, ",")?, |x| Expr::parse(x)),
+                map!(lexer(&args, ",")?, |x| Expr::parse(x))?,
             ))
         } else if let Ok((arr, idx)) = surround!(src, "[", "]") {
             Ok(Expr::Index(
@@ -192,7 +192,7 @@ impl Type {
                     Ok(Type::Function(
                         vec![],
                         Box::new(Type::parse(&func)?),
-                        Some(map!(lexer(&args, ",")?, |x| Type::parse(x))),
+                        Some(map!(lexer(&args, ",")?, |x| Type::parse(x)))?,
                     ))
                 } else if let Some(arr) = surround!("[", x, "]") {
                     Ok(Type::Array(Box::new(Type::parse(arr)?)))
@@ -206,6 +206,9 @@ impl Type {
 
 impl Display for Type {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        fn comma(x: &Vec<Type>) -> String {
+            map!(x, |x: &Type| Ok(x.to_string())).unwrap().join(", ")
+        }
         match self {
             Type::Integer => write!(f, "Int"),
             Type::String => write!(f, "Str"),
@@ -214,14 +217,8 @@ impl Display for Type {
             Type::None => write!(f, "()"),
             Type::Array(typ) => write!(f, "[{typ}]"),
             Type::Class(Generics(name, args)) if args.is_empty() => write!(f, "{name}"),
-            Type::Class(Generics(name, args)) => {
-                let args = map!(args, |x| x.to_string()).join(", ");
-                write!(f, "{name}<{args}>")
-            }
-            Type::Function(_, ret, Some(args)) => {
-                let args = map!(args, |x| x.to_string()).join(", ");
-                write!(f, "{ret}({args})")
-            }
+            Type::Class(Generics(name, args)) => write!(f, "{name}<{}>", comma(args)),
+            Type::Function(_, ret, Some(args)) => write!(f, "{ret}({})", comma(args)),
             Type::Function(_, ret, None) => write!(f, "{ret}()"),
         }
     }
@@ -233,7 +230,7 @@ impl Generics {
         if let Some((var, args)) = surround!("<", ">", x) {
             Ok(Generics(
                 Name::new(var)?,
-                map!(lexer(args, ",")?, |x| Type::parse(x)),
+                map!(lexer(args, ",")?, |x| Type::parse(x))?,
             ))
         } else {
             Ok(Generics(Name::new(x)?, vec![]))
