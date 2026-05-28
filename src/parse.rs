@@ -67,10 +67,10 @@ impl Expr {
         if let Some(x) = src.strip_prefix("print ") {
             Ok(Expr::Print(map!(lexer(x, ",")? => |i| Expr::parse(i))))
         } else if let Some(x) = src.strip_prefix("let ") {
-            if let Ok((name, value)) = once!(x, "=") {
+            if let Ok((name, val)) = once!(x, "=") {
                 Ok(Expr::Let(
                     Box::new(Expr::parse(&name)?),
-                    Box::new(Expr::parse(&value)?),
+                    Box::new(Expr::parse(&val)?),
                 ))
             } else {
                 let (name, typ) = once!(x, ":")?;
