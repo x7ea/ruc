@@ -124,6 +124,7 @@ impl Expr {
                     return Err(format!("if-else test: Bool != {cond}"));
                 }
                 if let Some(els) = els {
+                    dbg!(&self);
                     let [then, els] = [then.infer(ctx)?, els.infer(ctx)?];
                     if then != els {
                         return Err(format!("if-else term: {then} != {els}"));
@@ -225,7 +226,6 @@ impl Expr {
                         }
                         for (arg, param) in args.iter().zip(params) {
                             alias.insert(param.clone(), arg.clone());
-                            dbg!(typ.rewrite(&param, arg));
                             *typ = typ.rewrite(&param, arg);
                         }
                         let mangle = func.generics();
@@ -244,7 +244,6 @@ impl Expr {
                         ctx.global.alias = alias.clone();
                         {
                             *typ = unify.infer(ctx)?;
-                            dbg!(&typ);
                         }
                         ctx.global.alias = parent;
                         ctx.global.def.insert(mangle, unify.clone());
@@ -309,18 +308,7 @@ impl Expr {
                 typing!(Type::Array(Box::new(typ.clone())))
             }
             Expr::Sequence(array) => {
-                let mut typ = None;
-                for val in array {
-                    if let Some(typ) = typ.clone() {
-                        let val = val.infer(ctx)?;
-                        if val != typ {
-                            return Err(format!("array [.., ] {typ} != {val}"));
-                        }
-                    } else {
-                        typ = Some(val.infer(ctx)?);
-                    }
-                }
-                let typ = typ.unwrap();
+                let typ = array[0].infer(ctx)?;
                 let temp = Box::new(Expr::Variable(Generics(
                     Generics(Name::new("temp")?, vec![typ.clone()]).generics(),
                     vec![],
