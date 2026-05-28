@@ -128,7 +128,7 @@ pub enum Expr {
     Print(Vec<Expr>),
     If(Box<Expr>, Box<Expr>, Option<Box<Expr>>),
     Match(Box<Expr>, Vec1<(Name, Option<Expr>, Expr)>),
-    For(Box<Expr>, Box<Expr>, Box<Expr>),
+    // For(Box<Expr>, Box<Expr>, Box<Expr>),
     While(Box<Expr>, Box<Expr>),
     Block(Vec<Expr>),
     // Operator
