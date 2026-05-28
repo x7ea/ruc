@@ -265,7 +265,7 @@ impl Expr {
                 }
                 other => Err(format!("not assign target: {}", other.infer(ctx)?)),
             },
-            Expr::Array(typ, len) => {
+            Expr::Alloc(typ, len) => {
                 let _ = expand!(initializer!(*len + 1));
                 typing!(Type::Array(Box::new(typ.clone())))
             }
@@ -290,7 +290,7 @@ impl Expr {
                 )));
                 let mut expr = vec![Expr::Let(
                     temp.clone(),
-                    Box::new(Expr::Array(typ.clone(), array.len())),
+                    Box::new(Expr::Alloc(typ.clone(), array.len())),
                 )];
                 for (idx, val) in array.iter().enumerate() {
                     expr.push(Expr::Let(
@@ -304,7 +304,7 @@ impl Expr {
                 expr.push(*temp);
                 typing!(expand!(Expr::Block(expr)))
             }
-            Expr::New(typ) => {
+            Expr::Constructor(typ) => {
                 let Type::Class(Generics(name, mut args)) = typ.clone() else {
                     return Err(format!("no constructor: {typ}"));
                 };
