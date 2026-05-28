@@ -485,9 +485,9 @@ impl Expr {
             Expr::Null(typ) => {
                 let typ = typ.solve(ctx);
                 if let Type::Float = typ {
-                    expand!(Expr::Float(Float::from(0.0)))
+                    let _ = expand!(Expr::Float(Float::from(0.0)));
                 } else {
-                    expand!(Expr::Integer(0))
+                    let _ = expand!(Expr::Integer(0));
                 }
                 typing!(typ)
             }
