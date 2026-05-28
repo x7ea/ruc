@@ -146,7 +146,7 @@ impl Expr {
         } else if let Some(expr) = surround!("(", src, ")") {
             Expr::parse(expr)
         } else if let Some(arr) = surround!("[", src, "]") {
-            let arr = map!(lexer(arr, ",")?, |x| Expr::parse(x))?;
+            let arr = serial!(lexer(arr, ",")?, |x| Expr::parse(x));
             if let Ok(arr) = arr.try_into() {
                 Ok(Expr::Sequence(arr))
             } else {
@@ -155,7 +155,7 @@ impl Expr {
         } else if let Ok((func, args)) = surround!(src, "(", ")") {
             Ok(Expr::Call(
                 Box::new(Expr::parse(&func)?),
-                map!(lexer(&args, ",")?, |x| Expr::parse(x))?,
+                serial!(lexer(&args, ",")?, |x| Expr::parse(x)),
             ))
         } else if let Ok((arr, idx)) = surround!(src, "[", "]") {
             Ok(Expr::Index(
@@ -192,7 +192,7 @@ impl Type {
                     Ok(Type::Function(
                         vec![],
                         Box::new(Type::parse(&func)?),
-                        Some(map!(lexer(&args, ",")?, |x| Type::parse(x)))?,
+                        Some(serial!(lexer(&args, ",")?, |x| Type::parse(x))),
                     ))
                 } else if let Some(arr) = surround!("[", x, "]") {
                     Ok(Type::Array(Box::new(Type::parse(arr)?)))
@@ -207,7 +207,7 @@ impl Type {
 impl Display for Type {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         fn comma(x: &Vec<Type>) -> String {
-            map!(x, |x: &Type| Ok(x.to_string())).unwrap().join(", ")
+            map!(x, |x: &Type| x.to_string()).join(", ")
         }
         match self {
             Type::Integer => write!(f, "Int"),
