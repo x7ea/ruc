@@ -1,5 +1,5 @@
 fn reduce<T>(this: [T], lambda: T(T, T)) {
-    for i = this do { let print i }
+    for i = this do print i
     this[0]
 }
 
