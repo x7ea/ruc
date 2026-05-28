@@ -106,7 +106,7 @@ impl Expr {
                 let Ok(len) = len.trim().parse::<usize>() else {
                     return Err(format!("not length: {len}"));
                 };
-                Ok(Expr::Alloc(Type::parse(typ)?, len))
+                Ok(Expr::Init(Type::parse(typ)?, len))
             } else {
                 Ok(Expr::Constructor(Type::parse(class)?))
             }
