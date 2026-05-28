@@ -7,10 +7,9 @@ fn reduce<T>(this: [T], lambda: T(T, T)) {
 fn add<T>(a: T, b: T) a + b
 
 fn main() {
-     let y = [1.2, 2.3, 4.0]
-    print reduce<Float>(y, add<Float>)
-
-       let x = [8, 5, 4, 6, 2]
+    let x = [8, 5, 4, 6, 2]
     print reduce<Int>(x, add<Int>)
 
+    let y = [1.2, 2.3, 4.0]
+    print reduce<Float>(y, add<Float>)
 }
