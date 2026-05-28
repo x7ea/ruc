@@ -467,26 +467,21 @@ impl Expr {
 }
 
 impl Type {
-    fn rewrite(&mut self, old: &Type, new: &Type) {
+    fn rewrite(&self, old: &Type, new: &Type) -> Type {
         if self == old {
-            *self = new.clone()
+            return new.clone();
         }
         match self {
-            Type::Function(_, ret, args) => {
-                ret.rewrite(old, new);
-                if let Some(args) = args {
-                    for arg in args {
-                        arg.rewrite(old, new);
-                    }
-                }
+            Type::Function(typ, ret, Some(args)) => Type::Function(
+                typ.clone(),
+                Box::new(ret.rewrite(old, new)),
+                Some(map!(args, |x| x.rewrite(old, new))),
+            ),
+            Type::Class(Generics(name, args)) => {
+                Type::Class(Generics(name.clone(), map!(args, |x| x.rewrite(old, new))))
             }
-            Type::Class(Generics(_, args)) => {
-                for arg in args {
-                    arg.rewrite(old, new);
-                }
-            }
-            Type::Array(typ) => typ.rewrite(old, new),
-            _ => {}
+            Type::Array(typ) => Type::Array(Box::new(typ.rewrite(old, new))),
+            _ => self.clone(),
         }
     }
 
