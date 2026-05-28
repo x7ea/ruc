@@ -14,9 +14,9 @@ use std::process::exit;
 
 fn main() {
     macro_rules! error {
-        ($value: expr) => {
-            match $value {
-                Ok(value) => value,
+        ($val: expr) => {
+            match $val {
+                Ok(val) => val,
                 Err(err) => {
                     eprintln!("Error! {err}");
                     exit(1)
