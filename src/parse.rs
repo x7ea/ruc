@@ -64,23 +64,23 @@ impl Expr {
             }
         }
 
-        if let Some(x) = src.strip_prefix("print ") {
-            Ok(Expr::Print(map!(lexer(x, ",")?, |i| Expr::parse(i))))
-        } else if let Some(x) = src.strip_prefix("let ") {
-            if let Ok((name, value)) = once!(x, "=") {
+        if let Some(src) = src.strip_prefix("print ") {
+            Ok(Expr::Print(serial!(src, |i| Expr::parse(i))))
+        } else if let Some(src) = src.strip_prefix("let ") {
+            if let Ok((name, value)) = once!(src, "=") {
                 Ok(Expr::Let(
                     Box::new(Expr::parse(&name)?),
                     Box::new(Expr::parse(&value)?),
                 ))
             } else {
-                let (name, typ) = once!(x, ":")?;
+                let (name, typ) = once!(src, ":")?;
                 Ok(Expr::Let(
                     Box::new(Expr::parse(&name)?),
                     Box::new(Expr::Null(Type::parse(&typ)?)),
                 ))
             }
-        } else if let Some(x) = src.strip_prefix("if ") {
-            let (cond, body) = once!(x, "then")?;
+        } else if let Some(src) = src.strip_prefix("if ") {
+            let (cond, body) = once!(src, "then")?;
             if let Ok((then, r#else)) = once!(&body, "else") {
                 Ok(Expr::If(
                     Box::new(Expr::parse(&cond)?),
@@ -94,8 +94,8 @@ impl Expr {
                     None,
                 ))
             }
-        } else if let Some(x) = src.strip_prefix("while ") {
-            let (cond, body) = once!(x, "do")?;
+        } else if let Some(src) = src.strip_prefix("while ") {
+            let (cond, body) = once!(src, "do")?;
             Ok(Expr::While(
                 Box::new(Expr::parse(&cond)?),
                 Box::new(Expr::parse(&body)?),
@@ -146,7 +146,7 @@ impl Expr {
         } else if let Some(expr) = surround!("(", src, ")") {
             Expr::parse(expr)
         } else if let Some(arr) = surround!("[", src, "]") {
-            let arr = serial!(lexer(arr, ",")?, |x| Expr::parse(x));
+            let arr = serial!(arr, |x| Expr::parse(x));
             if let Ok(arr) = arr.try_into() {
                 Ok(Expr::Sequence(arr))
             } else {
@@ -155,7 +155,7 @@ impl Expr {
         } else if let Ok((func, args)) = surround!(src, "(", ")") {
             Ok(Expr::Call(
                 Box::new(Expr::parse(&func)?),
-                serial!(lexer(&args, ",")?, |x| Expr::parse(x)),
+                serial!(&args, |x| Expr::parse(x)),
             ))
         } else if let Ok((arr, idx)) = surround!(src, "[", "]") {
             Ok(Expr::Index(
@@ -192,7 +192,7 @@ impl Type {
                     Ok(Type::Function(
                         vec![],
                         Box::new(Type::parse(&func)?),
-                        Some(serial!(lexer(&args, ",")?, |x| Type::parse(x))),
+                        Some(serial!(&args, |x| Type::parse(x))),
                     ))
                 } else if let Some(arr) = surround!("[", x, "]") {
                     Ok(Type::Array(Box::new(Type::parse(arr)?)))
@@ -228,10 +228,7 @@ impl Generics {
     pub fn parse(src: &str) -> Result<Generics, String> {
         let x = src.trim();
         if let Some((var, args)) = surround!("<", ">", x) {
-            Ok(Generics(
-                Name::new(var)?,
-                map!(lexer(args, ",")?, |x| Type::parse(x))?,
-            ))
+            Ok(Generics(Name::new(var)?, serial!(args, |x| Type::parse(x))))
         } else {
             Ok(Generics(Name::new(x)?, vec![]))
         }
