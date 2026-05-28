@@ -125,6 +125,7 @@ pub enum Expr {
     Member(Box<Expr>, Name),
     Check(Box<Expr>),
     // Control
+    Print(Vec<Expr>),
     If(Box<Expr>, Box<Expr>, Option<Box<Expr>>),
     While(Box<Expr>, Box<Expr>),
     Block(Vec<Expr>),
