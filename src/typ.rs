@@ -173,7 +173,9 @@ impl Expr {
                 let typ = callee.infer(ctx)?;
                 if let Type::Function(_, ret, params) = typ {
                     let Some(params) = params else {
-                        map!(args, |x| x.infer(ctx));
+                        for arg in args {
+                            arg.infer(ctx)?;
+                        }
                         return typing!(*ret.clone());
                     };
                     let (pl, al) = (params.len(), args.len());
