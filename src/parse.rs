@@ -94,6 +94,21 @@ impl Expr {
                     None,
                 ))
             }
+        } else if let Some(src) = src.strip_prefix("match ") {
+            let (cond, body) = once!(src, "then")?;
+            if let Ok((then, r#else)) = once!(&body, "else") {
+                Ok(Expr::If(
+                    Box::new(Expr::parse(&cond)?),
+                    Box::new(Expr::parse(&then)?),
+                    Some(Box::new(Expr::parse(&r#else)?)),
+                ))
+            } else {
+                Ok(Expr::If(
+                    Box::new(Expr::parse(&cond)?),
+                    Box::new(Expr::parse(&body)?),
+                    None,
+                ))
+            }
         } else if let Some(src) = src.strip_prefix("while ") {
             let (cond, body) = once!(src, "do")?;
             Ok(Expr::While(
