@@ -260,7 +260,7 @@ impl Expr {
                     {
                         let [val, typ] = [val.infer(ctx)?, acc.infer(ctx)?];
                         if typ.clone() != val {
-                            return Err(format!("array[n]: {typ} != {val}"));
+                            return Err(format!("array[n] {typ} != {val}"));
                         }
                     }
                     let _ = expand!(Expr::Write(array!(arr, idx), val.clone(), arr.clone()));
