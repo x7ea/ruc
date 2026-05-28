@@ -147,7 +147,11 @@ impl Expr {
             Expr::parse(expr)
         } else if let Some(arr) = surround!("[", src, "]") {
             let arr = map!(lexer(arr, ",")? => |x| Expr::parse(x));
-            Ok(Expr::Sequence(arr.try_into()?))
+            if let Ok(arr) = arr.try_into() {
+                Ok(Expr::Sequence(arr))
+            } else {
+                Err(format!("empty: {src}"))
+            }
         } else if let Ok((func, args)) = surround!(src, "(", ")") {
             Ok(Expr::Call(
                 Box::new(Expr::parse(&func)?),
