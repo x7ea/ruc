@@ -7,6 +7,7 @@ use indexmap::{IndexMap, IndexSet};
 use lexer::lexer;
 use lexer::name::Name;
 use ordered_float::OrderedFloat as Float;
+use vec1::Vec1;
 
 use std::hash::Hash;
 use std::io::{Read, Write, stdin, stdout};
@@ -117,7 +118,7 @@ pub enum Expr {
     Read(Box<Expr>, Type, Box<Expr>),
     Write(Box<Expr>, Box<Expr>, Box<Expr>),
     Array(Type, usize),
-    Sequence(Vec<Expr>),
+    Sequence(Vec1<Expr>),
     Index(Box<Expr>, Box<Expr>),
     New(Type),
     Member(Box<Expr>, Name),
