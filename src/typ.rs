@@ -49,7 +49,7 @@ impl Expr {
                 typ.clone()
             }};
         }
-        macro_rules! initializer {
+        macro_rules! new {
             ($layout: expr) => {
                 Expr::Call(
                     Box::new(Expr::Variable(Generics(Name::new("calloc")?, vec![]))),
@@ -270,7 +270,7 @@ impl Expr {
                 other => Err(format!("not assign target: {}", other.infer(ctx)?)),
             },
             Expr::Alloc(typ, len) => {
-                let _ = expand!(initializer!(*len + 1));
+                let _ = expand!(new!(*len + 1));
                 typing!(Type::Array(Box::new(typ.clone())))
             }
             Expr::Sequence(array) => {
@@ -334,11 +334,11 @@ impl Expr {
                 };
                 let unify = match table {
                     Object::Enum(_) => {
-                        let _ = expand!(initializer!(2));
+                        let _ = expand!(new!(2));
                         Object::Enum(layout).clone()
                     }
                     Object::Struct(inner) => {
-                        let _ = expand!(initializer!(inner.len()));
+                        let _ = expand!(new!(inner.len()));
                         Object::Struct(layout).clone()
                     }
                 };
