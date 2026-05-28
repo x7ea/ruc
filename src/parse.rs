@@ -4,10 +4,10 @@ use std::fmt::{self, Display};
 pub const SPACE: &str = " ";
 
 impl Define {
-    pub fn parse(source: &str) -> Result<Vec<Define>, String> {
-        let source = source.trim().to_string();
+    pub fn parse(src: &str) -> Result<Vec<Define>, String> {
+        let src = src.trim().to_string();
         let mut result = Vec::new();
-        for line in tokenize(&source, "\n")? {
+        for line in tokenize(&src, "\n")? {
             macro_rules! args {
                 ($args: expr) => {{
                     let mut map = IndexMap::new();
@@ -49,10 +49,10 @@ impl Define {
 }
 
 impl Expr {
-    pub fn parse(source: &str) -> Result<Expr, String> {
-        let source = source.trim();
-        fn is_operator(source: &str) -> Result<(String, String, String), String> {
-            let tokens: Vec<String> = tokenize(source, SPACE)?;
+    pub fn parse(src: &str) -> Result<Expr, String> {
+        let src = src.trim();
+        fn is_operator(src: &str) -> Result<(String, String, String), String> {
+            let tokens: Vec<String> = tokenize(src, SPACE)?;
             if tokens.len() >= 3 {
                 let pos: usize = tokens.len() - 2;
                 let lhs = tokens[..pos].join(SPACE);
@@ -64,9 +64,9 @@ impl Expr {
             }
         }
 
-        if let Some(x) = source.strip_prefix("print ") {
+        if let Some(x) = src.strip_prefix("print ") {
             Ok(Expr::Print(map!(tokenize(x, ",")? => |i| Expr::parse(i))))
-        } else if let Some(x) = source.strip_prefix("let ") {
+        } else if let Some(x) = src.strip_prefix("let ") {
             if let Ok((name, value)) = once!(x, "=") {
                 Ok(Expr::Let(
                     Box::new(Expr::parse(&name)?),
@@ -79,7 +79,7 @@ impl Expr {
                     Box::new(Expr::Null(Type::parse(&typ)?)),
                 ))
             }
-        } else if let Some(x) = source.strip_prefix("if ") {
+        } else if let Some(x) = src.strip_prefix("if ") {
             let (cond, body) = once!(x, "then")?;
             if let Ok((then, r#else)) = once!(&body, "else") {
                 Ok(Expr::If(
@@ -94,13 +94,13 @@ impl Expr {
                     None,
                 ))
             }
-        } else if let Some(x) = source.strip_prefix("while ") {
+        } else if let Some(x) = src.strip_prefix("while ") {
             let (cond, body) = once!(x, "do")?;
             Ok(Expr::While(
                 Box::new(Expr::parse(&cond)?),
                 Box::new(Expr::parse(&body)?),
             ))
-        } else if let Some(class) = source.strip_prefix("new ") {
+        } else if let Some(class) = src.strip_prefix("new ") {
             if let Some(arr) = surround!("[", class, "]") {
                 let (typ, len) = ok!(arr.rsplit_once(";"))?;
                 let Ok(len) = len.trim().parse::<usize>() else {
@@ -110,7 +110,7 @@ impl Expr {
             } else {
                 Ok(Expr::New(Type::parse(class)?))
             }
-        } else if let Some(x) = surround!("{", source, "}") {
+        } else if let Some(x) = surround!("{", src, "}") {
             let mut block = vec![];
             for line in tokenize(x, "\n")? {
                 let (line, _) = once!(&line, ";").unwrap_or((line, String::new()));
@@ -119,7 +119,7 @@ impl Expr {
                 }
             }
             Ok(Expr::Block(block))
-        } else if let Ok((lhs, op, rhs)) = is_operator(source) {
+        } else if let Ok((lhs, op, rhs)) = is_operator(src) {
             let lhs = Box::new(Expr::parse(&lhs)?);
             let rhs = Box::new(Expr::parse(&rhs)?);
             Ok(match op.as_str() {
@@ -139,45 +139,45 @@ impl Expr {
                 "<=" => Expr::LtEq(lhs, rhs),
                 op => return Err(format!("unknown operator: {op}")),
             })
-        } else if source == "()" {
+        } else if src == "()" {
             Ok(Expr::Null(Type::None))
-        } else if let Some(x) = surround!("\"", source, "\"") {
+        } else if let Some(x) = surround!("\"", src, "\"") {
             Ok(Expr::String(x.to_owned()))
-        } else if let Some(expr) = surround!("(", source, ")") {
+        } else if let Some(expr) = surround!("(", src, ")") {
             Expr::parse(expr)
-        } else if let Some(arr) = surround!("[", source, "]") {
+        } else if let Some(arr) = surround!("[", src, "]") {
             let arr = map!(tokenize(arr, ",")? => |x| Expr::parse(x));
             Ok(Expr::Sequence(arr))
-        } else if let Ok((func, args)) = surround!(source, "(", ")") {
+        } else if let Ok((func, args)) = surround!(src, "(", ")") {
             Ok(Expr::Call(
                 Box::new(Expr::parse(&func)?),
                 map!(tokenize(&args, ",")? => |x| Expr::parse(x)),
             ))
-        } else if let Ok((arr, idx)) = surround!(source, "[", "]") {
+        } else if let Ok((arr, idx)) = surround!(src, "[", "]") {
             Ok(Expr::Index(
                 Box::new(Expr::parse(&arr)?),
                 Box::new(Expr::parse(&idx)?),
             ))
-        } else if let Ok(literal) = source.parse::<bool>() {
+        } else if let Ok(literal) = src.parse::<bool>() {
             Ok(Expr::Bool(literal))
-        } else if let Ok(literal) = source.parse::<i64>() {
+        } else if let Ok(literal) = src.parse::<i64>() {
             Ok(Expr::Integer(literal))
-        } else if let Ok(literal) = source.parse::<f64>() {
+        } else if let Ok(literal) = src.parse::<f64>() {
             use ordered_float::OrderedFloat;
             Ok(Expr::Float(OrderedFloat(literal)))
-        } else if let Some(class) = source.strip_suffix("?") {
+        } else if let Some(class) = src.strip_suffix("?") {
             Ok(Expr::Check(Box::new(Expr::parse(class)?)))
-        } else if let Some((obj, key)) = source.rsplit_once(".") {
+        } else if let Some((obj, key)) = src.rsplit_once(".") {
             Ok(Expr::Member(Box::new(Expr::parse(obj)?), Name::new(key)?))
         } else {
-            Ok(Expr::Variable(Generics::parse(source)?))
+            Ok(Expr::Variable(Generics::parse(src)?))
         }
     }
 }
 
 impl Type {
-    pub fn parse(source: &str) -> Result<Type, String> {
-        match source.trim() {
+    pub fn parse(src: &str) -> Result<Type, String> {
+        match src.trim() {
             "Int" => Ok(Type::Integer),
             "Str" => Ok(Type::String),
             "Bool" => Ok(Type::Bool),
@@ -224,8 +224,8 @@ impl Display for Type {
 }
 
 impl Generics {
-    pub fn parse(source: &str) -> Result<Generics, String> {
-        let x = source.trim();
+    pub fn parse(src: &str) -> Result<Generics, String> {
+        let x = src.trim();
         if let Some((var, args)) = surround!("<", ">", x) {
             Ok(Generics(
                 Name::new(var)?,
