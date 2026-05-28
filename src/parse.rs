@@ -206,7 +206,7 @@ impl Type {
 
 impl Display for Type {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        fn comma(x: &Vec<Type>) -> String {
+        fn comma(x: &[Type]) -> String {
             map!(x, |x: &Type| x.to_string()).join(", ")
         }
         match self {
