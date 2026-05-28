@@ -119,6 +119,14 @@ impl Expr {
                 Box::new(Expr::parse(&cond)?),
                 Box::new(Expr::parse(&body)?),
             ))
+        } else if let Some(src) = src.strip_prefix("for ") {
+            let (head, body) = once!(src, "do")?;
+            let (cnt, arr) = once!(&head, "=")?;
+            Ok(Expr::For(
+                Box::new(Expr::parse(&cnt)?),
+                Box::new(Expr::parse(&arr)?),
+                Box::new(Expr::parse(&body)?),
+            ))
         } else if let Some(class) = src.strip_prefix("new ") {
             if let Some(arr) = surround!("[", class, "]") {
                 let (typ, len) = ok!(arr.rsplit_once(";"))?;
