@@ -190,7 +190,7 @@ macro_rules! once {
         if v.len() >= 2 {
             Ok((v[0].clone(), v[1..].join($del)))
         } else {
-            Err(format!("expected: {}", $del))
+            Err(format!("expected {}", $del))
         }
     }};
 }
