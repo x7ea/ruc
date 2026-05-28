@@ -482,7 +482,7 @@ impl Expr {
                 op!(Type::Integer, lhs, rhs)
             }
             Expr::Null(typ) => {
-                if let Type::Float = typ {
+                if let Type::Float = typ.solve(ctx) {
                     typing!(expand!(Expr::Float(Float::from(0.0))))
                 } else {
                     typing!(expand!(Expr::Integer(0)))
