@@ -77,17 +77,17 @@ pub fn tokenize(input: &str, delimiter: &str) -> Result<Vec<String>, String> {
     let mut is_escape = false;
 
     let chars = input.chars().collect::<Vec<char>>();
-    let mut index = 0;
+    let mut idx = 0;
 
-    while index < chars.len() {
-        let c = chars[index];
+    while idx < chars.len() {
+        let c = chars[idx];
         if is_escape {
             current.push(c);
             is_escape = false;
-            index += 1;
+            idx += 1;
             continue;
         }
-        if let Some(op) = input.get(index..index + 3)
+        if let Some(op) = input.get(idx..idx + 3)
             && [" < ", " > "].contains(&op)
         {
             if delimiter == SPACE {
@@ -97,7 +97,7 @@ pub fn tokenize(input: &str, delimiter: &str) -> Result<Vec<String>, String> {
             } else {
                 current += op;
             }
-            index += 3;
+            idx += 3;
             continue;
         }
         match c {
@@ -122,21 +122,21 @@ pub fn tokenize(input: &str, delimiter: &str) -> Result<Vec<String>, String> {
                 is_escape = true;
             }
             _ => {
-                if input.get(index..index + delimiter.len()) == Some(delimiter) {
+                if input.get(idx..idx + delimiter.len()) == Some(delimiter) {
                     if level != 0 || in_quote || is_escape {
                         current += delimiter;
                     } else if !current.is_empty() {
                         tokens.push(current.clone());
                         current.clear();
                     }
-                    index += delimiter.len();
+                    idx += delimiter.len();
                     continue;
                 } else {
                     current.push(c);
                 }
             }
         }
-        index += 1
+        idx += 1
     }
 
     if is_escape || in_quote || level != 0 {
