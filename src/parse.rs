@@ -96,7 +96,23 @@ impl Expr {
             }
         } else if let Some(src) = src.strip_prefix("match ") {
             let (expr, pats) = surround!(src, "{", "}")?;
-            Ok(Expr::Match(Box::new(Expr::parse(&expr)?)))
+            let pats = serial!(&pats, |src| {
+                let (head, ret) = once!(src, "=")?;
+                if let Ok((key, bind)) = once!(&head, SPACE) {
+                    Ok((
+                        Name::new(&key)?,
+                        Some(Expr::parse(&bind)?),
+                        Expr::parse(&ret)?,
+                    ))
+                } else {
+                    Ok((Name::new(&head)?, None, Expr::parse(&ret)?))
+                }
+            });
+            if let Ok(pats) = pats.try_into() {
+                Ok(Expr::Match(Box::new(Expr::parse(&expr)?), pats))
+            } else {
+                Err(format!("empty: {src}"))
+            }
         } else if let Some(src) = src.strip_prefix("while ") {
             let (cond, body) = once!(src, "do")?;
             Ok(Expr::While(
