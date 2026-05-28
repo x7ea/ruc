@@ -7,10 +7,15 @@ enum State {
 
 fn eval(n: Int) {
     let this = new State
-    let this.number = n
-    if n % 3 == 0 then let this.fizz = ()
-    if n % 5 == 0 then let this.buzz = ()
-    if n % 15 == 0 then let this.fizzbuzz = ()
+    if n % 15 == 0 then {
+        let this.fizzbuzz = ()
+    } else if n % 3 == 0 then {
+        let this.fizz = ()
+    } else if n % 5 == 0 then {
+        let this.buzz = ()
+    } else {
+        let this.number = n
+    }
     this
 }
 
