@@ -146,7 +146,7 @@ impl Expr {
         } else if let Some(expr) = surround!("(", src, ")") {
             Expr::parse(expr)
         } else if let Some(arr) = surround!("[", src, "]") {
-            let arr = serial!(arr, |x| Expr::parse(x));
+            let arr = serial!(arr, Expr::parse);
             if let Ok(arr) = arr.try_into() {
                 Ok(Expr::Sequence(arr))
             } else {
