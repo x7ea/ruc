@@ -195,7 +195,7 @@ impl Expr {
                 }
                 _ => expr!(self).emit(ctx),
             },
-            Expr::Array(_, len) => {
+            Expr::Alloc(_, len) => {
                 let setlen = &format!("\tmov qword [rax], {len}\n");
                 Ok(expr!(self).emit(ctx)? + setlen)
             }
