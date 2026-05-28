@@ -107,26 +107,28 @@ pub struct Generics(Name, Vec<Type>);
 
 #[derive(Clone, Debug, Hash, PartialEq, Eq)]
 pub enum Expr {
+    // Literal
     Integer(i64),
     Float(Float<f64>),
     Bool(bool),
     String(String),
     Null(Type),
+    // Reference
     Variable(Generics),
     Let(Box<Expr>, Box<Expr>),
     Call(Box<Expr>, Vec<Expr>),
-    Read(Box<Expr>, Type, Box<Expr>),
-    Write(Box<Expr>, Box<Expr>, Box<Expr>),
-    Array(Type, usize),
+    // Array
     Sequence(Vec1<Expr>),
     Index(Box<Expr>, Box<Expr>),
-    New(Type),
+    // Object
+    Constructor(Type),
     Member(Box<Expr>, Name),
     Check(Box<Expr>),
+    // Control
     If(Box<Expr>, Box<Expr>, Option<Box<Expr>>),
     While(Box<Expr>, Box<Expr>),
-    Print(Vec<Expr>),
     Block(Vec<Expr>),
+    // Operator
     Add(Box<Expr>, Box<Expr>),
     Sub(Box<Expr>, Box<Expr>),
     Mul(Box<Expr>, Box<Expr>),
@@ -141,6 +143,10 @@ pub enum Expr {
     And(Box<Expr>, Box<Expr>),
     Or(Box<Expr>, Box<Expr>),
     Xor(Box<Expr>, Box<Expr>),
+    // Low-layer IR
+    Read(Box<Expr>, Type, Box<Expr>),
+    Write(Box<Expr>, Box<Expr>, Box<Expr>),
+    Alloc(Type, usize),
 }
 
 #[derive(Clone, PartialEq, Eq, Debug, Hash)]
