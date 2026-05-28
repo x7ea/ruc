@@ -51,10 +51,10 @@ pub mod name {
             if self.1.is_empty() {
                 return self.0.clone();
             }
+            fn concat(x: &[Type]) -> String {
+                map!(x, |x| Ok(mangle(x))).unwrap().concat()
+            }
             fn mangle(typ: &Type) -> String {
-                fn concat(x: &[Type]) -> String {
-                    map!(x, |x| Ok(mangle(x))).unwrap().concat()
-                }
                 match typ {
                     Type::Integer => "I".to_string(),
                     Type::String => "S".to_string(),
@@ -69,7 +69,7 @@ pub mod name {
                     Type::Function(_, ret, None) => format!("L{}", mangle(ret)),
                 }
             }
-            let typ = concat(self.1);
+            let typ = concat(&self.1);
             Name(format!("{}.{typ}", self.0))
         }
     }
