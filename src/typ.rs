@@ -483,11 +483,10 @@ impl Expr {
             }
             Expr::Null(typ) => {
                 if let Type::Float = typ {
-                    let _ = expand!(Expr::Float(Float::from(0.0)));
+                    typing!(expand!(Expr::Float(Float::from(0.0))))
                 } else {
-                    let _ = expand!(Expr::Integer(0));
+                    typing!(expand!(Expr::Integer(0)))
                 }
-                typing!(typ.clone())
             }
             Expr::Integer(_) => typing!(Type::Integer),
             Expr::Float(_) => typing!(Type::Float),
