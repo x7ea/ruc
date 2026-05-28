@@ -69,18 +69,19 @@ impl Expr {
             };
         }
         macro_rules! op {
-            ($typ: pat, $lhs: expr, $rhs: expr $(, $ret: expr)?) => {{
-                let [lt, rt] =[$lhs.infer(ctx)?, $rhs.infer(ctx)?];
+            ($typ: pat, $lhs: expr, $rhs: expr) => {{
+                let [lt, rt] = [$lhs.infer(ctx)?, $rhs.infer(ctx)?];
                 if lt != rt {
-                    return Err(format!("term: {lt} != {rt}"))
+                    return Err(format!("operator term: {lt} != {rt}"));
                 }
-                #[allow(warnings)]
-                if let $typ = lt {
-                    $( return typing!($ret); )?
-                    typing!(lt.clone())
-                } else {
-                    Err(format!("no operation: {lt}"))
-                }
+                let $typ = lt else {
+                    return Err(format!("no operation: {lt}"));
+                };
+                typing!(lt.clone())
+            }};
+            ($typ: pat, $lhs: expr, $rhs: expr, $ret: expr) => {{
+                op!($typ, $lhs, $rhs);
+                typing!($ret.clone())
             }};
         }
         macro_rules! get {
@@ -123,10 +124,15 @@ impl Expr {
                     return Err(format!("if-else test: Bool != {cond}"));
                 }
                 if let Some(els) = els {
-                    return op!(_, then, els);
+                    let [then, els] = [then.infer(ctx)?, els.infer(ctx)?];
+                    if then != els {
+                        return Err(format!("if-else term: {then} != {els}"));
+                    }
+                    typing!(then.clone())
+                } else {
+                    then.infer(ctx)?;
+                    Ok(Type::None)
                 }
-                then.infer(ctx)?;
-                Ok(Type::None)
             }
             Expr::Match(val, pats) => {
                 let mut expr = Expr::Null(pats[0].2.infer(ctx)?);
