@@ -71,16 +71,15 @@ impl Expr {
         macro_rules! op {
             ($typ: pat, $lhs: expr, $rhs: expr $(, $ret: expr)?) => {{
                 let [lt, rt] =[$lhs.infer(ctx)?, $rhs.infer(ctx)?];
-                if lt == rt {
-                    #[allow(warnings)]
-                    if let $typ = lt {
-                        $( return typing!($ret); )?
-                        typing!(lt.clone())
-                    } else {
-                        Err(format!("no operation: {lt}"))
-                    }
+                if lt != rt {
+                    return Err(format!("term: {lt} != {rt}"))
+                }
+                #[allow(warnings)]
+                if let $typ = lt {
+                    $( return typing!($ret); )?
+                    typing!(lt.clone())
                 } else {
-                    Err(format!("term: {lt} != {rt}"))
+                    Err(format!("no operation: {lt}"))
                 }
             }};
         }
