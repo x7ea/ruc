@@ -169,7 +169,7 @@ impl Expr {
             if let Ok(arr) = arr.try_into() {
                 Ok(Expr::Sequence(arr))
             } else {
-                Err(format!("empty: {src}"))
+                Err(format!("empty array: {src}"))
             }
         } else if let Ok((func, args)) = surround!(src, "(", ")") {
             Ok(Expr::Call(
