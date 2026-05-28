@@ -236,7 +236,7 @@ impl Expr {
                     {
                         let [val, typ] = [val.infer(ctx)?, acc.infer(ctx)?];
                         if typ.clone() != val {
-                            return Err(format!("array: {typ} != {val}"));
+                            return Err(format!("array[n]: {typ} != {val}"));
                         }
                     }
                     let _ = expand!(Expr::Write(array!(arr, idx), val.clone(), arr.clone()));
@@ -279,22 +279,20 @@ impl Expr {
                     if let Some(typ) = typ.clone() {
                         let val = val.infer(ctx)?;
                         if val != typ {
-                            return Err(format!("sequence: {typ} != {val}"));
+                            return Err(format!("sequence [...] {typ} != {val}"));
                         }
                     } else {
                         typ = Some(val.infer(ctx)?);
                     }
                 }
-                let Some(typ) = typ else {
-                    return Err(format!("empty: {array:?}"));
-                };
+                let typ = typ.unwrap();
                 let temp = Box::new(Expr::Variable(Generics(
                     Generics(Name::new("temp")?, vec![typ.clone()]).generics(),
                     vec![],
                 )));
                 let mut expr = vec![Expr::Let(
                     temp.clone(),
-                    Box::new(Expr::Init(typ.clone(), array.len())),
+                    Box::new(Expr::Init(typ, array.len())),
                 )];
                 for (idx, val) in array.iter().enumerate() {
                     expr.push(Expr::Let(
