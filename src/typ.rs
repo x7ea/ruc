@@ -124,6 +124,7 @@ impl Expr {
                 }
                 if let Some(els) = els {
                     let [then, els] = [then.infer(ctx)?, els.infer(ctx)?];
+                    dbg!(&self);
                     if then != els {
                         return Err(format!("if-else term: {then} != {els}"));
                     }
@@ -482,11 +483,13 @@ impl Expr {
                 op!(Type::Integer, lhs, rhs)
             }
             Expr::Null(typ) => {
-                if let Type::Float = typ.solve(ctx) {
-                    typing!(expand!(Expr::Float(Float::from(0.0))))
+                let typ = typ.solve(ctx);
+                if let Type::Float = typ {
+                    expand!(Expr::Float(Float::from(0.0)))
                 } else {
-                    typing!(expand!(Expr::Integer(0)))
+                    expand!(Expr::Integer(0))
                 }
+                typing!(typ)
             }
             Expr::Integer(_) => typing!(Type::Integer),
             Expr::Float(_) => typing!(Type::Float),
