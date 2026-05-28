@@ -15,10 +15,12 @@ fn eval(n: Int) {
 }
 
 fn display(this: State) {
-    if this.fizz? then print "Fizz"
-    if this.buzz? then print "Buzz"
-    if this.fizzbuzz? then print "FizzBuzz"
-    if let n = this.number then print n
+    match this {
+        fizz = print "Fizz",
+        buzz = print "Buzz",
+        fizzbuzz = print "FizzBuzz"
+        number i = print i
+    }
 }
 
 fn main() {
