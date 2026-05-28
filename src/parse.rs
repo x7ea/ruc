@@ -106,9 +106,9 @@ impl Expr {
                 let Ok(len) = len.trim().parse::<usize>() else {
                     return Err(format!("not length: {len}"));
                 };
-                Ok(Expr::Array(Type::parse(typ)?, len))
+                Ok(Expr::Alloc(Type::parse(typ)?, len))
             } else {
-                Ok(Expr::New(Type::parse(class)?))
+                Ok(Expr::Constructor(Type::parse(class)?))
             }
         } else if let Some(x) = surround!("{", src, "}") {
             let mut block = vec![];
