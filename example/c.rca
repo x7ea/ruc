@@ -1,6 +1,8 @@
 fn reduce<T>(this: [T], lambda: T(T, T)) {
     let acc: T
-    for i = this do let acc = lambda(acc, i)
+    for i = this do {
+        let acc = lambda(acc, i)
+    }
     acc
 }
 
