@@ -24,12 +24,12 @@ impl Define {
             if let Some(func) = line.strip_prefix("fn ") {
                 let (head, body) = once!(func, SPACE)?;
                 let (name, args) = surround!(&head, "(", ")")?;
-                let func = Define::Function(
+                let body = Expr::Block(vec![Expr::parse(&body)?]);
+                result.push(Define::Function(
                     Generics::parse(&name)?,
                     args!(&args),
-                    Expr::Block(vec![Expr::parse(&body)?]),
-                );
-                result.push(func);
+                    body,
+                ));
             } else if let Some(head) = line.strip_prefix("struct ") {
                 let (name, args) = surround!(&head, "{", "}")?;
                 result.push(Define::Class(
