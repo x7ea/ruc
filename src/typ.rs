@@ -80,7 +80,7 @@ impl Expr {
                 typing!(lt.clone())
             }};
             ($typ: pat, $lhs: expr, $rhs: expr, $ret: expr) => {{
-                op!($typ, $lhs, $rhs);
+                op!($typ, $lhs, $rhs)?;
                 typing!($ret.clone())
             }};
         }
