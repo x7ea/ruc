@@ -507,7 +507,7 @@ impl Type {
             Type::Function(typ, ret, Some(args)) => Type::Function(
                 typ.clone(),
                 Box::new(ret.solve(ctx)),
-                Some(map!(args, |x| x.solve(ctx))),
+                Some(map!(args, |x| x.solve(ctx))?),
             ),
             Type::Class(Generics(name, args)) => {
                 Type::Class(Generics(name.clone(), map!(args, |x| x.solve(ctx))))
