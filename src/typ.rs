@@ -280,13 +280,13 @@ impl Expr {
             Expr::Let(name, val) => match &**name {
                 Expr::Variable(Generics(name, _)) => {
                     let val = val.infer(ctx)?;
-                    let env = &mut ctx.local.scope;
-                    if let Some(typ) = env.get(name) {
-                        if val != *typ {
+                    if let Some(typ) = ctx.local.scope.get(name) {
+                        let typ = typ.clone().solve(ctx);
+                        if val != typ {
                             return Err(format!("{name}: {typ} != {val}"));
                         }
                     } else {
-                        env.insert(name.clone(), val.clone());
+                        ctx.local.scope.insert(name.clone(), val.clone());
                     }
                     typing!(Type::None)
                 }
