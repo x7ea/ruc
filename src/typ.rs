@@ -124,6 +124,7 @@ impl Expr {
                     return Err(format!("if-else test: Bool != {cond}"));
                 }
                 if let Some(els) = els {
+                    dbg!(&then);
                     let [then, els] = [then.infer(ctx)?, els.infer(ctx)?];
                     if then != els {
                         return Err(format!("if-else term: {then} != {els}"));
@@ -404,13 +405,14 @@ impl Expr {
                 let Type::Class(name) = &typ else {
                     return Err(format!("not class: {typ}"));
                 };
-                let Some((_, class)) = ctx.global.table.get(&name.generics()) else {
+                let Some((_, class)) = ctx.global.table.get(&name.generics()).cloned() else {
                     return Err(format!("undefined: {name}"));
                 };
-                let (Object::Struct(layout) | Object::Enum(layout)) = class;
+                let (Object::Struct(layout) | Object::Enum(layout)) = &class;
                 let Some(typ) = layout.get(key).cloned() else {
                     return Err(format!("undefined: {name}.{key}"));
                 };
+                let typ = typ.solve(ctx);
                 match class {
                     Object::Struct(layout) => {
                         let offset = Expr::Integer(layout.get_index_of(key).unwrap() as i64);
