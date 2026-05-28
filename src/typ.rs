@@ -147,6 +147,15 @@ impl Expr {
                             Box::new(ret.clone()),
                             Some(Box::new(expr)),
                         )
+                    } else {
+                        expr = Expr::If(
+                            Box::new(Expr::Check(Box::new(Expr::Member(
+                                val.clone(),
+                                key.clone(),
+                            )))),
+                            Box::new(ret.clone()),
+                            Some(Box::new(expr)),
+                        )
                     }
                 }
                 typing!(expand!(expr))
