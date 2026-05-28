@@ -279,7 +279,7 @@ impl Expr {
                     if let Some(typ) = typ.clone() {
                         let val = val.infer(ctx)?;
                         if val != typ {
-                            return Err(format!("sequence [...] {typ} != {val}"));
+                            return Err(format!("sequence [.., ] {typ} != {val}"));
                         }
                     } else {
                         typ = Some(val.infer(ctx)?);
