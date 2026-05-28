@@ -87,8 +87,8 @@ pub fn tokenize(input: &str, delimiter: &str) -> Result<Vec<String>, String> {
             index += 1;
             continue;
         }
-        if let Some(op) = input.get(index..index + 3) {
-            if [" < ", " > "].contains(&op) {
+        if let Some(op) = input.get(index..index + 3)
+            && [" < ", " > "].contains(&op) {
                 if delimiter == SPACE {
                     tokens.push(current_token.clone());
                     tokens.push(op.trim().to_string());
@@ -99,7 +99,6 @@ pub fn tokenize(input: &str, delimiter: &str) -> Result<Vec<String>, String> {
                 index += 3;
                 continue;
             }
-        }
         match c {
             '<' | '(' | '{' | '[' if !in_quote => {
                 if c.to_string() == delimiter && in_parentheses == 0 {
