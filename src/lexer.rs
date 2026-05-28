@@ -211,7 +211,7 @@ macro_rules! serial {
     ($arr: expr, $lambda: expr) => {
         lexer($arr, ",")?
             .iter()
-            .map($lambda)
+            .map(|x| $lambda(&x))
             .collect::<Result<Vec<_>, String>>()?
     };
 }
