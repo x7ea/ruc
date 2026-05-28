@@ -9,7 +9,7 @@ impl Define {
                 ctx.local.scope = args.clone();
 
                 let ret = body.infer(ctx);
-                let args = Some(args.vals().cloned().collect::<Vec<Type>>());
+                let args = Some(args.values().cloned().collect::<Vec<Type>>());
                 let sig = if !param.is_empty() {
                     ctx.global.meta.insert(name.clone());
                     Type::Function(param.clone(), Box::new(Type::None), args)
@@ -233,18 +233,22 @@ impl Expr {
                     typing!(Type::None)
                 }
                 acc @ Expr::Index(arr, idx) => {
-                    let [val, typ] = [val.infer(ctx)?, acc.infer(ctx)?];
-                    if typ.clone() != val {
-                        return Err(format!("array: {typ} != {val}"));
+                    {
+                        let [val, typ] = [val.infer(ctx)?, acc.infer(ctx)?];
+                        if typ.clone() != val {
+                            return Err(format!("array: {typ} != {val}"));
+                        }
                     }
                     let _ = expand!(Expr::Write(array!(arr, idx), val.clone(), arr.clone()));
                     typing!(Type::None)
                 }
                 acc @ Expr::Member(obj, key) => {
-                    let [val, typ] = [val.infer(ctx)?, acc.infer(ctx)?];
                     let Generics(name, _) = &get!(Class, obj.infer(ctx)?);
-                    if typ.solve(ctx) != val {
-                        return Err(format!("{name}.{key}: {typ} != {val}"));
+                    {
+                        let [val, typ] = [val.infer(ctx)?, acc.infer(ctx)?];
+                        if typ.solve(ctx) != val {
+                            return Err(format!("{name}.{key}: {typ} != {val}"));
+                        }
                     }
                     match ok!(ctx.global.table.get(name))? {
                         (_, Object::Struct(layout)) => {
