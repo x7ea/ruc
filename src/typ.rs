@@ -130,7 +130,7 @@ impl Expr {
                 Ok(Type::None)
             }
             Expr::Match(val, pats) => {
-                let mut expr = Expr::Null(pats[0].2.infer(ctx)?);
+                let mut expr = Expr::Null(pats[0].1.infer(ctx)?);
                 for (key, bind, ret) in pats {
                     if let Some(bind) = bind {
                         expr = Expr::If(
@@ -507,7 +507,7 @@ impl Type {
             Type::Function(typ, ret, Some(args)) => Type::Function(
                 typ.clone(),
                 Box::new(ret.solve(ctx)),
-                Some(map!(args, |x| x.solve(ctx))?),
+                Some(map!(args, |x| x.solve(ctx))),
             ),
             Type::Class(Generics(name, args)) => {
                 Type::Class(Generics(name.clone(), map!(args, |x| x.solve(ctx))))
