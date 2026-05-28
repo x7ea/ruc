@@ -302,10 +302,6 @@ impl Expr {
                 }
                 other => Err(format!("not assign target: {}", other.infer(ctx)?)),
             },
-            Expr::Init(typ, len) => {
-                let _ = expand!(new!(*len + 1));
-                typing!(Type::Array(Box::new(typ.clone())))
-            }
             Expr::Sequence(array) => {
                 let typ = array[0].infer(ctx)?;
                 let temp = Box::new(Expr::Variable(Generics(
@@ -327,6 +323,18 @@ impl Expr {
                 }
                 expr.push(*temp);
                 typing!(expand!(Expr::Block(expr)))
+            }
+            Expr::Index(arr, idx) => {
+                let typ = arr.infer(ctx)?;
+                let Type::Array(typ) = typ else {
+                    return Err(format!("not array: {typ}"));
+                };
+                let idx_t = idx.infer(ctx)?;
+                let Type::Integer = idx_t else {
+                    return Err(format!("not index: {idx_t}"));
+                };
+                let _ = expand!(Expr::Read(array!(arr, idx), *typ.clone(), arr.clone()));
+                typing!(*typ.clone())
             }
             Expr::Constructor(typ) => {
                 let Type::Class(Generics(name, mut args)) = typ.clone() else {
@@ -365,18 +373,6 @@ impl Expr {
                 let mangle = Generics(name.clone(), args).generics();
                 ctx.global.table.insert(mangle.clone(), (vec![], unify));
                 typing!(typ.solve(ctx))
-            }
-            Expr::Index(arr, idx) => {
-                let typ = arr.infer(ctx)?;
-                let Type::Array(typ) = typ else {
-                    return Err(format!("not array: {typ}"));
-                };
-                let idx_t = idx.infer(ctx)?;
-                let Type::Integer = idx_t else {
-                    return Err(format!("not index: {idx_t}"));
-                };
-                let _ = expand!(Expr::Read(array!(arr, idx), *typ.clone(), arr.clone()));
-                typing!(*typ.clone())
             }
             Expr::Member(obj, key) => {
                 let typ = obj.infer(ctx)?;
@@ -436,6 +432,10 @@ impl Expr {
                     return Err(format!("not nullable: {typ}"));
                 }
                 typing!(Type::Bool)
+            }
+            Expr::Init(typ, len) => {
+                let _ = expand!(new!(*len + 1));
+                typing!(Type::Array(Box::new(typ.clone())))
             }
             Expr::Read(addr, typ, offset) => {
                 let offset = offset.infer(ctx)?;
