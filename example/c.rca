@@ -1,9 +1,5 @@
 fn reduce<T>(this: [T], lambda: T(T, T)) {
-    let index = 1
-    while index < this.len do {
-        let this[0] = lambda(this[0], this[index])
-        let index = index + 1
-    }
+    for i = this do let this[0] = lambda(this[0], i)
     this[0]
 }
 
