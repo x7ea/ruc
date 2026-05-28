@@ -68,29 +68,29 @@ pub mod name {
     }
 }
 
-pub fn tokenize(input: &str, delimiter: &str) -> Result<Vec<String>, String> {
+pub fn tokenize(src: &str, del: &str) -> Result<Vec<String>, String> {
     let mut tokens: Vec<String> = Vec::new();
     let mut current = String::new();
 
     let mut level: usize = 0;
-    let mut in_quote = false;
-    let mut is_escape = false;
+    let mut quote = false;
+    let mut esc = false;
 
-    let chars = input.chars().collect::<Vec<char>>();
+    let chars = src.chars().collect::<Vec<char>>();
     let mut idx = 0;
 
     while idx < chars.len() {
         let c = chars[idx];
-        if is_escape {
+        if esc {
             current.push(c);
-            is_escape = false;
+            esc = false;
             idx += 1;
             continue;
         }
-        if let Some(op) = input.get(idx..idx + 3)
+        if let Some(op) = src.get(idx..idx + 3)
             && [" < ", " > "].contains(&op)
         {
-            if delimiter == SPACE {
+            if del == SPACE {
                 tokens.push(current.clone());
                 tokens.push(op.trim().to_string());
                 current.clear();
@@ -101,35 +101,35 @@ pub fn tokenize(input: &str, delimiter: &str) -> Result<Vec<String>, String> {
             continue;
         }
         match c {
-            '<' | '(' | '{' | '[' if !in_quote => {
-                if c.to_string() == delimiter && level == 0 {
+            '<' | '(' | '{' | '[' if !quote => {
+                if c.to_string() == del && level == 0 {
                     tokens.push(current.clone());
                     current.clear();
                 }
                 current.push(c);
                 level += 1;
             }
-            '>' | ')' | '}' | ']' if !in_quote => {
+            '>' | ')' | '}' | ']' if !quote => {
                 current.push(c);
                 level = level.saturating_sub(1);
             }
             '"' => {
-                in_quote = !in_quote;
+                quote = !quote;
                 current.push(c);
             }
-            '\\' if in_quote => {
+            '\\' if quote => {
                 current.push(c);
-                is_escape = true;
+                esc = true;
             }
             _ => {
-                if input.get(idx..idx + delimiter.len()) == Some(delimiter) {
-                    if level != 0 || in_quote || is_escape {
-                        current += delimiter;
+                if src.get(idx..idx + del.len()) == Some(del) {
+                    if level != 0 || quote || esc {
+                        current += del;
                     } else if !current.is_empty() {
                         tokens.push(current.clone());
                         current.clear();
                     }
-                    idx += delimiter.len();
+                    idx += del.len();
                     continue;
                 } else {
                     current.push(c);
@@ -139,7 +139,7 @@ pub fn tokenize(input: &str, delimiter: &str) -> Result<Vec<String>, String> {
         idx += 1
     }
 
-    if is_escape || in_quote || level != 0 {
+    if esc || quote || level != 0 {
         return Err(format!("not closed: {current}"));
     }
     if !current.is_empty() {
