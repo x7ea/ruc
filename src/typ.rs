@@ -174,7 +174,7 @@ impl Expr {
                 typing!(expand!(Expr::Block(vec![
                     Expr::Let(temp.clone(), Box::new(Expr::Integer(0))),
                     Expr::While(
-                        Box::new(Expr::Lt(
+                        Box::new(Expr::NotEq(
                             temp.clone(),
                             Box::new(Expr::Member(arr.clone(), Name::new("len")?)),
                         )),
