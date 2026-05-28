@@ -9,7 +9,7 @@ impl Define {
                 ctx.local.scope = args.clone();
 
                 let ret = body.infer(ctx);
-                let args = Some(args.values().cloned().collect::<Vec<Type>>());
+                let args = Some(args.vals().cloned().collect::<Vec<Type>>());
                 let sig = if !param.is_empty() {
                     ctx.global.meta.insert(name.clone());
                     Type::Function(param.clone(), Box::new(Type::None), args)
@@ -23,8 +23,8 @@ impl Define {
                 Ok(sig)
             }
             Define::Class(Generics(name, args), layout) => {
-                let value = (args.clone(), layout.clone());
-                ctx.global.table.insert(name.clone(), value);
+                let val = (args.clone(), layout.clone());
+                ctx.global.table.insert(name.clone(), val);
                 Ok(Type::None)
             }
         }
@@ -91,9 +91,9 @@ impl Expr {
             }};
         }
         match self {
-            Expr::Print(values) => {
+            Expr::Print(vals) => {
                 let mut fmt = String::new();
-                for i in values.iter() {
+                for i in vals.iter() {
                     let typ = i.infer(ctx)?;
                     fmt += match typ {
                         Type::Integer => "%ld",
@@ -104,7 +104,7 @@ impl Expr {
                 }
                 let _ = expand!(Expr::Call(
                     Box::new(Expr::Variable(Generics(Name::new("printf")?, vec![]))),
-                    [vec![Expr::String(fmt + "\\n")], values.to_vec()].concat(),
+                    [vec![Expr::String(fmt + "\\n")], vals.to_vec()].concat(),
                 ));
                 typing!(Type::None)
             }
@@ -142,13 +142,13 @@ impl Expr {
                 for line in lines {
                     ret = line.infer(ctx)?;
                 }
-                for (name, value) in &ctx.local.scope {
+                for (name, val) in &ctx.local.scope {
                     if let Some(typ) = ctx.local.var.get(name)
-                        && typ != value
+                        && typ != val
                     {
-                        return Err(format!("duplicated {name}: {typ} != {value}"));
+                        return Err(format!("duplicated {name}: {typ} != {val}"));
                     }
-                    ctx.local.var.insert(name.clone(), value.clone());
+                    ctx.local.var.insert(name.clone(), val.clone());
                 }
                 ctx.local.scope = parent;
                 typing!(ret.clone())
@@ -219,9 +219,9 @@ impl Expr {
                     Err(format!("undefined: {name}"))
                 }
             }
-            Expr::Let(name, value) => match &**name {
+            Expr::Let(name, val) => match &**name {
                 Expr::Variable(Generics(name, _)) => {
-                    let val = value.infer(ctx)?;
+                    let val = val.infer(ctx)?;
                     let env = &mut ctx.local.scope;
                     if let Some(typ) = env.get(name) {
                         if val != *typ {
@@ -233,15 +233,15 @@ impl Expr {
                     typing!(Type::None)
                 }
                 acc @ Expr::Index(arr, idx) => {
-                    let [val, typ] = [value.infer(ctx)?, acc.infer(ctx)?];
+                    let [val, typ] = [val.infer(ctx)?, acc.infer(ctx)?];
                     if typ.clone() != val {
                         return Err(format!("array: {typ} != {val}"));
                     }
-                    let _ = expand!(Expr::Write(array!(arr, idx), value.clone(), arr.clone()));
+                    let _ = expand!(Expr::Write(array!(arr, idx), val.clone(), arr.clone()));
                     typing!(Type::None)
                 }
                 acc @ Expr::Member(obj, key) => {
-                    let [val, typ] = [value.infer(ctx)?, acc.infer(ctx)?];
+                    let [val, typ] = [val.infer(ctx)?, acc.infer(ctx)?];
                     let Generics(name, _) = &get!(Class, obj.infer(ctx)?);
                     if typ.solve(ctx) != val {
                         return Err(format!("{name}.{key}: {typ} != {val}"));
@@ -250,14 +250,14 @@ impl Expr {
                         (_, Object::Struct(layout)) => {
                             let offset = layout.get_index_of(key).unwrap();
                             let offset = Box::new(Expr::Integer(offset as i64));
-                            let _ = expand!(Expr::Write(offset, value.clone(), obj.clone()));
+                            let _ = expand!(Expr::Write(offset, val.clone(), obj.clone()));
                         }
                         (_, Object::Enum(layout)) => {
                             let tag = layout.get_index_of(key).unwrap() as i64;
                             let offset = |x| Box::new(Expr::Integer(x));
                             let _ = expand!(Expr::Block(vec![
                                 Expr::Write(offset(0), offset(tag), obj.clone()),
-                                Expr::Write(offset(8), value.clone(), obj.clone()),
+                                Expr::Write(offset(8), val.clone(), obj.clone()),
                             ]));
                         }
                     }
@@ -421,13 +421,13 @@ impl Expr {
                 addr.infer(ctx)?;
                 typing!(typ.clone())
             }
-            Expr::Write(addr, value, offset) => {
+            Expr::Write(addr, val, offset) => {
                 let offset = offset.infer(ctx)?;
                 if let Type::Integer = offset {
                     return Err(format!("not address: {offset}"));
                 }
                 addr.infer(ctx)?;
-                typing!(value.infer(ctx)?)
+                typing!(val.infer(ctx)?)
             }
             Expr::Mod(lhs, rhs) => {
                 let _ = expand!(Expr::Div(lhs.clone(), rhs.clone()));
