@@ -15,6 +15,7 @@ fn eval(n: Int) {
         let this.buzz = ()
     } else {
         let this.number = n
+        ()
     }
     this
 }
