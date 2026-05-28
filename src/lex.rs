@@ -185,12 +185,12 @@ macro_rules! ok {
 
 #[macro_export]
 macro_rules! once {
-    ($v: expr, $delimiter: expr) => {{
-        let v = tokenize($v, $delimiter)?;
+    ($v: expr, $del: expr) => {{
+        let v = tokenize($v, $del)?;
         if v.len() >= 2 {
-            Ok((v[0].clone(), v[1..].join($delimiter)))
+            Ok((v[0].clone(), v[1..].join($del)))
         } else {
-            Err(format!("expected: {}", $delimiter))
+            Err(format!("expected: {}", $del))
         }
     }};
 }
