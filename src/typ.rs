@@ -130,20 +130,20 @@ impl Expr {
                 Ok(Type::None)
             }
             Expr::Match(val, pats) => {
-                let expr = None;
+                let mut expr = Expr::Null(pats[0].2.infer(ctx)?);
                 for (key, bind, ret) in pats {
                     if let Some(bind) = bind {
-                        expr = Some(Box::new(Expr::If(
+                        expr = Expr::If(
                             Box::new(Expr::Let(
                                 Box::new(bind.clone()),
                                 Box::new(Expr::Member(val.clone(), key.clone())),
                             )),
                             Box::new(ret.clone()),
-                            expr,
-                        )))
+                            Some(Box::new(expr)),
+                        )
                     }
                 }
-                todo!()
+                typing!(expand!(expr))
             }
             Expr::While(cond, body) => {
                 let cond = cond.infer(ctx)?;
@@ -173,7 +173,7 @@ impl Expr {
                 let typ = callee.infer(ctx)?;
                 if let Type::Function(_, ret, params) = typ {
                     let Some(params) = params else {
-                        map!(args => |x| x.infer(ctx));
+                        map!(args, |x| x.infer(ctx));
                         return typing!(*ret.clone());
                     };
                     let (pl, al) = (params.len(), args.len());
