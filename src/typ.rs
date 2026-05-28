@@ -192,7 +192,7 @@ impl Expr {
                         }
                         for (arg, param) in args.iter().zip(params) {
                             alias.insert(param.clone(), arg.clone());
-                            typ.rewrite(&param, arg);
+                            *typ = typ.rewrite(&param, arg);
                         }
                         let mangle = func.generics();
                         let mut unify = ctx.global.def.get(name).unwrap().clone();
