@@ -68,7 +68,7 @@ pub mod name {
     }
 }
 
-pub fn token(src: &str, del: &str) -> Result<Vec<String>, String> {
+pub fn lexer(src: &str, del: &str) -> Result<Vec<String>, String> {
     let mut tokens: Vec<String> = Vec::new();
     let mut current = String::new();
 
