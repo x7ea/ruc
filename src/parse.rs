@@ -7,11 +7,11 @@ impl Define {
     pub fn parse(src: &str) -> Result<Vec<Define>, String> {
         let src = src.trim().to_string();
         let mut result = Vec::new();
-        for line in token(&src, "\n")? {
+        for line in lexer(&src, "\n")? {
             macro_rules! args {
                 ($args: expr) => {{
                     let mut map = IndexMap::new();
-                    for arg in tokenize($args, ",")? {
+                    for arg in lexer($args, ",")? {
                         if arg.trim().is_empty() {
                             continue;
                         }
@@ -52,7 +52,7 @@ impl Expr {
     pub fn parse(src: &str) -> Result<Expr, String> {
         let src = src.trim();
         fn is_operator(src: &str) -> Result<(String, String, String), String> {
-            let tokens: Vec<String> = token(src, SPACE)?;
+            let tokens: Vec<String> = lexer(src, SPACE)?;
             if tokens.len() >= 3 {
                 let pos: usize = tokens.len() - 2;
                 let lhs = tokens[..pos].join(SPACE);
@@ -65,7 +65,7 @@ impl Expr {
         }
 
         if let Some(x) = src.strip_prefix("print ") {
-            Ok(Expr::Print(map!(token(x, ",")? => |i| Expr::parse(i))))
+            Ok(Expr::Print(map!(lexer(x, ",")? => |i| Expr::parse(i))))
         } else if let Some(x) = src.strip_prefix("let ") {
             if let Ok((name, value)) = once!(x, "=") {
                 Ok(Expr::Let(
@@ -112,7 +112,7 @@ impl Expr {
             }
         } else if let Some(x) = surround!("{", src, "}") {
             let mut block = vec![];
-            for line in token(x, "\n")? {
+            for line in lexer(x, "\n")? {
                 let (line, _) = once!(&line, ";").unwrap_or((line, String::new()));
                 if !line.trim().is_empty() {
                     block.push(Expr::parse(&line)?);
@@ -146,12 +146,12 @@ impl Expr {
         } else if let Some(expr) = surround!("(", src, ")") {
             Expr::parse(expr)
         } else if let Some(arr) = surround!("[", src, "]") {
-            let arr = map!(token(arr, ",")? => |x| Expr::parse(x));
+            let arr = map!(lexer(arr, ",")? => |x| Expr::parse(x));
             Ok(Expr::Sequence(arr))
         } else if let Ok((func, args)) = surround!(src, "(", ")") {
             Ok(Expr::Call(
                 Box::new(Expr::parse(&func)?),
-                map!(token(&args, ",")? => |x| Expr::parse(x)),
+                map!(lexer(&args, ",")? => |x| Expr::parse(x)),
             ))
         } else if let Ok((arr, idx)) = surround!(src, "[", "]") {
             Ok(Expr::Index(
@@ -188,7 +188,7 @@ impl Type {
                     Ok(Type::Function(
                         vec![],
                         Box::new(Type::parse(&func)?),
-                        Some(map!(token(&args, ",")? => |x| Type::parse(x))),
+                        Some(map!(lexer(&args, ",")? => |x| Type::parse(x))),
                     ))
                 } else if let Some(arr) = surround!("[", x, "]") {
                     Ok(Type::Array(Box::new(Type::parse(arr)?)))
@@ -229,7 +229,7 @@ impl Generics {
         if let Some((var, args)) = surround!("<", ">", x) {
             Ok(Generics(
                 Name::new(var)?,
-                map!(token(args, ",")? => |x| Type::parse(x)),
+                map!(lexer(args, ",")? => |x| Type::parse(x)),
             ))
         } else {
             Ok(Generics(Name::new(x)?, vec![]))
