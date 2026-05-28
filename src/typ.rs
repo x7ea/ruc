@@ -324,9 +324,9 @@ impl Expr {
                     if params.len() != args.len() {
                         return Err(format!("generics: {typ}"));
                     }
-                    for (key, mut field) in layout.clone() {
+                    for (key, field) in layout.clone() {
                         for (arg, param) in args.iter().zip(&params) {
-                            field.rewrite(param, arg);
+                            let field = field.rewrite(param, arg);
                             layout.insert(key.clone(), field.clone());
                         }
                     }
