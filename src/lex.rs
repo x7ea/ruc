@@ -70,9 +70,9 @@ pub mod name {
 
 pub fn tokenize(input: &str, delimiter: &str) -> Result<Vec<String>, String> {
     let mut tokens: Vec<String> = Vec::new();
-    let mut current_token = String::new();
+    let mut current = String::new();
 
-    let mut in_parentheses: usize = 0;
+    let mut level: usize = 0;
     let mut in_quote = false;
     let mut is_escape = false;
 
@@ -82,68 +82,69 @@ pub fn tokenize(input: &str, delimiter: &str) -> Result<Vec<String>, String> {
     while index < chars.len() {
         let c = chars[index];
         if is_escape {
-            current_token.push(c);
+            current.push(c);
             is_escape = false;
             index += 1;
             continue;
         }
         if let Some(op) = input.get(index..index + 3)
-            && [" < ", " > "].contains(&op) {
-                if delimiter == SPACE {
-                    tokens.push(current_token.clone());
-                    tokens.push(op.trim().to_string());
-                    current_token.clear();
-                } else {
-                    current_token += op;
-                }
-                index += 3;
-                continue;
+            && [" < ", " > "].contains(&op)
+        {
+            if delimiter == SPACE {
+                tokens.push(current.clone());
+                tokens.push(op.trim().to_string());
+                current.clear();
+            } else {
+                current += op;
             }
+            index += 3;
+            continue;
+        }
         match c {
             '<' | '(' | '{' | '[' if !in_quote => {
-                if c.to_string() == delimiter && in_parentheses == 0 {
-                    tokens.push(current_token.clone());
-                    current_token.clear();
+                if c.to_string() == delimiter && level == 0 {
+                    tokens.push(current.clone());
+                    current.clear();
                 }
-                current_token.push(c);
-                in_parentheses += 1;
+                current.push(c);
+                level += 1;
             }
             '>' | ')' | '}' | ']' if !in_quote => {
-                current_token.push(c);
-                in_parentheses = in_parentheses.saturating_sub(1);
+                current.push(c);
+                level = level.saturating_sub(1);
             }
             '"' => {
                 in_quote = !in_quote;
-                current_token.push(c);
+                current.push(c);
             }
             '\\' if in_quote => {
-                current_token.push(c);
+                current.push(c);
                 is_escape = true;
             }
             _ => {
                 if input.get(index..index + delimiter.len()) == Some(delimiter) {
-                    if in_parentheses != 0 || in_quote || is_escape {
-                        current_token += delimiter;
-                    } else if !current_token.is_empty() {
-                        tokens.push(current_token.clone());
-                        current_token.clear();
+                    if level != 0 || in_quote || is_escape {
+                        current += delimiter;
+                    } else if !current.is_empty() {
+                        tokens.push(current.clone());
+                        current.clear();
                     }
                     index += delimiter.len();
                     continue;
                 } else {
-                    current_token.push(c);
+                    current.push(c);
                 }
             }
         }
         index += 1
     }
 
-    if is_escape || in_quote || in_parentheses != 0 {
-        return Err(format!("not closed: {current_token}"));
+    if is_escape || in_quote || level != 0 {
+        return Err(format!("not closed: {current}"));
     }
-    if !current_token.is_empty() {
-        tokens.push(current_token.clone());
-        current_token.clear();
+    if !current.is_empty() {
+        tokens.push(current.clone());
+        current.clear();
     }
 
     Ok(tokens)
