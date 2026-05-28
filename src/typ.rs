@@ -234,10 +234,9 @@ impl Expr {
                 }
             }
             Expr::Variable(func @ Generics(name, args)) => {
-                let env = &ctx.local.scope;
                 let mut args = args.clone();
-                if let Some(typ) = env.get(name) {
-                    typing!(typ.clone())
+                if let Some(typ) = ctx.local.scope.get(name) {
+                    typing!(typ.clone().solve(ctx))
                 } else if let Some(typ) = ctx.global.lib.get(name) {
                     let typ = &mut typ.clone().solve(ctx);
                     if let Type::Function(params, _, Some(_)) = typ.clone() {
