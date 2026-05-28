@@ -181,16 +181,16 @@ impl Expr {
                     Ok(format!("\tlea rax, [{name}]\n"))
                 }
             }
-            Expr::Let(name, value) => match &**name {
+            Expr::Let(name, val) => match &**name {
                 Expr::Variable(Generics(name, _)) => {
                     let env = &ctx.local.var;
                     let idx = env.get_index_of(name).unwrap();
                     let typ = env.get(name).unwrap().clone();
-                    let (value, addr) = (value.emit(ctx)?, (idx + 1) * 8);
+                    let (val, addr) = (val.emit(ctx)?, (idx + 1) * 8);
                     if let Type::Float = typ {
-                        Ok(format!("{value}\tmovsd [rbp-{addr}], xmm0\n"))
+                        Ok(format!("{val}\tmovsd [rbp-{addr}], xmm0\n"))
                     } else {
-                        Ok(format!("{value}\tmov [rbp-{addr}], rax\n"))
+                        Ok(format!("{val}\tmov [rbp-{addr}], rax\n"))
                     }
                 }
                 _ => expr!(self).emit(ctx),
@@ -223,13 +223,13 @@ impl Expr {
                     }
                 ))
             }
-            Expr::Write(offset, value, addr) => {
+            Expr::Write(offset, val, addr) => {
                 let id = label!();
-                let [addr, value, offset] = [addr.emit(ctx)?, value.emit(ctx)?, offset.emit(ctx)?];
+                let [addr, val, offset] = [addr.emit(ctx)?, val.emit(ctx)?, offset.emit(ctx)?];
                 let guard = format!("\tpxor xmm0, xmm0\n\tcmp rax, 0\n\tje null.{id}\n");
                 let calc = format!("\tpush rax\n{offset}\tpop r11\n\tlea r11, [r11+rax*8]\n");
                 Ok(format!(
-                    "{addr}{guard}{calc}\tpush r11\n{value}\tpop r11\n{}null.{id}:\n",
+                    "{addr}{guard}{calc}\tpush r11\n{val}\tpop r11\n{}null.{id}:\n",
                     if let Type::Float = typ!(self) {
                         "\tmovsd [r11], xmm0\n"
                     } else {
@@ -237,21 +237,21 @@ impl Expr {
                     }
                 ))
             }
-            Expr::Integer(value) => Ok(format!("\tmov rax, {value}\n")),
-            Expr::Bool(value) => Expr::Integer(if *value { 1 } else { 0 }).emit(ctx),
-            Expr::Float(value) => {
+            Expr::Integer(val) => Ok(format!("\tmov rax, {val}\n")),
+            Expr::Bool(val) => Expr::Integer(if *val { 1 } else { 0 }).emit(ctx),
+            Expr::Float(val) => {
                 let name = format!("float.{}", label!());
-                ctx.global.data += &format!("\t{name} dq {value:?}\n");
+                ctx.global.data += &format!("\t{name} dq {val:?}\n");
                 Ok(format!("\tmovsd xmm0, [{name}]\n"))
             }
-            Expr::String(value) => {
-                let value = format!("\"{value}\", 0")
+            Expr::String(val) => {
+                let val = format!("\"{val}\", 0")
                     .replace("\\t", "\", 9, \"")
                     .replace("\\n", "\", 10, \"")
                     .replace("\\\"", "\", 34, \"")
                     .replace("\"\", ", "");
                 let name = format!("str.{}", label!());
-                ctx.global.data += &format!("\t{name} db {value}\n");
+                ctx.global.data += &format!("\t{name} db {val}\n");
                 Ok(format!("\tmov rax, {name}\n"))
             }
             Expr::Div(lhs, rhs) => {
