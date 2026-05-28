@@ -130,7 +130,7 @@ impl Expr {
                 Ok(Type::None)
             }
             Expr::Match(val, pats) => {
-                let mut expr = Expr::Null(pats[0].1.infer(ctx)?);
+                let mut expr = Expr::Null(pats[0].2.infer(ctx)?);
                 for (key, bind, ret) in pats {
                     if let Some(bind) = bind {
                         expr = Expr::If(
