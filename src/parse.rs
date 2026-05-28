@@ -188,14 +188,14 @@ impl Type {
             "Float" => Ok(Type::Float),
             "()" => Ok(Type::None),
             x => {
-                if let Ok((func, args)) = surround!(x, "(", ")") {
+                if let Ok((ret, args)) = surround!(x, "(", ")") {
                     Ok(Type::Function(
                         vec![],
-                        Box::new(Type::parse(&func)?),
+                        Box::new(Type::parse(&ret)?),
                         Some(serial!(&args, Type::parse)),
                     ))
-                } else if let Some(arr) = surround!("[", x, "]") {
-                    Ok(Type::Array(Box::new(Type::parse(arr)?)))
+                } else if let Some(typ) = surround!("[", x, "]") {
+                    Ok(Type::Array(Box::new(Type::parse(typ)?)))
                 } else {
                     Ok(Type::Class(Generics::parse(x)?))
                 }
