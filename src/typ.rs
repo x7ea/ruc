@@ -408,7 +408,7 @@ impl Expr {
                 let Some((_, class)) = ctx.global.table.get(&name.generics()) else {
                     return Err(format!("undefined: {name}"));
                 };
-                let (Object::Struct(layout) | Object::Enum(layout)) = &class;
+                let (Object::Struct(layout) | Object::Enum(layout)) = class;
                 let Some(typ) = layout.get(key).cloned() else {
                     return Err(format!("undefined: {name}.{key}"));
                 };
