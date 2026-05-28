@@ -124,7 +124,6 @@ impl Expr {
                     return Err(format!("if-else test: Bool != {cond}"));
                 }
                 if let Some(els) = els {
-                    dbg!(&then);
                     let [then, els] = [then.infer(ctx)?, els.infer(ctx)?];
                     if then != els {
                         return Err(format!("if-else term: {then} != {els}"));
@@ -226,6 +225,7 @@ impl Expr {
                         }
                         for (arg, param) in args.iter().zip(params) {
                             alias.insert(param.clone(), arg.clone());
+                            dbg!(typ.rewrite(&param, arg));
                             *typ = typ.rewrite(&param, arg);
                         }
                         let mangle = func.generics();
@@ -244,6 +244,7 @@ impl Expr {
                         ctx.global.alias = alias.clone();
                         {
                             *typ = unify.infer(ctx)?;
+                            dbg!(&typ);
                         }
                         ctx.global.alias = parent;
                         ctx.global.def.insert(mangle, unify.clone());
