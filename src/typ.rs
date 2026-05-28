@@ -129,6 +129,22 @@ impl Expr {
                 then.infer(ctx)?;
                 Ok(Type::None)
             }
+            Expr::Match(val, pats) => {
+                let expr = None;
+                for (key, bind, ret) in pats {
+                    if let Some(bind) = bind {
+                        expr = Some(Box::new(Expr::If(
+                            Box::new(Expr::Let(
+                                Box::new(bind.clone()),
+                                Expr::Member(   Box::new(val.clone()),, key),
+                            )),
+                            Box::new(ret.clone()),
+                            expr,
+                        )))
+                    }
+                }
+                todo!()
+            }
             Expr::While(cond, body) => {
                 let cond = cond.infer(ctx)?;
                 if cond != Type::Bool {
