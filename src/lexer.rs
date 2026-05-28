@@ -36,8 +36,13 @@ pub mod name {
 
     impl fmt::Display for Generics {
         fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-            let args = map!(self.1, |x| x.to_string()).join(", ");
-            write!(f, "{}<{}>", self.0, args)
+            let Generics(name, args) = self;
+            let args = args
+                .iter()
+                .map(|x| x.to_string())
+                .collect::<Vec<_>>()
+                .join(", ");
+            write!(f, "{name}<{args}>",)
         }
     }
 
@@ -56,13 +61,13 @@ pub mod name {
                     Type::Array(typ) => format!("A{}", mangle(typ)),
                     Type::Class(Generics(name, _)) => format!("C{name}"),
                     Type::Function(_, ret, Some(args)) => {
-                        let args = map!(args, mangle).concat();
+                        let args = args.iter().map(mangle).collect::<Vec<_>>().concat();
                         format!("L{}{args}", mangle(ret))
                     }
                     Type::Function(_, ret, None) => format!("L{}", mangle(ret)),
                 }
             }
-            let typ = map!(self.1, mangle).concat();
+            let typ = self.1.iter().map(mangle).collect::<Vec<_>>().concat();
             Name(format!("{}.{typ}", self.0))
         }
     }
@@ -208,12 +213,9 @@ macro_rules! hash {
 
 #[macro_export]
 macro_rules! map {
-    ($arr: expr => $lambda: expr) => {
+    ($arr: expr,  $lambda: expr) => {
         $arr.iter()
             .map($lambda)
             .collect::<Result<Vec<_>, String>>()?
-    };
-    ($arr: expr, $lambda: expr) => {
-        $arr.iter().map($lambda).collect::<Vec<_>>()
     };
 }
