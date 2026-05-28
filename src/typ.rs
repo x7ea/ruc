@@ -124,7 +124,6 @@ impl Expr {
                     return Err(format!("if-else test: Bool != {cond}"));
                 }
                 if let Some(els) = els {
-                    dbg!(&self);
                     let [then, els] = [then.infer(ctx)?, els.infer(ctx)?];
                     if then != els {
                         return Err(format!("if-else term: {then} != {els}"));
