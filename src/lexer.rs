@@ -36,13 +36,8 @@ pub mod name {
 
     impl fmt::Display for Generics {
         fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-            let Generics(name, args) = self;
-            let args = args
-                .iter()
-                .map(|x| x.to_string())
-                .collect::<Vec<_>>()
-                .join(", ");
-            write!(f, "{name}<{args}>",)
+            let args = map!(self.1, |x| x.to_string()).join(", ");
+            write!(f, "{}<{}>", self.0, args)
         }
     }
 
@@ -50,9 +45,6 @@ pub mod name {
         pub fn generics(&self) -> Name {
             if self.1.is_empty() {
                 return self.0.clone();
-            }
-            fn concat(x: &[Type]) -> String {
-                map!(x, |x| Ok(mangle(x))).unwrap().concat()
             }
             fn mangle(typ: &Type) -> String {
                 match typ {
@@ -63,13 +55,14 @@ pub mod name {
                     Type::None => "N".to_string(),
                     Type::Array(typ) => format!("A{}", mangle(typ)),
                     Type::Class(Generics(name, _)) => format!("C{name}"),
-                    Type::Function(_, ret, None) => format!("L{}", mangle(ret)),
                     Type::Function(_, ret, Some(args)) => {
-                        format!("L{}{}", mangle(ret), concat(&args))
+                        let args = map!(args, mangle).concat();
+                        format!("L{}{args}", mangle(ret))
                     }
+                    Type::Function(_, ret, None) => format!("L{}", mangle(ret)),
                 }
             }
-            let typ = concat(&self.1);
+            let typ = map!(self.1, mangle).concat();
             Name(format!("{}.{typ}", self.0))
         }
     }
@@ -214,8 +207,17 @@ macro_rules! hash {
 }
 
 #[macro_export]
+macro_rules! serial {
+    ($arr: expr, $lambda: expr) => {
+        $arr.iter()
+            .map($lambda)
+            .collect::<Result<Vec<_>, String>>()?
+    };
+}
+
+#[macro_export]
 macro_rules! map {
-    ($arr: expr,  $lambda: expr) => {
-        $arr.iter().map($lambda).collect::<Result<Vec<_>, String>>()
+    ($arr: expr, $lambda: expr) => {
+        $arr.iter().map($lambda).collect::<Vec<_>>()
     };
 }
