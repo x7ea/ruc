@@ -135,7 +135,8 @@ impl Expr {
                 }
             }
             Expr::Match(val, pats) => {
-                let mut expr = Expr::Null(pats[0].2.infer(ctx)?);
+                let (_, _, pat) = pats[0].clone();
+                let mut expr = Expr::Null(pat.infer(ctx)?);
                 for (key, bind, ret) in pats {
                     if let Some(bind) = bind {
                         expr = Expr::If(
