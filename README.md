@@ -1,9 +1,10 @@
 # Ruca
 Statically-Typed Programming Language on x86_64 GNU/Linux
 
-- Type: Int, Str, Float, Bool, Array, Enum, Struct, Generics (Polymorphism) 
 - Syntax: fn, print, format, if-else, for, while-do, if-let, match, new
-- Features: C/C++ compatible , abstructive layers, GUI toolkits by GTK
+- Type: Int, Str, Float, Bool, Array, Enum, Struct, Generics (Polymorphism) 
+- Features: System V ABI aligned, fully C/C++ compatible
+- Libraries: abstructive layers, GUI toolkits by GTK
 
 ## App
 
