@@ -438,6 +438,7 @@ impl Expr {
             }
             Expr::Check(expr) => {
                 if let Expr::Member(obj, key) = &**expr {
+                    expr.infer(ctx)?;
                     let typ = obj.infer(ctx)?;
                     if let Type::Class(Generics(name, _)) = &typ
                         && let Some((_, Object::Enum(layout))) = ctx.global.table.get(name)
