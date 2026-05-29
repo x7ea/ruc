@@ -343,7 +343,7 @@ impl Expr {
                 let typ = array[0].infer(ctx)?;
                 let temp = Box::new(Expr::Variable(Generics(
                     Generics(Name::new("temp")?, vec![typ.clone()]).generics(),
-                    vec![],
+                    Vec::new(),
                 )));
                 let mut expr = vec![Expr::Let(
                     temp.clone(),
