@@ -118,7 +118,7 @@ impl Expr {
                     ))),
                     [vec![Expr::String(fmt + "\\n")], vals.to_vec()].concat(),
                 ));
-                typing!(if is_print { Type::None } else { Type::Str })
+                typing!(if *is_print { Type::None } else { Type::String })
             }
             Expr::If(cond, then, els) => {
                 if let Expr::Let(bind, check) = &**cond {
