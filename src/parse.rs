@@ -181,6 +181,12 @@ impl Expr {
             } else {
                 Err(format!("empty array: {src}"))
             }
+        } else if let Ok((obj, key)) = once!(src, ".") {
+            let obj = Expr::parse(&obj)?;
+            if let Ok(Expr::Call(callee, arg)) = Expr::parse(&key) {
+                return Ok(Expr::Call(callee.clone(), [vec![obj], arg].concat()));
+            }
+            Ok(Expr::Member(Box::new(obj), Name::new(&key)?))
         } else if let Ok((func, args)) = surround!(src, "(", ")") {
             Ok(Expr::Call(
                 Box::new(Expr::parse(&func)?),
@@ -200,12 +206,6 @@ impl Expr {
             Ok(Expr::Float(OrderedFloat(f)))
         } else if let Some(class) = src.strip_suffix("?") {
             Ok(Expr::Check(Box::new(Expr::parse(class)?)))
-        } else if let Ok((obj, key)) = once!(src, ".") {
-            let obj = Expr::parse(&obj)?;
-            if let Ok(Expr::Call(callee, arg)) = Expr::parse(&key) {
-                return Ok(Expr::Call(callee.clone(), [vec![obj], arg].concat()));
-            }
-            Ok(Expr::Member(Box::new(obj), Name::new(&key)?))
         } else {
             Ok(Expr::Variable(Generics::parse(src)?))
         }
