@@ -232,7 +232,7 @@ impl Expr {
             Expr::Call(callee, args) => {
                 if let Some(obj) = args.first() {
                     if let Type::Class(Generics(name, _)) = obj.infer(ctx)? {
-                        ctx.local.object = Some(name);
+                        ctx.local.class = Some(name);
                     }
                 }
                 let typ = callee.infer(ctx)?;
@@ -263,8 +263,8 @@ impl Expr {
             }
             Expr::Variable(func @ Generics(name, args)) => {
                 let mut args = args.clone();
-                if let Some(obj) = ctx.local.object.clone() {
-                    ctx.local.object = None;
+                if let Some(obj) = ctx.local.class.clone() {
+                    ctx.local.class = None;
                     let name = Name::new(&format!("{obj}__{name}"))?;
                     if ctx.global.lib.contains_key(&name) {
                         dbg!(&obj, &name);
