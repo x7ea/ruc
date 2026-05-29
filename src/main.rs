@@ -201,5 +201,5 @@ pub struct Function {
     scope: IndexMap<Name, Type>,
     typed: IndexMap<Expr, Type>,
     expand: IndexMap<Expr, Expr>,
-    object: Option<Name>,
+    class: Option<Name>,
 }
