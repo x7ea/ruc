@@ -1,0 +1,19 @@
+use gtk
+
+struct State {
+    count: Int
+}
+
+fn increment(this: Elm, data: State) {
+    let data.count = data.count + 1
+    let view = format "Count: ", data.count
+    this.update(view)
+}
+
+fn main() {
+    let app = App()
+    let state = new State
+    let btn = app.button("Counter App")
+    btn.on_click<State>(state, increment)
+    app.run()
+}
