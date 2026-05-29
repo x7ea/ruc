@@ -1,1 +1,1 @@
-fn gtk_init()
+fn gtk_init(a: Type) -> Type
