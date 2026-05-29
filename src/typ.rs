@@ -17,7 +17,7 @@ impl Define {
                     ctx.global.meta.insert(name.clone());
                     Type::Function(param.clone(), Box::new(Type::None), args)
                 } else {
-                    Type::Function(param.clone(), Box::new(ret?), args)
+                    Type::Function(param.clone(), Box::new(ret), args)
                 };
 
                 ctx.table.insert(name.clone(), ctx.local.clone());
