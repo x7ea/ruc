@@ -137,7 +137,7 @@ pub enum Expr {
     Member(Box<Expr>, Name),
     Check(Box<Expr>),
     // Control
-    Print(Vec<Expr>),
+    Print(bool, Vec<Expr>),
     If(Box<Expr>, Box<Expr>, Option<Box<Expr>>),
     Match(Box<Expr>, Vec1<(Name, Option<Expr>, Expr)>),
     For(Box<Expr>, Box<Expr>, Box<Expr>),
