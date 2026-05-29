@@ -46,7 +46,7 @@ fn greet(this: Elm, data: State) {
 fn main() {
     let app = App()
     let state = new State
-    let btn = button(app, "Hello!")
-    on_click<State>(btn, state, greet)
+    let btn = app.button("Hello!")
+    btn.on_click<State>(state, greet)
     run(app)
 }
