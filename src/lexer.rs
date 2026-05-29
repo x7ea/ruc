@@ -17,13 +17,14 @@ pub mod name {
             if name.is_empty() {
                 return Err("empty".to_string());
             }
+            let name = name.replace(".", "__");
             fn validate(x: char) -> bool {
                 x == '_' || x.is_ascii_alphabetic() || x.is_ascii_digit()
             }
             if !name.chars().all(validate) {
                 return Err(format!("invalid: {name}"));
             }
-            if RESERVED.contains(&name) {
+            if RESERVED.contains(&name.as_str()) {
                 return Err(format!("reserved: {name}"));
             }
             Ok(Name(name.to_owned()))
