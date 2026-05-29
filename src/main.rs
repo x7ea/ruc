@@ -45,8 +45,9 @@ impl Define {
         macro_rules! name {
             ($define: expr) => {
                 match $define.clone() {
-                    Define::Function(Generics(func, _), _, _) => func,
-                    Define::Class(Generics(class, _), _) => class,
+                    Define::Function(Generics(func, _), _, Ok(_)) => Some(func),
+                    Define::Class(Generics(class, _), _) => Some(class),
+                    _ => None,
                 }
                 .clone()
             };
@@ -70,7 +71,9 @@ impl Define {
             define.infer(ctx)?;
         }
         for (_, define) in ctx.global.def.clone() {
-            if name!(define).to_string() == "main" {
+            if let Some(func) = name!(define)
+                && func.to_string() == "main"
+            {
                 text = define.emit(ctx)? + &text;
             } else {
                 text += &define.emit(ctx)?;
@@ -78,7 +81,9 @@ impl Define {
         }
         let data = ctx.global.data.clone();
         for (_, define) in ctx.global.def.clone() {
-            ctx.global.lib.shift_remove(&name!(define));
+            if let Some(func) = name!(define) {
+                ctx.global.lib.shift_remove(&func);
+            }
         }
         let mut lib = String::from("\nsection .text\n\tglobal main\n");
         for symbol in ctx.global.lib.keys() {
