@@ -181,6 +181,11 @@ impl Expr {
             } else {
                 Err(format!("empty array: {src}"))
             }
+        } else if let Ok(i) = src.parse::<i64>() {
+            Ok(Expr::Integer(i))
+        } else if let Ok(f) = src.parse::<f64>() {
+            use ordered_float::OrderedFloat;
+            Ok(Expr::Float(OrderedFloat(f)))
         } else if let Some(class) = src.strip_suffix("?") {
             Ok(Expr::Check(Box::new(Expr::parse(class)?)))
         } else if let Some((obj, key)) = src.rsplit_once(".") {
@@ -201,11 +206,6 @@ impl Expr {
             ))
         } else if let Ok(b) = src.parse::<bool>() {
             Ok(Expr::Bool(b))
-        } else if let Ok(i) = src.parse::<i64>() {
-            Ok(Expr::Integer(i))
-        } else if let Ok(f) = src.parse::<f64>() {
-            use ordered_float::OrderedFloat;
-            Ok(Expr::Float(OrderedFloat(f)))
         } else {
             Ok(Expr::Variable(Generics::parse(src)?))
         }
