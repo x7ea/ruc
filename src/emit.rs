@@ -167,6 +167,10 @@ impl Expr {
                 ))
             }
             Expr::Variable(var @ Generics(name, _)) => {
+                let method = ctx.local.expand.get(&self.clone());
+                if let Some(expr) = method.cloned() {
+                    return expr.emit(ctx);
+                }
                 let env = &ctx.local.var;
                 let mut name = name.clone();
                 if let Some(i) = env.get_index_of(&name) {
