@@ -200,8 +200,12 @@ impl Expr {
             Ok(Expr::Float(OrderedFloat(f)))
         } else if let Some(class) = src.strip_suffix("?") {
             Ok(Expr::Check(Box::new(Expr::parse(class)?)))
-        } else if let Some((obj, key)) = src.rsplit_once(".") {
-            Ok(Expr::Member(Box::new(Expr::parse(obj)?), Name::new(key)?))
+        } else if let Ok((obj, key)) = once!(src, ".") {
+            let obj = Expr::parse(&obj)?;
+            if let Ok(Expr::Call(callee, arg)) = Expr::parse(&key) {
+                return Ok(Expr::Call(callee.clone(), [vec![obj], arg].concat()));
+            }
+            Ok(Expr::Member(Box::new(obj), Name::new(&key)?))
         } else {
             Ok(Expr::Variable(Generics::parse(src)?))
         }
