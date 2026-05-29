@@ -1,42 +1,4 @@
-fn gtk_init(argc: (), argv: ()) -> ()
-fn gtk_window_new(init: ()) -> App
-fn gtk_window_set_default_size(app: App, width: Int, height: Int) -> ()
-fn gtk_button_new_with_label(content: Str) -> Elm
-fn gtk_button_set_label(elm: Elm, content: Str) -> ()
-fn gtk_container_add(app: App, elm: Elm) -> ()
-fn g_signal_connect_data<T>(elm: Elm, event: Str, handle: ()(Elm, T), data: T) -> ()
-fn g_signal_connect_object(app: App, event: Str, handle: ()(), object: ()) -> ()
-fn gtk_button_set_label(elm: Elm, content: Str) -> ()
-fn gtk_widget_show_all(window: App) -> ()
-fn gtk_main() -> ()
-fn gtk_main_quit() -> ()
-
-fn App() {
-    gtk_init((), ())
-    let this = gtk_window_new(())
-    gtk_window_set_default_size(this, 500, 300)
-    g_signal_connect_object(this, "destroy", gtk_main_quit, ())
-    this
-}
-
-fn button(app: App, content: Str) {
-    let this = gtk_button_new_with_label(content)
-    gtk_container_add(app, this)
-    this
-}
-
-fn update(elm: Elm, content: Str) gtk_button_set_label(elm, content)
-
-fn on_click<T>(this: Elm, data: T, handle: ()(Elm, T)) {
-    g_signal_connect_data<T>(this, "clicked", handle, data)
-}
-
-fn run(this: App) {
-    gtk_widget_show_all(this)
-    gtk_main()
-}
-
-;; ------
+use gtk
 
 struct State {
     count: Int
