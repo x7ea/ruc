@@ -17,7 +17,7 @@ fn eval(n: Int) {
 fn display(this: State) {
     match this {
         fizz = print "Fizz",
-        buzz = print "Buzz",
+        bzz = print "Buzz",
         fizzbuzz = print "FizzBuzz",
         number i = print i
     }
