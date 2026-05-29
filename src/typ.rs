@@ -111,12 +111,15 @@ impl Expr {
                         _ => return Err(format!("can't print: {typ}")),
                     }
                 }
+                if *is_print {
+                    fmt += "\\n";
+                }
                 let _ = expand!(Expr::Call(
                     Box::new(Expr::Variable(Generics(
                         Name::new(if *is_print { "printf" } else { "strdup_printf" })?,
                         vec![]
                     ))),
-                    [vec![Expr::String(fmt + "\\n")], vals.to_vec()].concat(),
+                    [vec![Expr::String(fmt)], vals.to_vec()].concat(),
                 ));
                 typing!(if *is_print { Type::None } else { Type::String })
             }
