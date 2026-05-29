@@ -8,4 +8,4 @@ Statically-Typed Programming Language on x86_64 GNU/Linux
 
 ## App
 
-![](https://github.com/user-attachments/assets/315a8ae7-9c8b-43b2-8011-a1cc3008c4c1)
+![image](https://github.com/user-attachments/assets/8061b414-a7be-4b37-991d-2f54b0a26729)
