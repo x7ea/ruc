@@ -51,11 +51,18 @@ impl Define {
                 }
                 .clone()
             };
+            (all, $define: expr) => {
+                match $define.clone() {
+                    Define::Function(Generics(func, _), _, _) => func,
+                    Define::Class(Generics(class, _), _) => class,
+                }
+                .clone()
+            };
         }
         ctx.global.def = {
             let mut map = IndexMap::new();
             for define in defines {
-                map.insert(name!(define), define.clone());
+                map.insert(name!(all, define), define.clone());
             }
             map
         };
