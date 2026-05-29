@@ -1,0 +1,27 @@
+fn destroy(widget, data) gtk_main_quit()
+fn onclick(widget, data) {
+    let *data = *data + 1
+    let label = g_strdup_printf("Count: %d", *data)
+    gtk_button_set_label(widget, label)
+    g_free(label)
+}
+
+fn main(argc, argv) {
+    let count = malloc(8)
+    let *count = 0
+
+    gtk_init(&argc, &argv)
+    let window = gtk_window_new(0)
+    gtk_window_set_default_size(window, 500, 300)
+
+    let button = gtk_button_new_with_label("Counter App")
+    gtk_container_add(window, button)
+
+    g_signal_connect_data(button, "clicked", onclick, count)
+    g_signal_connect_object(window, "destroy", destroy, 0)
+
+    gtk_widget_show_all(window)
+    gtk_main()
+
+    free(count)
+}
