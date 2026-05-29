@@ -267,8 +267,7 @@ impl Expr {
                     ctx.local.class = None;
                     let name = Name::new(&format!("{obj}__{name}"))?;
                     if ctx.global.lib.contains_key(&name) {
-                        dbg!(&obj, &name);
-                        return Expr::Variable(Generics(name, args.clone())).infer(ctx);
+                        return typing!(expand!(Expr::Variable(Generics(name, args.clone()))));
                     }
                 }
                 if let Some(typ) = ctx.local.scope.get(name) {
