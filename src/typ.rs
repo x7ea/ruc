@@ -265,7 +265,7 @@ impl Expr {
                 let mut args = args.clone();
                 if let Some(obj) = &ctx.local.obj {
                     let name = Name::new(&format!("{obj}__{name}"))?;
-                    if let Ok(ret) = Expr::Variable(Generics(name, args)).infer(ctx) {
+                    if let Ok(ret) = Expr::Variable(Generics(name, args.clone())).infer(ctx) {
                         return Ok(ret);
                     }
                 }
