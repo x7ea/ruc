@@ -5,7 +5,7 @@ elif [ $1 = "--update" ]; then
     git pull
     cargo install --path .
 elif [ $1 = "--test" ]; then
-    for file in $(find ./example -type f); do
+    for file in $(find ./app -type f); do
         echo "Test $file"
         ./ruca.sh "$file"
     done
