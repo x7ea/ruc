@@ -264,6 +264,7 @@ impl Expr {
             Expr::Variable(func @ Generics(name, args)) => {
                 let mut args = args.clone();
                 if let Some(obj) = &ctx.local.obj {
+                    ctx.local.obj = None;
                     let name = Name::new(&format!("{obj}__{name}"))?;
                     if let Ok(ret) = Expr::Variable(Generics(name, args.clone())).infer(ctx) {
                         return Ok(ret);
