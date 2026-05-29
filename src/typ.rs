@@ -9,17 +9,16 @@ impl Define {
                 ctx.local.scope = args.clone();
 
                 let ret = body.clone().map(|x| x.infer(ctx));
-                let (Ok(Ok(ret)) | Err(ret)) = ret else {
-                    return ret.unwrap();
-                };
                 let args = Some(args.values().cloned().collect::<Vec<Type>>());
-                let sig = if !param.is_empty() {
+                let sig = if let (Ok(Ok(ret)) | Err(ret)) = ret {
+                    Type::Function(param.clone(), Box::new(ret), args)
+                } else {
+                    if param.is_empty() {
+                        return ret.unwrap();
+                    }
                     ctx.global.meta.insert(name.clone());
                     Type::Function(param.clone(), Box::new(Type::None), args)
-                } else {
-                    Type::Function(param.clone(), Box::new(ret), args)
                 };
-
                 ctx.table.insert(name.clone(), ctx.local.clone());
                 ctx.global.lib.insert(name.clone(), sig.clone());
                 ctx.local = parent;
