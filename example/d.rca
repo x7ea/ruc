@@ -2,6 +2,7 @@ fn gtk_init(argc: (), argv: ()) -> ()
 fn gtk_window_new(init: ()) -> App
 fn gtk_window_set_default_size(app: App, width: Int, height: Int) -> ()
 fn gtk_button_new_with_label(content: Str) -> Elm
+fn gtk_button_set_label(elm: Elm, content: Str) -> ()
 fn gtk_container_add(app: App, elm: Elm) -> ()
 fn g_signal_connect_data<T>(elm: Elm, event: Str, handle: ()(Elm, T), data: T) -> ()
 fn g_signal_connect_object(app: App, event: Str, handle: ()(), object: ()) -> ()
@@ -23,6 +24,9 @@ fn button(app: App, content: Str) {
     gtk_container_add(app, this)
     this
 }
+
+fn update(elm: Elm, content: Str) gtk_button_set_label(elm, content)
+
 fn on_click<T>(this: Elm, data: T, handle: ()(Elm, T)) {
     g_signal_connect_data<T>(this, "clicked", handle, data)
 }
@@ -38,15 +42,15 @@ struct State {
     count: Int
 }
 
-fn greet(this: Elm, data: State) {
+fn increment(this: Elm, data: State) {
     let data.count = data.count + 1
-    print "Hello!!! ", data.count
+    this.update(format "Count: ", data.count)
 }
 
 fn main() {
     let app = App()
     let state = new State
-    let btn = app.button("Hello!")
-    btn.on_click<State>(state, greet)
+    let btn = app.button("Counter App")
+    btn.on_click<State>(increment, greet)
     run(app)
 }
