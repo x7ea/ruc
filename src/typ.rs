@@ -266,8 +266,9 @@ impl Expr {
                 if let Some(obj) = ctx.local.obj.clone() {
                     ctx.local.obj = None;
                     let name = Name::new(&format!("{obj}__{name}"))?;
-                    if let Ok(ret) = Expr::Variable(Generics(name, args.clone())).infer(ctx) {
-                        return Ok(ret);
+                    if ctx.global.lib.contains_key(&name) {
+                        dbg!(&obj, &name);
+                        return Expr::Variable(Generics(name, args.clone())).infer(ctx);
                     }
                 }
                 if let Some(typ) = ctx.local.scope.get(name) {
