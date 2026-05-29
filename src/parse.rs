@@ -128,15 +128,7 @@ impl Expr {
                 Box::new(Expr::parse(&body)?),
             ))
         } else if let Some(class) = src.strip_prefix("new ") {
-            if let Some(arr) = surround!("[", class, "]") {
-                let (typ, len) = ok!(arr.rsplit_once(";"))?;
-                let Ok(len) = len.trim().parse::<usize>() else {
-                    return Err(format!("not length: {len}"));
-                };
-                Ok(Expr::Init(Type::parse(typ)?, len))
-            } else {
-                Ok(Expr::Constructor(Type::parse(class)?))
-            }
+            Ok(Expr::Constructor(Type::parse(class)?))
         } else if let Some(x) = surround!("{", src, "}") {
             let mut block = vec![];
             for line in lexer(x, "\n")? {
