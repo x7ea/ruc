@@ -37,8 +37,9 @@ struct State {
     count: Int
 }
 
-fn greet(el: State) {
-
+fn greet(this: Elm, data: State) {
+    print "Hello!!! ", data.count
+    let data.count = data.count + 1
 }
 
 fn main() {
