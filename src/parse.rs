@@ -26,7 +26,7 @@ impl Define {
                 let (name, args) = surround!(&head, "(", ")")?;
                 let body = Expr::parse(&body)
                     .and_then(|x| Ok(Expr::Block(vec![x])))
-                    .or(Err(Type::parse(&body)?));
+                    .or(Err(Type::parse(&ok!(body.trim().strip_prefix("->"))?)?));
                 result.push(Define::Function(
                     Generics::parse(&name)?,
                     args!(&args),
