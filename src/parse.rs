@@ -189,11 +189,11 @@ impl Expr {
         } else if let Some(class) = src.strip_suffix("?") {
             Ok(Expr::Check(Box::new(Expr::parse(class)?)))
         } else if let Some((obj, key)) = src.rsplit_once(".") {
-            let obj = Expr::parse(&obj)?;
-            if let Ok(Expr::Call(callee, arg)) = Expr::parse(&key) {
+            let obj = Expr::parse(obj)?;
+            if let Ok(Expr::Call(callee, arg)) = Expr::parse(key) {
                 return Ok(Expr::Call(callee.clone(), [vec![obj], arg].concat()));
             }
-            Ok(Expr::Member(Box::new(obj), Name::new(&key)?))
+            Ok(Expr::Member(Box::new(obj), Name::new(key)?))
         } else if let Ok((func, args)) = surround!(src, "(", ")") {
             Ok(Expr::Call(
                 Box::new(Expr::parse(&func)?),
