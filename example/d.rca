@@ -1,1 +1,10 @@
-fn gtk_init(a: Type) -> Type
+fn gtk_init(argc: (), argv: ()) -> ()
+fn gtk_window_new(_: ()) -> App
+fn gtk_window_set_default_size(width: Int, height: Int) -> ()
+fn gtk_button_new_with_label(content: Str) -> Elm
+fn gtk_container_add(app: App, elm: Elm) -> ()
+fn g_signal_connect_data<T>(elm: Elm, event: Str, handle: ()(Elm, T), data: T) -> ()
+fn g_signal_connect_object(app: App, event: Str, handle: ()(), object: ()) -> ()
+fn gtk_button_set_label(elm: Elm, content: Str) -> ()
+fn gtk_widget_show_all(window: App) -> ()
+fn gtk_main() -> ()
