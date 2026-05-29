@@ -24,7 +24,9 @@ impl Define {
             if let Some(func) = line.strip_prefix("fn ") {
                 let (head, body) = once!(func, SPACE)?;
                 let (name, args) = surround!(&head, "(", ")")?;
-                let body = Expr::Block(vec![Expr::parse(&body)?]);
+                let body = Expr::parse(&body)
+                    .and_then(|x| Ok(Expr::Block(vec![x])))
+                    .or(Err(Type::parse(&body)?));
                 result.push(Define::Function(
                     Generics::parse(&name)?,
                     args!(&args),
