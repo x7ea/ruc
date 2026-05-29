@@ -113,7 +113,7 @@ impl Expr {
                 }
                 let _ = expand!(Expr::Call(
                     Box::new(Expr::Variable(Generics(
-                        Name::new(if *is_print { "printf" } else { "sprintf" })?,
+                        Name::new(if *is_print { "printf" } else { "strdup_printf" })?,
                         vec![]
                     ))),
                     [vec![Expr::String(fmt + "\\n")], vals.to_vec()].concat(),
