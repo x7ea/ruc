@@ -19,19 +19,19 @@ fn App() {
     this
 }
 
-fn button(app: App, content: Str) {
+fn App.button(app: App, content: Str) {
     let this = gtk_button_new_with_label(content)
     gtk_container_add(app, this)
     this
 }
 
-fn update(elm: Elm, content: Str) gtk_button_set_label(elm, content)
+fn Elm.update(elm: Elm, content: Str) gtk_button_set_label(elm, content)
 
-fn on_click<T>(this: Elm, data: T, handle: ()(Elm, T)) {
+fn Elm.on_click<T>(this: Elm, data: T, handle: ()(Elm, T)) {
     g_signal_connect_data<T>(this, "clicked", handle, data)
 }
 
-fn run(this: App) {
+fn App.run(this: App) {
     gtk_widget_show_all(this)
     gtk_main()
 }
