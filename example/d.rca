@@ -18,8 +18,11 @@ fn App() {
     this
 }
 
-fn button(content: Str) gtk_button_new_with_label(content)
-
+fn button(app: App, content: Str) {
+    let this = gtk_button_new_with_label(content)
+    gtk_container_add(app, this)
+    this
+}
 fn on_click<T>(this: Elm, data: T, handle: ()(Elm, T)) {
     g_signal_connect_data<T>(this, "clicked", handle, data)
 }
@@ -43,7 +46,7 @@ fn greet(this: Elm, data: State) {
 fn main() {
     let app = App()
     let state = new State
-    let button = button("Hello!")
-    on_click<State>(button, state, greet)
+    let btn = button(app, "Hello!")
+    on_click<State>(btn, state, greet)
     run(app)
 }
