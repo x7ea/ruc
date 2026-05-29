@@ -187,7 +187,7 @@ macro_rules! ok {
 
 #[macro_export]
 macro_rules! once {
-    ($v: expr, $del: expr) => {{
+    ($v: expr, $del: literal) => {{
         let v = lexer($v, $del)?;
         if v.len() >= 2 {
             Ok((v[0].clone(), v[1..].join($del)))
@@ -195,11 +195,11 @@ macro_rules! once {
             Err(format!("expected {}", $del))
         }
     }};
-    ($del: expr, $v: expr) => {{
+    ($del: literal, $v: expr) => {{
         let v = lexer($v, $del)?;
         if v.len() >= 2 {
-            let last = v.len() - 1:
-            Ok((v[..last].clone(), v[last].join($del)))
+            let last = v.len() - 1;
+            Ok((v[..last].join($del), v[last].clone()))
         } else {
             Err(format!("expected {}", $del))
         }
