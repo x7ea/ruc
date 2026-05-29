@@ -262,10 +262,14 @@ impl Expr {
                 }
             }
             Expr::Variable(func @ Generics(name, args)) => {
+                let mut name = name.clone();
                 let mut args = args.clone();
-                if let Some(typ) = ctx.local.scope.get(name) {
+                if let Some(obj) = &ctx.local.obj {
+                    name = Name::new(&format!("{obj}__{name}"))?;
+                }
+                if let Some(typ) = ctx.local.scope.get(&name) {
                     typing!(typ.clone().solve(ctx))
-                } else if let Some(typ) = ctx.global.lib.get(name) {
+                } else if let Some(typ) = ctx.global.lib.get(&name) {
                     let typ = &mut typ.clone().solve(ctx);
                     if let Type::Function(params, _, Some(_)) = typ.clone() {
                         if params.len() != args.len() {
@@ -280,7 +284,7 @@ impl Expr {
                             *typ = typ.rewrite(&param, arg);
                         }
                         let mangle = func.generics();
-                        let mut unify = ctx.global.def.get(name).unwrap().clone();
+                        let mut unify = ctx.global.def.get(&name).unwrap().clone();
                         if let Define::Function(Generics(_, _), params, body) = &unify
                             && let Type::Function(_, _, Some(args)) = typ.clone()
                         {
