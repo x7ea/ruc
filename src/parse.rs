@@ -69,7 +69,9 @@ impl Expr {
         }
 
         if let Some(src) = src.strip_prefix("print ") {
-            Ok(Expr::Print(serial!(src, Expr::parse)))
+            Ok(Expr::Print(true, serial!(src, Expr::parse)))
+        } else if let Some(src) = src.strip_prefix("format ") {
+            Ok(Expr::Print(false, serial!(src, Expr::parse)))
         } else if let Some(src) = src.strip_prefix("let ") {
             if let Ok((name, value)) = once!(src, "=") {
                 Ok(Expr::Let(
