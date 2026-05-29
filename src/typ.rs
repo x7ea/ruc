@@ -323,9 +323,10 @@ impl Expr {
                     typing!(Type::None)
                 }
                 acc @ Expr::Member(obj, key) => {
+                    let typ = acc.infer(ctx)?;
                     let Generics(name, _) = &get!(Class, obj.infer(ctx)?);
                     {
-                        let [val, typ] = [val.infer(ctx)?, acc.infer(ctx)?];
+                        let val = val.infer(ctx)?;
                         if typ.solve(ctx) != val {
                             return Err(format!("{name}.{key}: {typ} != {val}"));
                         }
