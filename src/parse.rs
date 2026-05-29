@@ -26,7 +26,7 @@ impl Define {
             }
             if let Some(file) = line.strip_prefix("use ") {
                 let file = file.trim().to_string();
-                let Ok(file) = read_to_string(format!("./stdlib/{file}.rca")) else {
+                let Ok(file) = read_to_string(format!("./lib/{file}.rca")) else {
                     return Err(format!("undefined library: {file}"));
                 };
                 result.append(&mut Define::parse(&file)?);
