@@ -8,10 +8,10 @@ impl Define {
                 ctx.local = Function::default();
                 ctx.local.scope = args.clone();
 
-                let ret = body
-                    .clone()
-                    .and_then(|x| Ok(x.infer(ctx)))
-                    .or_else(|x| Ok::<Result<Type, String>, String>(Ok(x)))?;
+                let ret = body.clone().map(|x| x.infer(ctx));
+                let (Ok(Ok(ret)) | Err(ret)) = ret else {
+                    return ret.unwrap();
+                };
                 let args = Some(args.values().cloned().collect::<Vec<Type>>());
                 let sig = if !param.is_empty() {
                     ctx.global.meta.insert(name.clone());
