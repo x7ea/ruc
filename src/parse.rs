@@ -165,12 +165,11 @@ impl Expr {
         } else if let Some(expr) = surround!("(", src, ")") {
             Expr::parse(expr)
         } else if let Some(arr) = surround!("[", src, "]") {
-            if let Some(arr) = surround!("[", arr, "]") {
-                let (typ, len) = ok!(arr.rsplit_once(";"))?;
+            if let Ok((typ, len)) = once!(arr, ";") {
                 let Ok(len) = len.trim().parse::<usize>() else {
                     return Err(format!("not length: {len}"));
                 };
-                return Ok(Expr::Init(Type::parse(typ)?, len));
+                return Ok(Expr::Init(Type::parse(&typ)?, len));
             }
             let arr = serial!(arr, Expr::parse);
             if let Ok(arr) = arr.try_into() {
