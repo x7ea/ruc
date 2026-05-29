@@ -14,7 +14,7 @@ fn App() {
     gtk_init((), ())
     let this = gtk_window_new(())
     gtk_window_set_default_size(this, 500, 300)
-    g_signal_connect_object(this, "destroy", gtk_main_quit, 0)
+    g_signal_connect_object(this, "destroy", gtk_main_quit, ())
     this
 }
 
@@ -46,6 +46,6 @@ fn main() {
     let app = App()
     let state = new State
     let button = button("Hello!")
-    on_click<State>(button, greet, state)
+    on_click<State>(button, state, greet)
     run(app)
 }
