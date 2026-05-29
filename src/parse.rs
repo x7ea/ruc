@@ -1,5 +1,8 @@
 use crate::*;
-use std::fmt::{self, Display};
+use std::{
+    fmt::{self, Display},
+    fs::read_to_string,
+};
 
 pub const SPACE: &str = " ";
 
@@ -21,7 +24,13 @@ impl Define {
                     map
                 }};
             }
-            if let Some(func) = line.strip_prefix("fn ") {
+            if let Some(file) = line.strip_prefix("use ") {
+                let file = file.trim().to_string();
+                let Ok(file) = read_to_string(format!("./stdlib/{file}.rca")) else {
+                    return Err(format!("undefined library: {file}"));
+                };
+                result.append(&mut Define::parse(&file)?);
+            } else if let Some(func) = line.strip_prefix("fn ") {
                 let (head, body) = once!(func, SPACE)?;
                 let (name, args) = surround!(&head, "(", ")")?;
                 let body = if let Some(typ) = body.trim().strip_prefix("->") {
