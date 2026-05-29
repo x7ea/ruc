@@ -178,7 +178,7 @@ impl Expr {
                         Ok(format!("\tmov rax, [rbp-{addr}]\n"))
                     }
                 } else {
-                    if !ctx.global.meta.contains(&name) {
+                    if !ctx.global.extrn.contains(&name) {
                         name = var.generics();
                     }
                     Ok(format!("\tlea rax, [{name}]\n"))
