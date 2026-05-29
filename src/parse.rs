@@ -183,7 +183,7 @@ impl Expr {
             }
         } else if let Some(class) = src.strip_suffix("?") {
             Ok(Expr::Check(Box::new(Expr::parse(class)?)))
-        } else if let Ok((obj, key)) = once!(src, ".") {
+        } else if let Some((obj, key)) = src.rsplit_once(".") {
             let obj = Expr::parse(&obj)?;
             if let Ok(Expr::Call(callee, arg)) = Expr::parse(&key) {
                 return Ok(Expr::Call(callee.clone(), [vec![obj], arg].concat()));
