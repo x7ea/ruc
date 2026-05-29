@@ -74,7 +74,7 @@ impl Define {
             }
             map
         };
-        for (_, define) in ctx.global.def.clone() {
+        for (_, define) in ctx.global.def.iter_mut() {
             define.infer(ctx)?;
         }
         for (_, define) in ctx.global.def.clone() {
