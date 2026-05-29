@@ -168,8 +168,9 @@ impl Expr {
             }
             Expr::Variable(var @ Generics(name, _)) => {
                 let env = &ctx.local.var;
-                if let Some(i) = env.get_index_of(name) {
-                    let typ = env.get(name).unwrap();
+                let mut name = name.clone();
+                if let Some(i) = env.get_index_of(&name) {
+                    let typ = env.get(&name).unwrap();
                     let addr = (i + 1) * 8;
                     if let Type::Float = typ {
                         Ok(format!("\tmovsd xmm0, [rbp-{addr}]\n"))
@@ -177,7 +178,9 @@ impl Expr {
                         Ok(format!("\tmov rax, [rbp-{addr}]\n"))
                     }
                 } else {
-                    let name = var.generics();
+                    if !ctx.global.meta.contains(&name) {
+                        name = var.generics();
+                    }
                     Ok(format!("\tlea rax, [{name}]\n"))
                 }
             }
