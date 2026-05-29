@@ -10,6 +10,9 @@ impl Define {
 
                 let ret = body.clone().map(|x| x.infer(ctx));
                 let args = Some(args.values().cloned().collect::<Vec<Type>>());
+                if let Err(ret) = &ret {
+                    ctx.global.extrn.insert(name);
+                }
                 let sig = if let Ok(Ok(ret)) | Err(ret) = ret {
                     if param.is_empty() {
                         Type::Function(param.clone(), Box::new(ret), args)
