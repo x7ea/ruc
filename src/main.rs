@@ -77,7 +77,6 @@ impl Define {
         for (_, define) in ctx.global.def.clone() {
             define.infer(ctx)?;
         }
-        dbg!(&ctx.global.meta);
         for (_, define) in ctx.global.def.clone() {
             if let Some(func) = name!(define)
                 && func.to_string() == "main"
