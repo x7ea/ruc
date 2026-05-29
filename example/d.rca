@@ -53,5 +53,5 @@ fn main() {
     let state = new State
     let btn = app.button("Counter App")
     btn.on_click<State>(state, increment)
-    run(app)
+    app.run()
 }
