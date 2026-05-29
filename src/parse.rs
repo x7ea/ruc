@@ -27,7 +27,7 @@ impl Define {
                 let body = if let Some(typ) = body.trim().strip_prefix("->") {
                     Err(Type::parse(typ)?)
                 } else {
-                    Ok(Expr::parse(&body)?)
+                    Ok(Expr::Block(vec![Expr::parse(&body)?]))
                 };
                 result.push(Define::Function(
                     Generics::parse(&name)?,
