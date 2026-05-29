@@ -100,7 +100,7 @@ impl Expr {
             }};
         }
         match self {
-            Expr::Print(vals) => {
+            Expr::Print(is_print, vals) => {
                 let mut fmt = String::new();
                 for i in vals.iter() {
                     let typ = i.infer(ctx)?;
@@ -112,10 +112,13 @@ impl Expr {
                     }
                 }
                 let _ = expand!(Expr::Call(
-                    Box::new(Expr::Variable(Generics(Name::new("printf")?, vec![]))),
+                    Box::new(Expr::Variable(Generics(
+                        Name::new(if *is_print { "printf" } else { "sprintf" })?,
+                        vec![]
+                    ))),
                     [vec![Expr::String(fmt + "\\n")], vals.to_vec()].concat(),
                 ));
-                typing!(Type::None)
+                typing!(if is_print{Type::None}else{Type:Str})
             }
             Expr::If(cond, then, els) => {
                 if let Expr::Let(bind, check) = &**cond {
