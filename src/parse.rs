@@ -181,6 +181,8 @@ impl Expr {
             } else {
                 Err(format!("empty array: {src}"))
             }
+        } else if let Some(class) = src.strip_suffix("?") {
+            Ok(Expr::Check(Box::new(Expr::parse(class)?)))
         } else if let Ok((obj, key)) = once!(src, ".") {
             let obj = Expr::parse(&obj)?;
             if let Ok(Expr::Call(callee, arg)) = Expr::parse(&key) {
@@ -204,8 +206,6 @@ impl Expr {
         } else if let Ok(f) = src.parse::<f64>() {
             use ordered_float::OrderedFloat;
             Ok(Expr::Float(OrderedFloat(f)))
-        } else if let Some(class) = src.strip_suffix("?") {
-            Ok(Expr::Check(Box::new(Expr::parse(class)?)))
         } else {
             Ok(Expr::Variable(Generics::parse(src)?))
         }
