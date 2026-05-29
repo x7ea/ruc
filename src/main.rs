@@ -191,6 +191,7 @@ pub struct Global {
     def: IndexMap<Name, Define>,
     table: IndexMap<Name, (Vec<Type>, Object)>,
     alias: IndexMap<Type, Type>,
+    extrn: IndexSet<Name>,
     meta: IndexSet<Name>,
 }
 
