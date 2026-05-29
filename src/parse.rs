@@ -29,7 +29,6 @@ impl Define {
                 } else {
                     Ok(Expr::parse(&body)?)
                 };
-
                 result.push(Define::Function(
                     Generics::parse(&name)?,
                     args!(&args),
