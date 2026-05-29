@@ -190,8 +190,7 @@ impl Expr {
             Ok(Expr::Float(OrderedFloat(f)))
         } else if let Some(class) = src.strip_suffix("?") {
             Ok(Expr::Check(Box::new(Expr::parse(class)?)))
-        } else if let Ok((obj, key)) = once!(".", src) {
-            dbg!(src);
+        } else if let Ok((obj, key)) = once!(src, ".", right) {
             let obj = Expr::parse(&obj)?;
             if let Ok(Expr::Call(callee, arg)) = Expr::parse(&key) {
                 return Ok(Expr::Call(callee.clone(), [vec![obj], arg].concat()));
