@@ -1,5 +1,3 @@
-struct Term { lhs: Expr, rhs: Expr }
-
 enum Expr {
     add: Term,
     number: Int
