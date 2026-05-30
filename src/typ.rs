@@ -202,7 +202,7 @@ impl Expr {
                         )
                     }
                 }
-                typing!(expand!(expr))
+                typing!(expands!(expr))
             }
             Expr::While(cond, body) => {
                 let cond = cond.infer(ctx)?;
