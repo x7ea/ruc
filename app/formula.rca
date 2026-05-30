@@ -11,7 +11,7 @@ struct Term {
     rhs: Expr
 }
 
-fn eval(this: Expr) {
+fn eval(this: Expr) -> Float {
     match this {
         add term = eval(term.lhs) + eval(term.rhs),
         mul term = eval(term.lhs) * eval(term.rhs),
