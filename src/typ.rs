@@ -349,10 +349,10 @@ impl Expr {
                     Err(format!("undefined: {name}"))
                 }
             }
-            Expr::Let(name, val) => match *name {
+            Expr::Let(name, val) => match &*name {
                 Expr::Variable(Generics(name, _)) => {
                     let val = val.infer(ctx)?;
-                    if let Some(typ) = ctx.local.scope.get(&name) {
+                    if let Some(typ) = ctx.local.scope.get(name) {
                         let typ = typ.clone().solve(ctx);
                         if val != typ {
                             return Err(format!("{name}: {typ} != {val}"));
@@ -383,12 +383,12 @@ impl Expr {
                     }
                     match ok!(ctx.global.table.get(name))? {
                         (_, Object::Struct(layout)) => {
-                            let offset = layout.get_index_of(&key).unwrap();
+                            let offset = layout.get_index_of(key).unwrap();
                             let offset = Box::new(Expr::Integer(offset as i64));
                             expand!(Expr::Write(offset, val.clone(), obj.clone()));
                         }
                         (_, Object::Enum(layout)) => {
-                            let tag = layout.get_index_of(&key).unwrap() as i64;
+                            let tag = layout.get_index_of(key).unwrap() as i64;
                             let offset = |x| Box::new(Expr::Integer(x));
                             expand!(Expr::Block(vec![
                                 Expr::Write(offset(0), offset(tag), obj.clone()),
@@ -488,12 +488,12 @@ impl Expr {
                 typing!(*typ.clone())
             }
             Expr::Check(expr) => {
-                if let Expr::Member(obj, key) = *expr {
+                if let Expr::Member(obj, key) = &*expr {
                     let typ = obj.infer(ctx)?;
                     if let Type::Class(Generics(name, _)) = &typ
                         && let Some((_, Object::Enum(layout))) = ctx.global.table.get(name)
                     {
-                        let Some(tag) = layout.get_index_of(&key) else {
+                        let Some(tag) = layout.get_index_of(key) else {
                             return Err(format!("undefined: {name}.{key}"));
                         };
                         let offset = Box::new(Expr::Integer(0));
