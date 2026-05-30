@@ -50,12 +50,17 @@ impl Expr {
                 Ok::<Type, String>(typ)
             }};
         }
-        macro_rules! expand {
+        macro_rules! expands {
             ($expr: expr) => {{
                 let expr = $expr.clone();
                 let typ = expr.infer(ctx)?;
                 ctx.local.expand.insert(self.clone(), expr.clone());
                 typ.clone()
+            }};
+        }
+        macro_rules! expand {
+            ($expr: expr) => {{
+                let _ = expands!($expr);
             }};
         }
         macro_rules! new {
@@ -114,7 +119,7 @@ impl Expr {
                 if *is_print {
                     fmt += "\\n";
                 }
-                let _ = expand!(Expr::Call(
+                expand!(Expr::Call(
                     Box::new(Expr::Variable(Generics(
                         Name::new(if *is_print {
                             "printf"
@@ -129,7 +134,7 @@ impl Expr {
             }
             Expr::If(cond, then, els) => {
                 if let Expr::Let(bind, check) = &**cond {
-                    return Ok(expand!(Expr::If(
+                    return Ok(expands!(Expr::If(
                         Box::new(Expr::Check(check.clone())),
                         Box::new(Expr::Block(vec![
                             Expr::Let(bind.clone(), check.clone()),
@@ -177,7 +182,7 @@ impl Expr {
                         )
                     }
                 }
-                typing!(expand!(expr))
+                typing!(expands!(expr))
             }
             Expr::While(cond, body) => {
                 let cond = cond.infer(ctx)?;
@@ -191,7 +196,7 @@ impl Expr {
                     Generics(Name::new("temp")?, vec![Type::Integer]).generics(),
                     vec![],
                 )));
-                typing!(expand!(Expr::Block(vec![
+                typing!(expands!(Expr::Block(vec![
                     Expr::Let(temp.clone(), Box::new(Expr::Integer(0))),
                     Expr::While(
                         Box::new(Expr::Lt(
@@ -231,9 +236,10 @@ impl Expr {
             }
             Expr::Call(callee, args) => {
                 if let Some(obj) = args.first()
-                    && let Type::Class(Generics(name, _)) = obj.infer(ctx)? {
-                        ctx.local.class = Some(name);
-                    }
+                    && let Type::Class(Generics(name, _)) = obj.infer(ctx)?
+                {
+                    ctx.local.class = Some(name);
+                }
                 let typ = callee.infer(ctx)?;
                 if let Type::Function(_, ret, params) = typ {
                     let Some(params) = params else {
@@ -266,7 +272,7 @@ impl Expr {
                     ctx.local.class = None;
                     let name = Name::new(&format!("{obj}__{name}"))?;
                     if ctx.global.lib.contains_key(&name) {
-                        return typing!(expand!(Expr::Variable(Generics(name, args.clone()))));
+                        return typing!(expands!(Expr::Variable(Generics(name, args.clone()))));
                     }
                 }
                 if let Some(typ) = ctx.local.scope.get(name) {
@@ -330,7 +336,7 @@ impl Expr {
                             return Err(format!("array[n] {typ} != {val}"));
                         }
                     }
-                    let _ = expand!(Expr::Write(array!(arr, idx), val.clone(), arr.clone()));
+                    expand!(Expr::Write(array!(arr, idx), val.clone(), arr.clone()));
                     typing!(Type::None)
                 }
                 acc @ Expr::Member(obj, key) => {
@@ -346,12 +352,12 @@ impl Expr {
                         (_, Object::Struct(layout)) => {
                             let offset = layout.get_index_of(key).unwrap();
                             let offset = Box::new(Expr::Integer(offset as i64));
-                            let _ = expand!(Expr::Write(offset, val.clone(), obj.clone()));
+                            expand!(Expr::Write(offset, val.clone(), obj.clone()));
                         }
                         (_, Object::Enum(layout)) => {
                             let tag = layout.get_index_of(key).unwrap() as i64;
                             let offset = |x| Box::new(Expr::Integer(x));
-                            let _ = expand!(Expr::Block(vec![
+                            expand!(Expr::Block(vec![
                                 Expr::Write(offset(0), offset(tag), obj.clone()),
                                 Expr::Write(offset(8), val.clone(), obj.clone()),
                             ]));
@@ -381,7 +387,7 @@ impl Expr {
                     ));
                 }
                 expr.push(*temp);
-                typing!(expand!(Expr::Block(expr)))
+                typing!(expands!(Expr::Block(expr)))
             }
             Expr::Index(arr, idx) => {
                 let typ = arr.infer(ctx)?;
@@ -392,7 +398,7 @@ impl Expr {
                 let Type::Integer = idx_t else {
                     return Err(format!("not index: {idx_t}"));
                 };
-                let _ = expand!(Expr::Read(array!(arr, idx), *typ.clone(), arr.clone()));
+                expand!(Expr::Read(array!(arr, idx), *typ.clone(), arr.clone()));
                 typing!(*typ.clone())
             }
             Expr::Constructor(typ) => {
@@ -421,11 +427,11 @@ impl Expr {
                 };
                 let unify = match table {
                     Object::Enum(_) => {
-                        let _ = expand!(new!(2));
+                        expand!(new!(2));
                         Object::Enum(layout).clone()
                     }
                     Object::Struct(inner) => {
-                        let _ = expand!(new!(inner.len()));
+                        expand!(new!(inner.len()));
                         Object::Struct(layout).clone()
                     }
                 };
@@ -438,7 +444,7 @@ impl Expr {
                 if let Type::Array(_) = typ.clone()
                     && key.to_string() == "len"
                 {
-                    let _ = expand!(Expr::Read(
+                    expand!(Expr::Read(
                         Box::new(Expr::Integer(0)),
                         Type::Integer,
                         obj.clone()
@@ -458,11 +464,11 @@ impl Expr {
                 match class {
                     Object::Struct(layout) => {
                         let offset = Expr::Integer(layout.get_index_of(key).unwrap() as i64);
-                        let _ = expand!(Expr::Read(Box::new(offset), typ.clone(), obj.clone()));
+                        expand!(Expr::Read(Box::new(offset), typ.clone(), obj.clone()));
                     }
                     Object::Enum(_) => {
                         let offset = Box::new(Expr::Integer(8));
-                        let _ = expand!(Expr::If(
+                        expand!(Expr::If(
                             Box::new(Expr::Check(Box::new(self.clone()))),
                             Box::new(Expr::Read(offset, typ.clone(), obj.clone())),
                             Some(Box::new(Expr::Null(typ.clone())))
@@ -481,7 +487,7 @@ impl Expr {
                             return Err(format!("undefined: {name}.{key}"));
                         };
                         let offset = Box::new(Expr::Integer(0));
-                        let _ = expand!(Expr::Eql(
+                        expand!(Expr::Eql(
                             Box::new(Expr::Read(offset, Type::Integer, obj.clone())),
                             Box::new(Expr::Integer(tag as i64)),
                         ));
@@ -495,7 +501,7 @@ impl Expr {
                 typing!(Type::Bool)
             }
             Expr::Init(typ, len) => {
-                let _ = expand!(new!(*len + 1));
+                expand!(new!(*len + 1));
                 typing!(Type::Array(Box::new(typ.clone())))
             }
             Expr::Read(addr, typ, offset) => {
@@ -515,15 +521,15 @@ impl Expr {
                 typing!(val.infer(ctx)?)
             }
             Expr::Mod(lhs, rhs) => {
-                let _ = expand!(Expr::Div(lhs.clone(), rhs.clone()));
+                expand!(Expr::Div(lhs.clone(), rhs.clone()));
                 op!(Type::Integer, lhs, rhs)
             }
             Expr::Null(typ) => {
                 let typ = typ.solve(ctx);
                 if let Type::Float = typ {
-                    let _ = expand!(Expr::Float(Float::from(0.0)));
+                    expand!(Expr::Float(Float::from(0.0)));
                 } else {
-                    let _ = expand!(Expr::Integer(0));
+                    expand!(Expr::Integer(0));
                 }
                 typing!(typ)
             }
