@@ -6,7 +6,7 @@ enum Peano {
 fn add(lhs: Peano, rhs: Peano) -> Peano {
     match rhs {
         zero = lhs,
-        S n = add(lhs, n)
+        S n = add(n, lhs)
     }
 }
 
