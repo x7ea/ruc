@@ -166,25 +166,19 @@ impl Expr {
                 let (_, _, pat) = pats[0].clone();
                 let mut expr = Expr::Null(pat.infer(ctx)?);
                 for (key, bind, ret) in pats {
-                    if let Some(bind) = bind {
-                        expr = Expr::If(
+                    expr = Expr::If(
+                        if let Some(bind) = bind {
                             Box::new(Expr::Let(
                                 Box::new(bind.clone()),
                                 Box::new(Expr::Member(val.clone(), key.clone())),
-                            )),
-                            Box::new(ret.clone()),
-                            Some(Box::new(expr)),
-                        )
-                    } else {
-                        expr = Expr::If(
-                            Box::new(Expr::Check(Box::new(Expr::Member(
-                                val.clone(),
-                                key.clone(),
-                            )))),
-                            Box::new(ret.clone()),
-                            Some(Box::new(expr)),
-                        )
-                    }
+                            ))
+                        } else {
+                            let acc = Expr::Member(val.clone(), key.clone());
+                            Box::new(Expr::Check(Box::new(acc)))
+                        },
+                        Box::new(ret.clone()),
+                        Some(Box::new(expr)),
+                    )
                 }
                 typing!(expands!(expr))
             }
