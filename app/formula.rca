@@ -6,7 +6,7 @@ enum Peano {
 fn add(lhs: Peano, rhs: Peano) -> Peano {
     match rhs {
         zero = lhs,
-        S n = add(n, lhs)
+        S n = add(lhs, n)
     }
 }
 
@@ -28,7 +28,7 @@ fn peano(n: Int) -> Peano {
 }
 
 fn main() {
-    let one = peano(1)
+    let one = peano(5)
     let proof = add(one, one)
     print decode(proof)
 }
