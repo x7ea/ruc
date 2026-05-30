@@ -4,10 +4,10 @@ pub const ABI: [&str; 6] = ["rdi", "rsi", "rdx", "rcx", "r8", "r9"];
 
 impl Define {
     pub fn emit(&self, ctx: &mut Context) -> Result<String, String> {
-        let Define::Function(Generics(name, _), args, (Some(body), _)) = self else {
+        let Define::Function(Generics(name, params), args, (Some(body), _)) = self else {
             return Ok(String::new());
         };
-        if ctx.global.meta.contains(name) {
+        if !params.is_empty() {
             return Ok(String::new());
         }
         ctx.local = ctx.table.get(name).unwrap().clone();
