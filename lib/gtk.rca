@@ -1,56 +1,40 @@
-fn gtk_init(argc: (), argv: ()) -> ()
-fn gtk_window_new(init: ()) -> Window
-fn gtk_window_set_default_size(this: Window, width: Int, height: Int) -> ()
-
-fn gtk_button_new_with_label(content: Str) -> Widget
-fn gtk_button_set_label(elm: Widget, content: Str) -> ()
-fn gtk_container_add(this: Window, elm: Widget) -> ()
-
-fn g_signal_connect_data<T>(this: Widget, event: Str, handle: ()(Widget, T), data: T) -> ()
-fn g_signal_connect_object(this: Window, event: Str, handle: ()(), object: ()) -> ()
-
 fn gtk_main() -> ()
-fn gtk_widget_show_all(window: Window) -> ()
 fn gtk_main_quit() -> ()
+fn gtk_init(argc: (), argv: ()) -> ()
+fn gtk_container_add(app: App, elm: Elm) -> ()
+fn gtk_window_new(init: ()) -> App
+fn gtk_window_set_default_size(app: App, width: Int, height: Int) -> ()
+fn gtk_button_new_with_label(content: Str) -> Elm
+fn gtk_button_set_label(elm: Elm, content: Str) -> ()
+fn gtk_button_set_label(elm: Elm, content: Str) -> ()
+fn g_signal_connect_data<T>(elm: Elm, event: Str, handle: ()(Elm, T), data: T) -> ()
+fn g_signal_connect_object(app: App, event: Str, handle: ()(), object: ()) -> ()
+fn gtk_widget_show_all(window: App) -> ()
 
 
-struct App<T> {
-    state: T,
-    obj: Window
-}
-
-fn Gtk.app<T>() {
+fn App() {
     gtk_init((), ())
-    let window = gtk_window_new(())
-    gtk_window_set_default_size(window, 500, 300)
-    g_signal_connect_object(window, "destroy", gtk_main_quit, ())
-
-    let app = new App<T>
-    let app.state = new T
-    let app.obj = window
-    app
-}
-
-fn App.button(this: App, content: Str) {
-    let button = gtk_button_new_with_label(content)
-    gtk_container_add(this.obj, button)
+    let this = gtk_window_new(())
+    gtk_window_set_default_size(this, 500, 300)
+    g_signal_connect_object(this, "destroy", gtk_main_quit, ())
     this
 }
 
-struct Elm {
-    obj: Widget,
-    parent: App
+fn App.button(this: App, content: Str) {
+    let this = gtk_button_new_with_label(content)
+    gtk_container_add(this, this)
+    this
 }
 
-fn Widget.update(this: Widget, content: Str) {
+fn Elm.update(this: Elm, content: Str) {
     gtk_button_set_label(this, content)
 }
 
-fn Elm.click<T>(this: Elm, handle: ()(Widget, T)) {
-    g_signal_connect_data<T>(this.obj, "clicked", handle, this.parent.state)
+fn Elm.on_click<T>(this: Elm, data: T, handle: ()(Elm, T)) {
+    g_signal_connect_data<T>(this, "clicked", handle, data)
 }
 
 fn App.run(this: App) {
-    gtk_widget_show_all(this.obj)
+    gtk_widget_show_all(this)
     gtk_main()
 }
