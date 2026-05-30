@@ -12,8 +12,8 @@ fn increment(this: Elm, data: State) {
 
 fn main() {
     let app = App()
-    let state = new State
+    let data = new State
     let btn = app.button("Counter App")
-    btn.on_click<State>(state, increment)
+    btn.on_click<State>(data, increment)
     app.run()
 }
