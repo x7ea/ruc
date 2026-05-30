@@ -10,6 +10,7 @@ struct Term {
     lhs: Expr,
     rhs: Expr
 }
+cat app/formula.rca | RUST_BACKTRACE=1 cargo run
 
 fn eval(this: Expr) -> Float {
     match this {
