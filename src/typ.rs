@@ -23,6 +23,11 @@ impl Define {
                 Ok(sig)
             }
             Define::Function(Generics(name, param), args, (Some(body), None)) => {
+                if !param.is_empty() {
+                    let sig = Type::Function(param.clone(), Box::new(Type::None), types!(args));
+                    ctx.global.lib.insert(name.clone(), sig.clone());
+                }
+
                 let sig;
                 let parent = ctx.local.clone();
                 {
