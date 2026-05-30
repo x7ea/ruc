@@ -34,7 +34,7 @@ impl Define {
                 let (head, body) = once!(func, SPACE)?;
                 let (name, args) = surround!(&head, "(", ")")?;
                 let body = if let Some(typ) = body.trim().strip_prefix("->") {
-                    if let Ok((typ, expr)) = once!(func, SPACE) {
+                    if let Ok((typ, expr)) = once!(typ, SPACE) {
                         (
                             Some(Expr::Block(vec![Expr::parse(&expr)?])),
                             Some(Type::parse(&typ)?),
