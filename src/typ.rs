@@ -9,7 +9,7 @@ impl Define {
         }
         match self {
             Define::Function(Generics(name, param), args, (Some(body), Some(ret))) => {
-                let sig = Type::Function(param.clone(), Box::new(*ret), types!(args));
+                let sig = Type::Function(param.clone(), Box::new(ret.clone()), types!(args));
                 ctx.table.insert(name.clone(), ctx.local.clone());
                 ctx.global.lib.insert(name.clone(), sig.clone());
 
@@ -39,7 +39,7 @@ impl Define {
                 Ok(sig)
             }
             Define::Function(Generics(name, param), args, (None, Some(ret))) => {
-                let sig = Type::Function(param.clone(), Box::new(*ret), types!(args));
+                let sig = Type::Function(param.clone(), Box::new(ret.clone()), types!(args));
                 ctx.table.insert(name.clone(), ctx.local.clone());
                 ctx.global.lib.insert(name.clone(), sig.clone());
                 Ok(sig)
