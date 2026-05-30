@@ -82,6 +82,14 @@ impl Expr {
                 ))
             };
         }
+        macro_rules! temp {
+            ($typ: expr) => {
+                Expr::Variable(Generics(
+                    Generics(Name::new("temp")?, vec![$typ.clone()]).generics(),
+                    Vec::new(),
+                ))
+            };
+        }
         macro_rules! op {
             ($typ: pat, $lhs: expr, $rhs: expr) => {{
                 let [lt, rt] = [$lhs.infer(ctx)?, $rhs.infer(ctx)?];
@@ -187,10 +195,7 @@ impl Expr {
                 body.infer(ctx)
             }
             Expr::For(cnt, arr, body) => {
-                let temp = Box::new(Expr::Variable(Generics(
-                    Generics(Name::new("temp")?, vec![Type::Integer]).generics(),
-                    vec![],
-                )));
+                let temp = Box::new(temp!(Type::Integer));
                 typing!(expands!(Expr::Block(vec![
                     Expr::Let(temp.clone(), Box::new(Expr::Integer(0))),
                     Expr::While(
@@ -214,10 +219,7 @@ impl Expr {
             }
             Expr::Sequence(array) => {
                 let typ = array[0].infer(ctx)?;
-                let temp = Box::new(Expr::Variable(Generics(
-                    Generics(Name::new("temp")?, vec![typ.clone()]).generics(),
-                    Vec::new(),
-                )));
+                let temp = Box::new(temp!(typ.clone()));
                 let mut expr = vec![Expr::Let(
                     temp.clone(),
                     Box::new(Expr::Init(typ, array.len())),
