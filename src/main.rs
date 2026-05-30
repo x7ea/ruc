@@ -26,10 +26,8 @@ fn main() {
         };
     }
 
-    use std::thread::Builder;
-
-    let builder = thread::::new().stack_size(8 * 1024 * 1024);
-    letbuild = || {
+    use std::thread::Builder
+    let build = || {
         let code = {
             let mut buffer = String::new();
             error!(stdin().read_to_string(&mut buffer));
@@ -39,6 +37,7 @@ fn main() {
         let output = error!(Define::compile(&mut ast));
         error!(stdout().write_all(output.as_bytes()));
     };
+    let thread=Builder::new().stack_size(8 * 1024 * 1024);
     let handler = builder.spawn(build).unwrap();
     handler.join().unwrap();
 }
