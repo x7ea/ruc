@@ -1,4 +1,4 @@
-use crate::parse::SPACE;
+use crate::{Context, parse::SPACE};
 
 pub mod name {
     use crate::*;
@@ -156,6 +156,14 @@ pub fn lexer(src: &str, del: &str) -> Result<Vec<String>, String> {
     }
 
     Ok(tokens)
+}
+
+impl Context {
+    fn label(&mut self) -> String {
+        let id = self.global.idx;
+        self.global.idx += 1;
+        id.to_string()
+    }
 }
 
 #[macro_export]
