@@ -105,11 +105,7 @@ impl Expr {
         macro_rules! temp {
             ($typ: expr) => {
                 Expr::Variable(Generics(
-                    Generics(
-                        Name::new(&format!("temp.{}", ctx.label()))?,
-                        vec![$typ.clone()],
-                    )
-                    .generics(),
+                    Generics(Name::new(&format!("temp"))?, vec![$typ.clone()]).generics(),
                     Vec::new(),
                 ))
             };
