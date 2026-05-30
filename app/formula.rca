@@ -13,10 +13,10 @@ struct Term {
 
 fn eval(this: Expr) {
     match this {
-        add term = eval(term.lhs) + eval(term.rhs)
-        mul term = eval(term.lhs) * eval(term.rhs)
-        neg term = 0.0 - eval(term)
-        rec term = 1.0 / eval(term)
+        add term = eval(term.lhs) + eval(term.rhs),
+        mul term = eval(term.lhs) * eval(term.rhs),
+        neg e = 0.0 - eval(e),
+        rec e = 1.0 / eval(e),
         number i = i
     }
 }
