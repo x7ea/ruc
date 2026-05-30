@@ -138,7 +138,7 @@ impl Expr {
             }
             Expr::If(cond, then, els) => {
                 if let Expr::Let(bind, check) = &**cond {
-                    return Ok(expands!(Expr::If(
+                    return typing!(expands!(Expr::If(
                         Box::new(Expr::Check(check.clone())),
                         Box::new(Expr::Block(vec![
                             Expr::Let(bind.clone(), check.clone()),
