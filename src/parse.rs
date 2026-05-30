@@ -271,6 +271,7 @@ impl Display for Type {
             Type::Class(Generics(name, args)) => write!(f, "{name}<{}>", comma(args)),
             Type::Function(_, ret, Some(args)) => write!(f, "{ret}({})", comma(args)),
             Type::Function(_, ret, None) => write!(f, "{ret}()"),
+            Type::Any => panic!(),
         }
     }
 }
