@@ -322,28 +322,27 @@ impl Expr {
                             alias.insert(param.clone(), arg.clone());
                             *typ = typ.rewrite(param, arg);
                         }
-                        if !params.is_empty() {
-                            let mangle = func.generics();
-                            let mut unify = ctx.global.def.get(name).unwrap().clone();
-                            if let Define::Function(Generics(_, _), params, body) = &unify
-                                && let Type::Function(_, _, Some(args)) = typ.clone()
-                            {
-                                let mut map = IndexMap::new();
-                                for (param, arg) in params.keys().zip(args) {
-                                    map.insert(param.clone(), arg);
-                                }
-                                let name = Generics(mangle.clone(), vec![]);
-                                unify = Define::Function(name, map.clone(), body.clone());
-                            };
-                            let parent = ctx.global.alias.clone();
-                            ctx.global.alias = alias.clone();
-                            {
-                                *typ = unify.infer(ctx)?;
+                        let mangle = func.generics();
+                        let mut unify = ctx.global.def.get(name).unwrap().clone();
+                        if let Define::Function(Generics(_, _), params, body) = &unify
+                            && let Type::Function(_, _, Some(args)) = typ.clone()
+                        {
+                            let mut map = IndexMap::new();
+                            for (param, arg) in params.keys().zip(args) {
+                                map.insert(param.clone(), arg);
                             }
-                            ctx.global.alias = parent;
-                            ctx.global.def.insert(mangle, unify.clone());
+                            let name = Generics(mangle.clone(), vec![]);
+                            unify = Define::Function(name, map.clone(), body.clone());
+                        };
+                        let parent = ctx.global.alias.clone();
+                        ctx.global.alias = alias.clone();
+                        {
+                            *typ = unify.infer(ctx)?;
                         }
+                        ctx.global.alias = parent;
+                        ctx.global.def.insert(mangle, unify.clone());
                     }
+
                     typing!(typ.clone())
                 } else {
                     Err(format!("undefined: {name}"))
