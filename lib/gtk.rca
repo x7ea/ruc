@@ -19,7 +19,7 @@ struct App<T> {
     obj: Window
 }
 
-fn App<T>(state: T) {
+fn App<T>() {
     gtk_init((), ())
     let window = gtk_window_new(())
     gtk_window_set_default_size(window, 500, 300)
