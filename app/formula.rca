@@ -12,7 +12,9 @@ struct Term {
 }
 
 fn eval(this: Expr) {
-    match this {
+    if let u = this.add then u
+
+    ; match this {
         add term = eval(term.lhs) + eval(term.rhs),
         mul term = eval(term.lhs) * eval(term.rhs),
         neg e = 0.0 - eval(e),
