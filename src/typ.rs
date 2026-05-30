@@ -180,23 +180,29 @@ impl Expr {
                 }
             }
             Expr::Match(val, pats) => {
-                let mut expr = None;
+                let mut expr = Expr::Null(Type::Any);
                 for (key, bind, ret) in pats {
-                    let pat = if let Some(bind) = bind {
-                        Box::new(Expr::Let(
-                            Box::new(bind.clone()),
-                            Box::new(Expr::Member(val.clone(), key.clone())),
-                        ))
+                    if let Some(bind) = bind {
+                        expr = Expr::If(
+                            Box::new(Expr::Let(
+                                Box::new(bind.clone()),
+                                Box::new(Expr::Member(val.clone(), key.clone())),
+                            )),
+                            Box::new(ret.clone()),
+                            Some(Box::new(expr)),
+                        )
                     } else {
-                        let acc = Expr::Member(val.clone(), key.clone());
-                        Box::new(Expr::Check(Box::new(acc)))
-                    };
-                    if expr.is_none() {
-                        expr = Some(Box::new(Expr::Null(pat.infer(ctx)?)))
+                        expr = Expr::If(
+                            Box::new(Expr::Check(Box::new(Expr::Member(
+                                val.clone(),
+                                key.clone(),
+                            )))),
+                            Box::new(ret.clone()),
+                            Some(Box::new(expr)),
+                        )
                     }
-                    expr = Some(Box::new(Expr::If(pat, Box::new(ret.clone()), expr)))
                 }
-                typing!(expands!(*expr.unwrap()))
+                typing!(expand!(expr))
             }
             Expr::While(cond, body) => {
                 let cond = cond.infer(ctx)?;
