@@ -2,21 +2,50 @@ use crate::*;
 
 impl Define {
     pub fn infer(&self, ctx: &mut Context) -> Result<Type, String> {
+        macro_rules! types {
+            ($args: expr) => {
+                Some($args.values().cloned().collect::<Vec<Type>>())
+            };
+        }
         match self {
             Define::Function(Generics(name, param), args, (Some(body), Some(ret))) => {
-                let sig = Type::Function(
-                    param.clone(),
-                    Box::new(*ret),
-                    Some(args.values().cloned().collect::<Vec<Type>>()),
-                );
+                let sig = Type::Function(param.clone(), Box::new(*ret), types!(args));
                 ctx.table.insert(name.clone(), ctx.local.clone());
+                ctx.global.lib.insert(name.clone(), sig.clone());
 
                 let parent = ctx.local.clone();
-                ctx.local = Function::default();
-                ctx.local.scope = args.clone();
-                ctx.global.lib.insert(name.clone(), sig.clone());
                 {
+                    ctx.local = Function::default();
+                    ctx.local.scope = args.clone();
                     body.infer(ctx)?;
+                }
+                ctx.local = parent;
+                Ok(sig)
+            }
+            Define::Function(Generics(name, param), args, (Some(body), None)) => {
+                let sig;
+                let parent = ctx.local.clone();
+                {
+                    ctx.local = Function::default();
+                    ctx.local.scope = args.clone();
+                    let ret = body.infer(ctx)?;
+                    sig = Type::Function(param.clone(), Box::new(ret), types!(args));
+                    ctx.table.insert(name.clone(), ctx.local.clone());
+                    ctx.global.lib.insert(name.clone(), sig.clone());
+                }
+                ctx.local = parent;
+                Ok(sig)
+            }
+            Define::Function(Generics(name, param), args, (Some(body), None)) => {
+                let sig;
+                let parent = ctx.local.clone();
+                {
+                    ctx.local = Function::default();
+                    ctx.local.scope = args.clone();
+                    let ret = body.infer(ctx)?;
+                    sig = Type::Function(param.clone(), Box::new(ret), types!(args));
+                    ctx.table.insert(name.clone(), ctx.local.clone());
+                    ctx.global.lib.insert(name.clone(), sig.clone());
                 }
                 ctx.local = parent;
                 Ok(sig)
