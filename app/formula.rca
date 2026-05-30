@@ -32,7 +32,9 @@ fn decode(this: Peano) -> Int {
 fn to_str(this: Peano) -> Str {
     match this {
         zero = "0",
-        S n = (format "S(", n, ")")
+        S n = {
+            format "S(", n.to_str(), ")"
+        }
     }
 }
 
