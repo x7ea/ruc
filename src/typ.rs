@@ -306,9 +306,8 @@ impl Expr {
                         return typing!(expands!(Expr::Variable(Generics(name, args.clone()))));
                     }
                 }
-                if let Some(typ) = ctx.local.scope.get(&name) {
-                    typing!(typ.clone().solve(ctx))
-                } else if let Some(typ) = ctx.global.lib.get(&name) {
+
+                if let Some(typ) = ctx.global.lib.get(&name) {
                     let typ = &mut typ.clone().solve(ctx);
                     if let Type::Function(params, _, Some(_)) = typ.clone()
                         && !params.is_empty()
@@ -345,6 +344,8 @@ impl Expr {
                         ctx.global.def.insert(mangle, unify.clone());
                     }
                     typing!(typ.clone())
+                } else if let Some(typ) = ctx.local.scope.get(&name) {
+                    typing!(typ.clone().solve(ctx))
                 } else {
                     Err(format!("undefined: {name}"))
                 }
