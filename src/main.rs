@@ -110,7 +110,7 @@ pub enum Object {
 
 #[derive(Clone, PartialEq)]
 pub enum Define {
-    Function(Generics, IndexMap<Name, Type>, Result<Expr, Type>),
+    Function(Generics, IndexMap<Name, Type>, (Option<Expr>, Option<Type>)),
     Class(Generics, Object),
 }
 
