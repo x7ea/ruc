@@ -30,5 +30,5 @@ fn peano(n: Int) -> Peano {
 fn main() {
     let one = peano(5)
     let proof = add(one, one)
-    print decode(proof)
+    print decode(one)
 }
