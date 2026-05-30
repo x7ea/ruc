@@ -4,7 +4,7 @@ struct State {
     count: Int
 }
 
-fn increment(this: Elm, data: State) {
+fn inc(this: Elm, data: State) {
     let data.count = data.count + 1
     let view = format "Count: ", data.count
     this.update(view)
@@ -13,7 +13,6 @@ fn increment(this: Elm, data: State) {
 fn main() {
     let app = App()
     let data = new State
-    let btn = app.button("Counter App")
-    btn.on_click<State>(data, increment)
+    app.button("Counter").on_click<State>(data, inc)
     app.run()
 }
