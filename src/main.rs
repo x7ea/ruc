@@ -102,7 +102,7 @@ impl Define {
 
 // Abstract Syntax Tree (AST)
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, PartialEq)]
 pub enum Object {
     Struct(IndexMap<Name, Type>),
     Enum(IndexMap<Name, Type>),
@@ -114,10 +114,10 @@ pub enum Define {
     Class(Generics, Object),
 }
 
-#[derive(Clone, Hash, Debug, PartialEq, Eq)]
+#[derive(Clone, Hash, PartialEq, Eq)]
 pub struct Generics(Name, Vec<Type>);
 
-#[derive(Clone, Debug, Hash, PartialEq, Eq)]
+#[derive(Clone, Hash, PartialEq, Eq)]
 pub enum Expr {
     // Literal
     Integer(i64),
@@ -164,7 +164,7 @@ pub enum Expr {
     Init(Type, usize),
 }
 
-#[derive(Clone, PartialEq, Eq, Debug, Hash)]
+#[derive(Clone, PartialEq, Eq, Hash)]
 pub enum Type {
     String,
     Integer,
@@ -195,7 +195,7 @@ pub struct Global {
     meta: IndexSet<Name>,
 }
 
-#[derive(Default, Debug, Clone)]
+#[derive(Default, Clone)]
 pub struct Function {
     var: IndexMap<Name, Type>,
     scope: IndexMap<Name, Type>,
