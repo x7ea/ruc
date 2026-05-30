@@ -140,6 +140,7 @@ pub enum Expr {
     Index(Box<Expr>, Box<Expr>),
     // Object
     Constructor(Type),
+    Enum(Type, Name, Box<Expr>),
     Member(Box<Expr>, Name),
     Check(Box<Expr>),
     // Control
