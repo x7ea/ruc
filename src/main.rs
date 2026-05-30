@@ -84,13 +84,7 @@ impl Define {
             define.infer(ctx)?;
         }
         for (_, define) in ctx.global.def.clone() {
-            if let Some(func) = name!(define)
-                && func.to_string() == "main"
-            {
-                text = define.emit(ctx)? + &text;
-            } else {
-                text += &define.emit(ctx)?;
-            }
+            text += &define.emit(ctx)?;
         }
         let data = ctx.global.data.clone();
         for (_, define) in ctx.global.def.clone() {
