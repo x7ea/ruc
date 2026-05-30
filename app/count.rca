@@ -11,7 +11,8 @@ fn inc(this: Elm, data: State) {
 }
 
 fn main() {
-    let app = app<State>()
-    app.button("Counter").click<State>(inc)
+    let app = App()
+    let data = new State
+    app.button("Counter").click<State>(data, inc)
     app.run()
 }
