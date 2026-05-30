@@ -26,7 +26,7 @@ impl Define {
                 if !param.is_empty() {
                     let sig = Type::Function(param.clone(), Box::new(Type::None), types!(args));
                     ctx.global.lib.insert(name.clone(), sig.clone());
-                    return sig;
+                    return Ok(sig);
                 }
                 let sig;
                 let parent = ctx.local.clone();
