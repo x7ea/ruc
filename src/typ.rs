@@ -13,19 +13,20 @@ impl Define {
                 if ret.is_err() {
                     ctx.global.extrn.insert(name.clone());
                 }
-                let sig = if let Ok(Ok(ret)) | Err(ret) = ret {
-                    if param.is_empty() {
-                        Type::Function(param.clone(), Box::new(ret), args)
-                    } else {
+                let sig = match ret {
+                    Ok(Ok(ret)) | Err(ret) => {
+                        if param.is_empty() {
+                            Type::Function(param.clone(), Box::new(ret), args)
+                        } else {
+                            ctx.global.meta.insert(name.clone());
+                            Type::Function(param.clone(), Box::new(ret), args)
+                        }
+                    }
+                    Ok(err @ Err(_)) if param.is_empty() => return err,
+                    _ => {
                         ctx.global.meta.insert(name.clone());
-                        Type::Function(param.clone(), Box::new(ret), args)
+                        Type::Function(param.clone(), Box::new(Type::None), args)
                     }
-                } else {
-                    if param.is_empty() {
-                        return ret.unwrap();
-                    }
-                    ctx.global.meta.insert(name.clone());
-                    Type::Function(param.clone(), Box::new(Type::None), args)
                 };
                 ctx.table.insert(name.clone(), ctx.local.clone());
                 ctx.global.lib.insert(name.clone(), sig.clone());
