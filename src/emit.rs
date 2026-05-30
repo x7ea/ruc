@@ -101,7 +101,7 @@ impl Expr {
                 if let Some(expr) = if_let.cloned() {
                     return expr.emit(ctx);
                 }
-                let id = label!();
+                let id = ctx.label();
                 let [cond, then] = [cond.emit(ctx)?, then.emit(ctx)?];
                 Ok(if let Some(els) = els {
                     let cmp = format!("\tcmp rax, 0\n\tje else.{id}\n");
@@ -114,7 +114,7 @@ impl Expr {
                 })
             }
             Expr::While(cond, body) => {
-                let id = label!();
+                let id = ctx.label();
                 let cmp = format!("\tcmp rax, 0\n\tje do.{id}\n");
                 Ok(format!(
                     "while.{id}:\n{}{cmp}{}\tjmp while.{id}\ndo.{id}:\n",
@@ -210,7 +210,7 @@ impl Expr {
                 ))
             }
             Expr::Read(offset, typ, addr) => {
-                let id = label!();
+                let id = ctx.label();
                 let [addr, offset] = [addr.emit(ctx)?, offset.emit(ctx)?];
                 let guard = format!("\tpxor xmm0, xmm0\n\tcmp rax, 0\n\tje null.{id}\n");
                 let calc = "\tlea rax, [r11+rax*8]\n".to_string();
@@ -224,7 +224,7 @@ impl Expr {
                 ))
             }
             Expr::Write(offset, val, addr) => {
-                let id = label!();
+                let id = ctx.label();
                 let [addr, val, offset] = [addr.emit(ctx)?, val.emit(ctx)?, offset.emit(ctx)?];
                 let guard = format!("\tpxor xmm0, xmm0\n\tcmp rax, 0\n\tje null.{id}\n");
                 let calc = format!("\tpush rax\n{offset}\tpop r11\n\tlea r11, [r11+rax*8]\n");
@@ -240,7 +240,7 @@ impl Expr {
             Expr::Integer(val) => Ok(format!("\tmov rax, {val}\n")),
             Expr::Bool(val) => Expr::Integer(if *val { 1 } else { 0 }).emit(ctx),
             Expr::Float(val) => {
-                let name = format!("float.{}", label!());
+                let name = format!("float.{}", ctx.label());
                 ctx.global.data += &format!("\t{name} dq {val:?}\n");
                 Ok(format!("\tmovsd xmm0, [{name}]\n"))
             }
@@ -250,7 +250,7 @@ impl Expr {
                     .replace("\\n", "\", 10, \"")
                     .replace("\\\"", "\", 34, \"")
                     .replace("\"\", ", "");
-                let name = format!("str.{}", label!());
+                let name = format!("str.{}", ctx.label());
                 ctx.global.data += &format!("\t{name} db {val}\n");
                 Ok(format!("\tmov rax, {name}\n"))
             }
