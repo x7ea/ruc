@@ -14,7 +14,7 @@ fn gtk_widget_show_all(window: Window) -> ()
 fn gtk_main_quit() -> ()
 
 
-struct App<T> {
+struct app<T> {
     state: T,
     obj: Window
 }
