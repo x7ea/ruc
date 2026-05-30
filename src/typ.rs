@@ -84,15 +84,8 @@ impl Expr {
             };
         }
         macro_rules! temp {
-            ($typ: literal) => {
-                Expr::Variable(Generics(
-                    Generics(
-                        Name::new("temp")?,
-                        vec![Type::Class(Generics(Name::new($typ)?, vec![]))],
-                    )
-                    .generics(),
-                    Vec::new(),
-                ))
+            () => {
+                Expr::Variable(Generics(Name::new("temp")?, Vec::new()))
             };
             ($typ: expr) => {
                 Expr::Variable(Generics(
@@ -185,7 +178,7 @@ impl Expr {
                             let acc = Expr::Member(val.clone(), key.clone());
                             Box::new(Expr::Check(Box::new(acc)))
                         },
-                        Box::new(Expr::Let(Box::new(temp!("match")), Box::new(ret.clone()))),
+                        Box::new(Expr::Let(Box::new(temp!()), Box::new(ret.clone()))),
                         None,
                     ))
                 }
