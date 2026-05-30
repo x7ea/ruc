@@ -212,6 +212,28 @@ impl Expr {
                     ),
                 ])))
             }
+            Expr::Sequence(array) => {
+                let typ = array[0].infer(ctx)?;
+                let temp = Box::new(Expr::Variable(Generics(
+                    Generics(Name::new("temp")?, vec![typ.clone()]).generics(),
+                    Vec::new(),
+                )));
+                let mut expr = vec![Expr::Let(
+                    temp.clone(),
+                    Box::new(Expr::Init(typ, array.len())),
+                )];
+                for (idx, val) in array.iter().enumerate() {
+                    expr.push(Expr::Let(
+                        Box::new(Expr::Index(
+                            temp.clone(),
+                            Box::new(Expr::Integer(idx as i64)),
+                        )),
+                        Box::new(val.clone()),
+                    ));
+                }
+                expr.push(*temp);
+                typing!(expands!(Expr::Block(expr)))
+            }
             Expr::Block(lines) => {
                 let mut ret = Type::None;
                 let parent = ctx.local.scope.clone();
@@ -362,40 +384,6 @@ impl Expr {
                 }
                 other => Err(format!("not assign target: {}", other.infer(ctx)?)),
             },
-            Expr::Sequence(array) => {
-                let typ = array[0].infer(ctx)?;
-                let temp = Box::new(Expr::Variable(Generics(
-                    Generics(Name::new("temp")?, vec![typ.clone()]).generics(),
-                    Vec::new(),
-                )));
-                let mut expr = vec![Expr::Let(
-                    temp.clone(),
-                    Box::new(Expr::Init(typ, array.len())),
-                )];
-                for (idx, val) in array.iter().enumerate() {
-                    expr.push(Expr::Let(
-                        Box::new(Expr::Index(
-                            temp.clone(),
-                            Box::new(Expr::Integer(idx as i64)),
-                        )),
-                        Box::new(val.clone()),
-                    ));
-                }
-                expr.push(*temp);
-                typing!(expands!(Expr::Block(expr)))
-            }
-            Expr::Index(arr, idx) => {
-                let typ = arr.infer(ctx)?;
-                let Type::Array(typ) = typ else {
-                    return Err(format!("not array: {typ}"));
-                };
-                let idx_t = idx.infer(ctx)?;
-                let Type::Integer = idx_t else {
-                    return Err(format!("not index: {idx_t}"));
-                };
-                expand!(Expr::Read(array!(arr, idx), *typ.clone(), arr.clone()));
-                typing!(*typ.clone())
-            }
             Expr::Constructor(typ) => {
                 let Type::Class(Generics(name, mut args)) = typ.clone() else {
                     return Err(format!("no constructor: {typ}"));
@@ -439,12 +427,11 @@ impl Expr {
                 if let Type::Array(_) = typ.clone()
                     && key.to_string() == "len"
                 {
-                    expand!(Expr::Read(
+                    return typing!(expands!(Expr::Read(
                         Box::new(Expr::Integer(0)),
                         Type::Integer,
                         obj.clone()
-                    ));
-                    return typing!(Type::Integer);
+                    )));
                 }
                 let Type::Class(name) = &typ else {
                     return Err(format!("not class: {typ}"));
@@ -471,6 +458,18 @@ impl Expr {
                     }
                 }
                 typing!(typ)
+            }
+            Expr::Index(arr, idx) => {
+                let typ = arr.infer(ctx)?;
+                let Type::Array(typ) = typ else {
+                    return Err(format!("not array: {typ}"));
+                };
+                let idx_t = idx.infer(ctx)?;
+                let Type::Integer = idx_t else {
+                    return Err(format!("not index: {idx_t}"));
+                };
+                expand!(Expr::Read(array!(arr, idx), *typ.clone(), arr.clone()));
+                typing!(*typ.clone())
             }
             Expr::Check(expr) => {
                 if let Expr::Member(obj, key) = &**expr {
