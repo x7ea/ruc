@@ -179,7 +179,7 @@ impl Expr {
                     }
                     expr = Some(Box::new(Expr::If(pat, Box::new(ret.clone()), expr)))
                 }
-                typing!(expands!(expr.unwrap().clone()))
+                typing!(expands!(*expr.unwrap()))
             }
             Expr::While(cond, body) => {
                 let cond = cond.infer(ctx)?;
