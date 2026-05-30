@@ -29,16 +29,7 @@ fn decode(this: Peano) -> Int {
     }
 }
 
-fn to_str(this: Peano) -> Str {
-    match this {
-        zero = "0",
-        S n = {
-            format "S(", n.to_str(), ")"
-        }
-    }
-}
-
 fn main() {
-    let one = S(S(S(S(zero()))))
-    print to_str(one)
+    let one = S(zero())
+    print decode(add(one,one))
 }
