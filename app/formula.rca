@@ -1,18 +1,18 @@
 enum Peano {
-    zero: ()
+    zero: (),
     S: Peano
 }
 
 fn add(lhs: Peano, rhs: Peano) -> Peano {
     match rhs {
-        zero = lhs
+        zero = lhs,
         S n = add(lhs, n)
     }
 }
 
 fn decode(this: Peano) -> Int {
     match this {
-        zero = 0
+        zero = 0,
         S n = decode(n) + 1
     }
 }
@@ -28,6 +28,6 @@ fn peano(n: Int) -> Peano {
 }
 
 fn main() {
-
-
+    let one = peano(2)
+    print decode(one)
 }
