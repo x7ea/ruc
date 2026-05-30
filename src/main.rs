@@ -117,7 +117,7 @@ pub enum Define {
 #[derive(Clone, Hash, Debug, PartialEq, Eq)]
 pub struct Generics(Name, Vec<Type>);
 
-#[derive(Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Debug, Hash, PartialEq, Eq)]
 pub enum Expr {
     // Literal
     Integer(i64),
