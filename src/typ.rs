@@ -105,7 +105,7 @@ impl Expr {
             }};
         }
         match self {
-            Expr::Print(is_print, vals) => {
+            Expr::Print(is_output, vals) => {
                 let mut fmt = String::new();
                 let mut name = "g_strdup_printf";
                 for i in vals.iter() {
@@ -117,7 +117,7 @@ impl Expr {
                         _ => return Err(format!("can't print: {typ}")),
                     }
                 }
-                if *is_print {
+                if *is_output {
                     fmt += "\\n";
                     name = "printf";
                 }
@@ -125,7 +125,7 @@ impl Expr {
                     Box::new(Expr::Variable(Generics(Name::new(name)?, vec![]))),
                     [vec![Expr::String(fmt)], vals.to_vec()].concat(),
                 ));
-                typing!(if *is_print { Type::None } else { Type::String })
+                typing!(if *is_output { Type::None } else { Type::String })
             }
             Expr::If(cond, then, els) => {
                 if let Expr::Let(bind, check) = &**cond {
