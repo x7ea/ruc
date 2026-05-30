@@ -180,6 +180,7 @@ pub enum Type {
     Class(Generics),
     Function(Vec<Type>, Box<Type>, Option<Vec<Type>>),
     None,
+    Any,
 }
 
 #[derive(Default)]
