@@ -13,10 +13,10 @@ struct Term {
 
 fn eval(this: Expr) -> Float {
     match this {
-        add term = eval(term.lhs) + eval(term.rhs),
-        mul term = eval(term.lhs) * eval(term.rhs),
-        neg e = 0.0 - eval(e),
-        rec e = 1.0 / eval(e),
+        add op = eval(op.lhs) + eval(op.rhs),
+        mul op = eval(op.lhs) * eval(op.rhs),
+        neg v = 0.0 - eval(v),
+        rec v = 1.0 / eval(v),
         number i = i
     }
 }
