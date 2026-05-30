@@ -50,7 +50,7 @@ fn Widget.click<T>(this: Elm, handle: ()(Widget, T)) {
     g_signal_connect_data<T>(this.obj, "clicked", handle, this.parent.state)
 }
 
-fn Window.run(this: Window) {
-    gtk_widget_show_all(this)
+fn App.run(this: App) {
+    gtk_widget_show_all(this.obj)
     gtk_main()
 }
