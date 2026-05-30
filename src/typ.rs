@@ -221,23 +221,16 @@ impl Expr {
             }
             Expr::For(cnt, arr, body) => {
                 let temp = Box::new(temp!(Type::Integer));
+                let read = Box::new(Expr::Index(arr.clone(), temp.clone()));
+                let inc = Box::new(Expr::Add(temp, Box::new(Expr::Integer(1))));
                 typing!(expands!(Expr::Block(vec![
                     Expr::Let(temp.clone(), Box::new(Expr::Integer(0))),
                     Expr::While(
-                        Box::new(Expr::Lt(
-                            temp.clone(),
-                            Box::new(Expr::Member(arr.clone(), Name::new("len")?)),
-                        )),
+                        Box::new(Expr::Lt(temp.clone(), len!(arr))),
                         Box::new(Expr::Block(vec![
-                            Expr::Let(
-                                cnt.clone(),
-                                Box::new(Expr::Index(arr.clone(), temp.clone()))
-                            ),
+                            Expr::Let(cnt.clone(), read),
                             *body.clone(),
-                            Expr::Let(
-                                temp.clone(),
-                                Box::new(Expr::Add(temp, Box::new(Expr::Integer(1)))),
-                            ),
+                            Expr::Let(temp.clone(), inc),
                         ])),
                     ),
                 ])))
