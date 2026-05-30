@@ -25,15 +25,15 @@ fn App<T>(state: T) {
     gtk_window_set_default_size(window, 500, 300)
     g_signal_connect_object(window, "destroy", gtk_main_quit, ())
 
-    let app = new App
-    let app.state = state
+    let app = new App<T>
+    let app.state = new T
     let app.obj = window
     app
 }
 
 fn App.button(this: App, content: Str) {
     let button = gtk_button_new_with_label(content)
-    gtk_container_add(app.obj, button)
+    gtk_container_add(this.obj, button)
     this
 }
 
