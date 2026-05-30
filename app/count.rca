@@ -1,0 +1,18 @@
+use gtk
+
+struct State {
+    count: Int
+}
+
+fn inc(this: Elm, data: State) {
+    let data.count = data.count + 1
+    let view = format "Count: ", data.count
+    this.update(view)
+}
+
+fn main() {
+    let app = Window()
+    let data = new State
+    app.button("Counter").click<State>(data, inc)
+    app.run()
+}
