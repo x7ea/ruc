@@ -84,6 +84,16 @@ impl Expr {
             };
         }
         macro_rules! temp {
+            ($typ: literal) => {
+                Expr::Variable(Generics(
+                    Generics(
+                        Name::new("temp")?,
+                        vec![Type::Class(Generics(Name::new($typ)?, vec![]))],
+                    )
+                    .generics(),
+                    Vec::new(),
+                ))
+            };
             ($typ: expr) => {
                 Expr::Variable(Generics(
                     Generics(Name::new("temp")?, vec![$typ.clone()]).generics(),
@@ -163,10 +173,9 @@ impl Expr {
                 }
             }
             Expr::Match(val, pats) => {
-                let (_, _, pat) = pats[0].clone();
-                let mut expr = Expr::Null(pat.infer(ctx)?);
+                let mut expr = vec![];
                 for (key, bind, ret) in pats {
-                    expr = Expr::If(
+                    expr.push(Expr::If(
                         if let Some(bind) = bind {
                             Box::new(Expr::Let(
                                 Box::new(bind.clone()),
@@ -176,11 +185,11 @@ impl Expr {
                             let acc = Expr::Member(val.clone(), key.clone());
                             Box::new(Expr::Check(Box::new(acc)))
                         },
-                        Box::new(ret.clone()),
-                        Some(Box::new(expr)),
-                    )
+                        Box::new(Expr::Let(Box::new(temp!("match")), ret.clone())),
+                        None,
+                    ))
                 }
-                typing!(expands!(expr))
+                typing!(expands!(Expr::Block(expr)))
             }
             Expr::While(cond, body) => {
                 let cond = cond.infer(ctx)?;
