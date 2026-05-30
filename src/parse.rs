@@ -34,9 +34,9 @@ impl Define {
                 let (head, body) = once!(func, SPACE)?;
                 let (name, args) = surround!(&head, "(", ")")?;
                 let body = if let Some(typ) = body.trim().strip_prefix("->") {
-                    Err(Type::parse(typ)?)
+                    (None, Some(Type::parse(typ)?))
                 } else {
-                    Ok(Expr::Block(vec![Expr::parse(&body)?]))
+                    (Some(Expr::Block(vec![Expr::parse(&body)?])), None)
                 };
                 result.push(Define::Function(
                     Generics::parse(&name)?,
