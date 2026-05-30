@@ -6,7 +6,6 @@ fn gtk_window_new(init: ()) -> App
 fn gtk_window_set_default_size(this: App, width: Int, height: Int) -> ()
 fn gtk_button_new_with_label(content: Str) -> Elm
 fn gtk_button_set_label(this: Elm, content: Str) -> ()
-fn gtk_button_set_label(this: Elm, content: Str) -> ()
 fn g_signal_connect_data<T>(this: Elm, event: Str, handle: ()(Elm, T), data: T) -> ()
 fn g_signal_connect_object(this: App, event: Str, handle: ()(), object: ()) -> ()
 fn gtk_widget_show_all(window: App) -> ()
