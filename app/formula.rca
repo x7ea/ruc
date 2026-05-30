@@ -39,6 +39,6 @@ fn to_str(this: Peano) -> Str {
 }
 
 fn main() {
-    let one = S(S(S(S(zero())))))
+    let one = S(S(S(S(zero()))))
     print to_str(one)
 }
