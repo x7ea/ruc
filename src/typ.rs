@@ -38,34 +38,10 @@ impl Define {
                 ctx.local = parent;
                 Ok(sig)
             }
-            Define::Function(Generics(name, param), args, ()) => {
-                let parent = ctx.local.clone();
-                ctx.local = Function::default();
-                ctx.local.scope = args.clone();
-
-                let ret = body.clone().map(|x| x.infer(ctx));
-                let args = Some(args.values().cloned().collect::<Vec<Type>>());
-                if ret.is_err() {
-                    ctx.global.extrn.insert(name.clone());
-                }
-                let sig = match ret {
-                    Ok(Ok(ret)) | Err(ret) => {
-                        if param.is_empty() {
-                            Type::Function(param.clone(), Box::new(ret), args)
-                        } else {
-                            ctx.global.meta.insert(name.clone());
-                            Type::Function(param.clone(), Box::new(ret), args)
-                        }
-                    }
-                    Ok(err @ Err(_)) if param.is_empty() => return err,
-                    _ => {
-                        ctx.global.meta.insert(name.clone());
-                        Type::Function(param.clone(), Box::new(Type::None), args)
-                    }
-                };
+            Define::Function(Generics(name, param), args, (None, Some(ret))) => {
+                let sig = Type::Function(param.clone(), Box::new(*ret), types!(args));
                 ctx.table.insert(name.clone(), ctx.local.clone());
                 ctx.global.lib.insert(name.clone(), sig.clone());
-                ctx.local = parent;
                 Ok(sig)
             }
             Define::Class(Generics(name, args), layout) => {
