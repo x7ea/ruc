@@ -49,6 +49,7 @@ impl Define {
                 ctx.global.table.insert(name.clone(), val);
                 Ok(Type::None)
             }
+            _ => panic!(),
         }
     }
 }
