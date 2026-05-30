@@ -212,7 +212,7 @@ impl Expr {
                 return Ok(Expr::Call(callee.clone(), [vec![obj], arg].concat()));
             }
             Ok(Expr::Member(Box::new(obj), Name::new(&key)?))
-        } else if let Ok((typ, key)) = once!(src, "::", right) {
+        } else if let Ok((typ, key)) = once!(src, "::") {
             let typ = Type::parse(&typ)?;
             if let Ok((key, value)) = surround!(src, "(", ")") {
                 Ok(Expr::Enum(
