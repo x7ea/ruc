@@ -185,7 +185,7 @@ impl Expr {
                             let acc = Expr::Member(val.clone(), key.clone());
                             Box::new(Expr::Check(Box::new(acc)))
                         },
-                        Box::new(Expr::Let(Box::new(temp!("match")), ret.clone())),
+                        Box::new(Expr::Let(Box::new(temp!("match")), Box::new(ret.clone()))),
                         None,
                     ))
                 }
