@@ -32,7 +32,7 @@ fn Elm.update(elm: Elm, content: Str) {
     gtk_button_set_label(elm, content)
 }
 
-fn Elm.on_click<T>(this: Elm, data: T, handle: ()(Elm, T)) {
+fn Elm.click<T>(this: Elm, data: T, handle: ()(Elm, T)) {
     g_signal_connect_data<T>(this, "clicked", handle, data)
 }
 
