@@ -10,15 +10,14 @@ impl Define {
         match self {
             Define::Function(Generics(name, param), args, (Some(body), Some(ret))) => {
                 let sig = Type::Function(param.clone(), Box::new(ret.clone()), types!(args));
-                ctx.table.insert(name.clone(), ctx.local.clone());
                 ctx.global.lib.insert(name.clone(), sig.clone());
-
                 let parent = ctx.local.clone();
                 {
                     ctx.local = Function::default();
                     ctx.local.scope = args.clone();
                     body.infer(ctx)?;
                 }
+                ctx.table.insert(name.clone(), ctx.local.clone());
                 ctx.local = parent;
                 Ok(sig)
             }
@@ -309,7 +308,6 @@ impl Expr {
                 if let Some(typ) = ctx.local.scope.get(name) {
                     typing!(typ.clone().solve(ctx))
                 } else if let Some(typ) = ctx.global.lib.get(name) {
-                    dbg!(&self);
                     let typ = &mut typ.clone().solve(ctx);
                     if let Type::Function(params, _, Some(_)) = typ.clone()
                         && !params.is_empty()
