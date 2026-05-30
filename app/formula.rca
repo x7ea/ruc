@@ -1,0 +1,22 @@
+enum Expr {
+    add: Term,
+    mul: Term,
+    neg: Expr,
+    rec: Expr,
+    number: Float
+}
+
+struct Term {
+    lhs: Expr,
+    rhs: Expr
+}
+
+fn eval(this: Expr) {
+    match this {
+        add term = eval(term.lhs) + eval(term.rhs)
+        mul term = eval(term.lhs) * eval(term.rhs)
+        neg term = 0.0 - eval(term)
+        rec term = 1.0 / eval(term)
+        number i = i
+    }
+}
