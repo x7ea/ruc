@@ -28,6 +28,7 @@ fn peano(n: Int) -> Peano {
 }
 
 fn main() {
-    let one = peano(2)
-    print decode(one)
+    let one = peano(1)
+    let proof = add(one, one)
+    print decode(proof)
 }
