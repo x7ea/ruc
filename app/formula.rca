@@ -5,6 +5,29 @@ enum Peano {
 
 fn add(lhs: Peano, rhs: Peano) -> Peano {
     match rhs {
-
+        zero = lhs
+        S n = add(lhs, n)
     }
+}
+
+fn decode(this: Peano) -> Int {
+    match this {
+        zero = 0
+        S n = decode(n) + 1
+    }
+}
+
+fn peano(n: Int) -> Peano {
+    let this = new Peano
+    if n == 0 then {
+        let this.zero = ()
+    } else {
+        let this.S = peano(n - 1)
+    }
+    this
+}
+
+fn main() {
+
+
 }
