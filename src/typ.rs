@@ -170,7 +170,7 @@ impl Expr {
                 }
                 if let Some(els) = els {
                     let [then, els] = [then.infer(ctx)?, els.infer(ctx)?];
-                    if then != els {
+                    if els != Type::Any && then != els {
                         return Err(format!("if-else term: {then} != {els}"));
                     }
                     typing!(then.clone())
