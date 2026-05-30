@@ -3,7 +3,25 @@ use crate::*;
 impl Define {
     pub fn infer(&self, ctx: &mut Context) -> Result<Type, String> {
         match self {
-            Define::Function(Generics(name, param), args, body) => {
+            Define::Function(Generics(name, param), args, (Some(body), Some(ret))) => {
+                let sig = Type::Function(
+                    param.clone(),
+                    Box::new(*ret),
+                    Some(args.values().cloned().collect::<Vec<Type>>()),
+                );
+                ctx.table.insert(name.clone(), ctx.local.clone());
+
+                let parent = ctx.local.clone();
+                ctx.local = Function::default();
+                ctx.local.scope = args.clone();
+                ctx.global.lib.insert(name.clone(), sig.clone());
+                {
+                    body.infer(ctx)?;
+                }
+                ctx.local = parent;
+                Ok(sig)
+            }
+            Define::Function(Generics(name, param), args, ()) => {
                 let parent = ctx.local.clone();
                 ctx.local = Function::default();
                 ctx.local.scope = args.clone();
