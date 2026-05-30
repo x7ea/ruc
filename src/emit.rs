@@ -85,13 +85,6 @@ impl Expr {
                 )
             };
         }
-        macro_rules! label {
-            () => {{
-                let id = ctx.global.idx;
-                ctx.global.idx += 1;
-                id.to_string()
-            }};
-        }
         macro_rules! typ {
             ($expr: expr) => {
                 ctx.local.typed.get($expr).unwrap().clone()
