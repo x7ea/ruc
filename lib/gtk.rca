@@ -2,11 +2,11 @@ fn gtk_init(argc: (), argv: ()) -> ()
 fn gtk_window_new(init: ()) -> Window
 fn gtk_window_set_default_size(this: Window, width: Int, height: Int) -> ()
 
-fn gtk_button_new_with_label(content: Str) -> Elm
-fn gtk_button_set_label(elm: Elm, content: Str) -> ()
-fn gtk_container_add(this: Window, elm: Elm) -> ()
+fn gtk_button_new_with_label(content: Str) -> Widget
+fn gtk_button_set_label(elm: Widget, content: Str) -> ()
+fn gtk_container_add(this: Window, elm: Widget) -> ()
 
-fn g_signal_connect_data<T>(this: Elm, event: Str, handle: ()(Elm, T), data: T) -> ()
+fn g_signal_connect_data<T>(this: Widget, event: Str, handle: ()(Widget, T), data: T) -> ()
 fn g_signal_connect_object(this: Window, event: Str, handle: ()(), object: ()) -> ()
 
 fn gtk_main() -> ()
@@ -37,11 +37,15 @@ fn App.button(this: App, content: Str) {
     this
 }
 
-fn Elm.update(elm: Elm, content: Str) {
-    gtk_button_set_label(elm, content)
+struct Elm {
+    parent:
 }
 
-fn Elm.click<T>(this: Elm, data: T, handle: ()(Elm, T)) {
+fn Widget.update(this: Widget, content: Str) {
+    gtk_button_set_label(this, content)
+}
+
+fn Widget.click<T>(this: Widget, handle: ()(Widget, T)) {
     g_signal_connect_data<T>(this, "clicked", handle, data)
 }
 
