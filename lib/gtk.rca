@@ -46,7 +46,7 @@ fn Widget.update(this: Widget, content: Str) {
     gtk_button_set_label(this, content)
 }
 
-fn Widget.click<T>(this: Elm, handle: ()(Widget, T)) {
+fn ELm.click<T>(this: Elm, handle: ()(Widget, T)) {
     g_signal_connect_data<T>(this.obj, "clicked", handle, this.parent.state)
 }
 
