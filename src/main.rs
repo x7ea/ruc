@@ -45,7 +45,7 @@ impl Define {
         macro_rules! name {
             ($define: expr) => {
                 match $define.clone() {
-                    Define::Function(Generics(func, _), _, Ok(_)) => Some(func),
+                    Define::Function(Generics(func, _), _, (Some(_), _)) => Some(func),
                     Define::Class(Generics(class, _), _) => Some(class),
                     _ => None,
                 }
