@@ -3,10 +3,22 @@ enum Peano {
     S: Peano
 }
 
+fn zero() {
+    let this = new Peano
+    let this.zero = ()
+    this
+}
+
+fn S(n: Peano) {
+    let this = new Peano
+    let this.S = n
+    this
+}
+
 fn add(lhs: Peano, rhs: Peano) -> Peano {
     match rhs {
         zero = lhs,
-        S n = add(lhs, n)
+        S n = S(add(lhs, n))
     }
 }
 
@@ -17,18 +29,8 @@ fn decode(this: Peano) -> Int {
     }
 }
 
-fn peano(n: Int) -> Peano {
-    let this = new Peano
-    if n == 0 then {
-        let this.zero = ()
-    } else {
-        let this.S = peano(n - 1)
-    }
-    this
-}
-
 fn main() {
-    let one = peano(5)
+    let one = S(zero())
     let proof = add(one, one)
     print decode(one)
 }
