@@ -18,7 +18,7 @@ fn S(n: Peano) {
 fn add(lhs: Peano, rhs: Peano) -> Peano {
     match rhs {
         zero = lhs,
-        S n = S(add(lhs, n))
+        S n = Peano::S(add(lhs, n))
     }
 }
 
@@ -30,7 +30,7 @@ fn decode(this: Peano) -> Int {
 }
 
 fn main() {
-    let one = S(zero())
+    let one = Peano::S(Peano::zero)
     let proof = add(one, one)
     print decode(proof)
 }
