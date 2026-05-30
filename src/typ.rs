@@ -46,6 +46,7 @@ impl Define {
                 let sig = Type::Function(param.clone(), Box::new(ret.clone()), types!(args));
                 ctx.table.insert(name.clone(), ctx.local.clone());
                 ctx.global.lib.insert(name.clone(), sig.clone());
+                ctx.global.extrn.insert(name.clone());
                 Ok(sig)
             }
             Define::Class(Generics(name, args), layout) => {
