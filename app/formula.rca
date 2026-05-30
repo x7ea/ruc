@@ -1,26 +1,26 @@
 enum Peano {
-    zero: (),
-    S: Peano
+    Zero: (),
+    Succ: Peano
 }
 
 fn add(lhs: Peano, rhs: Peano) -> Peano {
     match rhs {
-        zero = lhs,
-        S n = Peano::S(add(lhs, n))
+        Zero = lhs,
+        Succ n = Peano::Succ(add(lhs, n))
     }
 }
 
 fn decode(this: Peano) -> Int {
     match this {
-        zero = 0,
-        S n = decode(n) + 1
+        Zero = 0,
+        Succ n = decode(n) + 1
     }
 }
 
 fn main() {
     let proof = add(
-        Peano::S(Peano::zero),
-        Peano::S(Peano::zero)
+        Peano::Succ(Peano::Zero),
+        Peano::Succ(Peano::Zero)
     )
     print decode(proof)
 }
