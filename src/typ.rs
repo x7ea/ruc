@@ -289,7 +289,7 @@ impl Expr {
                 let mut args = args.clone();
                 if let Some(obj) = ctx.local.class.clone() {
                     ctx.local.class = None;
-                    let name = Name::new(&format!("{obj}__{name}"))?;
+                    let name = Name::new(&format!("{obj}.{name}"))?;
                     if ctx.global.lib.contains_key(&name) {
                         return typing!(expands!(Expr::Variable(Generics(name, args.clone()))));
                     }
