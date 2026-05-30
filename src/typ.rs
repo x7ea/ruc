@@ -220,21 +220,21 @@ impl Expr {
             }
             Expr::Sequence(array) => {
                 let typ = array[0].infer(ctx)?;
-                let temp = Box::new(temp!(typ.clone()));
+                let temp = temp!(typ.clone());
                 let mut expr = vec![Expr::Let(
-                    temp.clone(),
+                    Box::new(temp.clone()),
                     Box::new(Expr::Init(typ, array.len())),
                 )];
                 for (idx, val) in array.iter().enumerate() {
                     expr.push(Expr::Let(
                         Box::new(Expr::Index(
-                            temp.clone(),
+                            Box::new(temp.clone()),
                             Box::new(Expr::Integer(idx as i64)),
                         )),
                         Box::new(val.clone()),
                     ));
                 }
-                expr.push(*temp);
+                expr.push(temp);
                 typing!(expands!(Expr::Block(expr)))
             }
             Expr::Block(lines) => {
