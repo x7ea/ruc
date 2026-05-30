@@ -159,7 +159,7 @@ pub fn lexer(src: &str, del: &str) -> Result<Vec<String>, String> {
 }
 
 impl Context {
-    fn label(&mut self) -> String {
+    pub fn label(&mut self) -> String {
         let id = self.global.idx;
         self.global.idx += 1;
         id.to_string()
