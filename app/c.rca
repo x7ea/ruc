@@ -1,17 +1,19 @@
-fn reduce<T>(this: [T], lambda: T(T, T)) {
-    let acc: T
-    for i = this do {
-        let acc = lambda(acc, i)
-    }
-    acc
+use gtk
+
+struct State {
+    count: Int
 }
 
-fn add<T>(a: T, b: T) a + b
+fn increment(this: Elm, data: State) {
+    let data.count = data.count + 1
+    let view = format "Count: ", data.count
+    this.update(view)
+}
 
 fn main() {
-    let x = [8, 5, 4, 6, 2]
-    print reduce<Int>(x, add<Int>)
-
-    let y = [1.2, 2.3, 4.0]
-    print reduce<Float>(y, add<Float>)
+    let app = App()
+    let data = new State
+    let btn = app.button("Counter App")
+    btn.on_click<State>(data, increment)
+    app.run()
 }
