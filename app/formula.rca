@@ -18,7 +18,9 @@ fn decode(this: Peano) -> Int {
 }
 
 fn main() {
-    let one = Peano::S(Peano::zero)
-    let proof = add(one, one)
+    let proof = add(
+        Peano::S(Peano::zero),
+        Peano::S(Peano::zero)
+    )
     print decode(proof)
 }
