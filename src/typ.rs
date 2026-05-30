@@ -89,13 +89,15 @@ impl Expr {
                 )
             };
         }
+        macro_rules! len {
+            ($arr: expr) => {
+                Box::new(Expr::Member($arr.clone(), Name::new("len")?))
+            };
+        }
         macro_rules! array {
             ($arr: expr, $idx: expr) => {
                 Box::new(Expr::Add(
-                    Box::new(Expr::Mod(
-                        $idx.clone(),
-                        Box::new(Expr::Member($arr.clone(), Name::new("len")?)),
-                    )),
+                    Box::new(Expr::Mod($idx.clone(), len!($arr))),
                     Box::new(Expr::Integer(1)),
                 ))
             };
@@ -179,6 +181,13 @@ impl Expr {
                     Ok(Type::None)
                 }
             }
+            Expr::While(cond, body) => {
+                let cond = cond.infer(ctx)?;
+                if cond != Type::Bool {
+                    return Err(format!("while-do test: Bool != {cond}"));
+                }
+                body.infer(ctx)
+            }
             Expr::Match(val, pats) => {
                 let mut expr = Expr::Null(Type::Any);
                 for (key, bind, ret) in pats {
@@ -209,13 +218,6 @@ impl Expr {
                     ),
                     *temp
                 ])))
-            }
-            Expr::While(cond, body) => {
-                let cond = cond.infer(ctx)?;
-                if cond != Type::Bool {
-                    return Err(format!("while-do test: Bool != {cond}"));
-                }
-                body.infer(ctx)
             }
             Expr::For(cnt, arr, body) => {
                 let temp = Box::new(temp!(Type::Integer));
