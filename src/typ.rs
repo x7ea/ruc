@@ -107,6 +107,7 @@ impl Expr {
         match self {
             Expr::Print(is_print, vals) => {
                 let mut fmt = String::new();
+                let mut name = "g_strdup_printf";
                 for i in vals.iter() {
                     let typ = i.infer(ctx)?;
                     fmt += match typ {
@@ -118,16 +119,10 @@ impl Expr {
                 }
                 if *is_print {
                     fmt += "\\n";
+                    name = "printf";
                 }
                 expand!(Expr::Call(
-                    Box::new(Expr::Variable(Generics(
-                        Name::new(if *is_print {
-                            "printf"
-                        } else {
-                            "g_strdup_printf"
-                        })?,
-                        vec![]
-                    ))),
+                    Box::new(Expr::Variable(Generics(Name::new(name)?, vec![]))),
                     [vec![Expr::String(fmt)], vals.to_vec()].concat(),
                 ));
                 typing!(if *is_print { Type::None } else { Type::String })
