@@ -31,5 +31,6 @@ fn decode(this: Peano) -> Int {
 
 fn main() {
     let one = S(zero())
-    print decode(add(one,one))
+    let proof = add(one, one)
+    print decode(proof)
 }
