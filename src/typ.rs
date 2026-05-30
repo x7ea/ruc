@@ -199,6 +199,17 @@ impl Expr {
                 }
                 typing!(expands!(expr))
             }
+            Expr::Enum(typ, key, val) => {
+                let temp = Box::new(temp!(typ.clone()));
+                typing!(expands!(Expr::Block(vec![
+                    Expr::Let(temp.clone(), Box::new(Expr::Constructor(typ.clone()))),
+                    Expr::Let(
+                        Box::new(Expr::Member(temp.clone(), key.clone())),
+                        val.clone(),
+                    ),
+                    *temp
+                ])))
+            }
             Expr::While(cond, body) => {
                 let cond = cond.infer(ctx)?;
                 if cond != Type::Bool {
