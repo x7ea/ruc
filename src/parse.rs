@@ -212,6 +212,21 @@ impl Expr {
                 return Ok(Expr::Call(callee.clone(), [vec![obj], arg].concat()));
             }
             Ok(Expr::Member(Box::new(obj), Name::new(&key)?))
+        } else if let Ok((typ, key)) = once!(src, "::", right) {
+            let typ = Type::parse(&typ)?;
+            if let Ok((key, value)) = surround!(src, "(", ")") {
+                Ok(Expr::Enum(
+                    typ,
+                    Name::new(&key)?,
+                    Box::new(Expr::parse(&value)?),
+                ))
+            } else {
+                Ok(Expr::Enum(
+                    typ,
+                    Name::new(&key)?,
+                    Box::new(Expr::Null(Type::None)),
+                ))
+            }
         } else if let Ok((func, args)) = surround!(src, "(", ")") {
             Ok(Expr::Call(
                 Box::new(Expr::parse(&func)?),
