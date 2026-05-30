@@ -3,18 +3,6 @@ enum Peano {
     S: Peano
 }
 
-fn zero() {
-    let this = new Peano
-    let this.zero = ()
-    this
-}
-
-fn S(n: Peano) {
-    let this = new Peano
-    let this.S = n
-    this
-}
-
 fn add(lhs: Peano, rhs: Peano) -> Peano {
     match rhs {
         zero = lhs,
