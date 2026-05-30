@@ -38,8 +38,8 @@ fn main() {
         error!(stdout().write_all(output.as_bytes()));
     };
     let thread=Builder::new().stack_size(8 * 1024 * 1024);
-    let handler = builder.spawn(build).unwrap();
-    handler.join().unwrap();
+    let thread = thread.spawn(build).unwrap();
+    thread.join().unwrap();
 }
 
 impl Define {
