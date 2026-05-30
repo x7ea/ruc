@@ -306,7 +306,6 @@ impl Expr {
                         return typing!(expands!(Expr::Variable(Generics(name, args.clone()))));
                     }
                 }
-
                 if let Some(typ) = ctx.global.lib.get(&name) {
                     let typ = &mut typ.clone().solve(ctx);
                     if let Type::Function(params, _, Some(_)) = typ.clone()
