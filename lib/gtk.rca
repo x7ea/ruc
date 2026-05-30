@@ -23,7 +23,7 @@ fn App() {
 fn App.button(this: App, content: Str) {
     let button = gtk_button_new_with_label(content)
     gtk_container_add(this, button)
-    this
+    button
 }
 
 fn Elm.update(this: Elm, content: Str) {
