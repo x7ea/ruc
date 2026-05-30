@@ -215,17 +215,11 @@ impl Expr {
         } else if let Ok((typ, key)) = once!(src, "::") {
             let typ = Type::parse(&typ)?;
             if let Ok((key, value)) = surround!(src, "(", ")") {
-                Ok(Expr::Enum(
-                    typ,
-                    Name::new(&key)?,
-                    Box::new(Expr::parse(&value)?),
-                ))
+                let name = Name::new(&key)?;
+                Ok(Expr::Enum(typ, name, Box::new(Expr::parse(&value)?)))
             } else {
-                Ok(Expr::Enum(
-                    typ,
-                    Name::new(&key)?,
-                    Box::new(Expr::Null(Type::None)),
-                ))
+                let name = Name::new(&key)?;
+                Ok(Expr::Enum(typ, name, Box::new(Expr::Null(Type::None))))
             }
         } else if let Ok((func, args)) = surround!(src, "(", ")") {
             Ok(Expr::Call(
