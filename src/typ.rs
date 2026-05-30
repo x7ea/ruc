@@ -297,8 +297,8 @@ impl Expr {
                     Err(format!("not callee: {typ}"))
                 }
             }
-            Expr::Variable(ref func @ Generics(name, args)) => {
-                let mut args = args.clone();
+            Expr::Variable(func) => {
+                let Generics(name, mut args) = func.clone();
                 if let Some(obj) = ctx.local.class.clone() {
                     ctx.local.class = None;
                     let name = Name::new(&format!("{obj}.{name}"))?;
