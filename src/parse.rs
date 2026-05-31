@@ -151,6 +151,8 @@ impl Expr {
             ))
         } else if let Some(class) = src.strip_prefix("new ") {
             Ok(Expr::Constructor(Type::parse(class)?))
+        } else if let Some(expr) = src.strip_prefix("clone ") {
+            Ok(Expr::Clone(Expr::parse(expr)?))
         } else if let Some(x) = surround!("{", src, "}") {
             let mut block = vec![];
             for line in lexer(x, "\n")? {
