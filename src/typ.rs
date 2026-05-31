@@ -533,10 +533,13 @@ impl Expr {
             Expr::Clone(expr) => {
                 let typ = expr.infer(ctx)?;
                 let dest = Box::new(temp!(typ));
-                typing!(expands!(Expr::Block(vec![Expr::Let(
-                    dest,
-                    Box::new(Expr::Constructor(typ))
-                )])))
+                typing!(expands!(Expr::Block(vec![
+                    Expr::Let(dest, Box::new(Expr::Constructor(typ))),
+                    Expr::Call(
+                        Box::new(Expr::Variable(Generics(Name::new("memcpy")?, vec![]))),
+                        vec![dest, expr]
+                    )
+                ])))
             }
             Expr::Mod(lhs, rhs) => {
                 expand!(Expr::Div(lhs.clone(), rhs.clone()));
