@@ -9,15 +9,15 @@ fn add(lhs: Peano, rhs: Peano) -> Peano {
         Succ n = Peano::Succ(add(lhs, n))
     }
 }
-fn decode(this: Peano) -> Int {
+fn s(this: Peano) -> Str {
     match this {
-        Zero = 0,
-        Succ n = decode(n) + 1
+        Zero = "0",
+        Succ n = format "S(", s(n), ")"
     }
 }
 
 fn main() {
     let one = Peano::Succ(Peano::Zero)
     let proof = one.add(one)
-    print proof.decode()
+    print proof.s()
 }
