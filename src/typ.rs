@@ -601,6 +601,7 @@ impl Type {
                 (_, Object::Enum(_)) => 16,
                 _ => panic!(),
             },
+            _ => 8,
         }
     }
 
