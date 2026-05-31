@@ -162,6 +162,7 @@ pub enum Expr {
     // Low-layer IR
     Read(Box<Expr>, Type, Box<Expr>),
     Write(Box<Expr>, Box<Expr>, Box<Expr>),
+    Clone(Box<Expr>),
     Init(Type, usize),
 }
 
