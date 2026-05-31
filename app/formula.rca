@@ -5,7 +5,7 @@ enum Peano {
 
 fn add(lhs: Peano, rhs: Peano) -> Peano {
     match rhs {
-        Zero = lhs,
+        Zero = clone lhs,
         Succ n = Peano::Succ(add(lhs, n))
     }
 }
