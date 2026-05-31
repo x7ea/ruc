@@ -6,7 +6,7 @@ enum Peano {
 fn add(lhs: Peano, rhs: Peano) -> Peano {
     match rhs {
         Zero = lhs,
-        Succ n = Peano::Succ(lhs.add(n))
+        Succ n = Peano::Succ(n.add(lhs))
     }
 }
 fn decode(this: Peano) -> Int {
