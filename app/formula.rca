@@ -19,7 +19,7 @@ fn decode(this: Peano) -> Int {
 fn main() {
     let proof = add(
         Peano::Succ(Peano::Zero),
-        Peano::Succ(Peano::Zero),
+        Peano::Succ(Peano::Zero)
     )
     print proof.decode()
 }
