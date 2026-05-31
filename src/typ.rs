@@ -596,9 +596,9 @@ impl Type {
 
     fn size(&self, ctx: &Context) -> usize {
         match self {
-            Type::Class(Generics(name, _)) => match ctx.global.table.get(name).unwrap() {
-                (_, Object::Struct(layout)) => layout.len() * 8,
-                (_, Object::Enum(_)) => 16,
+            Type::Class(Generics(name, _)) => match ctx.global.table.get(name) {
+                Some((_, Object::Struct(layout))) => layout.len() * 8,
+                Some((_, Object::Enum(_))) => 16,
                 _ => panic!(),
             },
             _ => 8,
