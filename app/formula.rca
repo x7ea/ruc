@@ -12,7 +12,7 @@ fn add(lhs: Peano, rhs: Peano) -> Peano {
 fn s(this: Peano) -> Str {
     match this {
         Zero = "0",
-        Succ n = format "S(", s(n), ")"
+        Succ n = (format "S(", s(n), ")")
     }
 }
 
