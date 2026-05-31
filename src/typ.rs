@@ -530,6 +530,14 @@ impl Expr {
                 addr.infer(ctx)?;
                 typing!(val.infer(ctx)?)
             }
+            Expr::Clone(expr) => {
+                let typ = expr.infer(ctx)?;
+                let dest = Box::new(temp!(typ));
+                typing!(expand!(Expr::Block(vec![Expr::Let(
+                    dest,
+                    Box::new(Expr::Constructor(typ))
+                )])))
+            }
             Expr::Mod(lhs, rhs) => {
                 expand!(Expr::Div(lhs.clone(), rhs.clone()));
                 op!(Type::Integer, lhs, rhs)
