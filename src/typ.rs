@@ -595,14 +595,12 @@ impl Type {
     }
 
     fn size(&self, ctx: &Context) -> usize {
-        if let Some(_, _, obj))= ctx.global.table.get(self) {
-            return 8;
+        match self {
+            Type::Class(Generics(name, _)) => match ctx.global.table.get(self).unwrap().2 {
+                Object::Struct(layout) => lauout.len() * 8,
+                Object::Enum(_) => 16,
+            },
         }
-        match obj {
-             Object::Struct(layout) => lauout.len()*8,
-Object::Enum(_)=>16,
-        }
-
     }
 
     fn solve(&self, ctx: &mut Context) -> Type {
