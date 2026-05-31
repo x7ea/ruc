@@ -534,7 +534,7 @@ impl Expr {
                 let typ = expr.infer(ctx)?;
                 let dest = Box::new(temp!(typ));
                 typing!(expands!(Expr::Block(vec![
-                    Expr::Let(dest, clone(), Box::new(Expr::Constructor(typ.clone()))),
+                    Expr::Let(dest.clone(), Box::new(Expr::Constructor(typ.clone()))),
                     Expr::Call(
                         Box::new(Expr::Variable(Generics(Name::new("memcpy")?, vec![]))),
                         vec![*dest.clone(), *expr, Expr::Integer(typ.size(ctx) as i64)]
