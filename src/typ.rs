@@ -594,7 +594,18 @@ impl Type {
         }
     }
 
-    pub fn solve(&self, ctx: &mut Context) -> Type {
+    fn size(&self, ctx: &Context) -> usize {
+        if let Some(_, _, obj))= ctx.global.table.get(self) {
+            return 8;
+        }
+        match obj {
+             Object::Struct(layout) => lauout.len()*8,
+Object::Enum(_)=>16,
+        }
+
+    }
+
+    fn solve(&self, ctx: &mut Context) -> Type {
         if let Some(typ) = ctx.global.alias.get(self) {
             return typ.clone();
         }
