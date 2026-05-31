@@ -533,7 +533,7 @@ impl Expr {
             Expr::Clone(expr) => {
                 let typ = expr.infer(ctx)?;
                 let dest = Box::new(temp!(typ));
-                typing!(expand!(Expr::Block(vec![Expr::Let(
+                typing!(expands!(Expr::Block(vec![Expr::Let(
                     dest,
                     Box::new(Expr::Constructor(typ))
                 )])))
