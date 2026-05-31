@@ -3,14 +3,6 @@ enum Peano {
     Succ: Peano
 }
 
-fn decode(this: Peano) -> Int {
-    match this {
-        Zero = 0,
-        Succ n = decode(n) + 1
-    }
-}
-
-
 fn add(lhs: Peano, rhs: Peano) -> Peano {
     match rhs {
         Zero = lhs,
@@ -18,6 +10,12 @@ fn add(lhs: Peano, rhs: Peano) -> Peano {
     }
 }
 
+fn decode(this: Peano) -> Int {
+    match this {
+        Zero = 0,
+        Succ n = decode(n) + 1
+    }
+}
 
 fn main() {
     let one = Peano::Succ(Peano::Zero)
