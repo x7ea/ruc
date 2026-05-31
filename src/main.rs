@@ -42,7 +42,7 @@ fn main() {
 }
 
 impl Define {
-    const LIB: [&str; 5] = ["calloc", "printf", "g_strdup_printf", "free", "memcpy"];
+    const CORE: [&str; 5] = ["calloc", "printf", "g_strdup_printf", "free", "memcpy"];
 
     pub fn compile(defines: &mut [Self]) -> Result<String, String> {
         let mut text = String::new();
@@ -74,7 +74,7 @@ impl Define {
         };
         ctx.global.lib = {
             let mut map = IndexMap::new();
-            for line in Self::LIB {
+            for line in Self::CORE {
                 let signature = Type::Function(vec![], Box::new(Type::None), None);
                 map.insert(Name::new(line)?, signature);
             }
