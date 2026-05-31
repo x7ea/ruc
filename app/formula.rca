@@ -19,5 +19,5 @@ fn decode(this: Peano) -> Int {
 fn main() {
     let one = Peano::Succ(Peano::Zero)
     let proof = one.add(one)
-    print one.decode()
+    print (clone one).decode()
 }
