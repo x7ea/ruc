@@ -19,5 +19,6 @@ fn decode(this: Peano) -> Int {
 fn main() {
     let one = Peano::Succ(Peano::Zero)
     let proof = one.add(Peano::Succ(Peano::Zero))
+    printf("%ld, %ld\n",one,proof)
     print Peano::Succ(Peano::Zero).decode()
 }
