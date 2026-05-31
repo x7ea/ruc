@@ -12,7 +12,7 @@ fn decode(this: Peano) -> Int {
 
 
 fn add(lhs: Peano, rhs: Peano) -> Peano {
-    printf("%ld", n)
+    printf("%ld %ld", lhs, rhs)
     match rhs {
         Zero = lhs,
         Succ n = Peano::Succ(add(lhs, n))
