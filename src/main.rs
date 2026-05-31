@@ -42,7 +42,7 @@ fn main() {
 }
 
 impl Define {
-    const LIB: [&str; 4] = ["calloc", "printf", "g_strdup_printf", "free"];
+    const LIB: [&str; 5] = ["calloc", "printf", "g_strdup_printf", "free", "memcpy"];
 
     pub fn compile(defines: &mut [Self]) -> Result<String, String> {
         let mut text = String::new();
