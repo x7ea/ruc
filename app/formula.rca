@@ -17,7 +17,7 @@ fn add(lhs: Peano, rhs: Peano) -> Peano {
         Succ n = {
             print lhs.decode()
             print n.decode()
-            print add(lhs, n).decode()
+            print add(lhs, n)?
             Peano::Succ(add(lhs, n))
         }
     }
