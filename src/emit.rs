@@ -103,17 +103,22 @@ impl Expr {
                 }
                 let id = ctx.label();
                 let [cond, then] = [cond.emit(ctx)?, then.emit(ctx)?];
-                Ok(if let Some(els) = els {
+                if let Some(els) = els {
                     let cmp = format!("\tcmp rax, 0\n\tje else.{id}\n");
-                    format!(
+                    Ok(format!(
                         "{cond}{cmp}{then}\tjmp if.{id}\nelse.{id}:\n{}if.{id}:\n",
                         els.emit(ctx)?,
-                    )
+                    ))
                 } else {
-                    format!("{cond}\tcmp rax, 0\n\tje if.{id}\n{then}if.{id}:\n")
-                })
+                    let cmp = format!("\tcmp rax, 0\n\tje if.{id}\n");
+                    Ok(format!("{cond}{cmp}{then}if.{id}:\n"))
+                }
             }
             Expr::While(cond, body) => {
+                let while_let = ctx.local.expand.get(&self.clone());
+                if let Some(expr) = while_let.cloned() {
+                    return expr.emit(ctx);
+                }
                 let id = ctx.label();
                 let cmp = format!("\tcmp rax, 0\n\tje do.{id}\n");
                 Ok(format!(
