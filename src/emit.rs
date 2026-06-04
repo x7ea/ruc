@@ -13,25 +13,20 @@ impl Define {
         ctx.local = ctx.table.get(name).unwrap().clone();
         let (mut ptr, mut alloc) = (8, String::new());
         let (mut idx, mut xmm) = (0, 0);
-        for (count, (_, typ)) in args.iter().enumerate() {
+        for (stack, (_, typ)) in args.iter().enumerate() {
+            let stack = (stack - 4) * 8;
             if typ == &Type::Float {
                 if xmm < 8 {
                     alloc += &format!("\tmovsd [rbp-{ptr}], xmm{xmm}\n")
                 } else {
-                    alloc += &format!(
-                        "\tmovsd xmm0, [rbp+{}]\n\tmovsd [rbp-{ptr}], xmm0\n",
-                        (count - 4) * 8
-                    )
+                    alloc += &format!("\tmovsd xmm0, [rbp+{stack}]\n\tmovsd [rbp-{ptr}], xmm0\n")
                 };
                 xmm += 1;
             } else {
                 if let Some(reg) = ABI.get(idx) {
                     alloc += &format!("\tmov [rbp-{ptr}], {reg}\n")
                 } else {
-                    alloc += &format!(
-                        "\tmov rax, [rbp+{}]\n\tmov [rbp-{ptr}], rax\n",
-                        (count - 4) * 8
-                    )
+                    alloc += &format!("\tmov rax, [rbp+{stack}]\n\tmov [rbp-{ptr}], rax\n")
                 }
                 idx += 1;
             }
