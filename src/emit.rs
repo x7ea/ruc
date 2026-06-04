@@ -39,11 +39,7 @@ impl Define {
         let stack = ctx.local.var.len() * 8;
         let pro = format!(
             "\tpush rbp\n\tmov rbp, rsp\n\tsub rsp, {}\n",
-            if stack.is_multiple_of(16) {
-                stack
-            } else {
-                stack + 8
-            }
+            if stack % 16 == 0 { stack } else { stack + 8 }
         );
         Ok(format!("{name}:\n{pro}{alloc}{body}\tleave\n\tret\n\n"))
     }
