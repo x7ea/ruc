@@ -11,9 +11,11 @@ fn add(lhs: Peano, rhs: Peano) -> Peano {
 }
 
 fn decode(this: Peano) -> Int {
-    if let n = this.Succ then {
-        decode(n) + 1
+    let digit = 0
+    if let n = this.succ then {
+        digit = decode(n) + 1
     }
+    digit
 }
 
 fn main() {
