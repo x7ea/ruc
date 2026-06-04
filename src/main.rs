@@ -169,7 +169,7 @@ pub enum Expr {
 #[derive(Clone, PartialEq, Debug, Eq, Hash)]
 pub enum Type {
     String,
-    Integer,
+    Int,
     Bool,
     Float,
     Array(Box<Type>),
