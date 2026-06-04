@@ -9,10 +9,7 @@ fn add(lhs: Peano, rhs: Peano) -> Peano {
         Succ n = Peano::Succ(add(lhs, n))
     }
 }
-
-fn decode(this: Peano) -> Int {
-    if let n = this.Succ then decode(n) + 1 else 0
-}
+fn decode(this: Peano) -> Int if let n = this.Succ then decode(n) + 1 else 0
 
 fn main() {
     let one = Peano::Succ(Peano::Zero)
