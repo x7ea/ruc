@@ -186,17 +186,6 @@ macro_rules! surround {
 }
 
 #[macro_export]
-macro_rules! ok {
-    ($v: expr) => {
-        if let Some(v) = $v {
-            Ok(v)
-        } else {
-            Err(String::new())
-        }
-    };
-}
-
-#[macro_export]
 macro_rules! once {
     ($v: expr, $del: expr) => {{
         let v = lexer($v, $del)?;
@@ -242,5 +231,12 @@ macro_rules! serial {
 macro_rules! map {
     ($arr: expr, $lambda: expr) => {
         $arr.iter().map($lambda).collect::<Vec<_>>()
+    };
+}
+
+#[macro_export]
+macro_rules! ok {
+    ($v: expr) => {
+        if let Some(v) = $v { Ok(v) } else { Err(String::new()) }
     };
 }
