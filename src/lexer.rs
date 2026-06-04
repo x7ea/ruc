@@ -220,10 +220,7 @@ macro_rules! hash {
 #[macro_export]
 macro_rules! serial {
     ($arr: expr, $lambda: expr) => {
-        lexer($arr, ",")?
-            .iter()
-            .map(|x| $lambda(&x))
-            .collect::<Result<Vec<_>, String>>()?
+        lexer($arr, ",")?.iter().map(|x| $lambda(&x)).collect::<Result<Vec<_>, String>>()?
     };
 }
 
