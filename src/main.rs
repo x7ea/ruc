@@ -75,7 +75,7 @@ impl Define {
         ctx.global.lib = {
             let mut map = IndexMap::new();
             for line in Self::CORE {
-                let signature = Type::Func(vec![], Box::new(Type::None), None);
+                let signature = Type::Function(vec![], Box::new(Type::None), None);
                 map.insert(Name::new(line)?, signature);
             }
             map
@@ -174,7 +174,7 @@ pub enum Type {
     Float,
     Array(Box<Type>),
     Class(Generics),
-    Func(Vec<Type>, Box<Type>, Option<Vec<Type>>),
+    Function(Vec<Type>, Box<Type>, Option<Vec<Type>>),
     None,
 }
 
