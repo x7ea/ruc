@@ -60,17 +60,14 @@ impl Expr {
                 match typ!(self) {
                     Type::Integer | Type::Boolean => format!(
                         "{}\tpush rax\n{}\tmov r10, rax\n\tpop rax\n\t{} rax, r10\n",
-                        $lhs.emit(ctx)?,
-                        $rhs.emit(ctx)?,
-                        $asm,
+                        $lhs.emit(ctx)?, $rhs.emit(ctx)?, $asm,
                     ),
                     Type::Float => format!(
                         "{lhs}{push}{rhs}\tmovsd xmm1, xmm0\n{pop}\t{op}sd xmm0, xmm1\n",
-                        lhs = $lhs.emit(ctx)?,
-                        rhs = $rhs.emit(ctx)?,
-                        op = $asm.replace("imul", "mul"),
+                        lhs = $lhs.emit(ctx)?, rhs = $rhs.emit(ctx)?,
                         push = "\tsub rsp, 8\n\tmovsd [rsp], xmm0\n",
                         pop = "\tmovsd xmm0, [rsp]\n\tadd rsp, 8\n"
+                        op = $asm.replace("imul", "mul"),
                     ),
                     _ => panic!(),
                 }
