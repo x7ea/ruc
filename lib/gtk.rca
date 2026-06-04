@@ -11,7 +11,7 @@ fn g_signal_connect_object(this: App, event: Str, handle: ()(), object: ()) -> (
 fn gtk_widget_show_all(window: App) -> ()
 
 
-fn App() {
+fn Gtk() {
     gtk_init((), ())
     let this = gtk_window_new(())
     gtk_window_set_default_size(this, 500, 300)
