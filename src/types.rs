@@ -182,6 +182,12 @@ impl Expr {
                 }
             }
             Expr::While(cond, body) => {
+                if let Expr::Let(bind, check) = *cond {
+                    return typing!(expands!(Expr::While(
+                        Box::new(Expr::Check(check.clone())),
+                        Box::new(Expr::Block(vec![Expr::Let(bind, check), *body])),
+                    )));
+                }
                 let cond = cond.infer(ctx)?;
                 if cond != Type::Bool {
                     return Err(format!("while-do test: Bool != {cond}"));
