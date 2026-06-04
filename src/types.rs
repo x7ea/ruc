@@ -141,8 +141,8 @@ impl Expr {
                     let typ = i.infer(ctx)?;
                     fmt += match typ {
                         Type::Integer => "%ld",
-                        Type::Float => "%g",
                         Type::String => "%s",
+                        Type::Float => "%g",
                         _ => return Err(format!("can't print: {typ}")),
                     }
                 }
