@@ -15,7 +15,7 @@ fn decode(this: Peano) -> Int {
     if let n = this.succ then {
         digit = decode(n) + 1
     }
-    2
+    digit
 }
 
 fn main() {
