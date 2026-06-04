@@ -1,7 +1,8 @@
 pub mod emit;
 pub mod lexer;
+pub mod object;
 pub mod parse;
-pub mod typ;
+pub mod types;
 
 use indexmap::{IndexMap, IndexSet};
 use lexer::lexer;
