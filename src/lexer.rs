@@ -57,7 +57,7 @@ pub mod name {
             fn mangle(typ: &Type) -> String {
                 match typ {
                     Type::Int => "I".to_string(),
-                    Type::Str => "S".to_string(),
+                    Type::String => "S".to_string(),
                     Type::Bool => "B".to_string(),
                     Type::None => "N".to_string(),
                     Type::Float => "F".to_string(),
