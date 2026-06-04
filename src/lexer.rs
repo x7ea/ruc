@@ -65,8 +65,7 @@ pub mod name {
                     Type::Class(Generics(name, _)) => format!("C{name}"),
                     Type::Function(_, ret, None) => format!("L{}", mangle(ret)),
                     Type::Function(_, ret, Some(args)) => {
-                        let args = map!(args, mangle).concat();
-                        format!("L{}{args}", mangle(ret))
+                        format!("L{}{}", mangle(ret), map!(args, mangle).concat())
                     }
                     Type::Any => panic!(),
                 }
