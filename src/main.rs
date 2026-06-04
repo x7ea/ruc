@@ -169,8 +169,8 @@ pub enum Expr {
 #[derive(Clone, PartialEq, Debug, Eq, Hash)]
 pub enum Type {
     String,
-    Int,
-    Bool,
+    Integer,
+    Boolean,
     Float,
     Array(Box<Type>),
     Class(Generics),
