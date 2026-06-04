@@ -586,7 +586,8 @@ impl Type {
             return new.clone();
         }
         match self {
-            Type::Function(typ, ret, Some(args)) => Type::Function(
+            Type::Function(typ, ret, Some(args))
+            => Type::Function(
                 typ.clone(), Box::new(ret.rewrite(old, new)),
                 Some(map!(args, |x| x.rewrite(old, new))),
             ),
@@ -598,7 +599,8 @@ impl Type {
 
     fn size(&self, ctx: &Context) -> Result<usize, String> {
         match self {
-            Type::Class(Generics(name, _)) => match ctx.global.table.get(name) {
+            Type::Class(Generics(name, _)) =>
+            match ctx.global.table.get(name) {
                 Some((_, Object::Struct(layout))) => Ok(layout.len() * 8),
                 Some((_, Object::Enum(_))) => Ok(16),
                 _ => Err(format!("undefined: {name}")),
@@ -612,7 +614,8 @@ impl Type {
             return typ.clone();
         }
         match self {
-            Type::Function(typ, ret, Some(args)) => Type::Function(
+            Type::Function(typ, ret, Some(args))
+            => Type::Function(
                 typ.clone(), Box::new(ret.solve(ctx)),
                 Some(map!(args, |x| x.solve(ctx))),
             ),
