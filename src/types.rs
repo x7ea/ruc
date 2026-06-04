@@ -12,13 +12,13 @@ impl Define {
                 let sig = Type::Function(param.clone(), Box::new(ret.clone()), types!(args));
                 ctx.global.lib.insert(name.clone(), sig.clone());
                 let parent = ctx.local.clone();
-                {
-                    ctx.local = Function::default();
-                    ctx.local.scope = args.clone();
-                    if *ret != body.infer(ctx)? {
-                        return Err(format!("expected: returns {ret}"));
-                    }
+
+                ctx.local = Function::default();
+                ctx.local.scope = args.clone();
+                if *ret != body.infer(ctx)? {
+                    return Err(format!("expected: returns {ret}"));
                 }
+
                 ctx.table.insert(name.clone(), ctx.local.clone());
                 ctx.local = parent;
                 Ok(sig)
