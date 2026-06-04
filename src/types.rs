@@ -144,7 +144,7 @@ impl Expr {
                     fmt += match typ {
                         Type::Int => "%ld",
                         Type::Float => "%g",
-                        Type::Str => "%s",
+                        Type::String => "%s",
                         _ => return Err(format!("can't print: {typ}")),
                     }
                 }
@@ -156,7 +156,7 @@ impl Expr {
                     Box::new(Expr::Variable(Generics(Name::new(name)?, vec![]))),
                     [vec![Expr::String(fmt)], vals.to_vec()].concat(),
                 ));
-                typing!(if is_output { Type::None } else { Type::Str })
+                typing!(if is_output { Type::None } else { Type::String })
             }
             Expr::If(cond, then, els) => {
                 if let Expr::Let(bind, check) = *cond {
@@ -561,7 +561,7 @@ impl Expr {
             }
             Expr::Integer(_) => typing!(Type::Int),
             Expr::Float(_) => typing!(Type::Float),
-            Expr::String(_) => typing!(Type::Str),
+            Expr::String(_) => typing!(Type::String),
             Expr::Bool(_) => typing!(Type::Bool),
             Expr::Add(lhs, rhs)
             | Expr::Sub(lhs, rhs)
