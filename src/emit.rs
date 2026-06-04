@@ -77,8 +77,7 @@ impl Expr {
             ($op: literal, $lhs: expr , $rhs: expr) => {
                 format!(
                     "{}\tset{} al\n\tmovzx rax, al\n",
-                    op!("cmp", $lhs, $rhs),
-                    $op
+                    op!("cmp", $lhs, $rhs), $op
                 )
             };
         }
