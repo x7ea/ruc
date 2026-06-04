@@ -189,7 +189,7 @@ impl Expr {
                 body.infer(ctx)
             }
             Expr::Match(val, pats) => {
-                let mut expr = Expr::Null(Type::Any);
+                let mut expr = Expr::Null(None);
                 for (key, bind, ret) in pats {
                     let acc = Box::new(Expr::Member(val.clone(), key.clone()));
                     expr = Expr::If(
@@ -468,7 +468,7 @@ impl Expr {
                         expand!(Expr::If(
                             Box::new(Expr::Check(Box::new(self.clone()))),
                             Box::new(Expr::Read(offset, typ.clone(), obj.clone())),
-                            Some(Box::new(Expr::Null(typ.clone())))
+                            Some(Box::new(Expr::Null(Some(typ.clone()))))
                         ));
                     }
                 }
@@ -547,11 +547,10 @@ impl Expr {
             }
             Expr::Null(typ) => {
                 let typ = typ.solve(ctx);
-                if let Type::Float = typ {
-                    expand!(Expr::Float(Float::from(0.0)));
-                } else {
-                    expand!(Expr::Integer(0));
-                }
+                expand!(Expr::Block(vec![
+                    Expr::Float(Float::from(0.0)),
+                    Expr::Integer(0)
+                ]));
                 typing!(typ)
             }
             Expr::Integer(_) => typing!(Type::Integer),
