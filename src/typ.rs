@@ -468,7 +468,7 @@ impl Expr {
                         expand!(Expr::If(
                             Box::new(Expr::Check(Box::new(self.clone()))),
                             Box::new(Expr::Read(offset, typ.clone(), obj.clone())),
-                            Some(Box::new(Expr::Null(Some(typ.clone()))))
+                            Some(Box::new(Expr::Null(typ.clone())))
                         ));
                     }
                 }
