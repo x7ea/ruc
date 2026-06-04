@@ -9,7 +9,7 @@ impl Define {
         }
         match self {
             Define::Function(Generics(name, param), args, (Some(body), Some(ret))) => {
-                let sig = Type::Func(param.clone(), Box::new(ret.clone()), types!(args));
+                let sig = Type::Function(param.clone(), Box::new(ret.clone()), types!(args));
                 ctx.global.lib.insert(name.clone(), sig.clone());
                 let parent = ctx.local.clone();
                 {
@@ -25,7 +25,7 @@ impl Define {
             }
             Define::Function(Generics(name, param), args, (Some(body), None)) => {
                 if !param.is_empty() {
-                    let sig = Type::Func(param.clone(), Box::new(Type::None), types!(args));
+                    let sig = Type::Function(param.clone(), Box::new(Type::None), types!(args));
                     ctx.global.lib.insert(name.clone(), sig.clone());
                     return Ok(sig);
                 }
@@ -36,7 +36,7 @@ impl Define {
                     ctx.local.scope = args.clone();
                     {
                         let ret = body.infer(ctx)?;
-                        sig = Type::Func(param.clone(), Box::new(ret), types!(args));
+                        sig = Type::Function(param.clone(), Box::new(ret), types!(args));
                     }
                     ctx.table.insert(name.clone(), ctx.local.clone());
                     ctx.global.lib.insert(name.clone(), sig.clone());
@@ -45,7 +45,7 @@ impl Define {
                 Ok(sig)
             }
             Define::Function(Generics(name, param), args, (None, Some(ret))) => {
-                let sig = Type::Func(param.clone(), Box::new(ret.clone()), types!(args));
+                let sig = Type::Function(param.clone(), Box::new(ret.clone()), types!(args));
                 ctx.table.insert(name.clone(), ctx.local.clone());
                 ctx.global.lib.insert(name.clone(), sig.clone());
                 ctx.global.extrn.insert(name.clone());
@@ -277,7 +277,7 @@ impl Expr {
                     ctx.local.class = Some(name);
                 }
                 let typ = callee.infer(ctx)?;
-                if let Type::Func(_, ret, params) = typ {
+                if let Type::Function(_, ret, params) = typ {
                     let Some(params) = params else {
                         for arg in args {
                             arg.infer(ctx)?;
@@ -313,7 +313,7 @@ impl Expr {
                 }
                 if let Some(typ) = ctx.global.lib.get(&name) {
                     let typ = &mut typ.clone().solve(ctx);
-                    if let Type::Func(params, _, Some(_)) = typ.clone()
+                    if let Type::Function(params, _, Some(_)) = typ.clone()
                         && !params.is_empty()
                     {
                         if params.len() != args.len() {
@@ -330,7 +330,7 @@ impl Expr {
                         let mangle = func.generics();
                         let mut unify = ctx.global.def.get(&name).unwrap().clone();
                         if let Define::Function(Generics(_, _), params, body) = &unify
-                            && let Type::Func(_, _, Some(args)) = typ.clone()
+                            && let Type::Function(_, _, Some(args)) = typ.clone()
                         {
                             let mut map = IndexMap::new();
                             for (param, arg) in params.keys().zip(args) {
@@ -586,7 +586,7 @@ impl Type {
             return new.clone();
         }
         match self {
-            Type::Func(typ, ret, Some(args)) => Type::Func(
+            Type::Function(typ, ret, Some(args)) => Type::Function(
                 typ.clone(),
                 Box::new(ret.rewrite(old, new)),
                 Some(map!(args, |x| x.rewrite(old, new))),
@@ -615,7 +615,7 @@ impl Type {
             return typ.clone();
         }
         match self {
-            Type::Func(typ, ret, Some(args)) => Type::Func(
+            Type::Function(typ, ret, Some(args)) => Type::Function(
                 typ.clone(),
                 Box::new(ret.solve(ctx)),
                 Some(map!(args, |x| x.solve(ctx))),
