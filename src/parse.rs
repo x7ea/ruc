@@ -244,9 +244,9 @@ impl Expr {
 impl Type {
     pub fn parse(src: &str) -> Result<Type, String> {
         match src.trim() {
-            "Int" => Ok(Type::Int),
+            "Int" => Ok(Type::Integer),
             "Str" => Ok(Type::String),
-            "Bool" => Ok(Type::Bool),
+            "Bool" => Ok(Type::Boolean),
             "Float" => Ok(Type::Float),
             "()" => Ok(Type::Void),
             x => {
@@ -272,10 +272,10 @@ impl Display for Type {
             map!(x, |x: &Type| x.to_string()).join(", ")
         }
         match self {
-            Type::Int => write!(f, "Int"),
+            Type::Integer => write!(f, "Int"),
             Type::String => write!(f, "Str"),
             Type::Float => write!(f, "Float"),
-            Type::Bool => write!(f, "Bool"),
+            Type::Boolean => write!(f, "Bool"),
             Type::Void => write!(f, "()"),
             Type::Array(typ) => write!(f, "[{typ}]"),
             Type::Class(Generics(name, args)) if args.is_empty() => write!(f, "{name}"),
