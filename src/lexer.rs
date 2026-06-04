@@ -64,7 +64,9 @@ pub mod name {
                     Type::Array(typ) => format!("A{}", mangle(typ)),
                     Type::Class(Generics(name, _)) => format!("C{name}"),
                     Type::Function(_, ret, None) => format!("L{}", mangle(ret)),
-                    Type::Function(_, ret, Some(args)) => format!("L{}{}", mangle(ret), map!(args, mangle).concat()),
+                    Type::Function(_, ret, Some(args)) => {
+                        format!("L{}{}", mangle(ret), map!(args, mangle).concat())
+                    }
                 }
             }
             let typ = map!(self.1, mangle).concat();
@@ -220,7 +222,10 @@ macro_rules! hash {
 #[macro_export]
 macro_rules! serial {
     ($arr: expr, $lambda: expr) => {
-        lexer($arr, ",")?.iter().map(|x| $lambda(&x)).collect::<Result<Vec<_>, String>>()?
+        lexer($arr, ",")?
+            .iter()
+            .map(|x| $lambda(&x))
+            .collect::<Result<Vec<_>, String>>()?
     };
 }
 
@@ -234,6 +239,10 @@ macro_rules! map {
 #[macro_export]
 macro_rules! ok {
     ($v: expr) => {
-        if let Some(v) = $v { Ok(v) } else { Err(String::new()) }
+        if let Some(v) = $v {
+            Ok(v)
+        } else {
+            Err(String::new())
+        }
     };
 }
