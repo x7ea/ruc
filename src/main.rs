@@ -54,13 +54,15 @@ impl Define {
                     Define::Function(Generics(func, _), _, (Some(_), _)) => Some(func),
                     Define::Class(Generics(class, _), _) => Some(class),
                     _ => None,
-                }.clone()
+                }
+                .clone()
             };
             (all, $define: expr) => {
                 match $define.clone() {
                     Define::Function(Generics(func, _), _, _) => func,
                     Define::Class(Generics(class, _), _) => class,
-                }.clone()
+                }
+                .clone()
             };
         }
         ctx.global.def = {
