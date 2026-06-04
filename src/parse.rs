@@ -183,7 +183,7 @@ impl Expr {
                 op => return Err(format!("unknown operator: {op}")),
             })
         } else if src == "()" {
-            Ok(Expr::Null(Type::None))
+            Ok(Expr::Null(Type::Void))
         } else if let Some(text) = surround!("\"", src, "\"") {
             Ok(Expr::String(text.to_owned()))
         } else if let Some(expr) = surround!("(", src, ")") {
@@ -221,7 +221,7 @@ impl Expr {
                 Ok(Expr::Enum(typ, name, Box::new(Expr::parse(&value)?)))
             } else {
                 let name = Name::new(&key)?;
-                Ok(Expr::Enum(typ, name, Box::new(Expr::Null(Type::None))))
+                Ok(Expr::Enum(typ, name, Box::new(Expr::Null(Type::Void))))
             }
         } else if let Ok((func, args)) = surround!(src, "(", ")") {
             Ok(Expr::Call(
@@ -248,7 +248,7 @@ impl Type {
             "Str" => Ok(Type::String),
             "Bool" => Ok(Type::Bool),
             "Float" => Ok(Type::Float),
-            "()" => Ok(Type::None),
+            "()" => Ok(Type::Void),
             x => {
                 if let Ok((ret, args)) = surround!(x, "(", ")") {
                     Ok(Type::Function(
@@ -276,7 +276,7 @@ impl Display for Type {
             Type::String => write!(f, "Str"),
             Type::Float => write!(f, "Float"),
             Type::Bool => write!(f, "Bool"),
-            Type::None => write!(f, "()"),
+            Type::Void => write!(f, "()"),
             Type::Array(typ) => write!(f, "[{typ}]"),
             Type::Class(Generics(name, args)) if args.is_empty() => write!(f, "{name}"),
             Type::Class(Generics(name, args)) => write!(f, "{name}<{}>", comma(args)),
