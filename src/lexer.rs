@@ -63,8 +63,8 @@ pub mod name {
                     Type::None => "N".to_string(),
                     Type::Array(typ) => format!("A{}", mangle(typ)),
                     Type::Class(Generics(name, _)) => format!("C{name}"),
-                    Type::Function(_, ret, None) => format!("L{}", mangle(ret)),
-                    Type::Function(_, ret, Some(args)) => {
+                    Type::Func(_, ret, None) => format!("L{}", mangle(ret)),
+                    Type::Func(_, ret, Some(args)) => {
                         format!("L{}{}", mangle(ret), map!(args, mangle).concat())
                     }
                 }
