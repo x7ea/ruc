@@ -5,8 +5,8 @@ pub mod name {
     use std::fmt;
 
     const RESERVED: [&str; 12] = [
-        "print", "format", "let", "new", "clone", "if", "then", "else", "while", "do", "match",
-        "for",
+        "print", "format", "let", "new", "clone", "if", "then", "else", "for", "while", "do",
+        "match",
     ];
 
     #[derive(Clone, Debug, PartialEq, Hash, Eq)]
