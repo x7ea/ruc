@@ -58,7 +58,7 @@ impl Expr {
         macro_rules! op {
             ($asm: literal, $lhs: expr, $rhs: expr) => {
                 match typ!(self) {
-                    Type::Int | Type::Bool => format!(
+                    Type::Integer | Type::Boolean => format!(
                         "{}\tpush rax\n{}\tmov r10, rax\n\tpop rax\n\t{} rax, r10\n",
                         $lhs.emit(ctx)?,
                         $rhs.emit(ctx)?,
