@@ -146,7 +146,8 @@ impl Expr {
                     }
                 }
                 if is_output {
-                    fmt += "\\n"; name = "printf";
+                    fmt += "\\n";
+                    name = "printf";
                 }
                 expand!(Expr::Call(
                     Box::new(Expr::Variable(Generics(Name::new(name)?, vec![]))),
@@ -562,19 +563,16 @@ impl Expr {
             Expr::Add(lhs, rhs)
             | Expr::Sub(lhs, rhs)
             | Expr::Mul(lhs, rhs)
-            | Expr::Div(lhs, rhs)
-            => op!((Type::Integer | Type::Float), lhs, rhs),
+            | Expr::Div(lhs, rhs) => op!((Type::Integer | Type::Float), lhs, rhs),
             Expr::Eql(lhs, rhs)
             | Expr::NotEq(lhs, rhs)
             | Expr::Gt(lhs, rhs)
             | Expr::Lt(lhs, rhs)
             | Expr::GtEq(lhs, rhs)
-            | Expr::LtEq(lhs, rhs)
-            => op!(Type::Integer, lhs, rhs, Type::Boolean),
-            Expr::And(lhs, rhs)
-            | Expr::Or(lhs, rhs)
-            | Expr::Xor(lhs, rhs)
-            => op!(Type::Boolean, lhs, rhs)
+            | Expr::LtEq(lhs, rhs) => op!(Type::Integer, lhs, rhs, Type::Boolean),
+            Expr::And(lhs, rhs) | Expr::Or(lhs, rhs) | Expr::Xor(lhs, rhs) => {
+                op!(Type::Boolean, lhs, rhs)
+            }
         }
     }
 }
@@ -586,10 +584,13 @@ impl Type {
         }
         match self {
             Type::Function(typ, ret, Some(args)) => Type::Function(
-                typ.clone(), Box::new(ret.rewrite(old, new)),
+                typ.clone(),
+                Box::new(ret.rewrite(old, new)),
                 Some(map!(args, |x| x.rewrite(old, new))),
             ),
-            Type::Class(Generics(name, args)) => Type::Class(Generics(name.clone(), map!(args, |x| x.rewrite(old, new)))),
+            Type::Class(Generics(name, args)) => {
+                Type::Class(Generics(name.clone(), map!(args, |x| x.rewrite(old, new))))
+            }
             Type::Array(typ) => Type::Array(Box::new(typ.rewrite(old, new))),
             _ => self.clone(),
         }
@@ -612,10 +613,13 @@ impl Type {
         }
         match self {
             Type::Function(typ, ret, Some(args)) => Type::Function(
-                typ.clone(), Box::new(ret.solve(ctx)),
+                typ.clone(),
+                Box::new(ret.solve(ctx)),
                 Some(map!(args, |x| x.solve(ctx))),
             ),
-            Type::Class(Generics(name, args)) => Type::Class(Generics(name.clone(), map!(args, |x| x.solve(ctx)))),
+            Type::Class(Generics(name, args)) => {
+                Type::Class(Generics(name.clone(), map!(args, |x| x.solve(ctx))))
+            }
             Type::Array(typ) => Type::Array(Box::new(typ.solve(ctx))),
             _ => self.clone(),
         }
