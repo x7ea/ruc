@@ -244,7 +244,7 @@ impl Expr {
 impl Type {
     pub fn parse(src: &str) -> Result<Type, String> {
         match src.trim() {
-            "Int" => Ok(Type::Integer),
+            "Int" => Ok(Type::Int),
             "Str" => Ok(Type::String),
             "Bool" => Ok(Type::Bool),
             "Float" => Ok(Type::Float),
@@ -272,7 +272,7 @@ impl Display for Type {
             map!(x, |x: &Type| x.to_string()).join(", ")
         }
         match self {
-            Type::Integer => write!(f, "Int"),
+            Type::Int => write!(f, "Int"),
             Type::String => write!(f, "Str"),
             Type::Float => write!(f, "Float"),
             Type::Bool => write!(f, "Bool"),
