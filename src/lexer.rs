@@ -67,7 +67,6 @@ pub mod name {
                     Type::Function(_, ret, Some(args)) => {
                         format!("L{}{}", mangle(ret), map!(args, mangle).concat())
                     }
-                    Type::Any => panic!(),
                 }
             }
             let typ = map!(self.1, mangle).concat();
