@@ -124,7 +124,7 @@ pub enum Expr {
     Float(Float<f64>),
     Bool(bool),
     String(String),
-    Null(Option<Type>),
+    Null(Type),
     // Reference
     Variable(Generics),
     Let(Box<Expr>, Box<Expr>),
