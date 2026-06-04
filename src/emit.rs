@@ -14,7 +14,7 @@ impl Define {
         let (mut ptr, mut alloc) = (8, String::new());
         let (mut idx, mut xmm) = (0, 0);
         for (count, (_, typ)) in args.iter().enumerate() {
-            if let Type::Float = typ {
+            if typ == &Type::Float {
                 if xmm < 8 {
                     alloc += &format!("\tmovsd [rbp-{ptr}], xmm{xmm}\n")
                 } else {
@@ -175,7 +175,7 @@ impl Expr {
                 if let Some(i) = env.get_index_of(&name) {
                     let typ = env.get(&name).unwrap();
                     let addr = (i + 1) * 8;
-                    if let Type::Float = typ {
+                    if typ == &Type::Float {
                         Ok(format!("\tmovsd xmm0, [rbp-{addr}]\n"))
                     } else {
                         Ok(format!("\tmov rax, [rbp-{addr}]\n"))
@@ -193,7 +193,7 @@ impl Expr {
                     let idx = env.get_index_of(name).unwrap();
                     let typ = env.get(name).unwrap().clone();
                     let (val, addr) = (val.emit(ctx)?, (idx + 1) * 8);
-                    if let Type::Float = typ {
+                    if typ == Type::Float {
                         Ok(format!("{val}\tmovsd [rbp-{addr}], xmm0\n"))
                     } else {
                         Ok(format!("{val}\tmov [rbp-{addr}], rax\n"))
@@ -222,7 +222,7 @@ impl Expr {
                 let calc = "\tlea rax, [r11+rax*8]\n".to_string();
                 Ok(format!(
                     "{addr}{guard}\tpush rax\n{offset}\tpop r11\n{calc}{}null.{id}:\n",
-                    if let Type::Float = typ {
+                    if typ == &Type::Float {
                         "\tmovsd xmm0, [rax]\n"
                     } else {
                         "\tmov rax, [rax]\n"
@@ -236,7 +236,7 @@ impl Expr {
                 let calc = format!("\tpush rax\n{offset}\tpop r11\n\tlea r11, [r11+rax*8]\n");
                 Ok(format!(
                     "{addr}{guard}{calc}\tpush r11\n{val}\tpop r11\n{}null.{id}:\n",
-                    if let Type::Float = typ!(self) {
+                    if typ!(self) == Type::Float {
                         "\tmovsd [r11], xmm0\n"
                     } else {
                         "\tmov [r11], rax\n"
@@ -261,7 +261,7 @@ impl Expr {
                 Ok(format!("\tmov rax, {name}\n"))
             }
             Expr::Div(lhs, rhs) => {
-                if let Type::Float = typ!(self) {
+                if typ!(self) == Type::Float {
                     return Ok(op!("div", lhs, rhs));
                 }
                 Ok(format!(
