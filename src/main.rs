@@ -150,12 +150,14 @@ pub enum Expr {
     Mul(Box<Expr>, Box<Expr>),
     Div(Box<Expr>, Box<Expr>),
     Mod(Box<Expr>, Box<Expr>),
+    // Compare
     Eql(Box<Expr>, Box<Expr>),
     NotEq(Box<Expr>, Box<Expr>),
     Gt(Box<Expr>, Box<Expr>),
     Lt(Box<Expr>, Box<Expr>),
     GtEq(Box<Expr>, Box<Expr>),
     LtEq(Box<Expr>, Box<Expr>),
+    // Logial
     And(Box<Expr>, Box<Expr>),
     Or(Box<Expr>, Box<Expr>),
     Xor(Box<Expr>, Box<Expr>),
