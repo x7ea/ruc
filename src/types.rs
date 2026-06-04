@@ -142,7 +142,7 @@ impl Expr {
                 for i in vals.iter() {
                     let typ = i.infer(ctx)?;
                     fmt += match typ {
-                        Type::Int => "%ld",
+                        Type::Integer => "%ld",
                         Type::Float => "%g",
                         Type::String => "%s",
                         _ => return Err(format!("can't print: {typ}")),
@@ -167,7 +167,7 @@ impl Expr {
                     )));
                 }
                 let cond = cond.infer(ctx)?;
-                if cond != Type::Bool {
+                if cond != Type::Boolean {
                     return Err(format!("if-else test: Bool != {cond}"));
                 }
                 if let Some(els) = els {
@@ -189,7 +189,7 @@ impl Expr {
                     )));
                 }
                 let cond = cond.infer(ctx)?;
-                if cond != Type::Bool {
+                if cond != Type::Boolean {
                     return Err(format!("while-do test: Bool != {cond}"));
                 }
                 body.infer(ctx)
@@ -222,7 +222,7 @@ impl Expr {
                 ])))
             }
             Expr::For(cnt, arr, body) => {
-                let temp = Box::new(temp!(Type::Int));
+                let temp = Box::new(temp!(Type::Integer));
                 let read = Box::new(Expr::Index(arr.clone(), temp.clone()));
                 let inc = Box::new(Expr::Add(temp.clone(), Box::new(Expr::Integer(1))));
                 let body = [Expr::Let(cnt, read), *body, Expr::Let(temp.clone(), inc)];
@@ -450,7 +450,7 @@ impl Expr {
                 {
                     return typing!(expands!(Expr::Read(
                         Box::new(Expr::Integer(0)),
-                        Type::Int,
+                        Type::Integer,
                         obj.clone()
                     )));
                 }
@@ -486,7 +486,7 @@ impl Expr {
                     return Err(format!("not array: {typ}"));
                 };
                 let idx_t = idx.infer(ctx)?;
-                let Type::Int = idx_t else {
+                let Type::Integer = idx_t else {
                     return Err(format!("not index: {idx_t}"));
                 };
                 expand!(Expr::Read(array!(arr, idx), *typ.clone(), arr.clone()));
@@ -503,17 +503,17 @@ impl Expr {
                         };
                         let offset = Box::new(Expr::Integer(0));
                         expand!(Expr::Eql(
-                            Box::new(Expr::Read(offset, Type::Int, obj.clone())),
+                            Box::new(Expr::Read(offset, Type::Integer, obj.clone())),
                             Box::new(Expr::Integer(tag as i64)),
                         ));
-                        return typing!(Type::Bool);
+                        return typing!(Type::Boolean);
                     }
                 }
                 let typ = expr.infer(ctx)?;
                 if !matches!(typ, Type::Class(_)) {
                     return Err(format!("not nullable: {typ}"));
                 }
-                typing!(Type::Bool)
+                typing!(Type::Boolean)
             }
             Expr::Init(typ, len) => {
                 expand!(new!(len + 1));
@@ -521,7 +521,7 @@ impl Expr {
             }
             Expr::Read(addr, typ, offset) => {
                 let offset = offset.infer(ctx)?;
-                if let Type::Int = offset {
+                if let Type::Integer = offset {
                     return Err(format!("not address: {offset}"));
                 }
                 addr.infer(ctx)?;
@@ -529,7 +529,7 @@ impl Expr {
             }
             Expr::Write(addr, val, offset) => {
                 let offset = offset.infer(ctx)?;
-                if let Type::Int = offset {
+                if let Type::Integer = offset {
                     return Err(format!("not address: {offset}"));
                 }
                 addr.infer(ctx)?;
@@ -549,7 +549,7 @@ impl Expr {
             }
             Expr::Mod(lhs, rhs) => {
                 expand!(Expr::Div(lhs.clone(), rhs.clone()));
-                op!(Type::Int, lhs, rhs)
+                op!(Type::Integer, lhs, rhs)
             }
             Expr::Null(typ) => {
                 let typ = typ.solve(ctx);
@@ -559,22 +559,22 @@ impl Expr {
                 ]));
                 typing!(typ)
             }
-            Expr::Integer(_) => typing!(Type::Int),
+            Expr::Integer(_) => typing!(Type::Integer),
             Expr::Float(_) => typing!(Type::Float),
             Expr::String(_) => typing!(Type::String),
-            Expr::Bool(_) => typing!(Type::Bool),
+            Expr::Bool(_) => typing!(Type::Boolean),
             Expr::Add(lhs, rhs)
             | Expr::Sub(lhs, rhs)
             | Expr::Mul(lhs, rhs)
-            | Expr::Div(lhs, rhs) => op!((Type::Int | Type::Float), lhs, rhs),
+            | Expr::Div(lhs, rhs) => op!((Type::Integer | Type::Float), lhs, rhs),
             Expr::Eql(lhs, rhs)
             | Expr::NotEq(lhs, rhs)
             | Expr::Gt(lhs, rhs)
             | Expr::Lt(lhs, rhs)
             | Expr::GtEq(lhs, rhs)
-            | Expr::LtEq(lhs, rhs) => op!(Type::Int, lhs, rhs, Type::Bool),
+            | Expr::LtEq(lhs, rhs) => op!(Type::Integer, lhs, rhs, Type::Boolean),
             Expr::And(lhs, rhs) | Expr::Or(lhs, rhs) | Expr::Xor(lhs, rhs) => {
-                op!(Type::Bool, lhs, rhs)
+                op!(Type::Boolean, lhs, rhs)
             }
         }
     }
