@@ -59,7 +59,7 @@ pub mod name {
                     Type::Int => "I".to_string(),
                     Type::String => "S".to_string(),
                     Type::Bool => "B".to_string(),
-                    Type::None => "N".to_string(),
+                    Type::Void => "N".to_string(),
                     Type::Float => "F".to_string(),
                     Type::Array(typ) => format!("A{}", mangle(typ)),
                     Type::Class(Generics(name, _)) => format!("C{name}"),
