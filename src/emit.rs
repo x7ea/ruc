@@ -123,8 +123,7 @@ impl Expr {
                 let cmp = format!("\tcmp rax, 0\n\tje do.{id}\n");
                 Ok(format!(
                     "while.{id}:\n{}{cmp}{}\tjmp while.{id}\ndo.{id}:\n",
-                    cond.emit(ctx)?,
-                    body.emit(ctx)?,
+                    cond.emit(ctx)?, body.emit(ctx)?,
                 ))
             }
             Expr::Block(lines) => {
@@ -265,8 +264,7 @@ impl Expr {
                 }
                 Ok(format!(
                     "{}\tpush rax\n{}\tmov rsi, rax\n\tpop rax\n\tcqo\n\tidiv rsi\n",
-                    lhs.emit(ctx)?,
-                    rhs.emit(ctx)?,
+                    lhs.emit(ctx)?, rhs.emit(ctx)?,
                 ))
             }
             Expr::Mod(_, _) => {
