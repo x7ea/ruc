@@ -221,7 +221,8 @@ impl Expr {
                 Ok(Expr::Enum(typ, name, Box::new(Expr::parse(&value)?)))
             } else {
                 let name = Name::new(&key)?;
-                Ok(Expr::Enum(typ, name, Box::new(Expr::Null(Type::None))))
+                let val = Box::new(Expr::Null(Some(Type::None)));
+                Ok(Expr::Enum(typ, name, val))
             }
         } else if let Ok((func, args)) = surround!(src, "(", ")") {
             Ok(Expr::Call(
@@ -282,7 +283,6 @@ impl Display for Type {
             Type::Class(Generics(name, args)) => write!(f, "{name}<{}>", comma(args)),
             Type::Function(_, ret, Some(args)) => write!(f, "{ret}({})", comma(args)),
             Type::Function(_, ret, None) => write!(f, "{ret}()"),
-            Type::Any => panic!(),
         }
     }
 }
