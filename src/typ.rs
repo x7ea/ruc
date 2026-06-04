@@ -15,7 +15,9 @@ impl Define {
                 {
                     ctx.local = Function::default();
                     ctx.local.scope = args.clone();
-                    body.infer(ctx)?;
+                    if *ret != body.infer(ctx)? {
+                        return Err(format!("expected: returns {ret}"));
+                    }
                 }
                 ctx.table.insert(name.clone(), ctx.local.clone());
                 ctx.local = parent;
