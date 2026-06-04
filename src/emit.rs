@@ -36,10 +36,10 @@ impl Define {
         let body = body.emit(ctx)?;
         ctx.table.insert(name.clone(), ctx.local.clone());
 
-        let stack = ctx.local.var.len() * 8;
+        let var = ctx.local.var.len() * 8;
         let pro = format!(
             "\tpush rbp\n\tmov rbp, rsp\n\tsub rsp, {}\n",
-            if stack % 16 == 0 { stack } else { stack + 8 }
+            if var % 16 == 0 { var } else { var + 8 }
         );
         Ok(format!("{name}:\n{pro}{alloc}{body}\tleave\n\tret\n\n"))
     }
