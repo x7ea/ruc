@@ -9,6 +9,7 @@ fn add(lhs: Peano, rhs: Peano) -> Peano {
         Succ n = Peano::Succ(add(lhs, n))
     }
 }
+
 fn decode(this: Peano) -> Int {
     match this {
         Zero = 0,
