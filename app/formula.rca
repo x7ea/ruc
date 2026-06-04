@@ -10,7 +10,7 @@ match rhs {
 }
 
 fn decode(this: Peano) -> Int '
-    if let n = this.Succ then decode(n) + 1　else 0
+    if let n = this.Succ then decode(n) + 1 else 0
 
 fn main() {
     let one = Peano::Succ(Peano::Zero)
