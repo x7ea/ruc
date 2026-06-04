@@ -172,7 +172,7 @@ impl Expr {
                 }
                 if let Some(els) = els {
                     let [then, els] = [then.infer(ctx)?, els.infer(ctx)?];
-                    if els != Type::Any && then != els {
+                    if els != Type::None && then != els {
                         return Err(format!("if-else term: {then} != {els}"));
                     }
                     typing!(then.clone())
@@ -189,7 +189,7 @@ impl Expr {
                 body.infer(ctx)
             }
             Expr::Match(val, pats) => {
-                let mut expr = Expr::Null(None);
+                let mut expr = Expr::Null(Type::None);
                 for (key, bind, ret) in pats {
                     let acc = Box::new(Expr::Member(val.clone(), key.clone()));
                     expr = Expr::If(
