@@ -180,6 +180,7 @@ impl Expr {
                 "<" => Expr::Lt(lhs, rhs),
                 ">=" => Expr::GtEq(lhs, rhs),
                 "<=" => Expr::LtEq(lhs, rhs),
+                "=" => Expr::Let(lhs, rhs),
                 op => return Err(format!("unknown operator: {op}")),
             })
         } else if src == "()" {
