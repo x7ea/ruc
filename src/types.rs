@@ -25,7 +25,7 @@ impl Define {
             }
             Define::Function(Generics(name, param), args, (Some(body), None)) => {
                 if !param.is_empty() {
-                    let sig = Type::Function(param.clone(), Box::new(Type::None), types!(args));
+                    let sig = Type::Function(param.clone(), Box::new(Type::Void), types!(args));
                     ctx.global.lib.insert(name.clone(), sig.clone());
                     return Ok(sig);
                 }
@@ -54,7 +54,7 @@ impl Define {
             Define::Class(Generics(name, args), layout) => {
                 let val = (args.clone(), layout.clone());
                 ctx.global.table.insert(name.clone(), val);
-                Ok(Type::None)
+                Ok(Type::Void)
             }
             _ => panic!(),
         }
@@ -156,7 +156,7 @@ impl Expr {
                     Box::new(Expr::Variable(Generics(Name::new(name)?, vec![]))),
                     [vec![Expr::String(fmt)], vals.to_vec()].concat(),
                 ));
-                typing!(if is_output { Type::None } else { Type::String })
+                typing!(if is_output { Type::Void } else { Type::String })
             }
             Expr::If(cond, then, els) => {
                 if let Expr::Let(bind, check) = *cond {
@@ -172,13 +172,13 @@ impl Expr {
                 }
                 if let Some(els) = els {
                     let [then, els] = [then.infer(ctx)?, els.infer(ctx)?];
-                    if els != Type::None && then != els {
+                    if els != Type::Void && then != els {
                         return Err(format!("if-else term: {then} != {els}"));
                     }
                     typing!(then.clone())
                 } else {
                     then.infer(ctx)?;
-                    Ok(Type::None)
+                    Ok(Type::Void)
                 }
             }
             Expr::While(cond, body) => {
@@ -195,7 +195,7 @@ impl Expr {
                 body.infer(ctx)
             }
             Expr::Match(val, pats) => {
-                let mut expr = Expr::Null(Type::None);
+                let mut expr = Expr::Null(Type::Void);
                 for (key, bind, ret) in pats {
                     let acc = Box::new(Expr::Member(val.clone(), key.clone()));
                     expr = Expr::If(
@@ -254,7 +254,7 @@ impl Expr {
                 typing!(expands!(Expr::Block(expr)))
             }
             Expr::Block(lines) => {
-                let mut ret = Type::None;
+                let mut ret = Type::Void;
                 let parent = ctx.local.scope.clone();
                 for line in lines {
                     ret = line.infer(ctx)?;
@@ -290,7 +290,7 @@ impl Expr {
                     }
                     for (param, arg) in params.iter().zip(args) {
                         let arg = arg.infer(ctx)?.solve(ctx);
-                        if param == &Type::None {
+                        if param == &Type::Void {
                             continue;
                         }
                         if param.solve(ctx) != arg {
@@ -365,7 +365,7 @@ impl Expr {
                     } else {
                         ctx.local.scope.insert(name.clone(), val.clone());
                     }
-                    typing!(Type::None)
+                    typing!(Type::Void)
                 }
                 acc @ Expr::Index(arr, idx) => {
                     {
@@ -375,7 +375,7 @@ impl Expr {
                         }
                     }
                     expand!(Expr::Write(array!(arr, idx), val.clone(), arr.clone()));
-                    typing!(Type::None)
+                    typing!(Type::Void)
                 }
                 acc @ Expr::Member(obj, key) => {
                     let typ = acc.infer(ctx)?;
@@ -401,7 +401,7 @@ impl Expr {
                             ]));
                         }
                     }
-                    typing!(Type::None)
+                    typing!(Type::Void)
                 }
                 other => Err(format!("not assign target: {}", other.infer(ctx)?)),
             },
