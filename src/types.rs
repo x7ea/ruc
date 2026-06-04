@@ -146,8 +146,7 @@ impl Expr {
                     }
                 }
                 if is_output {
-                    fmt += "\\n";
-                    name = "printf";
+                    fmt += "\\n"; name = "printf";
                 }
                 expand!(Expr::Call(
                     Box::new(Expr::Variable(Generics(Name::new(name)?, vec![]))),
