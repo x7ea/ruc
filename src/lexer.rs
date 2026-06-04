@@ -28,7 +28,7 @@ pub mod name {
             if RESERVED.contains(&name.as_str()) {
                 return Err(format!("reserved: {name}"));
             }
-            Ok(Name(name.to_lowercase()))
+            Ok(Name(name.to_owned()))
         }
     }
 
