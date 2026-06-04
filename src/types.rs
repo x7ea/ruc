@@ -591,9 +591,7 @@ impl Type {
                 Box::new(ret.rewrite(old, new)),
                 Some(map!(args, |x| x.rewrite(old, new))),
             ),
-            Type::Class(Generics(name, args)) => {
-                Type::Class(Generics(name.clone(), map!(args, |x| x.rewrite(old, new))))
-            }
+            Type::Class(Generics(name, args)) => Type::Class(Generics(name.clone(), map!(args, |x| x.rewrite(old, new)))),
             Type::Array(typ) => Type::Array(Box::new(typ.rewrite(old, new))),
             _ => self.clone(),
         }
@@ -620,9 +618,7 @@ impl Type {
                 Box::new(ret.solve(ctx)),
                 Some(map!(args, |x| x.solve(ctx))),
             ),
-            Type::Class(Generics(name, args)) => {
-                Type::Class(Generics(name.clone(), map!(args, |x| x.solve(ctx))))
-            }
+            Type::Class(Generics(name, args)) => Type::Class(Generics(name.clone(), map!(args, |x| x.solve(ctx)))),
             Type::Array(typ) => Type::Array(Box::new(typ.solve(ctx))),
             _ => self.clone(),
         }
