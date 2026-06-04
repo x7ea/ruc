@@ -534,7 +534,7 @@ impl Expr {
                     Expr::Let(dest.clone(), Box::new(Expr::Constructor(typ.clone()))),
                     Expr::Call(
                         Box::new(Expr::Variable(Generics(Name::new("memcpy")?, vec![]))),
-                        vec![*dest.clone(), *expr, Expr::Integer(typ.size(ctx) as i64)]
+                        vec![*dest.clone(), *expr, Expr::Integer(typ.size(ctx)? as i64)]
                     ),
                     *dest.clone()
                 ])))
@@ -592,14 +592,14 @@ impl Type {
         }
     }
 
-    fn size(&self, ctx: &Context) -> usize {
+    fn size(&self, ctx: &Context) -> Result<usize, String> {
         match self {
             Type::Class(Generics(name, _)) => match ctx.global.table.get(name) {
-                Some((_, Object::Struct(layout))) => layout.len() * 8,
-                Some((_, Object::Enum(_))) => 16,
-                _ => panic!(),
+                Some((_, Object::Struct(layout))) => Ok(layout.len() * 8),
+                Some((_, Object::Enum(_))) => Ok(16),
+                _ => Err(format!("undefined: {name}")),
             },
-            _ => 8,
+            _ => Err(format!("can't clone: {self}")),
         }
     }
 
