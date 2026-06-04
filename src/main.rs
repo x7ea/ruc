@@ -1,6 +1,5 @@
 pub mod emit;
 pub mod lexer;
-pub mod object;
 pub mod parse;
 pub mod types;
 
