@@ -587,8 +587,7 @@ impl Type {
         }
         match self {
             Type::Function(typ, ret, Some(args)) => Type::Function(
-                typ.clone(),
-                Box::new(ret.rewrite(old, new)),
+                typ.clone(), Box::new(ret.rewrite(old, new)),
                 Some(map!(args, |x| x.rewrite(old, new))),
             ),
             Type::Class(Generics(name, args)) => Type::Class(Generics(name.clone(), map!(args, |x| x.rewrite(old, new)))),
@@ -614,8 +613,7 @@ impl Type {
         }
         match self {
             Type::Function(typ, ret, Some(args)) => Type::Function(
-                typ.clone(),
-                Box::new(ret.solve(ctx)),
+                typ.clone(), Box::new(ret.solve(ctx)),
                 Some(map!(args, |x| x.solve(ctx))),
             ),
             Type::Class(Generics(name, args)) => Type::Class(Generics(name.clone(), map!(args, |x| x.solve(ctx)))),
