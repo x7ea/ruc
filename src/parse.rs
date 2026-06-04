@@ -221,8 +221,7 @@ impl Expr {
                 Ok(Expr::Enum(typ, name, Box::new(Expr::parse(&value)?)))
             } else {
                 let name = Name::new(&key)?;
-                let val = Box::new(Expr::Null(Some(Type::None)));
-                Ok(Expr::Enum(typ, name, val))
+                Ok(Expr::Enum(typ, name, Box::new(Expr::Null(Type::None))))
             }
         } else if let Ok((func, args)) = surround!(src, "(", ")") {
             Ok(Expr::Call(
