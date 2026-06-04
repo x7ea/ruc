@@ -574,7 +574,7 @@ impl Expr {
             => op!(Type::Integer, lhs, rhs, Type::Boolean),
             Expr::And(lhs, rhs)
             | Expr::Or(lhs, rhs)
-            | Expr::Xor(lhs, rhs) // d
+            | Expr::Xor(lhs, rhs)
             => op!(Type::Boolean, lhs, rhs)
         }
     }
