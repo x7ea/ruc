@@ -63,11 +63,11 @@ pub mod name {
                     Type::None => "N".to_string(),
                     Type::Array(typ) => format!("A{}", mangle(typ)),
                     Type::Class(Generics(name, _)) => format!("C{name}"),
+                    Type::Function(_, ret, None) => format!("L{}", mangle(ret)),
                     Type::Function(_, ret, Some(args)) => {
                         let args = map!(args, mangle).concat();
                         format!("L{}{args}", mangle(ret))
                     }
-                    Type::Function(_, ret, None) => format!("L{}", mangle(ret)),
                     Type::Any => panic!(),
                 }
             }
