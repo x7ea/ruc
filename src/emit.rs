@@ -210,34 +210,30 @@ impl Expr {
             Expr::Read(offset, typ, addr) => {
                 let id = ctx.label();
                 let [addr, offset] = [addr.emit(ctx)?, offset.emit(ctx)?];
-                let [guard, calc] = [
-                    format!("\tpxor xmm0, xmm0\n\tcmp rax, 0\n\tje null.{id}\n"),
-                    format!("\tpush rax\n{offset}\tpop r11\n\tlea rax, [r11+rax*8]\n"),
-                ];
                 Ok(format!(
                     "{addr}{guard}{calc}{}null.{id}:\n",
                     if typ == &Type::Float {
                         "\tmovsd xmm0, [rax]\n"
                     } else {
                         "\tmov rax, [rax]\n"
-                    }
+                    },
+                    guard = format!("\tpxor xmm0, xmm0\n\tcmp rax, 0\n\tje null.{id}\n"),
+                    calc = format!("\tpush rax\n{offset}\tpop r11\n\tlea rax, [r11+rax*8]\n"),
                 ))
             }
             Expr::Write(offset, val, addr) => {
                 let id = ctx.label();
-                let (addr, offset) = (addr.emit(ctx)?, offset.emit(ctx)?);
-                let [guard, calc, val] = [
-                    format!("\tpxor xmm0, xmm0\n\tcmp rax, 0\n\tje null.{id}\n"),
-                    format!("\tpush rax\n{offset}\tpop r11\n\tlea r11, [r11+rax*8]\n"),
-                    format!("\tpush r11\n{}\tpop r11\n", val.emit(ctx)?),
-                ];
+                let [addr, offset] = [addr.emit(ctx)?, offset.emit(ctx)?];
                 Ok(format!(
                     "{addr}{guard}{calc}{val}{}null.{id}:\n",
                     if typ!(self) == Type::Float {
                         "\tmovsd [r11], xmm0\n"
                     } else {
                         "\tmov [r11], rax\n"
-                    }
+                    },
+                    guard = format!("\tpxor xmm0, xmm0\n\tcmp rax, 0\n\tje null.{id}\n"),
+                    calc = format!("\tpush rax\n{offset}\tpop r11\n\tlea r11, [r11+rax*8]\n"),
+                    val = format!("\tpush r11\n{}\tpop r11\n", val.emit(ctx)?),
                 ))
             }
             Expr::Integer(val) => Ok(format!("\tmov rax, {val}\n")),
