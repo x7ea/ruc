@@ -210,8 +210,10 @@ impl Expr {
             Expr::Read(offset, typ, addr) => {
                 let id = ctx.label();
                 let [addr, offset] = [addr.emit(ctx)?, offset.emit(ctx)?];
-                let guard = format!("\tpxor xmm0, xmm0\n\tcmp rax, 0\n\tje null.{id}\n");
-                let calc = format!("\tpush rax\n{offset}\tpop r11\n\tlea rax, [r11+rax*8]\n");
+                let [guard, calc] = [
+                    format!("\tpxor xmm0, xmm0\n\tcmp rax, 0\n\tje null.{id}\n"),
+                    format!("\tpush rax\n{offset}\tpop r11\n\tlea rax, [r11+rax*8]\n"),
+                ];
                 Ok(format!(
                     "{addr}{guard}{calc}{}null.{id}:\n",
                     if typ == &Type::Float {
