@@ -224,9 +224,11 @@ impl Expr {
             Expr::Write(offset, val, addr) => {
                 let id = ctx.label();
                 let [addr, val, offset] = [addr.emit(ctx)?, val.emit(ctx)?, offset.emit(ctx)?];
-                let guard = format!("\tpxor xmm0, xmm0\n\tcmp rax, 0\n\tje null.{id}\n");
-                let calc = format!("\tpush rax\n{offset}\tpop r11\n\tlea r11, [r11+rax*8]\n");
-                let val = format!("\tpush r11\n{val}\tpop r11\n");
+                let [guard, calc, val] = [
+                    format!("\tpxor xmm0, xmm0\n\tcmp rax, 0\n\tje null.{id}\n"),
+                    format!("\tpush rax\n{offset}\tpop r11\n\tlea r11, [r11+rax*8]\n"),
+                    format!("\tpush r11\n{val}\tpop r11\n"),
+                ];
                 Ok(format!(
                     "{addr}{guard}{calc}{val}{}null.{id}:\n",
                     if typ!(self) == Type::Float {
