@@ -225,7 +225,7 @@ impl Expr {
             }
             Expr::Write(offset, val, addr) => {
                 let id = ctx.label();
-                let [addr, offset] = [addr.emit(ctx)?, offset.emit(ctx)?];
+                let (addr, offset) = (addr.emit(ctx)?, offset.emit(ctx)?);
                 let [guard, calc, val] = [
                     format!("\tpxor xmm0, xmm0\n\tcmp rax, 0\n\tje null.{id}\n"),
                     format!("\tpush rax\n{offset}\tpop r11\n\tlea r11, [r11+rax*8]\n"),
