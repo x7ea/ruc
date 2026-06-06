@@ -204,8 +204,7 @@ impl Expr {
         } else if let Ok(i) = src.parse::<i64>() {
             Ok(Expr::Integer(i))
         } else if let Ok(f) = src.parse::<f64>() {
-            use ordered_float::OrderedFloat;
-            Ok(Expr::Float(OrderedFloat(f)))
+            Ok(Expr::Float(Float(f)))
         } else if let Some(class) = src.strip_suffix("?") {
             Ok(Expr::Check(Box::new(Expr::parse(class)?)))
         } else if let Ok((obj, key)) = once!(src, ".", right) {
