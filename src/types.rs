@@ -560,7 +560,10 @@ impl Expr {
             Expr::Integer(_) => typing!(Type::Integer),
             Expr::Float(_) => typing!(Type::Float),
             Expr::String(_) => typing!(Type::String),
-            Expr::Bool(_) => typing!(Type::Boolean),
+            Expr::Bool(val) => {
+                expand!(Expr::Integer(if val { 1 } else { 0 }));
+                typing!(Type::Boolean)
+            }
             Expr::Add(lhs, rhs)
             | Expr::Sub(lhs, rhs)
             | Expr::Mul(lhs, rhs)
