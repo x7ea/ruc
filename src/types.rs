@@ -33,8 +33,8 @@ impl Define {
                 ctx.local = Function::default();
                 ctx.local.scope = args.clone();
 
-                let ret = body.infer(ctx)?;
-                let sig = Type::Function(param.clone(), Box::new(ret), types!(args));
+                let ret = Box::new(body.infer(ctx)?);
+                let sig = Type::Function(param.clone(), ret, types!(args));
 
                 ctx.table.insert(name.clone(), ctx.local.clone());
                 ctx.global.lib.insert(name.clone(), sig.clone());
