@@ -508,9 +508,9 @@ impl Expr {
                     return typing!(Type::Boolean);
                 }
                 let typ = expr.infer(ctx)?;
-                let Type::Class(_) =typ else{
+                let Type::Class(_) = typ else {
                     return Err(format!("not nullable: {typ}"));
-                }
+                };
                 typing!(Type::Boolean)
             }
             Expr::Init(typ, len) => {
