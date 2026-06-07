@@ -441,7 +441,7 @@ impl Expr {
                 ctx.global.table.insert(mangle.clone(), (vec![], unify));
                 typing!(typ.solve(ctx))
             }
-            Expr::Member(obj, key) if key.to_string() == "len" => {
+            Expr::Member(obj, key) if key == Name::new("len")? => {
                 let typ = obj.infer(ctx)?;
                 let Type::Array(_) = typ.clone() else {
                     return Err(format!("no length: {typ}"));
