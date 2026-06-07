@@ -441,17 +441,19 @@ impl Expr {
                 ctx.global.table.insert(mangle.clone(), (vec![], unify));
                 typing!(typ.solve(ctx))
             }
+            Expr::Member(obj, key) if key.to_string() == "len" => {
+                let typ = obj.infer(ctx)?;
+                let Type::Array(_) = typ.clone() else {
+                    return Err(format!("no length: {typ}"));
+                };
+                typing!(expands!(Expr::Read(
+                    Box::new(Expr::Integer(0)),
+                    Type::Integer,
+                    obj.clone()
+                )))
+            }
             Expr::Member(obj, key) => {
                 let typ = obj.infer(ctx)?;
-                if let Type::Array(_) = typ.clone()
-                    && key.to_string() == "len"
-                {
-                    return typing!(expands!(Expr::Read(
-                        Box::new(Expr::Integer(0)),
-                        Type::Integer,
-                        obj.clone()
-                    )));
-                }
                 let Type::Class(name) = &typ else {
                     return Err(format!("not class: {typ}"));
                 };
