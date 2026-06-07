@@ -493,20 +493,19 @@ impl Expr {
                 typing!(*typ.clone())
             }
             Expr::Check(expr) => {
-                if let Expr::Member(obj, key) = &*expr {
-                    if let Type::Class(Generics(name, _)) = &obj.infer(ctx)?
-                        && let Some((_, Object::Enum(layout))) = ctx.global.table.get(name)
-                    {
-                        let Some(tag) = layout.get_index_of(key) else {
-                            return Err(format!("undefined: {name}.{key}"));
-                        };
-                        let offset = Box::new(Expr::Integer(0));
-                        expand!(Expr::Eql(
-                            Box::new(Expr::Read(offset, Type::Integer, obj.clone())),
-                            Box::new(Expr::Integer(tag as i64)),
-                        ));
-                        return typing!(Type::Boolean);
-                    }
+                if let Expr::Member(obj, key) = &*expr
+                    && let Type::Class(Generics(name, _)) = &obj.infer(ctx)?
+                    && let Some((_, Object::Enum(layout))) = ctx.global.table.get(name)
+                {
+                    let Some(tag) = layout.get_index_of(key) else {
+                        return Err(format!("undefined: {name}.{key}"));
+                    };
+                    let offset = Box::new(Expr::Integer(0));
+                    expand!(Expr::Eql(
+                        Box::new(Expr::Read(offset, Type::Integer, obj.clone())),
+                        Box::new(Expr::Integer(tag as i64)),
+                    ));
+                    return typing!(Type::Boolean);
                 }
                 let typ = expr.infer(ctx)?;
                 if !matches!(typ, Type::Class(_)) {
