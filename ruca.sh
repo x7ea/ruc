@@ -1,13 +1,11 @@
 if  [ "$#" -lt 1 ]; then
     cat ./README.md
 elif [ $1 = "--update" ]; then
-    git stash
-    git pull
+    git stash & git pull
     cargo install --path .
 elif [ $1 = "--test" ]; then
     for file in $(find ./app -type f); do
-        echo "Test $file"
-        ./ruca.sh "$file"
+        ./ruca.sh $file
     done
 else
     cat $1 | ruca > main.asm
