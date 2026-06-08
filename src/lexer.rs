@@ -2,10 +2,7 @@ use crate::*;
 pub mod name {
     use crate::*;
     use std::fmt;
-    const RESERVED: [&str; 12] = [
-        "print", "format", "let", "new", "clone", "if", "then", "else", "for", "while", "do",
-        "match",
-    ];
+    const RESERVED: [&str; 12] = ["print", "format", "let", "new", "clone", "if", "then", "else", "for", "while", "do", "match"];
     #[derive(Clone, Default, PartialEq, Hash, Eq)]
     pub struct Name(String);
     impl Name {
