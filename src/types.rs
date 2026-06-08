@@ -553,7 +553,9 @@ impl Type {
         let Type::Function(params, _, _) = typ.clone() else {
             return Ok(typ.clone());
         };
-
+        if params.is_empty() {
+            return Ok(typ.clone());
+        }
         if params.len() != args.len() {
             return Err(format!("generics: {self}"));
         }
