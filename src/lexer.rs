@@ -214,3 +214,27 @@ macro_rules! ok {
         if let Some(v) = $v { Ok(v) } else { Err(String::new()) }
     };
 }
+#[macro_export]
+macro_rules! new {
+    ($layout: expr) => {
+        Expr::Call(
+            Box::new(Expr::Variable(Generics(Name::new("calloc")?, vec![]))),
+            vec![Expr::Integer($layout as i64), Expr::Integer(8)],
+        )
+    };
+}
+#[macro_export]
+macro_rules! len {
+    ($arr: expr) => {
+        Box::new(Expr::Member($arr.clone(), Name::new("len")?))
+    };
+}
+#[macro_export]
+macro_rules! array {
+    ($arr: expr, $idx: expr) => {
+        Box::new(Expr::Add(
+            Box::new(Expr::Mod($idx.clone(), len!($arr))),
+            Box::new(Expr::Integer(1)),
+        ))
+    };
+}
