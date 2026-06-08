@@ -34,10 +34,7 @@ impl Define {
                 let (name, args) = surround!(&head, "(", ")")?;
                 let body = if let Some(typ) = body.trim().strip_prefix("->") {
                     if let Ok((typ, expr)) = once!(typ, SPACE) {
-                        (
-                            Some(Expr::Block(vec![Expr::parse(&expr)?])),
-                            Some(Type::parse(&typ)?),
-                        )
+                        (Some(Expr::Block(vec![Expr::parse(&expr)?])), Some(Type::parse(&typ)?))
                     } else {
                         (None, Some(Type::parse(typ)?))
                     }
@@ -46,8 +43,7 @@ impl Define {
                 };
                 result.push(Define::Function(
                     Generics::parse(&name)?,
-                    args!(&args),
-                    body,
+                    args!(&args), body,
                 ));
             } else if let Some(head) = line.strip_prefix("struct ") {
                 let (name, args) = surround!(&head, "{", "}")?;
