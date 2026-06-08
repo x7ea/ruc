@@ -208,7 +208,7 @@ impl Expr {
             Expr::Enum(typ, key, val) => {
                 let temp = Box::new(temp!(typ.clone()));
                 typing!(expands!(Expr::Block(vec![
-                    Expr::Let(temp.clone(), Box::new(Expr::Constructor(typ.clone()))),
+                    Expr::Let(temp.clone(), Box::new(Expr::New(typ.clone()))),
                     Expr::Let(
                         Box::new(Expr::Member(temp.clone(), key.clone())),
                         val.clone(),
@@ -357,7 +357,7 @@ impl Expr {
                 }
                 other => Err(format!("not assign target: {}", other.infer(ctx)?)),
             },
-            Expr::Constructor(typ) => {
+            Expr::New(typ) => {
                 let Type::Class(_) = typ.clone() else {
                     return Err(format!("no constructor: {typ}"));
                 };
@@ -460,7 +460,7 @@ impl Expr {
                 let typ = expr.infer(ctx)?;
                 let dest = Box::new(temp!(typ));
                 typing!(expands!(Expr::Block(vec![
-                    Expr::Let(dest.clone(), Box::new(Expr::Constructor(typ.clone()))),
+                    Expr::Let(dest.clone(), Box::new(Expr::New(typ.clone()))),
                     Expr::Call(
                         Box::new(Expr::Variable(Generics(Name::new("memcpy")?, vec![]))),
                         vec![*dest.clone(), *expr, Expr::Integer(typ.size(ctx)? as i64)]
