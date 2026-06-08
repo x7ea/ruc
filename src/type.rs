@@ -54,7 +54,7 @@ impl Define {
 }
 
 impl Type {
-  pub  fn mono(self, ctx: &mut Context, func: Generics) -> Result<Type, String> {
+    pub fn mono(self, ctx: &mut Context, func: Generics) -> Result<Type, String> {
         let mut typ = self.solve(ctx);
         let Generics(name, mut args) = func.clone();
         for arg in args.iter_mut() {
