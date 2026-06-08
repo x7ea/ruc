@@ -118,18 +118,11 @@ impl Expr {
             }
         } else if let Some(src) = src.strip_prefix("while ") {
             let (cond, body) = once!(src, "do")?;
-            Ok(Expr::While(
-                Box::new(Expr::parse(&cond)?), 
-                Box::new(Expr::parse(&body)?)
-            ))
+            Ok(Expr::While(Box::new(Expr::parse(&cond)?), Box::new(Expr::parse(&body)?)))
         } else if let Some(src) = src.strip_prefix("for ") {
             let (head, body) = once!(src, "do")?;
             let (cnt, arr) = once!(&head, "=")?;
-            Ok(Expr::For(
-                Box::new(Expr::parse(&cnt)?),
-                Box::new(Expr::parse(&arr)?),
-                Box::new(Expr::parse(&body)?),
-            ))
+            Ok(Expr::For(Box::new(Expr::parse(&cnt)?), Box::new(Expr::parse(&arr)?), Box::new(Expr::parse(&body)?)))
         } else if let Some(class) = src.strip_prefix("new ") {
             Ok(Expr::New(Type::parse(class)?))
         } else if let Some(expr) = src.strip_prefix("clone ") {
@@ -204,15 +197,9 @@ impl Expr {
                 Ok(Expr::Enum(typ, name, Box::new(Expr::Null(Type::Void))))
             }
         } else if let Ok((func, args)) = surround!(src, "(", ")") {
-            Ok(Expr::Call(
-                Box::new(Expr::parse(&func)?),
-                serial!(&args, Expr::parse),
-            ))
+            Ok(Expr::Call(Box::new(Expr::parse(&func)?), serial!(&args, Expr::parse)))
         } else if let Ok((arr, idx)) = surround!(src, "[", "]") {
-            Ok(Expr::Index(
-                Box::new(Expr::parse(&arr)?),
-                Box::new(Expr::parse(&idx)?),
-            ))
+            Ok(Expr::Index(Box::new(Expr::parse(&arr)?), Box::new(Expr::parse(&idx)?)))
         } else if let Ok(b) = src.parse::<bool>() {
             Ok(Expr::Bool(b))
         } else {
