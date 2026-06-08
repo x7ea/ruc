@@ -52,6 +52,7 @@ impl Define {
         }
     }
 }
+
 impl Type {
   pub  fn mono(self, ctx: &mut Context, func: Generics) -> Result<Type, String> {
         let mut typ = self.solve(ctx);
