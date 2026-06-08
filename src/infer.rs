@@ -340,9 +340,8 @@ impl Expr {
             }
             Expr::Check(expr) => {
                 if let Expr::Member(obj, key) = &*expr
-                    && let Type::Class(Generics(name, _)) = &obj.infer(ctx)?
-                    && let Some((_, Object::Enum(layout))) = ctx.global.table.get(name)
-                {
+                && let Type::Class(Generics(name, _)) = &obj.infer(ctx)?
+                && let Some((_, Object::Enum(layout))) = ctx.global.table.get(name) {
                     let Some(tag) = layout.get_index_of(key) else {
                         return Err(format!("undefined: {name}.{key}"));
                     };
