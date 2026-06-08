@@ -3,9 +3,11 @@ pub mod lexer;
 pub mod parse;
 pub mod types;
 
-use indexmap::{IndexMap, IndexSet};
 use lexer::lexer;
 use lexer::name::Name;
+use parse::SPACE;
+
+use indexmap::{IndexMap, IndexSet};
 use ordered_float::OrderedFloat as Float;
 use vec1::Vec1;
 
