@@ -135,7 +135,7 @@ pub enum Expr {
     Sequence(Vec1<Expr>),
     Index(Box<Expr>, Box<Expr>),
     // Object
-    Constructor(Type),
+    New(Type),
     Enum(Type, Name, Box<Expr>),
     Member(Box<Expr>, Name),
     Check(Box<Expr>),
