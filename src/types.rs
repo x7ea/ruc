@@ -369,41 +369,10 @@ impl Expr {
                 other => Err(format!("not assign target: {}", other.infer(ctx)?)),
             },
             Expr::Constructor(typ) => {
-                let Type::Class(Generics(name, mut args)) = typ.clone() else {
+                let Type::Class(_) = typ.clone() else {
                     return Err(format!("no constructor: {typ}"));
                 };
-                let Some((params, table)) = ctx.global.table.get(&name).cloned() else {
-                    return Err(format!("undefined: {name}"));
-                };
-                for arg in args.iter_mut() {
-                    *arg = arg.solve(ctx);
-                }
-                let layout = {
-                    let (Object::Enum(layout) | Object::Struct(layout)) = &table;
-                    let mut layout = layout.clone();
-                    if params.len() != args.len() {
-                        return Err(format!("generics: {typ}"));
-                    }
-                    for (key, field) in layout.clone() {
-                        for (arg, param) in args.iter().zip(&params) {
-                            let field = field.rewrite(param, arg);
-                            layout.insert(key.clone(), field.clone());
-                        }
-                    }
-                    layout
-                };
-                let unify = match table {
-                    Object::Enum(_) => {
-                        expand!(new!(2));
-                        Object::Enum(layout).clone()
-                    }
-                    Object::Struct(inner) => {
-                        expand!(new!(inner.len()));
-                        Object::Struct(layout).clone()
-                    }
-                };
-                let mangle = Generics(name.clone(), args).generics();
-                ctx.global.table.insert(mangle.clone(), (vec![], unify));
+                let typ = typ.mono(ctx, Generics::default())?;
                 typing!(typ.solve(ctx))
             }
             Expr::Member(obj, key) if key == Name::new("len")? => {
