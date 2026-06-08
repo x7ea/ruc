@@ -8,14 +8,16 @@ impl Define {
         }
         match self {
             Define::Function(Generics(name, param), args, (Some(body), Some(ret))) => {
-                let sig = Type::Function(param.clone(), Box::new(ret.clone()), types!(args));
-                ctx.global.lib.insert(name.clone(), sig.clone());
                 let parent = ctx.local.clone();
+                let sig = Type::Function(param.clone(), Box::new(ret.clone()), types!(args));
+
+                ctx.global.lib.insert(name.clone(), sig.clone());
                 ctx.local = Function::default();
                 ctx.local.scope = args.clone();
                 if *ret != body.infer(ctx)? {
                     return Err(format!("expected: returns {ret}"));
                 }
+                
                 ctx.table.insert(name.clone(), ctx.local.clone());
                 ctx.local = parent;
                 Ok(sig)
@@ -29,8 +31,10 @@ impl Define {
                 let parent = ctx.local.clone();
                 ctx.local = Function::default();
                 ctx.local.scope = args.clone();
+                
                 let ret = Box::new(body.infer(ctx)?);
                 let sig = Type::Function(param.clone(), ret, types!(args));
+
                 ctx.table.insert(name.clone(), ctx.local.clone());
                 ctx.global.lib.insert(name.clone(), sig.clone());
                 ctx.local = parent;
