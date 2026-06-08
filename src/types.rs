@@ -502,7 +502,7 @@ impl Expr {
 }
 
 impl Type {
-    pub fn mono(self, ctx: &mut Context, func: Generics) -> Result<Type, String> {
+    fn mono(self, ctx: &mut Context, func: Generics) -> Result<Type, String> {
         let mut typ = self.solve(ctx);
         let Generics(name, mut args) = func.clone();
         for arg in args.iter_mut() {
@@ -580,7 +580,7 @@ impl Type {
         }
     }
 
-    pub fn solve(&self, ctx: &mut Context) -> Type {
+    fn solve(&self, ctx: &mut Context) -> Type {
         let mut typ = self.clone();
         for (old, new) in &ctx.global.alias {
             typ = self.rewrite(old, new);
@@ -588,7 +588,7 @@ impl Type {
         typ
     }
 
-    pub fn size(&self, ctx: &Context) -> Result<usize, String> {
+    fn size(&self, ctx: &Context) -> Result<usize, String> {
         match self {
             Type::Class(Generics(name, _)) => match ctx.global.table.get(name) {
                 Some((_, Object::Struct(layout))) => Ok(layout.len() * 8),
