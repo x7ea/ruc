@@ -362,6 +362,7 @@ impl Expr {
                     return Err(format!("no constructor: {typ}"));
                 };
                 let typ = typ.mono(ctx, Generics::default())?;
+                expand!(new!(typ.size(ctx)? / 8));
                 typing!(typ.solve(ctx))
             }
             Expr::Member(obj, key) if key == Name::new("len")? => {
