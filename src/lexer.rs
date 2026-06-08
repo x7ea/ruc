@@ -1,10 +1,13 @@
 use crate::*;
+
 pub mod name {
     use crate::*;
     use std::fmt;
+    
     const RESERVED: [&str; 12] = ["print", "format", "let", "new", "clone", "if", "then", "else", "for", "while", "do", "match"];
     #[derive(Clone, Default, PartialEq, Hash, Eq)]
     pub struct Name(String);
+    
     impl Name {
         pub fn new(name: &str) -> Result<Name, String> {
             let name = name.trim();
@@ -24,11 +27,13 @@ pub mod name {
             Ok(Name(name.to_owned()))
         }
     }
+    
     impl fmt::Display for Name {
         fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
             write!(f, "{}", self.0)
         }
     }
+    
     impl fmt::Display for Generics {
         fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
             let args = map!(self.1, |x| x.to_string()).join(", ");
@@ -39,6 +44,7 @@ pub mod name {
             }
         }
     }
+    
     impl Generics {
         pub fn generics(&self) -> Name {
             if self.1.is_empty() {
@@ -67,6 +73,7 @@ pub fn lexer(src: &str, del: &str) -> Result<Vec<String>, String> {
     let (mut tokens, mut current) = (Vec::new(),  String::new());
     let (mut level, mut quote, mut esc) = (0usize, false, false);
     let (chars, mut idx) = (src.chars().collect::<Vec<char>>(), 0);
+    
     while idx < chars.len() {
         let c = chars[idx];
         if esc {
@@ -126,7 +133,6 @@ pub fn lexer(src: &str, del: &str) -> Result<Vec<String>, String> {
         }
         idx += 1
     }
-
     if esc || quote || level != 0 {
         return Err(format!("not closed: {current}"));
     }
@@ -134,10 +140,8 @@ pub fn lexer(src: &str, del: &str) -> Result<Vec<String>, String> {
         tokens.push(current.clone());
         current.clear();
     }
-
     Ok(tokens)
 }
-
 impl Context {
     pub fn label(&mut self) -> String {
         let id = self.global.idx;
@@ -145,7 +149,6 @@ impl Context {
         id.to_string()
     }
 }
-
 #[macro_export]
 macro_rules! surround {
     ($ls: literal, $x: expr, $rs: literal) => {
