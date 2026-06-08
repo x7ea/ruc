@@ -361,6 +361,7 @@ pub fn lexer(src: &str, del: &str) -> Result<Vec<String>, String> {
         idx += 1
     }
     if esc || quote || level != 0 {
+        dbg!();
         return Err(format!("not closed: {current}"));
     }
     if !current.is_empty() {
