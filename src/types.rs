@@ -285,7 +285,7 @@ impl Expr {
                     for (param, arg) in params.iter().zip(args) {
                         let arg = arg.infer(ctx)?.solve(ctx);
                         if param == &Type::Void { continue; }
-                        if param.solve(ctx) != arg {
+                        if arg != param.solve(ctx) {
                             return Err(format!("arguments: {param} != {arg}"));
                         }
                     }
