@@ -1,4 +1,5 @@
 use crate::*;
+
 impl Define {
     pub fn infer(&self, ctx: &mut Context) -> Result<Type, String> {
         macro_rules! types {
