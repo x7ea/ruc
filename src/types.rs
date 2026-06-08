@@ -267,9 +267,7 @@ impl Expr {
                 typing!(ret.clone())
             }
             Expr::Call(callee, args) => {
-                if let Some(obj) = args.first()
-                    && let Type::Class(Generics(name, _)) = obj.infer(ctx)?
-                {
+                if let Some(obj) = args.first() && let Type::Class(Generics(name, _)) = obj.infer(ctx)? {
                     ctx.local.class = Some(name);
                 }
                 let typ = callee.infer(ctx)?;
