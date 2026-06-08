@@ -412,19 +412,16 @@ impl Expr {
             Expr::Add(lhs, rhs)
             | Expr::Sub(lhs, rhs)
             | Expr::Mul(lhs, rhs)
-            | Expr::Div(lhs, rhs)
-            => op!((Type::Integer | Type::Float), lhs, rhs),
+            | Expr::Div(lhs, rhs) => op!((Type::Integer | Type::Float), lhs, rhs),
             Expr::Eql(lhs, rhs)
             | Expr::NotEq(lhs, rhs)
             | Expr::Gt(lhs, rhs)
             | Expr::Lt(lhs, rhs)
             | Expr::GtEq(lhs, rhs)
-            | Expr::LtEq(lhs, rhs)
-            => op!(Type::Integer, lhs, rhs, Type::Boolean),
+            | Expr::LtEq(lhs, rhs) => op!(Type::Integer, lhs, rhs, Type::Boolean),
             Expr::And(lhs, rhs)
             | Expr::Or(lhs, rhs)
-            | Expr::Xor(lhs, rhs)
-            => op!(Type::Boolean, lhs, rhs)
+            | Expr::Xor(lhs, rhs) => op!(Type::Boolean, lhs, rhs)
         }
     }
 }
