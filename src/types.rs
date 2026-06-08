@@ -553,11 +553,8 @@ impl Type {
         for arg in args.iter_mut() {
             *arg = arg.solve(ctx);
         }
-        match typ {
-            Type::Function(params, _, _) => {
-                if params.is_empty() {
-                    return Ok(typ.clone());
-                }
+        match typ.clone() {
+            Type::Function(params, _, _) if !params.is_empty() => {
                 if params.len() != args.len() {
                     return Err(format!("generics: {self}"));
                 }
@@ -587,7 +584,7 @@ impl Type {
                 ctx.global.def.insert(mangle, unify.clone());
             }
             Type::Class(Generics(name, args)) => {
-                let Some((params, table)) = ctx.global.table.get(&name).cloned() else {
+                let Some((params, table)) = ctx.global.table.get(&name) else {
                     return Err(format!("undefined: {name}"));
                 };
                 let layout = {
@@ -597,7 +594,7 @@ impl Type {
                         return Err(format!("generics: {typ}"));
                     }
                     for (key, field) in layout.clone() {
-                        for (arg, param) in args.iter().zip(&params) {
+                        for (arg, param) in args.iter().zip(params) {
                             let field = field.rewrite(param, arg);
                             layout.insert(key.clone(), field.clone());
                         }
@@ -605,14 +602,8 @@ impl Type {
                     layout
                 };
                 let unify = match table {
-                    Object::Enum(_) => {
-                        expand!(new!(2));
-                        Object::Enum(layout).clone()
-                    }
-                    Object::Struct(inner) => {
-                        expand!(new!(inner.len()));
-                        Object::Struct(layout).clone()
-                    }
+                    Object::Enum(_) => Object::Enum(layout).clone(),
+                    Object::Struct(_) => Object::Struct(layout).clone(),
                 };
                 let mangle = Generics(name.clone(), args).generics();
                 ctx.global.table.insert(mangle.clone(), (vec![], unify));
