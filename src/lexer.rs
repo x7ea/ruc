@@ -164,9 +164,7 @@ macro_rules! surround {
     };
     ($x: expr, $ls: literal, $rs: literal) => {
         lexer($x, &$ls).and_then(|x| {
-            if x.len() < 2 {
-                return Err(String::new());
-            }
+            if x.len() < 2 { return Err(String::new()); }
             let args = ok!(x.last())?.to_string();
             let func = ok!(x.get(..x.len() - 1))?.concat();
             let args = ok!(args.get(1..args.len() - 1))?.to_string();
