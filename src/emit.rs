@@ -12,7 +12,7 @@ impl Define {
         let (mut ptr, mut alloc) = (8, String::new());
         let (mut idx, mut xmm) = (0, 0);
         for (var, (_, typ)) in args.iter().enumerate() {
-            let var = (var - 4) * 8;
+            let var = (var as isize - 4) * 8;
             if typ == &Type::Float {
                 if xmm < 8 {
                     alloc += &format!("\tmovsd [rbp-{ptr}], xmm{xmm}\n")
