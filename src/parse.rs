@@ -232,8 +232,7 @@ impl Type {
             x => {
                 if let Ok((ret, args)) = surround!(x, "(", ")") {
                     Ok(Type::Function(
-                        Vec::new(),
-                        Box::new(Type::parse(&ret)?),
+                        Vec::new(), Box::new(Type::parse(&ret)?),
                         Some(serial!(&args, Type::parse)),
                     ))
                 } else if let Some(typ) = surround!("[", x, "]") {
