@@ -34,20 +34,33 @@ impl Define {
                 let (name, args) = surround!(&head, "(", ")")?;
                 let body = if let Some(typ) = body.trim().strip_prefix("->") {
                     if let Ok((typ, expr)) = once!(typ, SPACE) {
-                        (Some(Expr::Block(vec![Expr::parse(&expr)?])), Some(Type::parse(&typ)?))
+                        (
+                            Some(Expr::Block(vec![Expr::parse(&expr)?])),
+                            Some(Type::parse(&typ)?),
+                        )
                     } else {
                         (None, Some(Type::parse(typ)?))
                     }
                 } else {
                     (Some(Expr::Block(vec![Expr::parse(&body)?])), None)
                 };
-                result.push(Define::Function(Generics::parse(&name)?, args!(&args), body));
+                result.push(Define::Function(
+                    Generics::parse(&name)?,
+                    args!(&args),
+                    body,
+                ));
             } else if let Some(head) = line.strip_prefix("struct ") {
                 let (name, args) = surround!(&head, "{", "}")?;
-                result.push(Define::Class(Generics::parse(&name)?, Object::Struct(args!(&args))));
+                result.push(Define::Class(
+                    Generics::parse(&name)?,
+                    Object::Struct(args!(&args)),
+                ));
             } else if let Some(head) = line.strip_prefix("enum ") {
                 let (name, args) = ok!(surround!("{", "}", &head))?;
-                result.push(Define::Class(Generics::parse(name)?, Object::Enum(args!(&args))));
+                result.push(Define::Class(
+                    Generics::parse(name)?,
+                    Object::Enum(args!(&args)),
+                ));
             }
         }
         Ok(result)
@@ -75,24 +88,42 @@ impl Expr {
             Ok(Expr::Print(false, serial!(src, Expr::parse)))
         } else if let Some(src) = src.strip_prefix("let ") {
             if let Ok((name, value)) = once!(src, "=") {
-                Ok(Expr::Let(Box::new(Expr::parse(&name)?), Box::new(Expr::parse(&value)?)))
+                Ok(Expr::Let(
+                    Box::new(Expr::parse(&name)?),
+                    Box::new(Expr::parse(&value)?),
+                ))
             } else {
                 let (name, typ) = once!(src, ":")?;
-                Ok(Expr::Let(Box::new(Expr::parse(&name)?), Box::new(Expr::Null(Type::parse(&typ)?))))
+                Ok(Expr::Let(
+                    Box::new(Expr::parse(&name)?),
+                    Box::new(Expr::Null(Type::parse(&typ)?)),
+                ))
             }
         } else if let Some(src) = src.strip_prefix("if ") {
             let (cond, body) = once!(src, "then")?;
             if let Ok((then, r#else)) = once!(&body, "else") {
-                Ok(Expr::If(Box::new(Expr::parse(&cond)?), Box::new(Expr::parse(&then)?), Some(Box::new(Expr::parse(&r#else)?))))
+                Ok(Expr::If(
+                    Box::new(Expr::parse(&cond)?),
+                    Box::new(Expr::parse(&then)?),
+                    Some(Box::new(Expr::parse(&r#else)?)),
+                ))
             } else {
-                Ok(Expr::If(Box::new(Expr::parse(&cond)?), Box::new(Expr::parse(&body)?), None))
+                Ok(Expr::If(
+                    Box::new(Expr::parse(&cond)?),
+                    Box::new(Expr::parse(&body)?),
+                    None,
+                ))
             }
         } else if let Some(src) = src.strip_prefix("match ") {
             let (expr, pats) = surround!(src, "{", "}")?;
             let pats = serial!(&pats, |src| {
                 let (head, ret) = once!(src, "=")?;
                 if let Ok((key, bind)) = once!(&head.trim(), SPACE) {
-                    Ok((Name::new(&key)?, Some(Expr::parse(&bind)?), Expr::parse(&ret)?))
+                    Ok((
+                        Name::new(&key)?,
+                        Some(Expr::parse(&bind)?),
+                        Expr::parse(&ret)?,
+                    ))
                 } else {
                     Ok((Name::new(&head)?, None, Expr::parse(&ret)?))
                 }
@@ -104,11 +135,18 @@ impl Expr {
             }
         } else if let Some(src) = src.strip_prefix("while ") {
             let (cond, body) = once!(src, "do")?;
-            Ok(Expr::While(Box::new(Expr::parse(&cond)?), Box::new(Expr::parse(&body)?)))
+            Ok(Expr::While(
+                Box::new(Expr::parse(&cond)?),
+                Box::new(Expr::parse(&body)?),
+            ))
         } else if let Some(src) = src.strip_prefix("for ") {
             let (head, body) = once!(src, "do")?;
             let (cnt, arr) = once!(&head, "=")?;
-            Ok(Expr::For(Box::new(Expr::parse(&cnt)?), Box::new(Expr::parse(&arr)?), Box::new(Expr::parse(&body)?)))
+            Ok(Expr::For(
+                Box::new(Expr::parse(&cnt)?),
+                Box::new(Expr::parse(&arr)?),
+                Box::new(Expr::parse(&body)?),
+            ))
         } else if let Some(class) = src.strip_prefix("new ") {
             Ok(Expr::New(Type::parse(class)?))
         } else if let Some(expr) = src.strip_prefix("clone ") {
@@ -183,9 +221,15 @@ impl Expr {
                 Ok(Expr::Enum(typ, name, Box::new(Expr::Null(Type::Void))))
             }
         } else if let Ok((func, args)) = surround!(src, "(", ")") {
-            Ok(Expr::Call(Box::new(Expr::parse(&func)?), serial!(&args, Expr::parse)))
+            Ok(Expr::Call(
+                Box::new(Expr::parse(&func)?),
+                serial!(&args, Expr::parse),
+            ))
         } else if let Ok((arr, idx)) = surround!(src, "[", "]") {
-            Ok(Expr::Index(Box::new(Expr::parse(&arr)?), Box::new(Expr::parse(&idx)?)))
+            Ok(Expr::Index(
+                Box::new(Expr::parse(&arr)?),
+                Box::new(Expr::parse(&idx)?),
+            ))
         } else if let Ok(b) = src.parse::<bool>() {
             Ok(Expr::Bool(b))
         } else {
@@ -204,7 +248,11 @@ impl Type {
             "()" => Ok(Type::Void),
             x => {
                 if let Ok((ret, args)) = surround!(x, "(", ")") {
-                    Ok(Type::Function(Vec::new(), Box::new(Type::parse(&ret)?), Some(serial!(&args, Type::parse))))
+                    Ok(Type::Function(
+                        Vec::new(),
+                        Box::new(Type::parse(&ret)?),
+                        Some(serial!(&args, Type::parse)),
+                    ))
                 } else if let Some(typ) = surround!("[", x, "]") {
                     Ok(Type::Array(Box::new(Type::parse(typ)?)))
                 } else {
