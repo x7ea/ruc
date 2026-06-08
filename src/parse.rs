@@ -41,22 +41,13 @@ impl Define {
                 } else {
                     (Some(Expr::Block(vec![Expr::parse(&body)?])), None)
                 };
-                result.push(Define::Function(
-                    Generics::parse(&name)?, 
-                    args!(&args), body
-                ));
+                result.push(Define::Function(Generics::parse(&name)?, args!(&args), body));
             } else if let Some(head) = line.strip_prefix("struct ") {
                 let (name, args) = surround!(&head, "{", "}")?;
-                result.push(Define::Class(
-                    Generics::parse(&name)?,
-                    Object::Struct(args!(&args)),
-                ));
+                result.push(Define::Class(Generics::parse(&name)?, Object::Struct(args!(&args))));
             } else if let Some(head) = line.strip_prefix("enum ") {
                 let (name, args) = ok!(surround!("{", "}", &head))?;
-                result.push(Define::Class(
-                    Generics::parse(name)?,
-                    Object::Enum(args!(&args)),
-                ));
+                result.push(Define::Class(Generics::parse(name)?, Object::Enum(args!(&args))));
             }
         }
         Ok(result)
