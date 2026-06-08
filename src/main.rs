@@ -116,10 +116,10 @@ pub enum Define {
     Class(Generics, Object),
 }
 
-#[derive(Clone, Hash, Debug, PartialEq, Eq)]
+#[derive(Clone, Hash, Default, PartialEq, Eq)]
 pub struct Generics(Name, Vec<Type>);
 
-#[derive(Clone, Debug, Hash, PartialEq, Eq)]
+#[derive(Clone, Hash, PartialEq, Eq)]
 pub enum Expr {
     // Literal
     Integer(i64),
@@ -170,7 +170,7 @@ pub enum Expr {
     Init(Type, usize),
 }
 
-#[derive(Clone, PartialEq, Debug, Eq, Hash)]
+#[derive(Clone, PartialEq, Eq, Hash)]
 pub enum Type {
     String,
     Integer,
