@@ -106,11 +106,7 @@ impl Expr {
             let pats = serial!(&pats, |src| {
                 let (head, ret) = once!(src, "=")?;
                 if let Ok((key, bind)) = once!(&head.trim(), SPACE) {
-                    Ok((
-                        Name::new(&key)?,
-                        Some(Expr::parse(&bind)?),
-                        Expr::parse(&ret)?,
-                    ))
+                    Ok((Name::new(&key)?, Some(Expr::parse(&bind)?), Expr::parse(&ret)?))
                 } else {
                     Ok((Name::new(&head)?, None, Expr::parse(&ret)?))
                 }
