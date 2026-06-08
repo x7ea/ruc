@@ -242,7 +242,7 @@ impl Define {
         let var = ctx.local.var.len() * 8;
         let pro = format!(
             "\tpush rbp\n\tmov rbp, rsp\n\tsub rsp, {}\n",
-            if var % 16 == 0 { var } else { var + 8 }
+            if var.is_multiple_of(16) { var } else { var + 8 }
         );
         Ok(format!("{name}:\n{pro}{alloc}{body}\tleave\n\tret\n\n"))
     }
