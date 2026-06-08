@@ -3,7 +3,6 @@ use std::{
     fmt::{self, Display},
     fs::read_to_string,
 };
-
 pub const SPACE: &str = " ";
 
 impl Define {
@@ -67,7 +66,6 @@ impl Define {
         Ok(result)
     }
 }
-
 impl Expr {
     pub fn parse(src: &str) -> Result<Expr, String> {
         let src = src.trim();
@@ -83,7 +81,6 @@ impl Expr {
                 Err(String::new())
             }
         }
-
         if let Some(src) = src.strip_prefix("print ") {
             Ok(Expr::Print(true, serial!(src, Expr::parse)))
         } else if let Some(src) = src.strip_prefix("format ") {
@@ -239,7 +236,6 @@ impl Expr {
         }
     }
 }
-
 impl Type {
     pub fn parse(src: &str) -> Result<Type, String> {
         match src.trim() {
@@ -264,7 +260,6 @@ impl Type {
         }
     }
 }
-
 impl Display for Type {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         fn comma(x: &[Type]) -> String {
@@ -284,7 +279,6 @@ impl Display for Type {
         }
     }
 }
-
 impl Generics {
     pub fn parse(src: &str) -> Result<Generics, String> {
         let x = src.trim();
