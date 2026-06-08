@@ -235,7 +235,6 @@ macro_rules! map {
 #[macro_export]
 macro_rules! ok {
     ($v: expr) => {
-        if let Some(v) = $v { Ok(v) } 
-        else { Err(String::new()) }
+        if let Some(v) = $v { Ok(v) } else { Err(String::new()) }
     };
 }
