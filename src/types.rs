@@ -12,13 +12,11 @@ impl Define {
                 let sig = Type::Function(param.clone(), Box::new(ret.clone()), types!(args));
                 ctx.global.lib.insert(name.clone(), sig.clone());
                 let parent = ctx.local.clone();
-
                 ctx.local = Function::default();
                 ctx.local.scope = args.clone();
                 if *ret != body.infer(ctx)? {
                     return Err(format!("expected: returns {ret}"));
                 }
-
                 ctx.table.insert(name.clone(), ctx.local.clone());
                 ctx.local = parent;
                 Ok(sig)
@@ -32,10 +30,8 @@ impl Define {
                 let parent = ctx.local.clone();
                 ctx.local = Function::default();
                 ctx.local.scope = args.clone();
-
                 let ret = Box::new(body.infer(ctx)?);
                 let sig = Type::Function(param.clone(), ret, types!(args));
-
                 ctx.table.insert(name.clone(), ctx.local.clone());
                 ctx.global.lib.insert(name.clone(), sig.clone());
                 ctx.local = parent;
@@ -57,7 +53,6 @@ impl Define {
         }
     }
 }
-
 impl Expr {
     fn infer(&self, ctx: &mut Context) -> Result<Type, String> {
         macro_rules! typing {
@@ -132,7 +127,6 @@ impl Expr {
                 class.clone()
             }};
         }
-
         match self.clone() {
             Expr::Print(is_output, vals) => {
                 let mut fmt = String::new();
@@ -507,7 +501,6 @@ impl Expr {
         }
     }
 }
-
 impl Type {
     fn mono(self, ctx: &mut Context, func: Generics) -> Result<Type, String> {
         let mut typ = self.solve(ctx);
@@ -568,7 +561,6 @@ impl Type {
         }
         Ok(typ.solve(ctx))
     }
-
     fn rewrite(&self, old: &Type, new: &Type) -> Type {
         if self == old {
             return new.clone();
@@ -586,7 +578,6 @@ impl Type {
             _ => self.clone(),
         }
     }
-
     fn solve(&self, ctx: &mut Context) -> Type {
         let mut typ = self.clone();
         for (old, new) in &ctx.global.alias {
@@ -594,7 +585,6 @@ impl Type {
         }
         typ
     }
-
     fn size(&self, ctx: &Context) -> Result<usize, String> {
         match self {
             Type::Class(Generics(name, _)) => match ctx.global.table.get(name) {
