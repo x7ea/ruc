@@ -18,7 +18,7 @@ impl Define {
                 if *ret != body.infer(ctx)? {
                     return Err(format!("expected: returns {ret}"));
                 }
-                
+
                 ctx.table.insert(name.clone(), ctx.local.clone());
                 ctx.local = parent;
                 Ok(sig)
@@ -32,7 +32,7 @@ impl Define {
                 let parent = ctx.local.clone();
                 ctx.local = Function::default();
                 ctx.local.scope = args.clone();
-                
+
                 let ret = Box::new(body.infer(ctx)?);
                 let sig = Type::Function(param.clone(), ret, types!(args));
 
@@ -75,7 +75,8 @@ impl Type {
                 let mangle = func.generics();
                 let mut unify = ctx.global.def.get(&name).unwrap().clone();
                 if let Define::Function(Generics(_, _), params, body) = &unify
-                && let Type::Function(_, _, Some(args)) = typ.clone() {
+                    && let Type::Function(_, _, Some(args)) = typ.clone()
+                {
                     let mut map = IndexMap::new();
                     for (param, arg) in params.keys().zip(args) {
                         map.insert(param.clone(), arg);
@@ -117,25 +118,25 @@ impl Type {
         }
         Ok(typ.solve(ctx))
     }
-    
+
     fn rewrite(&self, old: &Type, new: &Type) -> Type {
         if self == old {
             return new.clone();
         }
         match self {
             Type::Function(typ, ret, Some(args)) => Type::Function(
-                typ.clone(), Box::new(ret.rewrite(old, new)),
+                typ.clone(),
+                Box::new(ret.rewrite(old, new)),
                 Some(map!(args, |x| x.rewrite(old, new))),
             ),
-            Type::Class(Generics(name, args)) => Type::Class(
-                Generics(name.clone(), 
-                map!(args, |x| x.rewrite(old, new)))
-            ), 
+            Type::Class(Generics(name, args)) => {
+                Type::Class(Generics(name.clone(), map!(args, |x| x.rewrite(old, new))))
+            }
             Type::Array(typ) => Type::Array(Box::new(typ.rewrite(old, new))),
             _ => self.clone(),
         }
     }
-    
+
     pub fn solve(&self, ctx: &mut Context) -> Type {
         let mut typ = self.clone();
         for (old, new) in &ctx.global.alias {
@@ -143,7 +144,7 @@ impl Type {
         }
         typ
     }
-    
+
     pub fn size(&self, ctx: &Context) -> Result<usize, String> {
         match self {
             Type::Class(Generics(name, _)) => match ctx.global.table.get(name) {
