@@ -1,10 +1,10 @@
 use gtk
 
-struct State {
-    count: Int
+struct State<T> {
+    count: T
 }
 
-fn inc(this: Elm, data: State) {
+fn inc<T>(this: Elm, data: State<T>) {
     let data.count = data.count + 1
     let view = format "Number ", data.count
     this.update(view)
@@ -12,7 +12,7 @@ fn inc(this: Elm, data: State) {
 
 fn main() {
     let app = App()
-    let data = new State
-    app.button("Counter").click<State>(data, inc)
+    let data = new State<Int>
+    app.button("Counter").click<State<Int>>(data, inc<Int>)
     app.run()
 }
