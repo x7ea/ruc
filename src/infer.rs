@@ -66,9 +66,6 @@ impl Expr {
                         _ => return Err(format!("can't print: {typ}")),
                     }
                 }
-                if is_output {
-                    fmt += "\\n";
-                }
                 expand!(Expr::Call(
                     Box::new(Expr::Variable(Generics(
                         Name::new(if is_output {
@@ -78,7 +75,11 @@ impl Expr {
                         })?,
                         vec![]
                     ))),
-                    [vec![Expr::String(fmt)], vals.to_vec()].concat(),
+                    [
+                        vec![Expr::String(if is_output { fmt + "\\n" } else { fmt })],
+                        vals.to_vec()
+                    ]
+                    .concat(),
                 ));
                 typing!(if is_output { Type::Void } else { Type::String })
             }
