@@ -70,9 +70,11 @@ pub mod name {
 }
 
 pub fn lexer(src: &str, del: &str) -> Result<Vec<String>, String> {
+    let (mut level ,mut idx) = (0isize, 0);
+    let (mut quote, mut esc) = (false, false);
+    
     let (mut tokens, mut current) = (Vec::new(),  String::new());
-    let (mut level, mut quote, mut esc) = (0usize, false, false);
-    let (chars, mut idx) = (src.chars().collect::<Vec<char>>(), 0);
+    let chars = src.chars().collect::<Vec<char>>();
     
     while idx < chars.len() {
         let c = chars[idx];
