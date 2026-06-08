@@ -150,7 +150,7 @@ impl Expr {
                 Box::new(Expr::parse(&body)?),
             ))
         } else if let Some(class) = src.strip_prefix("new ") {
-            Ok(Expr::Constructor(Type::parse(class)?))
+            Ok(Expr::New(Type::parse(class)?))
         } else if let Some(expr) = src.strip_prefix("clone ") {
             Ok(Expr::Clone(Box::new(Expr::parse(expr)?)))
         } else if let Some(x) = surround!("{", src, "}") {
