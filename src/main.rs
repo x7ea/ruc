@@ -103,16 +103,19 @@ impl Define {
 }
 
 // Abstract Syntax Tree (AST)
+
 #[derive(Clone, PartialEq)]
 pub enum Object {
     Struct(IndexMap<Name, Type>),
     Enum(IndexMap<Name, Type>),
 }
+
 #[derive(Clone, PartialEq)]
 pub enum Define {
     Function(Generics, IndexMap<Name, Type>, (Option<Expr>, Option<Type>)),
     Class(Generics, Object),
 }
+
 #[derive(Clone, Hash, Default, PartialEq, Eq)]
 pub struct Generics(Name, Vec<Type>);
 
@@ -166,6 +169,7 @@ pub enum Expr {
     Clone(Box<Expr>),
     Init(Type, usize),
 }
+
 #[derive(Clone, PartialEq, Eq, Hash)]
 pub enum Type {
     String,
@@ -177,12 +181,14 @@ pub enum Type {
     Function(Vec<Type>, Box<Type>, Option<Vec<Type>>),
     Void,
 }
+
 #[derive(Default)]
 pub struct Context {
     global: Global,
     local: Function,
     table: IndexMap<Name, Function>,
 }
+
 #[derive(Default)]
 pub struct Global {
     idx: usize,
@@ -193,6 +199,7 @@ pub struct Global {
     alias: IndexMap<Type, Type>,
     extrn: IndexSet<Name>,
 }
+
 #[derive(Default, Clone)]
 pub struct Function {
     var: IndexMap<Name, Type>,
