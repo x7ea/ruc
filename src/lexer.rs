@@ -169,7 +169,6 @@ macro_rules! surround {
         })
     };
 }
-
 #[macro_export]
 macro_rules! once {
     ($v: expr, $del: expr) => {{
@@ -190,7 +189,6 @@ macro_rules! once {
         }
     }};
 }
-
 #[macro_export]
 macro_rules! hash {
     ($self: expr) => {{
@@ -201,21 +199,18 @@ macro_rules! hash {
         hasher.finish()
     }};
 }
-
 #[macro_export]
 macro_rules! serial {
     ($arr: expr, $lambda: expr) => {
         lexer($arr, ",")?.iter().map(|x| $lambda(&x)).collect::<Result<Vec<_>, String>>()?
     };
 }
-
 #[macro_export]
 macro_rules! map {
     ($arr: expr, $lambda: expr) => {
         $arr.iter().map($lambda).collect::<Vec<_>>()
     };
 }
-
 #[macro_export]
 macro_rules! ok {
     ($v: expr) => {
