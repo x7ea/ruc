@@ -144,6 +144,7 @@ pub fn lexer(src: &str, del: &str) -> Result<Vec<String>, String> {
     }
     Ok(tokens)
 }
+
 impl Context {
     pub fn label(&mut self) -> String {
         let id = self.global.idx;
@@ -151,6 +152,8 @@ impl Context {
         id.to_string()
     }
 }
+
+
 #[macro_export]
 macro_rules! surround {
     ($ls: literal, $x: expr, $rs: literal) => {
