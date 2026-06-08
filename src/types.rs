@@ -550,43 +550,76 @@ impl Type {
     fn mono(self, ctx: &mut Context, func: Generics) -> Result<Type, String> {
         let mut typ = self.solve(ctx);
         let Generics(name, mut args) = func.clone();
-        let Type::Function(params, _, _) = typ.clone() else {
-            return Ok(typ.clone());
-        };
-        if params.is_empty() {
-            return Ok(typ.clone());
-        }
-        if params.len() != args.len() {
-            return Err(format!("generics: {self}"));
-        }
-        let mut alias = IndexMap::new();
         for arg in args.iter_mut() {
             *arg = arg.solve(ctx);
         }
-        for (arg, param) in args.iter().zip(&params) {
-            alias.insert(param.clone(), arg.clone());
-            typ = self.rewrite(param, arg);
-        }
-        let mangle = func.generics();
-        let mut unify = ctx.global.def.get(&name).unwrap().clone();
-        if let Define::Function(Generics(_, _), params, body) = &unify
-            && let Type::Function(_, _, Some(args)) = typ.clone()
-        {
-            let mut map = IndexMap::new();
-            for (param, arg) in params.keys().zip(args) {
-                map.insert(param.clone(), arg);
+        match typ {
+            Type::Function(params, _, _) => {
+                if params.is_empty() {
+                    return Ok(typ.clone());
+                }
+                if params.len() != args.len() {
+                    return Err(format!("generics: {self}"));
+                }
+                let mut alias = IndexMap::new();
+                for (arg, param) in args.iter().zip(&params) {
+                    alias.insert(param.clone(), arg.clone());
+                    typ = self.rewrite(param, arg);
+                }
+                let mangle = func.generics();
+                let mut unify = ctx.global.def.get(&name).unwrap().clone();
+                if let Define::Function(Generics(_, _), params, body) = &unify
+                    && let Type::Function(_, _, Some(args)) = typ.clone()
+                {
+                    let mut map = IndexMap::new();
+                    for (param, arg) in params.keys().zip(args) {
+                        map.insert(param.clone(), arg);
+                    }
+                    let name = Generics(mangle.clone(), vec![]);
+                    unify = Define::Function(name, map.clone(), body.clone());
+                };
+                let parent = ctx.global.alias.clone();
+                ctx.global.alias = alias.clone();
+                {
+                    typ = unify.infer(ctx)?;
+                }
+                ctx.global.alias = parent;
+                ctx.global.def.insert(mangle, unify.clone());
             }
-            let name = Generics(mangle.clone(), vec![]);
-            unify = Define::Function(name, map.clone(), body.clone());
-        };
-        let parent = ctx.global.alias.clone();
-        ctx.global.alias = alias.clone();
-        {
-            typ = unify.infer(ctx)?;
+            Type::Class(Generics(name, args)) => {
+                let Some((params, table)) = ctx.global.table.get(&name).cloned() else {
+                    return Err(format!("undefined: {name}"));
+                };
+                let layout = {
+                    let (Object::Enum(layout) | Object::Struct(layout)) = &table;
+                    let mut layout = layout.clone();
+                    if params.len() != args.len() {
+                        return Err(format!("generics: {typ}"));
+                    }
+                    for (key, field) in layout.clone() {
+                        for (arg, param) in args.iter().zip(&params) {
+                            let field = field.rewrite(param, arg);
+                            layout.insert(key.clone(), field.clone());
+                        }
+                    }
+                    layout
+                };
+                let unify = match table {
+                    Object::Enum(_) => {
+                        expand!(new!(2));
+                        Object::Enum(layout).clone()
+                    }
+                    Object::Struct(inner) => {
+                        expand!(new!(inner.len()));
+                        Object::Struct(layout).clone()
+                    }
+                };
+                let mangle = Generics(name.clone(), args).generics();
+                ctx.global.table.insert(mangle.clone(), (vec![], unify));
+            }
+            _ => {}
         }
-        ctx.global.alias = parent;
-        ctx.global.def.insert(mangle, unify.clone());
-        Ok(typ.clone())
+        Ok(typ.solve(ctx))
     }
 
     fn rewrite(&self, old: &Type, new: &Type) -> Type {
