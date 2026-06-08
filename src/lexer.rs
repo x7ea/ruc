@@ -3,12 +3,15 @@ use crate::*;
 pub mod name {
     use crate::*;
     use std::fmt;
-    
-    const RESERVED: [&str; 12] = ["print", "format", "let", "new", "clone", "if", "then", "else", "for", "while", "do", "match"];
-  
+
+    const RESERVED: [&str; 12] = [
+        "print", "format", "let", "new", "clone", "if", "then", "else", "for", "while", "do",
+        "match",
+    ];
+
     #[derive(Clone, Default, PartialEq, Hash, Eq)]
     pub struct Name(String);
-    
+
     impl Name {
         pub fn new(name: &str) -> Result<Name, String> {
             let name = name.trim();
@@ -28,13 +31,13 @@ pub mod name {
             Ok(Name(name.to_owned()))
         }
     }
-    
+
     impl fmt::Display for Name {
         fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
             write!(f, "{}", self.0)
         }
     }
-    
+
     impl fmt::Display for Generics {
         fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
             let args = map!(self.1, |x| x.to_string()).join(", ");
@@ -45,7 +48,7 @@ pub mod name {
             }
         }
     }
-    
+
     impl Generics {
         pub fn generics(&self) -> Name {
             if self.1.is_empty() {
@@ -60,8 +63,12 @@ pub mod name {
                     Type::Float => "F".to_string(),
                     Type::Array(typ) => format!("A{}", mangle(typ)),
                     Type::Function(_, ret, None) => format!("L{}", mangle(ret)),
-                    Type::Function(_, ret, Some(args)) => format!("L{}{}", mangle(ret), map!(args, mangle).concat()),
-                    Type::Class(Generics(name, _)) => format!("C{}", name.to_string().to_lowercase()),
+                    Type::Function(_, ret, Some(args)) => {
+                        format!("L{}{}", mangle(ret), map!(args, mangle).concat())
+                    }
+                    Type::Class(Generics(name, _)) => {
+                        format!("C{}", name.to_string().to_lowercase())
+                    }
                 }
             }
             let typ = map!(self.1, mangle).concat();
@@ -71,12 +78,12 @@ pub mod name {
 }
 
 pub fn lexer(src: &str, del: &str) -> Result<Vec<String>, String> {
-    let (mut level ,mut idx) = (0isize, 0);
+    let (mut level, mut idx) = (0isize, 0);
     let (mut quote, mut esc) = (false, false);
-    
-    let (mut tokens, mut current) = (Vec::new(),  String::new());
+
+    let (mut tokens, mut current) = (Vec::new(), String::new());
     let chars = src.chars().collect::<Vec<char>>();
-    
+
     while idx < chars.len() {
         let c = chars[idx];
         if esc {
@@ -154,7 +161,6 @@ impl Context {
     }
 }
 
-
 #[macro_export]
 macro_rules! surround {
     ($ls: literal, $x: expr, $rs: literal) => {
@@ -165,7 +171,9 @@ macro_rules! surround {
     };
     ($x: expr, $ls: literal, $rs: literal) => {
         lexer($x, &$ls).and_then(|x| {
-            if x.len() < 2 { return Err(String::new()); }
+            if x.len() < 2 {
+                return Err(String::new());
+            }
             let args = ok!(x.last())?.to_string();
             let func = ok!(x.get(..x.len() - 1))?.concat();
             let args = ok!(args.get(1..args.len() - 1))?.to_string();
@@ -206,7 +214,10 @@ macro_rules! hash {
 #[macro_export]
 macro_rules! serial {
     ($arr: expr, $lambda: expr) => {
-        lexer($arr, ",")?.iter().map(|x| $lambda(&x)).collect::<Result<Vec<_>, String>>()?
+        lexer($arr, ",")?
+            .iter()
+            .map(|x| $lambda(&x))
+            .collect::<Result<Vec<_>, String>>()?
     };
 }
 #[macro_export]
@@ -218,7 +229,11 @@ macro_rules! map {
 #[macro_export]
 macro_rules! ok {
     ($v: expr) => {
-        if let Some(v) = $v { Ok(v) } else { Err(String::new()) }
+        if let Some(v) = $v {
+            Ok(v)
+        } else {
+            Err(String::new())
+        }
     };
 }
 #[macro_export]
