@@ -1,17 +1,13 @@
 use crate::*;
-
 pub mod name {
     use crate::*;
     use std::fmt;
-
     const RESERVED: [&str; 12] = [
         "print", "format", "let", "new", "clone", "if", "then", "else", "for", "while", "do",
         "match",
     ];
-
     #[derive(Clone, Default, PartialEq, Hash, Eq)]
     pub struct Name(String);
-
     impl Name {
         pub fn new(name: &str) -> Result<Name, String> {
             let name = name.trim();
@@ -31,13 +27,11 @@ pub mod name {
             Ok(Name(name.to_owned()))
         }
     }
-
     impl fmt::Display for Name {
         fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
             write!(f, "{}", self.0)
         }
     }
-
     impl fmt::Display for Generics {
         fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
             let args = map!(self.1, |x| x.to_string()).join(", ");
@@ -48,7 +42,6 @@ pub mod name {
             }
         }
     }
-
     impl Generics {
         pub fn generics(&self) -> Name {
             if self.1.is_empty() {
@@ -74,16 +67,9 @@ pub mod name {
 }
 
 pub fn lexer(src: &str, del: &str) -> Result<Vec<String>, String> {
-    let mut tokens: Vec<String> = Vec::new();
-    let mut current = String::new();
-
-    let mut level: usize = 0;
-    let mut quote = false;
-    let mut esc = false;
-
-    let chars = src.chars().collect::<Vec<char>>();
-    let mut idx = 0;
-
+    let (mut tokens, mut current) = (Vec::new(),  String::new());
+    let (mut level, mut quote, mut esc) = (0usize, false, false);
+    let (chars, mut idx) = (src.chars().collect::<Vec<char>>(), 0);
     while idx < chars.len() {
         let c = chars[idx];
         if esc {
