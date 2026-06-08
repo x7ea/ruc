@@ -1,8 +1,7 @@
 pub mod emit;
-pub mod infer;
 pub mod lexer;
 pub mod parse;
-pub mod r#type;
+pub mod types;
 
 use lexer::lexer;
 use lexer::name::Name;
