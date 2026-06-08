@@ -1,14 +1,10 @@
 pub mod emit;
-pub mod lexer;
 pub mod parse;
 pub mod types;
 
-use lexer::lexer;
-use lexer::name::Name;
-use parse::SPACE;
-
 use indexmap::{IndexMap, IndexSet};
 use ordered_float::OrderedFloat as Float;
+use parse::name::*;
 use vec1::Vec1;
 
 use std::hash::Hash;
