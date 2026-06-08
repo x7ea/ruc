@@ -146,10 +146,7 @@ impl Expr {
                         _ => return Err(format!("can't print: {typ}")),
                     }
                 }
-                if is_output {
-                    fmt += "\\n";
-                    name = "printf";
-                }
+                if is_output { fmt += "\\n"; name = "printf"; }
                 expand!(Expr::Call(
                     Box::new(Expr::Variable(Generics(Name::new(name)?, vec![]))),
                     [vec![Expr::String(fmt)], vals.to_vec()].concat(),
