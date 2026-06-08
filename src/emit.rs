@@ -8,6 +8,7 @@ impl Define {
         };
         if !params.is_empty() { return Ok(String::new()); }
         ctx.local = ctx.table.get(name).unwrap().clone();
+        
         let (mut ptr, mut alloc) = (8, String::new());
         let (mut idx, mut xmm) = (0, 0);
         for (var, (_, typ)) in args.iter().enumerate() {
