@@ -32,7 +32,7 @@ impl Define {
             } else if let Some(func) = line.strip_prefix("fn ") {
                 let (head, body) = once!(func, SPACE)?;
                 let (name, args) = surround!(&head, "(", ")")?;
-                let body = if let Some(typ) = body.trim().strip_prefix("->") {
+                let body = if let Some(typ) = body.trim().strip_prefix("=") {
                     if let Ok((typ, expr)) = once!(typ, SPACE) {
                         (
                             Some(Expr::Block(vec![Expr::parse(&expr)?])),
@@ -294,8 +294,8 @@ impl Generics {
     }
 }
 
-pub fn lexer(src: &str, del: &str) -> Result<Vec<String>, String> {
-    let (mut level, mut idx) = (0isize, 0);
+fn lexer(src: &str, del: &str) -> Result<Vec<String>, String> {
+    let (mut level, mut idx) = (0, 0);
     let (mut quote, mut esc) = (false, false);
 
     let (mut tokens, mut current) = (Vec::new(), String::new());
@@ -333,7 +333,7 @@ pub fn lexer(src: &str, del: &str) -> Result<Vec<String>, String> {
             }
             '>' | ')' | '}' | ']' if !quote => {
                 current.push(c);
-                level = level.saturating_sub(1);
+                level -= 1;
             }
             '"' => {
                 quote = !quote;
@@ -361,7 +361,6 @@ pub fn lexer(src: &str, del: &str) -> Result<Vec<String>, String> {
         idx += 1
     }
     if esc || quote || level != 0 {
-        dbg!();
         return Err(format!("not closed: {current}"));
     }
     if !current.is_empty() {
