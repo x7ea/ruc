@@ -119,8 +119,8 @@ impl Expr {
         } else if let Some(src) = src.strip_prefix("while ") {
             let (cond, body) = once!(src, "do")?;
             Ok(Expr::While(
-                Box::new(Expr::parse(&cond)?),
-                Box::new(Expr::parse(&body)?),
+                Box::new(Expr::parse(&cond)?), 
+                Box::new(Expr::parse(&body)?)
             ))
         } else if let Some(src) = src.strip_prefix("for ") {
             let (head, body) = once!(src, "do")?;
