@@ -475,6 +475,7 @@ macro_rules! surround {
         })
     };
 }
+
 #[macro_export]
 macro_rules! once {
     ($v: expr, $del: expr) => {{
@@ -495,6 +496,7 @@ macro_rules! once {
         }
     }};
 }
+
 #[macro_export]
 macro_rules! hash {
     ($self: expr) => {{
@@ -505,6 +507,7 @@ macro_rules! hash {
         hasher.finish()
     }};
 }
+
 #[macro_export]
 macro_rules! serial {
     ($arr: expr, $lambda: expr) => {
@@ -514,12 +517,14 @@ macro_rules! serial {
             .collect::<Result<Vec<_>, String>>()?
     };
 }
+
 #[macro_export]
 macro_rules! map {
     ($arr: expr, $lambda: expr) => {
         $arr.iter().map($lambda).collect::<Vec<_>>()
     };
 }
+
 #[macro_export]
 macro_rules! ok {
     ($v: expr) => {
@@ -530,6 +535,7 @@ macro_rules! ok {
         }
     };
 }
+
 #[macro_export]
 macro_rules! new {
     ($layout: expr) => {
@@ -539,12 +545,14 @@ macro_rules! new {
         )
     };
 }
+
 #[macro_export]
 macro_rules! len {
     ($arr: expr) => {
         Box::new(Expr::Member($arr.clone(), Name::new("len")?))
     };
 }
+
 #[macro_export]
 macro_rules! array {
     ($arr: expr, $idx: expr) => {
