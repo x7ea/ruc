@@ -57,7 +57,6 @@ impl Expr {
         match self.clone() {
             Expr::Print(is_output, vals) => {
                 let mut fmt = String::new();
-                let mut name = "g_strdup_printf";
                 for i in vals.iter() {
                     let typ = i.infer(ctx)?;
                     fmt += match typ {
@@ -69,10 +68,16 @@ impl Expr {
                 }
                 if is_output {
                     fmt += "\\n";
-                    name = "printf";
                 }
                 expand!(Expr::Call(
-                    Box::new(Expr::Variable(Generics(Name::new(name)?, vec![]))),
+                    Box::new(Expr::Variable(Generics(
+                        Name::new(if is_output {
+                            "g_strdup_printf"
+                        } else {
+                            "printf"
+                        })?,
+                        vec![]
+                    ))),
                     [vec![Expr::String(fmt)], vals.to_vec()].concat(),
                 ));
                 typing!(if is_output { Type::Void } else { Type::String })
