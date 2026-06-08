@@ -42,9 +42,9 @@ impl Define {
                     (Some(Expr::Block(vec![Expr::parse(&body)?])), None)
                 };
                 result.push(Define::Function(
-                    Generics::parse(&name)?,
-                    args!(&args), body,
-                ));
+                    Generics::parse(&name)?, 
+                    args!(&args), body)
+                );
             } else if let Some(head) = line.strip_prefix("struct ") {
                 let (name, args) = surround!(&head, "{", "}")?;
                 result.push(Define::Class(
