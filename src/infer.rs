@@ -53,7 +53,7 @@ impl Expr {
                 class.clone()
             }};
         }
-        
+
         match self.clone() {
             Expr::Print(is_output, vals) => {
                 let mut fmt = String::new();
@@ -67,7 +67,10 @@ impl Expr {
                         _ => return Err(format!("can't print: {typ}")),
                     }
                 }
-                if is_output { fmt += "\\n"; name = "printf"; }
+                if is_output {
+                    fmt += "\\n";
+                    name = "printf";
+                }
                 expand!(Expr::Call(
                     Box::new(Expr::Variable(Generics(Name::new(name)?, vec![]))),
                     [vec![Expr::String(fmt)], vals.to_vec()].concat(),
@@ -176,7 +179,9 @@ impl Expr {
                     ret = line.infer(ctx)?;
                 }
                 for (name, val) in &ctx.local.scope {
-                    if let Some(typ) = ctx.local.var.get(name) && typ != val {
+                    if let Some(typ) = ctx.local.var.get(name)
+                        && typ != val
+                    {
                         return Err(format!("duplicated {name}: {typ} != {val}"));
                     }
                     ctx.local.var.insert(name.clone(), val.clone());
@@ -185,14 +190,17 @@ impl Expr {
                 typing!(ret.clone())
             }
             Expr::Call(callee, args) => {
-                if let Some(obj) = args.first() 
-                && let Type::Class(name) = obj.infer(ctx)? {
+                if let Some(obj) = args.first()
+                    && let Type::Class(name) = obj.infer(ctx)?
+                {
                     ctx.local.class = Some(name.0);
                 }
                 let typ = callee.infer(ctx)?;
                 if let Type::Function(_, ret, params) = typ {
                     let Some(params) = params else {
-                        for arg in args { arg.infer(ctx)?; }
+                        for arg in args {
+                            arg.infer(ctx)?;
+                        }
                         return typing!(*ret.clone());
                     };
                     let (pl, al) = (params.len(), args.len());
@@ -200,7 +208,9 @@ impl Expr {
                         return Err(format!("length: {pl} != {al}"));
                     }
                     for (param, arg) in params.iter().zip(args) {
-                        if param == &Type::Void { continue; }
+                        if param == &Type::Void {
+                            continue;
+                        }
                         let arg = arg.infer(ctx)?.solve(ctx);
                         if arg != param.solve(ctx) {
                             return Err(format!("arguments: {param} != {arg}"));
@@ -216,7 +226,7 @@ impl Expr {
                 if let Some(obj) = ctx.local.class.clone() {
                     let name = Name::new(&format!("{obj}.{name}"))?;
                     if ctx.global.lib.contains_key(&name) {
-                        ctx.local.class = None; 
+                        ctx.local.class = None;
                         return typing!(expands!(Expr::Variable(Generics(name, args.clone()))));
                     }
                 }
@@ -340,8 +350,9 @@ impl Expr {
             }
             Expr::Check(expr) => {
                 if let Expr::Member(obj, key) = &*expr
-                && let Type::Class(Generics(name, _)) = &obj.infer(ctx)?
-                && let Some((_, Object::Enum(layout))) = ctx.global.table.get(name) {
+                    && let Type::Class(Generics(name, _)) = &obj.infer(ctx)?
+                    && let Some((_, Object::Enum(layout))) = ctx.global.table.get(name)
+                {
                     let Some(tag) = layout.get_index_of(key) else {
                         return Err(format!("undefined: {name}.{key}"));
                     };
@@ -419,9 +430,9 @@ impl Expr {
             | Expr::Lt(lhs, rhs)
             | Expr::GtEq(lhs, rhs)
             | Expr::LtEq(lhs, rhs) => op!(Type::Integer, lhs, rhs, Type::Boolean),
-            Expr::And(lhs, rhs)
-            | Expr::Or(lhs, rhs)
-            | Expr::Xor(lhs, rhs) => op!(Type::Boolean, lhs, rhs)
+            Expr::And(lhs, rhs) | Expr::Or(lhs, rhs) | Expr::Xor(lhs, rhs) => {
+                op!(Type::Boolean, lhs, rhs)
+            }
         }
     }
 }
