@@ -6,9 +6,11 @@ impl Define {
         let Define::Function(Generics(name, params), args, (Some(body), _)) = self else {
             return Ok(String::new());
         };
-        if !params.is_empty() { return Ok(String::new()); }
+        if !params.is_empty() {
+            return Ok(String::new());
+        }
         ctx.local = ctx.table.get(name).unwrap().clone();
-        
+
         let (mut ptr, mut alloc) = (8, String::new());
         let (mut idx, mut xmm) = (0, 0);
         for (var, (_, typ)) in args.iter().enumerate() {
@@ -32,7 +34,7 @@ impl Define {
         }
         let body = body.emit(ctx)?;
         ctx.table.insert(name.clone(), ctx.local.clone());
-        
+
         let var = ctx.local.var.len() * 8;
         let pro = format!(
             "\tpush rbp\n\tmov rbp, rsp\n\tsub rsp, {}\n",
@@ -48,11 +50,14 @@ impl Expr {
                 match typ!(self) {
                     Type::Integer | Type::Boolean => format!(
                         "{}\tpush rax\n{}\tmov r10, rax\n\tpop rax\n\t{} rax, r10\n",
-                        $lhs.emit(ctx)?, $rhs.emit(ctx)?, $asm,
+                        $lhs.emit(ctx)?,
+                        $rhs.emit(ctx)?,
+                        $asm,
                     ),
                     Type::Float => format!(
                         "{lhs}{push}{rhs}\tmovsd xmm1, xmm0\n{pop}\t{op}sd xmm0, xmm1\n",
-                        lhs = $lhs.emit(ctx)?, rhs = $rhs.emit(ctx)?,
+                        lhs = $lhs.emit(ctx)?,
+                        rhs = $rhs.emit(ctx)?,
                         push = "\tsub rsp, 8\n\tmovsd [rsp], xmm0\n",
                         pop = "\tmovsd xmm0, [rsp]\n\tadd rsp, 8\n",
                         op = $asm.replace("imul", "mul")
@@ -65,7 +70,8 @@ impl Expr {
             ($op: literal, $lhs: expr , $rhs: expr) => {
                 format!(
                     "{}\tset{} al\n\tmovzx rax, al\n",
-                    op!("cmp", $lhs, $rhs), $op
+                    op!("cmp", $lhs, $rhs),
+                    $op
                 )
             };
         }
@@ -107,7 +113,8 @@ impl Expr {
                 let cmp = format!("\tcmp rax, 0\n\tje do.{id}\n");
                 Ok(format!(
                     "while.{id}:\n{}{cmp}{}\tjmp while.{id}\ndo.{id}:\n",
-                    cond.emit(ctx)?, body.emit(ctx)?,
+                    cond.emit(ctx)?,
+                    body.emit(ctx)?,
                 ))
             }
             Expr::Block(lines) => {
@@ -248,7 +255,8 @@ impl Expr {
                 }
                 Ok(format!(
                     "{}\tpush rax\n{}\tmov rsi, rax\n\tpop rax\n\tcqo\n\tidiv rsi\n",
-                    lhs.emit(ctx)?, rhs.emit(ctx)?,
+                    lhs.emit(ctx)?,
+                    rhs.emit(ctx)?,
                 ))
             }
             Expr::Mod(_, _) => {
