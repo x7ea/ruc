@@ -79,7 +79,6 @@ impl Expr {
                 ctx.local.expand.get($expr).unwrap().clone()
             };
         }
-
         match self {
             Expr::If(cond, then, els) => {
                 let if_let = ctx.local.expand.get(&self.clone());
