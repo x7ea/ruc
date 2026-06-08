@@ -22,27 +22,6 @@ impl Expr {
                 let _ = expands!($expr);
             }};
         }
-        macro_rules! new {
-            ($layout: expr) => {
-                Expr::Call(
-                    Box::new(Expr::Variable(Generics(Name::new("calloc")?, vec![]))),
-                    vec![Expr::Integer($layout as i64), Expr::Integer(8)],
-                )
-            };
-        }
-        macro_rules! len {
-            ($arr: expr) => {
-                Box::new(Expr::Member($arr.clone(), Name::new("len")?))
-            };
-        }
-        macro_rules! array {
-            ($arr: expr, $idx: expr) => {
-                Box::new(Expr::Add(
-                    Box::new(Expr::Mod($idx.clone(), len!($arr))),
-                    Box::new(Expr::Integer(1)),
-                ))
-            };
-        }
         macro_rules! temp {
             ($typ: expr) => {{
                 let name = Name::new(&format!("temp{}", ctx.label()))?;
