@@ -300,8 +300,8 @@ impl Expr {
                     Err(format!("not callee: {typ}"))
                 }
             }
-            Expr::Variable(func) => {
-                let Generics(name, mut args) = func.clone();
+            Expr::Variable(generics) => {
+                let Generics(name, args) = generics.clone();
                 if let Some(obj) = ctx.local.class.clone() {
                     ctx.local.class = None;
                     let name = Name::new(&format!("{obj}.{name}"))?;
@@ -310,42 +310,7 @@ impl Expr {
                     }
                 }
                 if let Some(typ) = ctx.global.lib.get(&name) {
-                    let typ = &mut typ.clone().solve(ctx);
-                    if let Type::Function(params, _, Some(_)) = typ.clone()
-                        && !params.is_empty()
-                    {
-                        if params.len() != args.len() {
-                            return Err(format!("generics: {typ}"));
-                        }
-                        let mut alias = IndexMap::new();
-                        for arg in args.iter_mut() {
-                            *arg = arg.solve(ctx);
-                        }
-                        for (arg, param) in args.iter().zip(&params) {
-                            alias.insert(param.clone(), arg.clone());
-                            *typ = typ.rewrite(param, arg);
-                        }
-                        let mangle = func.generics();
-                        let mut unify = ctx.global.def.get(&name).unwrap().clone();
-                        if let Define::Function(Generics(_, _), params, body) = &unify
-                            && let Type::Function(_, _, Some(args)) = typ.clone()
-                        {
-                            let mut map = IndexMap::new();
-                            for (param, arg) in params.keys().zip(args) {
-                                map.insert(param.clone(), arg);
-                            }
-                            let name = Generics(mangle.clone(), vec![]);
-                            unify = Define::Function(name, map.clone(), body.clone());
-                        };
-                        let parent = ctx.global.alias.clone();
-                        ctx.global.alias = alias.clone();
-                        {
-                            *typ = unify.infer(ctx)?;
-                        }
-                        ctx.global.alias = parent;
-                        ctx.global.def.insert(mangle, unify.clone());
-                    }
-                    typing!(typ.clone())
+                    typing!(typ.clone().mono(ctx, generics)?)
                 } else if let Some(typ) = ctx.local.scope.get(&name) {
                     typing!(typ.clone().solve(ctx))
                 } else {
