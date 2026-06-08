@@ -247,6 +247,7 @@ impl Define {
         Ok(format!("{name}:\n{pro}{alloc}{body}\tleave\n\tret\n\n"))
     }
 }
+
 impl Expr {
     fn emit(&self, ctx: &mut Context) -> Result<String, String> {
         macro_rules! op {
