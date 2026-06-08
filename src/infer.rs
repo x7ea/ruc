@@ -53,6 +53,7 @@ impl Expr {
                 class.clone()
             }};
         }
+        
         match self.clone() {
             Expr::Print(is_output, vals) => {
                 let mut fmt = String::new();
