@@ -43,8 +43,8 @@ impl Define {
                 };
                 result.push(Define::Function(
                     Generics::parse(&name)?, 
-                    args!(&args), body)
-                );
+                    args!(&args), body
+                ));
             } else if let Some(head) = line.strip_prefix("struct ") {
                 let (name, args) = surround!(&head, "{", "}")?;
                 result.push(Define::Class(
