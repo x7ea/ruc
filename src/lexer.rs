@@ -180,7 +180,6 @@ macro_rules! surround {
             }
             let args = ok!(x.last())?.to_string();
             let func = ok!(x.get(..x.len() - 1))?.concat();
-
             let args = ok!(args.get(1..args.len() - 1))?.to_string();
             Ok((func, args))
         })
@@ -222,10 +221,7 @@ macro_rules! hash {
 #[macro_export]
 macro_rules! serial {
     ($arr: expr, $lambda: expr) => {
-        lexer($arr, ",")?
-            .iter()
-            .map(|x| $lambda(&x))
-            .collect::<Result<Vec<_>, String>>()?
+        lexer($arr, ",")?.iter().map(|x| $lambda(&x)).collect::<Result<Vec<_>, String>>()?
     };
 }
 
@@ -239,10 +235,7 @@ macro_rules! map {
 #[macro_export]
 macro_rules! ok {
     ($v: expr) => {
-        if let Some(v) = $v {
-            Ok(v)
-        } else {
-            Err(String::new())
-        }
+        if let Some(v) = $v { Ok(v) } 
+        else { Err(String::new()) }
     };
 }
