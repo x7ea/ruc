@@ -555,9 +555,6 @@ impl Type {
         }
         match typ.clone() {
             Type::Function(params, _, _) if !params.is_empty() => {
-                if params.len() != args.len() {
-                    return Err(format!("generics: {self}"));
-                }
                 let mut alias = IndexMap::new();
                 for (arg, param) in args.iter().zip(&params) {
                     alias.insert(param.clone(), arg.clone());
@@ -590,9 +587,6 @@ impl Type {
                 let layout = {
                     let (Object::Enum(layout) | Object::Struct(layout)) = &table;
                     let mut layout = layout.clone();
-                    if params.len() != args.len() {
-                        return Err(format!("generics: {typ}"));
-                    }
                     for (key, field) in layout.clone() {
                         for (arg, param) in args.iter().zip(params) {
                             let field = field.rewrite(param, arg);
