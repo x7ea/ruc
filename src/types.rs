@@ -611,6 +611,46 @@ impl Type {
         }
     }
 
+    fn mono(self, ctx: &mut Context, func: Generics) -> Result<Type, String> {
+        let mut typ = self.solve(ctx);
+        let Generics(name, mut args) = func;
+        let Type::Function(params, _, _) = typ else {
+            return Ok(typ.clone());
+        };
+
+        if params.len() != args.len() {
+            return Err(format!("generics: {self}"));
+        }
+        let mut alias = IndexMap::new();
+        for arg in args.iter_mut() {
+            *arg = arg.solve(ctx);
+        }
+        for (arg, param) in args.iter().zip(&params) {
+            alias.insert(param.clone(), arg.clone());
+            typ = self.rewrite(param, arg);
+        }
+        let mangle = func.generics();
+        let mut unify = ctx.global.def.get(&name).unwrap().clone();
+        if let Define::Function(Generics(_, _), params, body) = &unify
+            && let Type::Function(_, _, Some(args)) = typ.clone()
+        {
+            let mut map = IndexMap::new();
+            for (param, arg) in params.keys().zip(args) {
+                map.insert(param.clone(), arg);
+            }
+            let name = Generics(mangle.clone(), vec![]);
+            unify = Define::Function(name, map.clone(), body.clone());
+        };
+        let parent = ctx.global.alias.clone();
+        ctx.global.alias = alias.clone();
+        {
+            typ = unify.infer(ctx)?;
+        }
+        ctx.global.alias = parent;
+        ctx.global.def.insert(mangle, unify.clone());
+        Ok(typ.clone())
+    }
+
     fn solve(&self, ctx: &mut Context) -> Type {
         if let Some(typ) = ctx.global.alias.get(self) {
             return typ.clone();
