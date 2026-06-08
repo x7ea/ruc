@@ -264,37 +264,6 @@ impl Type {
     }
 }
 
-impl Display for Type {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        fn comma(x: &[Type]) -> String {
-            map!(x, |x: &Type| x.to_string()).join(", ")
-        }
-        match self {
-            Type::Integer => write!(f, "Int"),
-            Type::String => write!(f, "Str"),
-            Type::Float => write!(f, "Float"),
-            Type::Boolean => write!(f, "Bool"),
-            Type::Void => write!(f, "()"),
-            Type::Array(typ) => write!(f, "[{typ}]"),
-            Type::Class(Generics(name, args)) if args.is_empty() => write!(f, "{name}"),
-            Type::Class(Generics(name, args)) => write!(f, "{name}<{}>", comma(args)),
-            Type::Function(_, ret, Some(args)) => write!(f, "{ret}({})", comma(args)),
-            Type::Function(_, ret, None) => write!(f, "{ret}()"),
-        }
-    }
-}
-
-impl Generics {
-    pub fn parse(src: &str) -> Result<Generics, String> {
-        let x = src.trim();
-        if let Some((var, args)) = surround!("<", ">", x) {
-            Ok(Generics(Name::new(var)?, serial!(args, Type::parse)))
-        } else {
-            Ok(Generics(Name::new(x)?, vec![]))
-        }
-    }
-}
-
 fn lexer(src: &str, del: &str) -> Result<Vec<String>, String> {
     let (mut level, mut idx) = (0, 0);
     let (mut quote, mut esc) = (false, false);
@@ -369,6 +338,37 @@ fn lexer(src: &str, del: &str) -> Result<Vec<String>, String> {
         current.clear();
     }
     Ok(tokens)
+}
+
+impl Display for Type {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        fn comma(x: &[Type]) -> String {
+            map!(x, |x: &Type| x.to_string()).join(", ")
+        }
+        match self {
+            Type::Integer => write!(f, "Int"),
+            Type::String => write!(f, "Str"),
+            Type::Float => write!(f, "Float"),
+            Type::Boolean => write!(f, "Bool"),
+            Type::Void => write!(f, "()"),
+            Type::Array(typ) => write!(f, "[{typ}]"),
+            Type::Class(Generics(name, args)) if args.is_empty() => write!(f, "{name}"),
+            Type::Class(Generics(name, args)) => write!(f, "{name}<{}>", comma(args)),
+            Type::Function(_, ret, Some(args)) => write!(f, "{ret}({})", comma(args)),
+            Type::Function(_, ret, None) => write!(f, "{ret}()"),
+        }
+    }
+}
+
+impl Generics {
+    pub fn parse(src: &str) -> Result<Generics, String> {
+        let x = src.trim();
+        if let Some((var, args)) = surround!("<", ">", x) {
+            Ok(Generics(Name::new(var)?, serial!(args, Type::parse)))
+        } else {
+            Ok(Generics(Name::new(x)?, vec![]))
+        }
+    }
 }
 
 pub mod name {
