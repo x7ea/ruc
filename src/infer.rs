@@ -72,9 +72,9 @@ impl Expr {
                 expand!(Expr::Call(
                     Box::new(Expr::Variable(Generics(
                         Name::new(if is_output {
-                            "g_strdup_printf"
-                        } else {
                             "printf"
+                        } else {
+                            "g_strdup_printf"
                         })?,
                         vec![]
                     ))),
