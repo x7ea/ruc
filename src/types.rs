@@ -613,7 +613,7 @@ impl Type {
 
     fn mono(self, ctx: &mut Context, func: Generics) -> Result<Type, String> {
         let mut typ = self.solve(ctx);
-        let Generics(name, mut args) = func;
+        let Generics(name, mut args) = func.clone();
         let Type::Function(params, _, _) = typ else {
             return Ok(typ.clone());
         };
@@ -652,20 +652,10 @@ impl Type {
     }
 
     fn solve(&self, ctx: &mut Context) -> Type {
-        if let Some(typ) = ctx.global.alias.get(self) {
-            return typ.clone();
+        let mut typ = self.clone();
+        for (old, new) in ctx.global.alias {
+            typ = self.rewrite(&old, &new);
         }
-        match self {
-            Type::Function(typ, ret, Some(args)) => Type::Function(
-                typ.clone(),
-                Box::new(ret.solve(ctx)),
-                Some(map!(args, |x| x.solve(ctx))),
-            ),
-            Type::Class(Generics(name, args)) => {
-                Type::Class(Generics(name.clone(), map!(args, |x| x.solve(ctx))))
-            }
-            Type::Array(typ) => Type::Array(Box::new(typ.solve(ctx))),
-            _ => self.clone(),
-        }
+        typ
     }
 }
