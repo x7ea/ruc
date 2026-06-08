@@ -278,8 +278,8 @@ impl Expr {
                         return Err(format!("length: {pl} != {al}"));
                     }
                     for (param, arg) in params.iter().zip(args) {
-                        let arg = arg.infer(ctx)?.solve(ctx);
                         if param == &Type::Void { continue; }
+                        let arg = arg.infer(ctx)?.solve(ctx);
                         if arg != param.solve(ctx) {
                             return Err(format!("arguments: {param} != {arg}"));
                         }
