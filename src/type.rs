@@ -113,6 +113,7 @@ impl Type {
         }
         Ok(typ.solve(ctx))
     }
+    
     fn rewrite(&self, old: &Type, new: &Type) -> Type {
         if self == old {
             return new.clone();
@@ -130,6 +131,7 @@ impl Type {
             _ => self.clone(),
         }
     }
+    
     pub fn solve(&self, ctx: &mut Context) -> Type {
         let mut typ = self.clone();
         for (old, new) in &ctx.global.alias {
@@ -137,6 +139,7 @@ impl Type {
         }
         typ
     }
+    
     pub fn size(&self, ctx: &Context) -> Result<usize, String> {
         match self {
             Type::Class(Generics(name, _)) => match ctx.global.table.get(name) {
