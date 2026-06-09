@@ -114,6 +114,9 @@ impl Expr {
 
         match self.clone() {
             Expr::Print(is_output, vals) => {
+                const PRINT: &str = "printf";
+                const FORMAT: &str = "g_strdup_printf";
+
                 let mut fmt = String::new();
                 for i in vals.iter() {
                     let typ = i.infer(ctx)?;
@@ -127,8 +130,6 @@ impl Expr {
                 if is_output {
                     fmt += "\\n"
                 };
-                const PRINT: &str = "printf";
-                const FORMAT: &str = "g_strdup_printf";
                 expand!(Expr::Call(
                     Box::new(Expr::Variable(Generics(
                         Name::new(if is_output { PRINT } else { FORMAT })?,
