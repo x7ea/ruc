@@ -4,8 +4,6 @@ impl Define {
     const CORE: [&str; 5] = ["calloc", "printf", "g_strdup_printf", "free", "memcpy"];
 
     pub fn compile(defines: &mut [Self]) -> Result<String, String> {
-        let mut text = String::new();
-        let ctx = &mut Context::default();
         macro_rules! name {
             ($define: expr) => {
                 match $define.clone() {
@@ -23,6 +21,8 @@ impl Define {
                 .clone()
             };
         }
+        let mut text = String::new();
+        let ctx = &mut Context::default();
         ctx.global.def = {
             let mut map = IndexMap::new();
             for define in defines {
