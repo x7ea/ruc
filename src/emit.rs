@@ -21,9 +21,9 @@ impl Define {
                 .clone()
             };
         }
-
         let mut text = String::new();
         let ctx = &mut Context::default();
+
         ctx.global.def = {
             let mut map = IndexMap::new();
             for define in defines {
