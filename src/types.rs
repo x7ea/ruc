@@ -129,11 +129,7 @@ impl Expr {
                 };
                 expand!(Expr::Call(
                     Box::new(Expr::Variable(Generics(
-                        Name::new(if is_output {
-                            "printf"
-                        } else {
-                            "g_strdup_printf"
-                        })?,
+                        Name::new(is_output.then(|| "printf").unwrap_or("g_strdup_printf"))?,
                         vec![]
                     ))),
                     [vec![Expr::String(fmt)], vals.to_vec()].concat(),
