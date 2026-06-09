@@ -21,6 +21,7 @@ impl Define {
                 .clone()
             };
         }
+
         let mut text = String::new();
         let ctx = &mut Context::default();
         ctx.global.def = {
