@@ -127,10 +127,12 @@ impl Expr {
                 if is_output {
                     fmt += "\\n"
                 };
+                const PRINT: &str = "printf";
+                const FMT: &str = "g_strdup_printf";
                 expand!(Expr::Call(
                     Box::new(Expr::Variable(Generics(
-                        Name::new(is_output.then(|| "printf").unwrap_or("g_strdup_printf"))?,
-                        vec![]
+                        Name::new(if is_output { PRINT } else { FMT })?,
+                        Vec::new(),
                     ))),
                     [vec![Expr::String(fmt)], vals.to_vec()].concat(),
                 ));
