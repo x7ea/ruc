@@ -3,7 +3,7 @@ use crate::*;
 impl Define {
     const CORE: [&str; 5] = ["calloc", "printf", "g_strdup_printf", "free", "memcpy"];
 
-    pub fn compile(defines: &mut [Self]) -> Result<String, String> {
+    pub fn compile(defines: &[Self]) -> Result<String, String> {
         macro_rules! name {
             ($define: expr) => {
                 match $define.clone() {
