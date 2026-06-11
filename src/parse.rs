@@ -521,4 +521,7 @@ macro_rules! map {
     ($arr: expr, $lambda: expr) => {
         $arr.iter().map($lambda).collect::<Vec<_>>()
     };
+    ($arr: expr, $lambda: expr, ok) => {
+        $arr.iter().map($lambda).collect::<Result<Vec<_>, String>>()
+    };
 }
