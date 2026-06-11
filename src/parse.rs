@@ -522,24 +522,3 @@ macro_rules! once {
         }
     }};
 }
-
-#[macro_export]
-macro_rules! hash {
-    ($self: expr) => {{
-        use std::collections::hash_map::DefaultHasher;
-        use std::hash::Hasher;
-        let mut hasher = DefaultHasher::new();
-        $self.hash(&mut hasher);
-        hasher.finish()
-    }};
-}
-
-macro_rules! ok {
-    ($v: expr) => {
-        if let Some(v) = $v {
-            Ok(v)
-        } else {
-            Err(String::new())
-        }
-    };
-}
