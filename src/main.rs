@@ -1,11 +1,13 @@
 pub mod expand;
+pub mod name;
 pub mod object;
 pub mod parse;
 pub mod types;
 
+use name::Name;
+
 use indexmap::{IndexMap, IndexSet};
 use ordered_float::OrderedFloat as Float;
-use parse::name::*;
 use vec1::Vec1;
 
 use std::hash::Hash;
