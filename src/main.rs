@@ -1,10 +1,14 @@
 pub mod expand;
+pub mod lexer;
+pub mod macros;
 pub mod name;
 pub mod object;
 pub mod parse;
 pub mod types;
 
+use lexer::lexer;
 use name::Name;
+use parse::SPACE;
 
 use indexmap::{IndexMap, IndexSet};
 use ordered_float::OrderedFloat as Float;
