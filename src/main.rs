@@ -1,9 +1,10 @@
 pub mod parse;
 pub mod types;
+use parse::name::*;
 
+use derive_more::Unwrap;
 use indexmap::{IndexMap, IndexSet};
 use ordered_float::OrderedFloat as Float;
-use parse::name::*;
 use vec1::Vec1;
 
 use std::hash::Hash;
@@ -41,19 +42,10 @@ fn main() {
 // Abstract Syntax Tree (AST)
 
 #[derive(Clone, PartialEq)]
-pub enum Object {
-    Struct(IndexMap<Name, Type>),
-    Enum(IndexMap<Name, Type>),
-}
-
-#[derive(Clone, PartialEq)]
 pub enum Define {
     Function(Generics, IndexMap<Name, Type>, (Option<Expr>, Option<Type>)),
     Class(Generics, Object),
 }
-
-#[derive(Clone, Hash, Default, PartialEq, Eq)]
-pub struct Generics(Name, Vec<Type>);
 
 #[derive(Clone, Hash, PartialEq, Eq)]
 pub enum Expr {
@@ -106,7 +98,7 @@ pub enum Expr {
     Init(Type, usize),
 }
 
-#[derive(Clone, PartialEq, Eq, Hash)]
+#[derive(Clone, PartialEq, Unwrap, Eq, Hash)]
 pub enum Type {
     String,
     Integer,
@@ -116,6 +108,15 @@ pub enum Type {
     Class(Generics),
     Function(Vec<Type>, Box<Type>, Option<Vec<Type>>),
     Void,
+}
+
+#[derive(Clone, Hash, Default, PartialEq, Eq)]
+pub struct Generics(Name, Vec<Type>);
+
+#[derive(Clone, PartialEq)]
+pub enum Object {
+    Struct(IndexMap<Name, Type>),
+    Enum(IndexMap<Name, Type>),
 }
 
 #[derive(Default)]
