@@ -1,6 +1,6 @@
 pub mod emit;
 pub mod parse;
-pub mod types;
+pub mod typ;
 use parse::name::*;
 
 use derive_more::Unwrap;
