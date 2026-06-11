@@ -1,4 +1,3 @@
-pub mod emit;
 pub mod parse;
 pub mod types;
 
@@ -101,8 +100,6 @@ pub enum Expr {
     Or(Box<Expr>, Box<Expr>),
     Xor(Box<Expr>, Box<Expr>),
     // Low-layer IR
-    FLocal(usize),
-    ILocal(usize),
     Read(Box<Expr>, Type, Box<Expr>),
     Write(Box<Expr>, Box<Expr>, Box<Expr>),
     Clone(Box<Expr>),
