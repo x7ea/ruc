@@ -105,12 +105,6 @@ impl Expr {
                 typing!($ret.clone())
             }};
         }
-        macro_rules! get {
-            ($name:ident, $obj: expr) => {{
-                let Type::$name(class) = $obj else { panic!() };
-                class.clone()
-            }};
-        }
 
         match self.clone() {
             Expr::Print(is_output, vals) => {
@@ -320,14 +314,14 @@ impl Expr {
                 }
                 acc @ Expr::Member(obj, key) => {
                     let typ = acc.infer(ctx)?;
-                    let Generics(name, _) = &get!(Class, obj.infer(ctx)?);
+                    let Generics(name, _) = &obj.infer(ctx)?.unwrap_class();
                     {
                         let val = val.infer(ctx)?;
                         if typ.solve(ctx) != val {
                             return Err(format!("{name}.{key}: {typ} != {val}"));
                         }
                     }
-                    match ok!(ctx.global.table.get(name))? {
+                    match &ctx.global.table[name] {
                         (_, Object::Struct(layout)) => {
                             let offset = layout.get_index_of(key).unwrap();
                             let offset = Box::new(Expr::Integer(offset as i64));
