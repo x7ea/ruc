@@ -1,12 +1,16 @@
 pub mod emit;
+pub mod lexer;
 pub mod parse;
 pub mod typ;
-use parse::name::*;
 
 use derive_more::Unwrap;
 use indexmap::{IndexMap, IndexSet};
 use ordered_float::OrderedFloat as Float;
 use vec1::Vec1;
+use {
+    lexer::{lexer, name::Name},
+    parse::SPACE,
+};
 
 use std::hash::Hash;
 use std::io::{Read, Write, stdin, stdout};
