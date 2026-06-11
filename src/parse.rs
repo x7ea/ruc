@@ -39,24 +39,26 @@ impl Define {
                     (None, Some(Type::parse(&body)?)),
                 ));
             } else if let Some(func) = line.strip_prefix("fn ") {
-                let (expr, name, args);
                 if let Ok((head, body)) = once!(func, ":") {
                     let (typ, body) = once!(&body, SPACE)?;
-                    expr = (
-                        Some(Expr::Block(vec![Expr::parse(&body)?])),
-                        Some(Type::parse(&typ)?),
-                    );
-                    (name, args) = surround!(&head, "(", ")")?;
+                    let (name, args) = surround!(&head, "(", ")")?;
+                    result.push(Define::Function(
+                        Generics::parse(&name)?,
+                        args!(&args),
+                        (
+                            Some(Expr::Block(vec![Expr::parse(&body)?])),
+                            Some(Type::parse(&typ)?),
+                        ),
+                    ));
                 } else {
                     let (head, body) = once!(func, SPACE)?;
-                    (name, args) = surround!(&head, "(", ")")?;
-                    expr = (Some(Expr::Block(vec![Expr::parse(&body)?])), None);
+                    let (name, args) = surround!(&head, "(", ")")?;
+                    result.push(Define::Function(
+                        Generics::parse(&name)?,
+                        args!(&args),
+                        (Some(Expr::Block(vec![Expr::parse(&body)?])), None),
+                    ));
                 };
-                result.push(Define::Function(
-                    Generics::parse(&name)?,
-                    args!(&args),
-                    expr,
-                ));
             } else if let Some(head) = line.strip_prefix("struct ") {
                 let (name, args) = surround!(&head, "{", "}")?;
                 result.push(Define::Class(
