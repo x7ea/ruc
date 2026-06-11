@@ -597,10 +597,9 @@ impl Type {
 
     fn size(&self, ctx: &Context) -> Result<usize, String> {
         match self {
-            Type::Class(Generics(name, _)) => match ctx.global.table.get(name) {
-                Some((_, Object::Struct(layout))) => Ok(layout.len() * 8),
-                Some((_, Object::Enum(_))) => Ok(16),
-                _ => Err(format!("undefined: {name}")),
+            Type::Class(Generics(name, _)) => match &ctx.global.table[name] {
+                (_, Object::Struct(layout)) => Ok(layout.len() * 8),
+                (_, Object::Enum(_)) => Ok(16),
             },
             _ => Err(format!("can't clone: {self}")),
         }
