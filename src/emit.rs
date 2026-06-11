@@ -1,5 +1,64 @@
 use crate::*;
 
+impl Define {
+    const CORE: [&str; 5] = ["calloc", "printf", "g_strdup_printf", "free", "memcpy"];
+
+    pub fn compile(defines: &[Self]) -> Result<String, String> {
+        macro_rules! name {
+            ($define: expr) => {
+                match $define.clone() {
+                    Define::Function(Generics(func, _), _, (Some(_), _)) => Some(func),
+                    Define::Class(Generics(class, _), _) => Some(class),
+                    _ => None,
+                }
+                .clone()
+            };
+            (all, $define: expr) => {
+                match $define.clone() {
+                    Define::Function(Generics(func, _), _, _) => func,
+                    Define::Class(Generics(class, _), _) => class,
+                }
+                .clone()
+            };
+        }
+        let mut text = String::new();
+        let ctx = &mut Context::default();
+
+        ctx.global.def = {
+            let mut map = IndexMap::new();
+            for define in defines {
+                map.insert(name!(all, define), define.clone());
+            }
+            map
+        };
+        ctx.global.lib = {
+            let mut map = IndexMap::new();
+            for line in Self::CORE {
+                let signature = Type::Function(vec![], Box::new(Type::Void), None);
+                map.insert(Name::new(line)?, signature);
+            }
+            map
+        };
+        for (_, define) in ctx.global.def.clone() {
+            define.infer(ctx)?;
+        }
+        for (_, define) in ctx.global.def.clone() {
+            text += &define.emit(ctx)?;
+        }
+        let data = ctx.global.data.clone();
+        for (_, define) in ctx.global.def.clone() {
+            if let Some(func) = name!(define) {
+                ctx.global.lib.shift_remove(&func);
+            }
+        }
+        let mut lib = String::from("\nsection .text\n\tglobal main\n");
+        for symbol in ctx.global.lib.keys() {
+            lib += &format!("\textern {symbol}\n");
+        }
+        Ok(format!("section .data\n{data}{lib}{text}\n"))
+    }
+}
+
 pub const ABI: [&str; 6] = ["rdi", "rsi", "rdx", "rcx", "r8", "r9"];
 
 impl Define {
