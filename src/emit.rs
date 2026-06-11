@@ -333,3 +333,11 @@ impl Expr {
         }
     }
 }
+
+impl Context {
+    pub fn label(&mut self) -> String {
+        let id = self.global.idx;
+        self.global.idx += 1;
+        id.to_string()
+    }
+}
