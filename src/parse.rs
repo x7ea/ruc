@@ -31,18 +31,20 @@ impl Define {
                 };
                 result.append(&mut Define::parse(&file)?);
             } else if let Some(func) = line.strip_prefix("fn ") {
-                let (head, body) = once!(func, SPACE)?;
-                let (name, args) = surround!(&head, "(", ")")?;
-                let body = if let Some(typ) = body.trim().strip_prefix("=") {
-                    if let Ok((typ, expr)) = once!(typ, SPACE) {
+                let (name, args);
+                let body = if let Ok((head, body)) = once!(func, ":") {
+                    (name, args) = surround!(&head, "(", ")")?;
+                    if let Ok((typ, expr)) = once!(&body, SPACE) {
                         (
                             Some(Expr::Block(vec![Expr::parse(&expr)?])),
                             Some(Type::parse(&typ)?),
                         )
                     } else {
-                        (None, Some(Type::parse(typ)?))
+                        (None, Some(Type::parse(&body)?))
                     }
                 } else {
+                    let (head, body) = once!(func, SPACE)?;
+                    (name, args) = surround!(&head, "(", ")")?;
                     (Some(Expr::Block(vec![Expr::parse(&body)?])), None)
                 };
                 result.push(Define::Function(
