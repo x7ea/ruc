@@ -457,14 +457,6 @@ pub mod name {
     }
 }
 
-impl Context {
-    pub fn label(&mut self) -> String {
-        let id = self.global.idx;
-        self.global.idx += 1;
-        id.to_string()
-    }
-}
-
 #[macro_export]
 macro_rules! surround {
     ($ls: literal, $x: expr, $rs: literal) => {
