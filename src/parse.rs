@@ -30,18 +30,23 @@ impl Define {
                     return Err(format!("undefined library: {file}"));
                 };
                 result.append(&mut Define::parse(&file)?);
+            } else if let Some(func) = line.strip_prefix("extern fn ") {
+                let (head, body) = once!(func, ":")?;
+                let (name, args) = surround!(&head, "(", ")")?;
+                result.push(Define::Function(
+                    Generics::parse(&name)?,
+                    args!(&args),
+                    (None, Some(Type::parse(&body)?)),
+                ));
             } else if let Some(func) = line.strip_prefix("fn ") {
                 let (expr, name, args);
                 if let Ok((head, body)) = once!(func, ":") {
+                    let (typ, body) = once!(&body, SPACE)?;
+                    expr = (
+                        Some(Expr::Block(vec![Expr::parse(&body)?])),
+                        Some(Type::parse(&typ)?),
+                    );
                     (name, args) = surround!(&head, "(", ")")?;
-                    if let Ok((typ, body)) = once!(&body, SPACE) {
-                        expr = (
-                            Some(Expr::Block(vec![Expr::parse(&body)?])),
-                            Some(Type::parse(&typ)?),
-                        );
-                    } else {
-                        expr = (None, Some(Type::parse(&body)?));
-                    }
                 } else {
                     let (head, body) = once!(func, SPACE)?;
                     (name, args) = surround!(&head, "(", ")")?;
