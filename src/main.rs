@@ -369,9 +369,9 @@ impl Expr {
                 let env = &ctx.local.var;
                 let mut name = name.clone();
                 if let Some(i) = env.get_index_of(&name) {
-                    let typ = env.get(&name).unwrap();
+                    let typ = env[&name].clone();
                     let addr = (i + 1) * 8;
-                    if typ == &Type::Float {
+                    if typ == Type::Float {
                         Ok(format!("\tmovsd xmm0, [rbp-{addr}]\n"))
                     } else {
                         Ok(format!("\tmov rax, [rbp-{addr}]\n"))
@@ -386,8 +386,8 @@ impl Expr {
             Expr::Let(name, val) => match &**name {
                 Expr::Variable(Generics(name, _)) => {
                     let env = &ctx.local.var;
+                    let typ = env[name].clone();
                     let idx = env.get_index_of(name).unwrap();
-                    let typ = env.get(name).unwrap().clone();
                     let (val, addr) = (val.emit(ctx)?, (idx + 1) * 8);
                     if typ == Type::Float {
                         Ok(format!("{val}\tmovsd [rbp-{addr}], xmm0\n"))
