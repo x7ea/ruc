@@ -59,7 +59,7 @@ impl Define {
 }
 
 impl Expr {
-    pub fn infer(&self, ctx: &mut Context) -> Result<Type, String> {
+    fn infer(&self, ctx: &mut Context) -> Result<Type, String> {
         macro_rules! typing {
             ($typ: expr) => {{
                 let typ = $typ;
