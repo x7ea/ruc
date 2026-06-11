@@ -215,7 +215,7 @@ impl Define {
         if !params.is_empty() {
             return Ok(String::new());
         }
-        ctx.local = ctx.table.get(name).unwrap().clone();
+        ctx.local = ctx.table[name].clone();
 
         let (mut ptr, mut alloc) = (8, String::new());
         let (mut idx, mut xmm) = (0, 0);
@@ -284,12 +284,12 @@ impl Expr {
         }
         macro_rules! typ {
             ($expr: expr) => {
-                ctx.local.typed.get($expr).unwrap().clone()
+                ctx.local.typed[$expr].clone()
             };
         }
         macro_rules! expr {
             ($expr: expr) => {
-                ctx.local.expand.get($expr).unwrap().clone()
+                ctx.local.expand[$expr].clone()
             };
         }
         match self {
