@@ -176,19 +176,6 @@ impl Expr {
                     Ok(Type::Void)
                 }
             }
-            Expr::While(cond, body) => {
-                if let Expr::Let(bind, check) = *cond {
-                    return typing!(expands!(Expr::While(
-                        Box::new(Expr::Check(check.clone())),
-                        Box::new(Expr::Block(vec![Expr::Let(bind, check), *body])),
-                    )));
-                }
-                let cond = cond.infer(ctx)?;
-                if cond != Type::Boolean {
-                    return Err(format!("while-do test: Bool != {cond}"));
-                }
-                body.infer(ctx)
-            }
             Expr::Match(val, pats) => {
                 let mut expr = Expr::Null(Type::Void);
                 for (key, bind, ret) in pats {
@@ -205,16 +192,18 @@ impl Expr {
                 }
                 typing!(expands!(expr))
             }
-            Expr::Enum(typ, key, val) => {
-                let temp = Box::new(temp!(typ.clone()));
-                typing!(expands!(Expr::Block(vec![
-                    Expr::Let(temp.clone(), Box::new(Expr::New(typ.clone()))),
-                    Expr::Let(
-                        Box::new(Expr::Member(temp.clone(), key.clone())),
-                        val.clone(),
-                    ),
-                    *temp
-                ])))
+            Expr::While(cond, body) => {
+                if let Expr::Let(bind, check) = *cond {
+                    return typing!(expands!(Expr::While(
+                        Box::new(Expr::Check(check.clone())),
+                        Box::new(Expr::Block(vec![Expr::Let(bind, check), *body])),
+                    )));
+                }
+                let cond = cond.infer(ctx)?;
+                if cond != Type::Boolean {
+                    return Err(format!("while-do test: Bool != {cond}"));
+                }
+                body.infer(ctx)
             }
             Expr::For(cnt, arr, body) => {
                 let temp = Box::new(temp!(Type::Integer));
@@ -228,25 +217,6 @@ impl Expr {
                         Box::new(Expr::Block(body.to_vec()))
                     ),
                 ])))
-            }
-            Expr::Sequence(array) => {
-                let typ = array[0].infer(ctx)?;
-                let temp = temp!(typ.clone());
-                let mut expr = vec![Expr::Let(
-                    Box::new(temp.clone()),
-                    Box::new(Expr::Init(typ, array.len())),
-                )];
-                for (idx, val) in array.iter().enumerate() {
-                    expr.push(Expr::Let(
-                        Box::new(Expr::Index(
-                            Box::new(temp.clone()),
-                            Box::new(Expr::Integer(idx as i64)),
-                        )),
-                        Box::new(val.clone()),
-                    ));
-                }
-                expr.push(temp);
-                typing!(expands!(Expr::Block(expr)))
             }
             Expr::Block(lines) => {
                 let mut ret = Type::Void;
@@ -358,13 +328,36 @@ impl Expr {
                 }
                 other => Err(format!("not assign target: {}", other.infer(ctx)?)),
             },
-            Expr::New(typ) => {
-                let Type::Class(_) = typ.clone() else {
-                    return Err(format!("no constructor: {typ}"));
+            Expr::Sequence(array) => {
+                let typ = array[0].infer(ctx)?;
+                let temp = temp!(typ.clone());
+                let mut expr = vec![Expr::Let(
+                    Box::new(temp.clone()),
+                    Box::new(Expr::Init(typ, array.len())),
+                )];
+                for (idx, val) in array.iter().enumerate() {
+                    expr.push(Expr::Let(
+                        Box::new(Expr::Index(
+                            Box::new(temp.clone()),
+                            Box::new(Expr::Integer(idx as i64)),
+                        )),
+                        Box::new(val.clone()),
+                    ));
+                }
+                expr.push(temp);
+                typing!(expands!(Expr::Block(expr)))
+            }
+            Expr::Index(arr, idx) => {
+                let typ = arr.infer(ctx)?;
+                let Type::Array(typ) = typ else {
+                    return Err(format!("not array: {typ}"));
                 };
-                let typ = typ.mono(ctx, Generics::default())?;
-                expand!(new!(typ.size(ctx)? / 8));
-                typing!(typ.solve(ctx))
+                let idx_t = idx.infer(ctx)?;
+                let Type::Integer = idx_t else {
+                    return Err(format!("not index: {idx_t}"));
+                };
+                expand!(Expr::Read(array!(arr, idx), *typ.clone(), arr.clone()));
+                typing!(*typ.clone())
             }
             Expr::Member(obj, key) if key == Name::new("len")? => {
                 let typ = obj.infer(ctx)?;
@@ -376,6 +369,25 @@ impl Expr {
                     Type::Integer,
                     obj.clone()
                 )))
+            }
+            Expr::New(typ) => {
+                let Type::Class(_) = typ.clone() else {
+                    return Err(format!("no constructor: {typ}"));
+                };
+                let typ = typ.mono(ctx, Generics::default())?;
+                expand!(new!(typ.size(ctx)? / 8));
+                typing!(typ.solve(ctx))
+            }
+            Expr::Enum(typ, key, val) => {
+                let temp = Box::new(temp!(typ.clone()));
+                typing!(expands!(Expr::Block(vec![
+                    Expr::Let(temp.clone(), Box::new(Expr::New(typ.clone()))),
+                    Expr::Let(
+                        Box::new(Expr::Member(temp.clone(), key.clone())),
+                        val.clone(),
+                    ),
+                    *temp
+                ])))
             }
             Expr::Member(obj, key) => {
                 let typ = obj.infer(ctx)?;
@@ -404,18 +416,6 @@ impl Expr {
                     }
                 }
                 typing!(typ)
-            }
-            Expr::Index(arr, idx) => {
-                let typ = arr.infer(ctx)?;
-                let Type::Array(typ) = typ else {
-                    return Err(format!("not array: {typ}"));
-                };
-                let idx_t = idx.infer(ctx)?;
-                let Type::Integer = idx_t else {
-                    return Err(format!("not index: {idx_t}"));
-                };
-                expand!(Expr::Read(array!(arr, idx), *typ.clone(), arr.clone()));
-                typing!(*typ.clone())
             }
             Expr::Check(expr) => {
                 if let Expr::Member(obj, key) = &*expr
