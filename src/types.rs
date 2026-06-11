@@ -16,7 +16,7 @@ impl Define {
                 ctx.local = Function::default();
                 ctx.local.scope = args.clone();
 
-                if *ret != body.infer(ctx)? {
+                if *ret != body.expand(ctx)?.infer(ctx)? {
                     return Err(format!("expected: returns {ret}"));
                 }
                 ctx.table.insert(name.clone(), ctx.local.clone());
@@ -33,7 +33,7 @@ impl Define {
                 ctx.local = Function::default();
                 ctx.local.scope = args.clone();
 
-                let ret = Box::new(body.infer(ctx)?);
+                let ret = Box::new(body.expand(ctx)?.infer(ctx)?);
                 let sig = Type::Function(param.clone(), ret, types!(args));
 
                 ctx.table.insert(name.clone(), ctx.local.clone());
@@ -78,15 +78,6 @@ impl Expr {
         macro_rules! expand {
             ($expr: expr) => {{
                 let _ = expands!($expr);
-            }};
-        }
-        macro_rules! temp {
-            ($typ: expr) => {{
-                let name = Name::new(&format!("temp{}", ctx.label()))?;
-                Expr::Variable(Generics(
-                    Generics(name, vec![$typ.clone()]).generics(),
-                    Vec::new(),
-                ))
             }};
         }
         macro_rules! op {
@@ -417,6 +408,21 @@ impl Expr {
             Expr::And(lhs, rhs) | Expr::Or(lhs, rhs) | Expr::Xor(lhs, rhs) => {
                 op!(Type::Boolean, lhs, rhs)
             }
+            _ => panic!(),
+        }
+    }
+
+    pub fn expand(&self, ctx: &mut Context) -> Result<Expr, String> {
+        macro_rules! temp {
+            ($typ: expr) => {{
+                let name = Name::new(&format!("temp{}", ctx.label()))?;
+                Expr::Variable(Generics(
+                    Generics(name, vec![$typ.clone()]).generics(),
+                    Vec::new(),
+                ))
+            }};
+        }
+        match self.clone() {
             Expr::Match(val, pats) => {
                 let mut expr = Expr::Null(Type::Void);
                 for (key, bind, ret) in pats {
@@ -431,31 +437,31 @@ impl Expr {
                         Some(Box::new(expr)),
                     )
                 }
-                typing!(expands!(expr))
+                Ok(expr)
             }
             Expr::Enum(typ, key, val) => {
                 let temp = Box::new(temp!(typ.clone()));
-                typing!(expands!(Expr::Block(vec![
+                Ok(Expr::Block(vec![
                     Expr::Let(temp.clone(), Box::new(Expr::New(typ.clone()))),
                     Expr::Let(
                         Box::new(Expr::Member(temp.clone(), key.clone())),
                         val.clone(),
                     ),
-                    *temp
-                ])))
+                    *temp,
+                ]))
             }
             Expr::For(cnt, arr, body) => {
                 let temp = Box::new(temp!(Type::Integer));
                 let read = Box::new(Expr::Index(arr.clone(), temp.clone()));
                 let inc = Box::new(Expr::Add(temp.clone(), Box::new(Expr::Integer(1))));
                 let body = [Expr::Let(cnt, read), *body, Expr::Let(temp.clone(), inc)];
-                typing!(expands!(Expr::Block(vec![
+                Ok(Expr::Block(vec![
                     Expr::Let(temp.clone(), Box::new(Expr::Integer(0))),
                     Expr::While(
                         Box::new(Expr::Lt(temp.clone(), len!(arr))),
-                        Box::new(Expr::Block(body.to_vec()))
+                        Box::new(Expr::Block(body.to_vec())),
                     ),
-                ])))
+                ]))
             }
             Expr::Sequence(array) => {
                 let typ = array[0].infer(ctx)?;
@@ -474,20 +480,21 @@ impl Expr {
                     ));
                 }
                 expr.push(temp);
-                typing!(expands!(Expr::Block(expr)))
+                Ok(Expr::Block(expr))
             }
             Expr::Clone(expr) => {
                 let typ = expr.infer(ctx)?;
                 let dest = Box::new(temp!(typ));
-                typing!(expands!(Expr::Block(vec![
+                Ok(Expr::Block(vec![
                     Expr::Let(dest.clone(), Box::new(Expr::New(typ.clone()))),
                     Expr::Call(
                         Box::new(Expr::Variable(Generics(Name::new("memcpy")?, vec![]))),
-                        vec![*dest.clone(), *expr, Expr::Integer(typ.size(ctx)? as i64)]
+                        vec![*dest.clone(), *expr, Expr::Integer(typ.size(ctx)? as i64)],
                     ),
-                    *dest.clone()
-                ])))
+                    *dest.clone(),
+                ]))
             }
+            _ => Ok(self.clone()),
         }
     }
 }
