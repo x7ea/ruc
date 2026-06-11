@@ -6,6 +6,28 @@ use std::{
 
 pub const SPACE: &str = " ";
 
+macro_rules! surround {
+    ($ls: literal, $x: expr, $rs: literal) => {
+        $x.trim()
+            .strip_prefix($ls)
+            .and_then(|x| x.strip_suffix($rs))
+    };
+    ($ls: literal, $rs: literal,$x: expr) => {
+        $x.trim().strip_suffix($rs).and_then(|x| x.split_once($ls))
+    };
+    ($src: expr, $ls: literal, $rs: literal) => {
+        lexer($src.trim(), &$ls).and_then(|src| {
+            if src.len() < 2 {
+                return Err(String::new());
+            }
+            let args = src[src.len() - 1].to_string();
+            let func = src[..src.len() - 1].concat();
+            let args = args[1..args.len() - 1].to_string();
+            Ok((func, args))
+        })
+    };
+}
+
 impl Define {
     pub fn parse(src: &str) -> Result<Vec<Define>, String> {
         let src = src.trim().replace("'\n", SPACE);
@@ -66,9 +88,9 @@ impl Define {
                     Object::Struct(args!(&args)),
                 ));
             } else if let Some(head) = line.strip_prefix("enum ") {
-                let (name, args) = ok!(surround!("{", "}", &head))?;
+                let (name, args) = surround!(&head, "{", "}")?;
                 result.push(Define::Class(
-                    Generics::parse(name)?,
+                    Generics::parse(&name)?,
                     Object::Enum(args!(&args)),
                 ));
             }
@@ -478,29 +500,6 @@ impl Context {
         self.global.idx += 1;
         id.to_string()
     }
-}
-
-#[macro_export]
-macro_rules! surround {
-    ($ls: literal, $x: expr, $rs: literal) => {
-        $x.trim()
-            .strip_prefix($ls)
-            .and_then(|x| x.strip_suffix($rs))
-    };
-    ($ls: literal, $rs: literal,$x: expr) => {
-        $x.trim().strip_suffix($rs).and_then(|x| x.split_once($ls))
-    };
-    ($src: expr, $ls: literal, $rs: literal) => {
-        lexer($src.trim(), &$ls).and_then(|src| {
-            if src.len() < 2 {
-                return Err(String::new());
-            }
-            let args = src[src.len() - 1].to_string();
-            let func = src[..src.len() - 1].concat();
-            let args = args[1..args.len() - 1].to_string();
-            Ok((func, args))
-        })
-    };
 }
 
 #[macro_export]
