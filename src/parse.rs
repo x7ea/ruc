@@ -490,13 +490,13 @@ macro_rules! surround {
     ($ls: literal, $rs: literal,$x: expr) => {
         $x.trim().strip_suffix($rs).and_then(|x| x.split_once($ls))
     };
-    ($x: expr, $ls: literal, $rs: literal) => {
-        lexer($x.trim(), &$ls).and_then(|x| {
-            if x.len() < 2 {
+    ($src: expr, $ls: literal, $rs: literal) => {
+        lexer($src.trim(), &$ls).and_then(|src| {
+            if src.len() < 2 {
                 return Err(String::new());
             }
-            let args = x[x.len() - 1].to_string();
-            let func = x[..x.len() - 1].concat();
+            let args = src[src.len() - 1].to_string();
+            let func = src[..src.len() - 1].concat();
             let args = args[1..args.len() - 1].to_string();
             Ok((func, args))
         })
