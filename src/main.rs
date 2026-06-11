@@ -1,4 +1,5 @@
 pub mod expand;
+pub mod object;
 pub mod parse;
 pub mod types;
 
