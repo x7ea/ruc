@@ -270,9 +270,6 @@ impl Expr {
                         return Err(format!("length: {pl} != {al}"));
                     }
                     for (param, arg) in params.iter().zip(args) {
-                        if param == &Type::Void {
-                            continue;
-                        }
                         let arg = arg.infer(ctx)?.solve(ctx);
                         if arg != param.solve(ctx) {
                             return Err(format!("arguments: {param} != {arg}"));
@@ -288,9 +285,9 @@ impl Expr {
                 if let Some(obj) = ctx.local.class.clone() {
                     let name = Name::new(&format!("{obj}.{name}"))?;
                     if ctx.global.lib.contains_key(&name) {
-                        ctx.local.class = None;
                         return typing!(expands!(Expr::Variable(Generics(name, args.clone()))));
                     }
+                    ctx.local.class = None;
                 }
                 if let Some(typ) = ctx.global.lib.get(&name) {
                     typing!(typ.clone().mono(ctx, generics)?)
