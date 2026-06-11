@@ -311,13 +311,11 @@ impl Expr {
                     typing!(Type::Void)
                 }
                 acc @ Expr::Index(arr, idx) => {
-                    {
-                        let [val, typ] = [val.infer(ctx)?, acc.infer(ctx)?];
-                        if typ.clone() != val {
-                            return Err(format!("array[n] {typ} != {val}"));
-                        }
-                    }
                     expand!(Expr::Write(array!(arr, idx), val.clone(), arr.clone()));
+                    let [val, typ] = [val.infer(ctx)?, acc.infer(ctx)?];
+                    if typ.clone() != val {
+                        return Err(format!("array[n] {typ} != {val}"));
+                    }
                     typing!(Type::Void)
                 }
                 acc @ Expr::Member(obj, key) => {
