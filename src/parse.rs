@@ -78,7 +78,7 @@ impl Define {
 }
 
 impl Expr {
-    pub fn parse(src: &str) -> Result<Expr, String> {
+    fn parse(src: &str) -> Result<Expr, String> {
         let src = src.trim();
         fn is_operator(src: &str) -> Result<(String, String, String), String> {
             let tokens: Vec<String> = lexer(src, SPACE)?;
