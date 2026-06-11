@@ -143,7 +143,7 @@ impl Expr {
                         _ => return Err(format!("can't print: {typ}")),
                     }
                 }
-                is_output.then(|x| fmt += "\\n");
+                is_output.then(|| fmt += "\\n");
                 expand!(Expr::Call(
                     Box::new(Expr::Variable(Generics(
                         Name::new(if is_output { PRINT } else { FORMAT })?,
