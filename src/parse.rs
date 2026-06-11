@@ -468,13 +468,15 @@ impl Context {
 #[macro_export]
 macro_rules! surround {
     ($ls: literal, $x: expr, $rs: literal) => {
-        $x.strip_prefix($ls).and_then(|x| x.strip_suffix($rs))
+        $x.trim()
+            .strip_prefix($ls)
+            .and_then(|x| x.strip_suffix($rs))
     };
     ($ls: literal, $rs: literal,$x: expr) => {
-        $x.strip_suffix($rs).and_then(|x| x.split_once($ls))
+        $x.trim().strip_suffix($rs).and_then(|x| x.split_once($ls))
     };
     ($x: expr, $ls: literal, $rs: literal) => {
-        lexer($x, &$ls).and_then(|x| {
+        lexer($x.trim(), &$ls).and_then(|x| {
             if x.len() < 2 {
                 return Err(String::new());
             }
