@@ -503,7 +503,7 @@ impl Type {
                     typ = self.rewrite(param, arg);
                 }
                 let mangle = func.generics();
-                let mut unify = ctx.global.def[&name]clone();
+                let mut unify = ctx.global.def[&name].clone();
                 if let Define::Function(Generics(_, _), params, body) = &unify
                     && let Type::Function(_, _, Some(args)) = typ.clone()
                 {
