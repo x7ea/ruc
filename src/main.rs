@@ -425,15 +425,14 @@ impl Expr {
             }
             Expr::Write(offset, val, addr) => {
                 let id = ctx.label();
-                let [addr, offset] = [addr.emit(ctx)?, offset.emit(ctx)?];
+                let [addr, offset, val] = [addr.emit(ctx)?, offset.emit(ctx)?, val.emit(ctx)?];
                 Ok(format!(
-                    "{addr}\tpxor xmm0, xmm0\n\tcmp rax, 0\n\tje null.{id}\n\tpush rax\n{offset}\tpop r11\n\tlea r11, [r11+rax*8]\n\tpush r11\n{}\tpop r11\n{}null.{id}:\n",
+                    "{addr}\tpxor xmm0, xmm0\n\tcmp rax, 0\n\tje null.{id}\n\tpush rax\n{offset}\tpop r11\n\tlea r11, [r11+rax*8]\n\tpush r11\n{val}\tpop r11\n{}null.{id}:\n",
                     if typ!(self) == Type::Float {
                         "\tmovsd [r11], xmm0\n"
                     } else {
                         "\tmov [r11], rax\n"
-                    },
-                    val.emit(ctx)?,
+                    }
                 ))
             }
             Expr::Integer(val) => Ok(format!("\tmov rax, {val}\n")),
