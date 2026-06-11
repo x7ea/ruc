@@ -38,27 +38,27 @@ impl Define {
                     args!(&args),
                     (None, Some(Type::parse(&body)?)),
                 ));
+            } else if let Some(func) = line.strip_prefix("fn ")
+                && let Ok((head, body)) = once!(func, ":")
+            {
+                let (typ, body) = once!(&body, SPACE)?;
+                let (name, args) = surround!(&head, "(", ")")?;
+                result.push(Define::Function(
+                    Generics::parse(&name)?,
+                    args!(&args),
+                    (
+                        Some(Expr::Block(vec![Expr::parse(&body)?])),
+                        Some(Type::parse(&typ)?),
+                    ),
+                ));
             } else if let Some(func) = line.strip_prefix("fn ") {
-                if let Ok((head, body)) = once!(func, ":") {
-                    let (typ, body) = once!(&body, SPACE)?;
-                    let (name, args) = surround!(&head, "(", ")")?;
-                    result.push(Define::Function(
-                        Generics::parse(&name)?,
-                        args!(&args),
-                        (
-                            Some(Expr::Block(vec![Expr::parse(&body)?])),
-                            Some(Type::parse(&typ)?),
-                        ),
-                    ));
-                } else {
-                    let (head, body) = once!(func, SPACE)?;
-                    let (name, args) = surround!(&head, "(", ")")?;
-                    result.push(Define::Function(
-                        Generics::parse(&name)?,
-                        args!(&args),
-                        (Some(Expr::Block(vec![Expr::parse(&body)?])), None),
-                    ));
-                };
+                let (head, body) = once!(func, SPACE)?;
+                let (name, args) = surround!(&head, "(", ")")?;
+                result.push(Define::Function(
+                    Generics::parse(&name)?,
+                    args!(&args),
+                    (Some(Expr::Block(vec![Expr::parse(&body)?])), None),
+                ));
             } else if let Some(head) = line.strip_prefix("struct ") {
                 let (name, args) = surround!(&head, "{", "}")?;
                 result.push(Define::Class(
