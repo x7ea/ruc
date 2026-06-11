@@ -6,57 +6,6 @@ use std::{
 
 pub const SPACE: &str = " ";
 
-macro_rules! surround {
-    ($ls: literal, $x: expr, $rs: literal) => {
-        $x.trim()
-            .strip_prefix($ls)
-            .and_then(|x| x.strip_suffix($rs))
-    };
-    ($ls: literal, $rs: literal,$x: expr) => {
-        $x.trim().strip_suffix($rs).and_then(|x| x.split_once($ls))
-    };
-    ($src: expr, $ls: literal, $rs: literal) => {
-        lexer($src.trim(), &$ls).and_then(|src| {
-            if src.len() < 2 {
-                return Err(String::new());
-            }
-            let args = src[src.len() - 1].to_string();
-            let func = src[..src.len() - 1].concat();
-            let args = args[1..args.len() - 1].to_string();
-            Ok((func, args))
-        })
-    };
-}
-
-macro_rules! serial {
-    ($arr: expr, $lambda: expr) => {
-        lexer($arr, ",")?
-            .iter()
-            .map(|x| $lambda(&x))
-            .collect::<Result<Vec<_>, String>>()?
-    };
-}
-
-macro_rules! once {
-    ($v: expr, $del: expr) => {{
-        let v = lexer($v, $del)?;
-        if v.len() >= 2 {
-            Ok((v[0].clone(), v[1..].join($del)))
-        } else {
-            Err(format!("expected {}", $del))
-        }
-    }};
-    ($v: expr,$del: literal, right) => {{
-        let v = lexer($v, $del)?;
-        if v.len() >= 2 {
-            let last = v.len() - 1;
-            Ok((v[..last].join($del), v[last].clone()))
-        } else {
-            Err(format!("expected {}", $del))
-        }
-    }};
-}
-
 impl Define {
     pub fn parse(src: &str) -> Result<Vec<Define>, String> {
         let src = src.trim().replace("'\n", SPACE);
@@ -514,6 +463,60 @@ impl Context {
         self.global.idx += 1;
         id.to_string()
     }
+}
+
+#[macro_export]
+macro_rules! surround {
+    ($ls: literal, $x: expr, $rs: literal) => {
+        $x.trim()
+            .strip_prefix($ls)
+            .and_then(|x| x.strip_suffix($rs))
+    };
+    ($ls: literal, $rs: literal,$x: expr) => {
+        $x.trim().strip_suffix($rs).and_then(|x| x.split_once($ls))
+    };
+    ($src: expr, $ls: literal, $rs: literal) => {
+        lexer($src.trim(), &$ls).and_then(|src| {
+            if src.len() < 2 {
+                return Err(String::new());
+            }
+            let args = src[src.len() - 1].to_string();
+            let func = src[..src.len() - 1].concat();
+            let args = args[1..args.len() - 1].to_string();
+            Ok((func, args))
+        })
+    };
+}
+
+#[macro_export]
+macro_rules! serial {
+    ($arr: expr, $lambda: expr) => {
+        lexer($arr, ",")?
+            .iter()
+            .map(|x| $lambda(&x))
+            .collect::<Result<Vec<_>, String>>()?
+    };
+}
+
+#[macro_export]
+macro_rules! once {
+    ($v: expr, $del: expr) => {{
+        let v = lexer($v, $del)?;
+        if v.len() >= 2 {
+            Ok((v[0].clone(), v[1..].join($del)))
+        } else {
+            Err(format!("expected {}", $del))
+        }
+    }};
+    ($v: expr,$del: literal, right) => {{
+        let v = lexer($v, $del)?;
+        if v.len() >= 2 {
+            let last = v.len() - 1;
+            Ok((v[..last].join($del), v[last].clone()))
+        } else {
+            Err(format!("expected {}", $del))
+        }
+    }};
 }
 
 #[macro_export]
