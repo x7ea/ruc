@@ -9,10 +9,10 @@ impl Define {
         }
         match self {
             Define::Function(Generics(name, param), args, (Some(body), Some(ret))) => {
-                let parent = ctx.local.clone();
                 let sig = Type::Function(param.clone(), Box::new(ret.clone()), types!(args));
-
                 ctx.global.lib.insert(name.clone(), sig.clone());
+
+                let parent = ctx.local.clone();
                 ctx.local = Function::default();
                 ctx.local.scope = args.clone();
 
