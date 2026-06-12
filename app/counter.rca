@@ -4,7 +4,7 @@ struct State<T> {
     count: T
 }
 
-fn inc(this: Elm, data: State<Int>) {
+fn inc<T>(this: Elm, data: State<Int>) {
     let data.count = data.count + 1
     let view = format "Number ", data.count
     this.update(view)
