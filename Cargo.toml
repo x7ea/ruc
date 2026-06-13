@@ -7,7 +7,4 @@ edition = "2024"
 indexmap = "2.13.0"
 ordered-float = "5.3.0"
 vec1 = "1.12.1"
-derive_more = {
-    version = "2.1.0",
-    features = ["unwrap"]
-}
+derive_more = { version = "2.1.0", features = ["unwrap"] }
