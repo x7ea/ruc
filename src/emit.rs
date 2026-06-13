@@ -315,8 +315,10 @@ impl Expr {
                     rhs.emit(ctx)?,
                 ))
             }
-            Expr::Mod(_, _) => Ok(expr!(self).emit(ctx)?
-                + "\tadd rdx, rsi\n\tmov rax, rdx\n\tcqo\n\tidiv rsi\n\tmov rax, rdx\n"),
+            Expr::Mod(_, _) => {
+                let modulo = "\tadd rdx, rsi\n\tmov rax, rdx\n\tcqo\n\tidiv rsi\n\tmov rax, rdx\n";
+                Ok(expr!(self).emit(ctx)? + modulo)
+            }
             Expr::Add(lhs, rhs) => Ok(op!("add", lhs, rhs)),
             Expr::Sub(lhs, rhs) => Ok(op!("sub", lhs, rhs)),
             Expr::Mul(lhs, rhs) => Ok(op!("imul", lhs, rhs)),
