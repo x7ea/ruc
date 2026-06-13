@@ -130,8 +130,7 @@ impl Expr {
 
         match self.clone() {
             Expr::Print(is_output, vals) => {
-                const PRINT: &str = "printf";
-                const FORMAT: &str = "g_strdup_printf";
+                let [PRINT:,FORMAT: &str ] = ["printf","g_strdup_printf"];
 
                 let mut fmt = String::new();
                 for i in vals.iter() {
