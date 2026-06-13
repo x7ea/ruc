@@ -60,20 +60,20 @@ impl Define {
 
         let (mut ptr, mut alloc) = (8, String::new());
         let (mut idx, mut xmm) = (0, 0);
-        for (var, (_, typ)) in args.iter().enumerate() {
-            let var = (var as isize - 4) * 8;
+        for (arg, (_, typ)) in args.iter().enumerate() {
+            let arg = (arg as isize - 4) * 8;
             if typ == &Type::Float {
                 if xmm < 8 {
                     alloc += &format!("\tmovsd [rbp-{ptr}], xmm{xmm}\n")
                 } else {
-                    alloc += &format!("\tmovsd xmm0, [rbp+{var}]\n\tmovsd [rbp-{ptr}], xmm0\n")
+                    alloc += &format!("\tmovsd xmm0, [rbp+{arg}]\n\tmovsd [rbp-{ptr}], xmm0\n")
                 };
                 xmm += 1;
             } else {
                 if let Some(reg) = ABI.get(idx) {
                     alloc += &format!("\tmov [rbp-{ptr}], {reg}\n")
                 } else {
-                    alloc += &format!("\tmov rax, [rbp+{var}]\n\tmov [rbp-{ptr}], rax\n")
+                    alloc += &format!("\tmov rax, [rbp+{arg}]\n\tmov [rbp-{ptr}], rax\n")
                 }
                 idx += 1;
             }
