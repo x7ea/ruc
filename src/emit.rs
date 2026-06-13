@@ -38,9 +38,6 @@ impl Define {
             text += &define.emit(ctx)?;
         }
         let data = ctx.global.data.clone();
-        for (_, define) in ctx.global.def.clone() {
-            ctx.global.lib.shift_remove(&name!(define));
-        }
         let mut lib = String::from("\nsection .text\n\tglobal main\n");
         for symbol in ctx.global.lib.keys() {
             lib += &format!("\textern {symbol}\n");
