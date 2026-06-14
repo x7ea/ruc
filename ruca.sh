@@ -11,11 +11,13 @@ elif [ $1 = "--demo" ]; then
     for file in $(find ./app -type f); do
         clear
         echo "Ruca Programming Language"
-        line="---------------------------------"
         echo "[example $file]"
-        echo $line & cat $file
-        echo $line & read
-        ./ruca.sh $file
+
+        printf '-%0.0s' {1..10}
+            cat $file
+        printf '-%0.0s' {1..10}
+        read
+            ./ruca.sh $file
         read
     done
 else
