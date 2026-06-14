@@ -19,6 +19,7 @@ elif [ $1 = "--demo" ]; then
         read
             ./ruca.sh $file
         read
+        cat main.asm | less
     done
 else
     cat $1 | ruca > main.asm
