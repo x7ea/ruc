@@ -14,10 +14,10 @@ elif [ $1 = "--demo" ]; then
         echo "[example $file]"
 
         echo "----------"
-        cat $file
+            cat $file
         echo "----------"
         read
-        ./ruca.sh $file
+            ./ruca.sh $file
         read
     done
 else
