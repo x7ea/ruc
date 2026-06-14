@@ -9,12 +9,8 @@ elif [ $1 = "--test" ]; then
     done
 elif [ $1 = "--demo" ]; then
     for file in $(find ./app -type f); do
-        clear
-        echo "Example: $file"
-        cat $file
-        read
-        ./ruca.sh $file
-        read
+        clear & cat $file
+        read & ./ruca.sh $file & read
     done
 else
     cat $1 | ruca > main.asm
