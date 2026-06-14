@@ -13,11 +13,11 @@ elif [ $1 = "--demo" ]; then
         echo "Ruca Programming Language"
         echo "[example $file]"
 
-        printf '-%0.0s' {1..10}
-            cat $file
-        printf '-%0.0s' {1..10}
+        echo "----------"
+        cat $file
+        echo "----------"
         read
-            ./ruca.sh $file
+        ./ruca.sh $file
         read
     done
 else
