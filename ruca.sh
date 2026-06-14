@@ -9,8 +9,14 @@ elif [ $1 = "--test" ]; then
     done
 elif [ $1 = "--demo" ]; then
     for file in $(find ./app -type f); do
-        clear & cat $file
-        read & ./ruca.sh $file & read
+        clear
+        echo "Ruca Programming Language"
+        line="---------------------------------"
+        echo "[example $file]"
+        echo $line & cat $file
+        echo $line & read
+        ./ruca.sh $file
+        read
     done
 else
     cat $1 | ruca > main.asm
