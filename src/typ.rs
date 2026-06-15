@@ -544,10 +544,9 @@ impl Type {
                 let layout = {
                     let (Object::Enum(layout) | Object::Struct(layout)) = &table;
                     let mut layout = layout.clone();
-                    for (key, field) in layout.clone() {
+                    for (key, field) in layout.iter_mut() {
                         for (arg, param) in args.iter().zip(params) {
-                            let field = field.rewrite(param, arg);
-                            layout.insert(key.clone(), field.clone());
+                            field.rewrite(param, arg);
                         }
                     }
                     layout
