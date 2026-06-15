@@ -19,6 +19,6 @@ fn tw<A, B>(a: A, b: B) {
 }
 
 fn main() {
-    print safe_div(5, 0).err
+    print safe_div(15, 3).ok
     tw<Int, Float>(1, 1.5)
 }
