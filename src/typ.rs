@@ -515,7 +515,7 @@ impl Type {
                 let mut alias = IndexMap::new();
                 for (arg, param) in args.iter().zip(&params) {
                     alias.insert(param.clone(), arg.clone());
-                    typ = self.rewrite(param, arg);
+                    typ = typ.rewrite(param, arg);
                 }
                 let mangle = func.generics();
                 let mut unify = ctx.global.def[&name].clone();
