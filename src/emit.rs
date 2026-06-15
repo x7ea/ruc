@@ -135,9 +135,8 @@ impl Expr {
         }
         match self {
             Expr::If(cond, then, els) => {
-                let if_let = ctx.local.expand.get(&self.clone());
-                if let Some(expr) = if_let.cloned() {
-                    return expr.emit(ctx);
+                if let Some(expr) = ctx.local.expand.get(&self.clone()) {
+                    return expr.clone().emit(ctx);
                 }
                 let id = ctx.label();
                 let [cond, then] = [cond.emit(ctx)?, then.emit(ctx)?];
