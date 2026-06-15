@@ -156,9 +156,8 @@ impl Expr {
                     return expr.clone().emit(ctx);
                 }
                 let id = ctx.label();
-                let cmp = format!("\tcmp rax, 0\n\tje do.{id}\n");
                 Ok(format!(
-                    "while.{id}:\n{}{cmp}{}\tjmp while.{id}\ndo.{id}:\n",
+                    "while.{id}:\n{}\tcmp rax, 0\n\tje do.{id}\n{}\tjmp while.{id}\ndo.{id}:\n",
                     cond.emit(ctx)?,
                     body.emit(ctx)?,
                 ))
