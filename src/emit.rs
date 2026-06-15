@@ -135,8 +135,8 @@ impl Expr {
         }
         match self {
             Expr::If(cond, then, els) => {
-                let if_let = ctx.local.expand.get(&self.clone());
-                if let Some(expr) = if_let.cloned() {
+                let with_let = ctx.local.expand.get(&self.clone());
+                if let Some(expr) = with_let.cloned() {
                     return expr.emit(ctx);
                 }
                 let id = ctx.label();
@@ -153,8 +153,8 @@ impl Expr {
                 }
             }
             Expr::While(cond, body) => {
-                let while_let = ctx.local.expand.get(&self.clone());
-                if let Some(expr) = while_let.cloned() {
+                let with_let = ctx.local.expand.get(&self.clone());
+                if let Some(expr) = with_let.cloned() {
                     return expr.emit(ctx);
                 }
                 let id = ctx.label();
