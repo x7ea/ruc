@@ -152,9 +152,8 @@ impl Expr {
                 }
             }
             Expr::While(cond, body) => {
-                let while_let = ctx.local.expand.get(&self.clone());
-                if let Some(expr) = while_let.cloned() {
-                    return expr.emit(ctx);
+                if let Some(expr) = ctx.local.expand.get(&self.clone()) {
+                    return expr.clone().emit(ctx);
                 }
                 let id = ctx.label();
                 let cmp = format!("\tcmp rax, 0\n\tje do.{id}\n");
