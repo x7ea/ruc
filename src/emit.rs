@@ -142,14 +142,14 @@ impl Expr {
                 let id = ctx.label();
                 let [cond, then] = [cond.emit(ctx)?, then.emit(ctx)?];
                 if let Some(els) = els {
-                    let cmp = format!("\tcmp rax, 0\n\tje else.{id}\n");
                     Ok(format!(
-                        "{cond}{cmp}{then}\tjmp if.{id}\nelse.{id}:\n{}if.{id}:\n",
+                        "{cond}\tcmp rax, 0\n\tje else.{id}\n{then}\tjmp if.{id}\nelse.{id}:\n{}if.{id}:\n",
                         els.emit(ctx)?,
                     ))
                 } else {
-                    let cmp = format!("\tcmp rax, 0\n\tje if.{id}\n");
-                    Ok(format!("{cond}{cmp}{then}if.{id}:\n"))
+                    Ok(format!(
+                        "{cond}\tcmp rax, 0\n\tje if.{id}\n{then}if.{id}:\n"
+                    ))
                 }
             }
             Expr::While(cond, body) => {
