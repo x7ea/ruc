@@ -500,12 +500,9 @@ impl Type {
                 if let Define::Function(Generics(_, _), params, body) = &unify
                     && let Type::Function(_, _, Some(args)) = typ.clone()
                 {
-                    let mut map = IndexMap::new();
-                    for (param, arg) in params.keys().zip(args) {
-                        map.insert(param.clone(), arg);
-                    }
+                    let map = params.keys().cloned().zip(args);
                     let name = Generics(mangle.clone(), vec![]);
-                    unify = Define::Function(name, map.clone(), body.clone());
+                    unify = Define::Function(name, map.collect(), body.clone());
                 };
                 let parent = ctx.global.alias.clone();
                 ctx.global.alias = alias.clone();
