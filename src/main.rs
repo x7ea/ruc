@@ -116,7 +116,7 @@ pub enum Type {
 }
 
 #[derive(Clone, Hash, PartialEq, Eq)]
-struct Lambda(Vec<Type>, Box<Type>, Option<Vec<Type>>);
+pub struct Lambda(Vec<Type>, Box<Type>, Option<Vec<Type>>);
 
 #[derive(Clone, Hash, Default, PartialEq, Eq)]
 pub struct Generics(Name, Vec<Type>);
