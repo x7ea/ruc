@@ -502,9 +502,9 @@ impl Type {
                 if let Define::Function(Generics(_, _), params, body) = &unify
                     && let Type::Function(_, _, Some(args)) = typ.clone()
                 {
-                    let map = params.keys().cloned().zip(args);
                     let name = Generics(mangle.clone(), vec![]);
-                    unify = Define::Function(name, map.collect(), body.clone());
+                    let map = params.keys().cloned().zip(args).collect();
+                    unify = Define::Function(name, map, body.clone());
                 };
                 let parent = ctx.global.alias.clone();
                 ctx.global.alias = alias.clone();
