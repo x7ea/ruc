@@ -37,6 +37,9 @@ impl Define {
         for (_, define) in ctx.global.def.clone() {
             text += &define.emit(ctx)?;
         }
+        for (_, func) in ctx.global.def.clone() {
+            ctx.global.lib.swap_remove(&name!(func));
+        }
         let data = ctx.global.data.clone();
         let mut lib = String::from("\nsection .text\n\tglobal main\n");
         for symbol in ctx.global.lib.keys() {
