@@ -26,8 +26,8 @@ impl Define {
         ctx.global.lib = {
             let mut map = IndexMap::new();
             for line in Self::CORE {
-                let sig = Type::Function(vec![], Box::new(Type::Void), None);
-                map.insert(Name::new(line)?, sig);
+                let sig = Lambda(vec![], Box::new(Type::Void), None);
+                map.insert(Name::new(line)?, Type::Function(sig));
             }
             map
         };
