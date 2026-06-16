@@ -311,7 +311,7 @@ impl Expr {
             Expr::Sub(lhs, rhs) => Ok(op!("sub", lhs, rhs)),
             Expr::Mul(lhs, rhs) => Ok(op!("imul", lhs, rhs)),
             Expr::Eq(lhs, rhs) => Ok(cmp!("e", lhs, rhs)),
-            Expr::Neq(lhs, rhs) => Ok(cmp!("ne", lhs, rhs)),
+            Expr::Ne(lhs, rhs) => Ok(cmp!("ne", lhs, rhs)),
             Expr::Gt(lhs, rhs) => Ok(cmp!("g", lhs, rhs)),
             Expr::Lt(lhs, rhs) => Ok(cmp!("l", lhs, rhs)),
             Expr::Ge(lhs, rhs) => Ok(cmp!("ge", lhs, rhs)),
