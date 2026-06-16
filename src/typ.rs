@@ -221,7 +221,7 @@ impl Expr {
                     Type::Function(_, ret, Some(params)) => {
                         let (pl, al) = (params.len(), args.len());
                         if pl != al {
-                            return Err(format!("length: {pl} != {al}"));
+                            return Err(format!("f(x, ): {pl} != {al}"));
                         }
                         for (param, arg) in params.iter().zip(args) {
                             let arg = arg.infer(ctx)?.solve(ctx);
