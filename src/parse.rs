@@ -179,7 +179,7 @@ impl Expr {
                 "*" => Expr::Mul(lhs, rhs),
                 "/" => Expr::Div(lhs, rhs),
                 "%" => Expr::Mod(lhs, rhs),
-                "==" => Expr::Eql(lhs, rhs),
+                "==" => Expr::Eq(lhs, rhs),
                 "!=" => Expr::Neq(lhs, rhs),
                 "&" => Expr::And(lhs, rhs),
                 "|" => Expr::Or(lhs, rhs),
