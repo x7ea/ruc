@@ -90,7 +90,7 @@ pub enum Expr {
     Neq(Box<Expr>, Box<Expr>),
     Gt(Box<Expr>, Box<Expr>),
     Lt(Box<Expr>, Box<Expr>),
-    GtEq(Box<Expr>, Box<Expr>),
+    Ge(Box<Expr>, Box<Expr>),
     LtEq(Box<Expr>, Box<Expr>),
     // Logial
     And(Box<Expr>, Box<Expr>),
