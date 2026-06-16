@@ -79,7 +79,6 @@ pub fn lexer(src: &str, del: &str) -> Result<Vec<String>, String> {
 pub mod name {
     use crate::*;
     use std::fmt;
-    use std::hash::{DefaultHasher, Hasher};
 
     const RESERVED: [&str; 12] = [
         "print", "format", "let", "new", "clone", "if", "then", "else", "for", "while", "do",
@@ -163,6 +162,7 @@ macro_rules! surround {
 #[macro_export]
 macro_rules! hash {
     ($value: expr) => {{
+        use std::hash::{DefaultHasher, Hasher};
         let mut state = DefaultHasher::new();
         $value.hash(&mut state);
         state.finish()
