@@ -217,25 +217,26 @@ impl Expr {
                 {
                     ctx.local.class = Some(name.0);
                 }
-                let typ = callee.infer(ctx)?;
-                let Type::Function(_, ret, params) = typ else {
-                    return Err(format!("not callee: {typ}"));
-                };
-                if let Some(params) = params {
-                    let (pl, al) = (params.len(), args.len());
-                    if pl != al {
-                        return Err(format!("length: {pl} != {al}"));
-                    }
-                    for (param, arg) in params.iter().zip(args) {
-                        let arg = arg.infer(ctx)?.solve(ctx);
-                        if arg != param.solve(ctx) {
-                            return Err(format!("arguments: {param} != {arg}"));
+                match callee.infer(ctx)? {
+                    Type::Function(_, ret, Some(params)) => {
+                        let (pl, al) = (params.len(), args.len());
+                        if pl != al {
+                            return Err(format!("length: {pl} != {al}"));
                         }
+                        for (param, arg) in params.iter().zip(args) {
+                            let arg = arg.infer(ctx)?.solve(ctx);
+                            if arg != param.solve(ctx) {
+                                return Err(format!("arguments: {param} != {arg}"));
+                            }
+                        }
+                        typing!(*ret.clone())
                     }
-                } else {
-                    map!(args, |x| x.infer(ctx), ok)?;
+                    Type::Function(_, ret, None) => {
+                        map!(args, |x| x.infer(ctx), ok)?;
+                        typing!(*ret.clone())
+                    }
+                    typ => Err(format!("not callee: {typ}")),
                 }
-                typing!(*ret.clone())
             }
             Expr::Variable(generics) => {
                 let Generics(name, args) = generics.clone();
