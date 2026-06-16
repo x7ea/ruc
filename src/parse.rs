@@ -258,11 +258,11 @@ impl Type {
             "()" => Ok(Type::Void),
             x => {
                 if let Ok((ret, args)) = surround!(x, "(", ")") {
-                    Ok(Type::Function(
+                    Ok(Type::Function(Lambda(
                         Vec::new(),
                         Box::new(Type::parse(&ret)?),
                         Some(serial!(&args, Type::parse)),
-                    ))
+                    )))
                 } else if let Some(typ) = surround!("[", x, "]") {
                     Ok(Type::Array(Box::new(Type::parse(typ)?)))
                 } else {
@@ -298,8 +298,8 @@ impl Display for Type {
             Type::Array(typ) => write!(f, "[{typ}]"),
             Type::Class(Generics(name, args)) if args.is_empty() => write!(f, "{name}"),
             Type::Class(Generics(name, args)) => write!(f, "{name}<{}>", comma(args)),
-            Type::Function(_, ret, Some(args)) => write!(f, "{ret}({})", comma(args)),
-            Type::Function(_, ret, None) => write!(f, "{ret}()"),
+            Type::Function(Lambda(_, ret, Some(args))) => write!(f, "{ret}({})", comma(args)),
+            Type::Function(Lambda(_, ret, None)) => write!(f, "{ret}()"),
         }
     }
 }
