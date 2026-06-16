@@ -221,19 +221,19 @@ impl Expr {
                 let Type::Function(_, ret, params) = typ else {
                     return Err(format!("not callee: {typ}"));
                 };
-                let Some(params) = params else {
-                    map!(args, |x| x.infer(ctx), ok)?;
-                    return typing!(*ret.clone());
-                };
-                let (pl, al) = (params.len(), args.len());
-                if pl != al {
-                    return Err(format!("length: {pl} != {al}"));
-                }
-                for (param, arg) in params.iter().zip(args) {
-                    let arg = arg.infer(ctx)?.solve(ctx);
-                    if arg != param.solve(ctx) {
-                        return Err(format!("arguments: {param} != {arg}"));
+                if let Some(params) = params {
+                    let (pl, al) = (params.len(), args.len());
+                    if pl != al {
+                        return Err(format!("length: {pl} != {al}"));
                     }
+                    for (param, arg) in params.iter().zip(args) {
+                        let arg = arg.infer(ctx)?.solve(ctx);
+                        if arg != param.solve(ctx) {
+                            return Err(format!("arguments: {param} != {arg}"));
+                        }
+                    }
+                } else {
+                    map!(args, |x| x.infer(ctx), ok)?;
                 }
                 typing!(*ret.clone())
             }
