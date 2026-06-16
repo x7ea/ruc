@@ -87,7 +87,7 @@ pub enum Expr {
     Mod(Box<Expr>, Box<Expr>),
     // Compare
     Eq(Box<Expr>, Box<Expr>),
-    Neq(Box<Expr>, Box<Expr>),
+    Ne(Box<Expr>, Box<Expr>),
     Gt(Box<Expr>, Box<Expr>),
     Lt(Box<Expr>, Box<Expr>),
     Ge(Box<Expr>, Box<Expr>),
