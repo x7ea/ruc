@@ -142,9 +142,7 @@ pub mod name {
                     Type::Function(_, ret, Some(args)) => {
                         format!("L{}{}", mangle(ret), map!(args, mangle).concat())
                     }
-                    Type::Class(Generics(name, _)) => {
-                        format!("C{}", name.to_string().to_lowercase())
-                    }
+                    Type::Class(name) => format!("C{}", name.generics()),
                 }
             }
             let typ = map!(self.1, mangle).concat();
