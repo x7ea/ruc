@@ -186,7 +186,7 @@ impl Expr {
                 "^" => Expr::Xor(lhs, rhs),
                 ">" => Expr::Gt(lhs, rhs),
                 "<" => Expr::Lt(lhs, rhs),
-                ">=" => Expr::GtEq(lhs, rhs),
+                ">=" => Expr::Ge(lhs, rhs),
                 "<=" => Expr::LtEq(lhs, rhs),
                 op => return Err(format!("unknown operator: {op}")),
             })
