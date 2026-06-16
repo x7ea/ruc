@@ -401,7 +401,7 @@ impl Expr {
                         return Err(format!("undefined: {name}.{key}"));
                     };
                     let offset = Box::new(Expr::Integer(0));
-                    expand!(Expr::Eql(
+                    expand!(Expr::Eq(
                         Box::new(Expr::Read(offset, Type::Integer, obj.clone())),
                         Box::new(Expr::Integer(tag as i64)),
                     ));
@@ -468,7 +468,7 @@ impl Expr {
             | Expr::Sub(lhs, rhs)
             | Expr::Mul(lhs, rhs)
             | Expr::Div(lhs, rhs) => op!((Type::Integer | Type::Float), lhs, rhs),
-            Expr::Eql(lhs, rhs)
+            Expr::Eq(lhs, rhs)
             | Expr::Neq(lhs, rhs)
             | Expr::Gt(lhs, rhs)
             | Expr::Lt(lhs, rhs)
