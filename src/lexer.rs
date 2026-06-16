@@ -79,6 +79,7 @@ pub fn lexer(src: &str, del: &str) -> Result<Vec<String>, String> {
 pub mod name {
     use crate::*;
     use std::fmt;
+    use std::hash::{DefaultHasher, Hasher};
 
     const RESERVED: [&str; 12] = [
         "print", "format", "let", "new", "clone", "if", "then", "else", "for", "while", "do",
@@ -127,26 +128,13 @@ pub mod name {
 
     impl Generics {
         pub fn generics(&self) -> Name {
-            if self.1.is_empty() {
-                return self.0.clone();
+            let Generics(name, typ) = self;
+            if typ.is_empty() {
+                return name.clone();
             }
-            fn mangle(typ: &Type) -> String {
-                match typ {
-                    Type::Integer => "I".to_string(),
-                    Type::String => "S".to_string(),
-                    Type::Boolean => "B".to_string(),
-                    Type::Void => "N".to_string(),
-                    Type::Float => "F".to_string(),
-                    Type::Array(typ) => format!("A{}", mangle(typ)),
-                    Type::Class(name) => format!("C{}", name.generics()),
-                    Type::Function(_, ret, None) => format!("L{}", mangle(ret)),
-                    Type::Function(_, ret, Some(args)) => {
-                        format!("L{}{}", mangle(ret), map!(args, mangle).concat())
-                    }
-                }
-            }
-            let typ = map!(self.1, mangle).concat();
-            Name(format!("{}.{typ}", self.0))
+            let mut state = DefaultHasher::new();
+            self.1.hash(&mut state);
+            Name(format!("{name}.{:x}", state.finish()))
         }
     }
 }
