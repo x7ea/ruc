@@ -103,7 +103,8 @@ impl Expr {
             ($typ: pat, $lhs: expr, $rhs: expr) => {{
                 match ($lhs.infer(ctx)?, $rhs.infer(ctx)?) {
                     ($typ, ret @ $typ) => typing!(ret.clone()),
-                    (lhs, rhs) if lhs == rhs => Err(format!("operator term: {lhs} != {rhs}")),
+                    (lhs, rhs) if lhs != rhs => Err(format!("operator term: {lhs} != {rhs}")),
+                    (typ, _) => Err(format!("no operation: {typ}")),
                 }
             }};
             ($typ: pat, $lhs: expr, $rhs: expr, $ret: expr) => {{
