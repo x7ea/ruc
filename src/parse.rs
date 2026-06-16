@@ -187,7 +187,7 @@ impl Expr {
                 ">" => Expr::Gt(lhs, rhs),
                 "<" => Expr::Lt(lhs, rhs),
                 ">=" => Expr::Ge(lhs, rhs),
-                "<=" => Expr::LtEq(lhs, rhs),
+                "<=" => Expr::Le(lhs, rhs),
                 op => return Err(format!("unknown operator: {op}")),
             })
         } else if src == "()" {
