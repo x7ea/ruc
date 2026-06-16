@@ -241,7 +241,7 @@ impl Expr {
                 Box::new(Expr::parse(&idx)?),
             ))
         } else if let Ok(b) = src.parse::<bool>() {
-            Ok(Expr::Bool(b))
+            Ok(Expr::Boolean(b))
         } else {
             Ok(Expr::Variable(Generics::parse(src)?))
         }
