@@ -123,6 +123,13 @@ impl Expr {
                 )
             };
         }
+        macro_rules! label {
+            () => {{
+                let id = ctx.global.idx;
+                ctx.global.idx += 1;
+                id.to_string()
+            }};
+        }
         macro_rules! typ {
             ($expr: expr) => {
                 ctx.local.typed[$expr].clone()
@@ -139,7 +146,7 @@ impl Expr {
                 if let Some(expr) = ctx.local.expand.get(&self.clone()) {
                     return expr.clone().emit(ctx);
                 }
-                let id = ctx.label();
+                let id = label!();
                 let [cond, then] = [cond.emit(ctx)?, then.emit(ctx)?];
                 if let Some(els) = els {
                     Ok(format!(
@@ -156,7 +163,7 @@ impl Expr {
                 if let Some(expr) = ctx.local.expand.get(&self.clone()) {
                     return expr.clone().emit(ctx);
                 }
-                let id = ctx.label();
+                let id = label!();
                 Ok(format!(
                     "while.{id}:\n{}\tcmp rax, 0\n\tje do.{id}\n{}\tjmp while.{id}\ndo.{id}:\n",
                     cond.emit(ctx)?,
@@ -251,7 +258,7 @@ impl Expr {
                 ))
             }
             Expr::Read(offset, typ, addr) => {
-                let id = ctx.label();
+                let id = label!();
                 let [addr, offset] = [addr.emit(ctx)?, offset.emit(ctx)?];
                 Ok(format!(
                     "{addr}\tpxor xmm0, xmm0\n\tcmp rax, 0\n\tje null.{id}\n\tpush rax\n{offset}\tpop r11\n\tlea rax, [r11+rax*8]\n{}null.{id}:\n",
@@ -263,7 +270,7 @@ impl Expr {
                 ))
             }
             Expr::Write(offset, val, addr) => {
-                let id = ctx.label();
+                let id = label!();
                 let [addr, offset, val] = [addr.emit(ctx)?, offset.emit(ctx)?, val.emit(ctx)?];
                 Ok(format!(
                     "{addr}\tpxor xmm0, xmm0\n\tcmp rax, 0\n\tje null.{id}\n\tpush rax\n{offset}\tpop r11\n\tlea r11, [r11+rax*8]\n\tpush r11\n{val}\tpop r11\n{}null.{id}:\n",
@@ -279,7 +286,7 @@ impl Expr {
                 if *val == Float(0.0) {
                     return Ok(format!("\tpxor xmm0, xmm0\n"));
                 }
-                let name = format!("float.{}", ctx.label());
+                let name = format!("float.{}", label!());
                 ctx.global.data += &format!("\t{name} dq {val:?}\n");
                 Ok(format!("\tmovsd xmm0, [{name}]\n"))
             }
@@ -289,7 +296,7 @@ impl Expr {
                     .replace("\\n", "\", 10, \"")
                     .replace("\\\"", "\", 34, \"")
                     .replace("\"\", ", "");
-                let name = format!("str.{}", ctx.label());
+                let name = format!("str.{}", label!());
                 ctx.global.data += &format!("\t{name} db {val}\n");
                 Ok(format!("\tmov rax, {name}\n"))
             }
@@ -321,13 +328,5 @@ impl Expr {
             Expr::Xor(lhs, rhs) => Ok(op!("xor", lhs, rhs)),
             _ => expr!(self).emit(ctx),
         }
-    }
-}
-
-impl Context {
-    pub fn label(&mut self) -> String {
-        let id = self.global.idx;
-        self.global.idx += 1;
-        id.to_string()
     }
 }
