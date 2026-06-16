@@ -283,7 +283,7 @@ impl Expr {
                 }
                 acc @ Expr::Member(obj, key) => {
                     let typ = acc.infer(ctx)?;
-                    let Generics(name, _) = &obj.infer(ctx)?.unwrap_class();
+                    let name = &obj.infer(ctx)?.unwrap_class().0;
                     {
                         let val = val.infer(ctx)?;
                         if typ.solve(ctx) != val {
