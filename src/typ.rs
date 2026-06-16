@@ -130,10 +130,7 @@ impl Expr {
                 is_output.then(|| fmt += "\\n");
                 let handler = ["g_strdup_printf", "printf"];
                 expand!(Expr::Call(
-                    Box::new(Expr::Variable(Generics(
-                        Name::new(handler[is_output as usize])?,
-                        Vec::new(),
-                    ))),
+                    Box::new(var!(handler[is_output as usize])),
                     [vec![Expr::String(fmt)], vals.to_vec()].concat(),
                 ));
                 typing!(if is_output { Type::Void } else { Type::String })
@@ -450,7 +447,7 @@ impl Expr {
                 typing!(expands!(Expr::Block(vec![
                     Expr::Let(dest.clone(), Box::new(Expr::New(typ.clone()))),
                     Expr::Call(
-                        Box::new(Expr::Variable(Generics(Name::new("memcpy")?, vec![]))),
+                        Box::new(var!("memcpy")),
                         vec![*dest.clone(), *expr, Expr::Integer(typ.size(ctx)? as i64)]
                     ),
                     *dest.clone()
@@ -511,7 +508,7 @@ impl Type {
                 if let Define::Function(Generics(_, _), params, body) = &unify
                     && let Type::Function(Lambda(_, _, Some(args))) = typ.clone()
                 {
-                    let name = Generics(mangle.clone(), vec![]);
+                    let name = Generics(mangle.clone(), Vec::new());
                     let map = params.keys().cloned().zip(args).collect();
                     unify = Define::Function(name, map, body.clone());
                 };
