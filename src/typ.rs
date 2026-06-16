@@ -41,7 +41,6 @@ impl Define {
                     Box::new(body.infer(ctx)?),
                     Some(args.values().cloned().collect()),
                 ));
-
                 ctx.table.insert(name.clone(), ctx.local.clone());
                 ctx.global.lib.insert(name.clone(), sig.clone());
                 ctx.local = parent;
