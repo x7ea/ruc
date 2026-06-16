@@ -235,7 +235,7 @@ impl Expr {
                         map!(args, |x| x.infer(ctx), ok)?;
                         typing!(*ret.clone())
                     }
-                    typ => Err(format!("not callee: {typ}")),
+                    typ => Err(format!("not function: {typ}")),
                 }
             }
             Expr::Variable(generics) => {
