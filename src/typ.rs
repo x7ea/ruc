@@ -469,7 +469,7 @@ impl Expr {
             | Expr::Mul(lhs, rhs)
             | Expr::Div(lhs, rhs) => op!((Type::Integer | Type::Float), lhs, rhs),
             Expr::Eql(lhs, rhs)
-            | Expr::NotEq(lhs, rhs)
+            | Expr::Neq(lhs, rhs)
             | Expr::Gt(lhs, rhs)
             | Expr::Lt(lhs, rhs)
             | Expr::GtEq(lhs, rhs)
