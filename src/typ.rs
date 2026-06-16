@@ -239,7 +239,7 @@ impl Expr {
             }
             Expr::Variable(generics) => {
                 let Generics(name, args) = generics.clone();
-                if let Some(obj) = ctx.local.class.clone() {
+                if let Some(obj) = &ctx.local.class {
                     let name = Name::new(&format!("{obj}.{name}"))?;
                     if ctx.global.lib.contains_key(&name) {
                         return typing!(expands!(Expr::Variable(Generics(name, args.clone()))));
