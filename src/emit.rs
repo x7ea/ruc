@@ -207,9 +207,9 @@ impl Expr {
                 }
                 let env = &ctx.local.var;
                 let mut name = name.clone();
-                if let Some(i) = env.get_index_of(&name) {
+                if let Some(addr) = env.get_index_of(&name) {
                     let typ = env[&name].clone();
-                    let addr = (i + 1) * 8;
+                    let addr = (addr + 1) * 8;
                     if typ == Type::Float {
                         Ok(format!("\tmovsd xmm0, [rbp-{addr}]\n"))
                     } else {
