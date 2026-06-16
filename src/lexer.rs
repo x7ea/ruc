@@ -132,9 +132,7 @@ pub mod name {
             if typ.is_empty() {
                 return name.clone();
             }
-            let mut state = DefaultHasher::new();
-            self.1.hash(&mut state);
-            Name(format!("{name}.{:x}", state.finish()))
+            Name(format!("{name}.{:x}", hash!(typ)))
         }
     }
 }
@@ -160,6 +158,15 @@ macro_rules! surround {
             Ok((func, args))
         })
     };
+}
+
+#[macro_export]
+macro_rules! hash {
+    ($value: expr) => {{
+        let mut state = DefaultHasher::new();
+        $value.hash(&mut state);
+        state.finish()
+    }};
 }
 
 #[macro_export]
