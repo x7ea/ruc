@@ -90,13 +90,15 @@ impl Expr {
                 let _ = expands!($expr);
             }};
         }
+        macro_rules! var {
+            ($name: expr) => {
+                Expr::Variable(Generics(Name::new(&$name)?, Vec::new()))
+            };
+        }
         macro_rules! temp {
             ($typ: expr) => {{
                 let name = Name::new(&format!("tmp{}", hash!(&self)))?;
-                Expr::Variable(Generics(
-                    Generics(name, vec![$typ.clone()]).generics(),
-                    Vec::new(),
-                ))
+                var!(Generics(name, vec![$typ.clone()]).generics().to_string())
             }};
         }
         macro_rules! op {
