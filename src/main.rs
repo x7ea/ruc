@@ -57,7 +57,7 @@ pub enum Expr {
     // Literal
     Integer(i64),
     Float(Float<f64>),
-    Bool(bool),
+    Boolean(bool),
     String(String),
     Null(Type),
     // Reference
