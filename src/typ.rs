@@ -473,7 +473,7 @@ impl Expr {
             | Expr::Gt(lhs, rhs)
             | Expr::Lt(lhs, rhs)
             | Expr::Ge(lhs, rhs)
-            | Expr::LtEq(lhs, rhs) => op!(Type::Integer, lhs, rhs, Type::Boolean),
+            | Expr::Le(lhs, rhs) => op!(Type::Integer, lhs, rhs, Type::Boolean),
             Expr::And(lhs, rhs) | Expr::Or(lhs, rhs) | Expr::Xor(lhs, rhs) => {
                 op!(Type::Boolean, lhs, rhs)
             }
