@@ -103,11 +103,9 @@ impl Expr {
                         $asm,
                     ),
                     Type::Float => format!(
-                        "{lhs}{push}{rhs}\tmovsd xmm1, xmm0\n{pop}\t{op}sd xmm0, xmm1\n",
+                        "{lhs}\tsub rsp, 8\n\tmovsd [rsp], xmm0\n{rhs}\tmovsd xmm1, xmm0\n\tmovsd xmm0, [rsp]\n\tadd rsp, 8\n\t{op}sd xmm0, xmm1\n",
                         lhs = $lhs.emit(ctx)?,
                         rhs = $rhs.emit(ctx)?,
-                        push = "\tsub rsp, 8\n\tmovsd [rsp], xmm0\n",
-                        pop = "\tmovsd xmm0, [rsp]\n\tadd rsp, 8\n",
                         op = $asm.replace("imul", "mul")
                     ),
                     _ => panic!(),
