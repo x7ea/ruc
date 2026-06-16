@@ -2,14 +2,13 @@ use crate::*;
 
 impl Define {
     pub fn infer(&self, ctx: &mut Context) -> Result<Type, String> {
-        macro_rules! types {
-            ($args: expr) => {
-                Some($args.values().cloned().collect::<Vec<Type>>())
-            };
-        }
         match self {
             Define::Function(Generics(name, param), args, (Some(body), Some(ret))) => {
-                let sig = Type::Function(param.clone(), Box::new(ret.clone()), types!(args));
+                let sig = Type::Function(Lambda(
+                    param.clone(),
+                    Box::new(ret.clone()),
+                    Some(args.values().cloned().collect()),
+                ));
                 ctx.global.lib.insert(name.clone(), sig.clone());
 
                 let parent = ctx.local.clone();
@@ -25,7 +24,11 @@ impl Define {
             }
             Define::Function(Generics(name, param), args, (Some(body), None)) => {
                 if !param.is_empty() {
-                    let sig = Type::Function(param.clone(), Box::new(Type::Void), types!(args));
+                    let sig = Type::Function(Lambda(
+                        param.clone(),
+                        Box::new(Type::Void),
+                        Some(args.values().cloned().collect()),
+                    ));
                     ctx.global.lib.insert(name.clone(), sig.clone());
                     return Ok(sig);
                 }
@@ -33,8 +36,11 @@ impl Define {
                 ctx.local = Function::default();
                 ctx.local.scope = args.clone();
 
-                let ret = Box::new(body.infer(ctx)?);
-                let sig = Type::Function(param.clone(), ret, types!(args));
+                let sig = Type::Function(Lambda(
+                    param.clone(),
+                    Box::new(body.infer(ctx)?),
+                    Some(args.values().cloned().collect()),
+                ));
 
                 ctx.table.insert(name.clone(), ctx.local.clone());
                 ctx.global.lib.insert(name.clone(), sig.clone());
@@ -42,7 +48,11 @@ impl Define {
                 Ok(sig)
             }
             Define::Function(Generics(name, param), args, (None, Some(ret))) => {
-                let sig = Type::Function(param.clone(), Box::new(ret.clone()), types!(args));
+                let sig = Type::Function(Lambda(
+                    param.clone(),
+                    Box::new(ret.clone()),
+                    Some(args.values().cloned().collect()),
+                ));
                 ctx.table.insert(name.clone(), ctx.local.clone());
                 ctx.global.lib.insert(name.clone(), sig.clone());
                 ctx.global.extrn.insert(name.clone());
@@ -218,7 +228,7 @@ impl Expr {
                     ctx.local.class = Some(name.0);
                 }
                 match callee.infer(ctx)? {
-                    Type::Function(_, ret, Some(params)) => {
+                    Type::Function(Lambda(_, ret, Some(params))) => {
                         let (pl, al) = (params.len(), args.len());
                         if pl != al {
                             return Err(format!("arguments length: {pl} != {al}"));
@@ -231,7 +241,7 @@ impl Expr {
                         }
                         typing!(*ret.clone())
                     }
-                    Type::Function(_, ret, None) => {
+                    Type::Function(Lambda(_, ret, None)) => {
                         map!(args, |x| x.infer(ctx), ok)?;
                         typing!(*ret.clone())
                     }
@@ -491,7 +501,7 @@ impl Type {
             *arg = arg.solve(ctx);
         }
         match typ.clone() {
-            Type::Function(params, _, _) if !params.is_empty() => {
+            Type::Function(Lambda(params, _, _)) if !params.is_empty() => {
                 let mut alias = IndexMap::new();
                 for (arg, param) in args.iter().zip(&params) {
                     alias.insert(param.clone(), arg.clone());
@@ -500,7 +510,7 @@ impl Type {
                 let mangle = func.generics();
                 let mut unify = ctx.global.def[&name].clone();
                 if let Define::Function(Generics(_, _), params, body) = &unify
-                    && let Type::Function(_, _, Some(args)) = typ.clone()
+                    && let Type::Function(Lambda(_, _, Some(args))) = typ.clone()
                 {
                     let name = Generics(mangle.clone(), vec![]);
                     let map = params.keys().cloned().zip(args).collect();
@@ -545,11 +555,11 @@ impl Type {
             return new.clone();
         }
         match self {
-            Type::Function(typ, ret, Some(args)) => Type::Function(
+            Type::Function(Lambda(typ, ret, Some(args))) => Type::Function(Lambda(
                 typ.clone(),
                 Box::new(ret.rewrite(old, new)),
                 Some(map!(args, |x| x.rewrite(old, new))),
-            ),
+            )),
             Type::Class(Generics(name, args)) => {
                 Type::Class(Generics(name.clone(), map!(args, |x| x.rewrite(old, new))))
             }
