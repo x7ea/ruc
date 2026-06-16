@@ -37,9 +37,6 @@ impl Define {
         for (_, define) in ctx.global.def.clone() {
             text += &define.emit(ctx)?;
         }
-        for (_, func) in ctx.global.def.clone() {
-            ctx.global.lib.swap_remove(&name!(func));
-        }
         let data = ctx.global.data.clone();
         let mut lib = String::from("\nsection .text\n\tglobal main\n");
         for symbol in ctx.global.lib.keys() {
@@ -279,6 +276,9 @@ impl Expr {
             }
             Expr::Integer(val) => Ok(format!("\tmov rax, {val}\n")),
             Expr::Float(val) => {
+                if *val == Float(0.0) {
+                    return Ok(format!("\tpxor xmm0, xmm0\n"));
+                }
                 let name = format!("float.{}", ctx.label());
                 ctx.global.data += &format!("\t{name} dq {val:?}\n");
                 Ok(format!("\tmovsd xmm0, [{name}]\n"))
