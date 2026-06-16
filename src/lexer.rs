@@ -138,11 +138,11 @@ pub mod name {
                     Type::Void => "N".to_string(),
                     Type::Float => "F".to_string(),
                     Type::Array(typ) => format!("A{}", mangle(typ)),
+                    Type::Class(name) => format!("C{}", name.generics()),
                     Type::Function(_, ret, None) => format!("L{}", mangle(ret)),
                     Type::Function(_, ret, Some(args)) => {
                         format!("L{}{}", mangle(ret), map!(args, mangle).concat())
                     }
-                    Type::Class(name) => format!("C{}", name.generics()),
                 }
             }
             let typ = map!(self.1, mangle).concat();
