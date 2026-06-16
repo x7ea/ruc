@@ -111,9 +111,12 @@ pub enum Type {
     Float,
     Array(Box<Type>),
     Class(Generics),
-    Function(Vec<Type>, Box<Type>, Option<Vec<Type>>),
+    Function(Lambda),
     Void,
 }
+
+#[derive(Clone, Hash, PartialEq, Eq)]
+struct Lambda(Vec<Type>, Box<Type>, Option<Vec<Type>>);
 
 #[derive(Clone, Hash, Default, PartialEq, Eq)]
 pub struct Generics(Name, Vec<Type>);
