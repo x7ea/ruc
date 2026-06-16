@@ -101,14 +101,10 @@ impl Expr {
         }
         macro_rules! op {
             ($typ: pat, $lhs: expr, $rhs: expr) => {{
-                let [lt, rt] = [$lhs.infer(ctx)?, $rhs.infer(ctx)?];
-                if lt != rt {
-                    return Err(format!("operator term: {lt} != {rt}"));
+                match ($lhs.infer(ctx)?, $rhs.infer(ctx)?) {
+                    ($typ, ret @ $typ) => typing!(ret.clone()),
+                    (lhs, rhs) if lhs == rhs => Err(format!("operator term: {lhs} != {rhs}")),
                 }
-                let $typ = lt else {
-                    return Err(format!("no operation: {lt}"));
-                };
-                typing!(lt.clone())
             }};
             ($typ: pat, $lhs: expr, $rhs: expr, $ret: expr) => {{
                 op!($typ, $lhs, $rhs)?;
