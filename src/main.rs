@@ -86,7 +86,7 @@ pub enum Expr {
     Div(Box<Expr>, Box<Expr>),
     Mod(Box<Expr>, Box<Expr>),
     // Compare
-    Eql(Box<Expr>, Box<Expr>),
+    Eq(Box<Expr>, Box<Expr>),
     Neq(Box<Expr>, Box<Expr>),
     Gt(Box<Expr>, Box<Expr>),
     Lt(Box<Expr>, Box<Expr>),
