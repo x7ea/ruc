@@ -315,7 +315,7 @@ impl Expr {
             Expr::Gt(lhs, rhs) => Ok(cmp!("g", lhs, rhs)),
             Expr::Lt(lhs, rhs) => Ok(cmp!("l", lhs, rhs)),
             Expr::Ge(lhs, rhs) => Ok(cmp!("ge", lhs, rhs)),
-            Expr::LtEq(lhs, rhs) => Ok(cmp!("le", lhs, rhs)),
+            Expr::Le(lhs, rhs) => Ok(cmp!("le", lhs, rhs)),
             Expr::And(lhs, rhs) => Ok(op!("and", lhs, rhs)),
             Expr::Or(lhs, rhs) => Ok(op!("or", lhs, rhs)),
             Expr::Xor(lhs, rhs) => Ok(op!("xor", lhs, rhs)),
