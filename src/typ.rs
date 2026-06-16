@@ -328,12 +328,13 @@ impl Expr {
                 let Type::Array(typ) = typ else {
                     return Err(format!("not array: {typ}"));
                 };
-                let idx_t = idx.infer(ctx)?;
-                let Type::Integer = idx_t else {
-                    return Err(format!("not index: {idx_t}"));
-                };
-                expand!(Expr::Read(array!(arr, idx), *typ.clone(), arr.clone()));
-                typing!(*typ.clone())
+                match idx.infer(ctx)? {
+                    Type::Integer => {
+                        expand!(Expr::Read(array!(arr, idx), *typ.clone(), arr.clone()));
+                        typing!(*typ.clone())
+                    }
+                    typ => Err(format!("not index: {typ}")),
+                }
             }
             Expr::Member(obj, key) if key == Name::new("len")? => {
                 let typ = obj.infer(ctx)?;
