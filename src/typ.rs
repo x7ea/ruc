@@ -462,7 +462,7 @@ impl Expr {
             Expr::Integer(_) => typing!(Type::Integer),
             Expr::Float(_) => typing!(Type::Float),
             Expr::String(_) => typing!(Type::String),
-            Expr::Bool(val) => {
+            Expr::Boolean(val) => {
                 expand!(Expr::Integer(if val { 1 } else { 0 }));
                 typing!(Type::Boolean)
             }
