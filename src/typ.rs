@@ -3,7 +3,7 @@ use crate::*;
 impl Define {
     pub fn infer(&self, ctx: &mut Context) -> Result<Type, String> {
         match self {
-            Define::Function(Generics(name, param), args, (body, ret)) => {
+            Define::Function((Generics(name, param), args), (body, ret)) => {
                 let sig = Type::Function(Lambda(
                     param.clone(),
                     Box::new(ret.clone()),
@@ -23,7 +23,7 @@ impl Define {
                 ctx.local = parent;
                 Ok(sig)
             }
-            Define::Declare(Generics(name, param), args, ret) => {
+            Define::Declare((Generics(name, param), args), ret) => {
                 let sig = Type::Function(Lambda(
                     param.clone(),
                     Box::new(ret.clone()),
@@ -480,12 +480,12 @@ impl Type {
                 }
                 let mangle = func.generics();
                 let mut unify = ctx.global.def[&name].clone();
-                if let Define::Function(Generics(_, _), params, body) = &unify
+                if let Define::Function((_, params), body) = &unify
                     && let Type::Function(Lambda(_, _, Some(args))) = typ.clone()
                 {
                     let name = Generics(mangle.clone(), Vec::new());
                     let map = params.keys().cloned().zip(args).collect();
-                    unify = Define::Function(name, map, body.clone());
+                    unify = Define::Function((name, map), body.clone());
                 };
                 let parent = ctx.global.alias.clone();
                 ctx.global.alias = alias.clone();
