@@ -5,15 +5,8 @@ fn Str.add(a: Str, b: Str): Str format a, b
 
 extern fn malloc<T>(size: Int): T
 extern fn read(id: Int, buf: Str, size: Int): ()
-extern fn fdopen(id: Int, mode: Str): File
-extern fn fflush(buf: File): ()
 
-fn input(prompt: Str): Str {
-    printf(prompt)
-
-    let out = fdopen(1, "w")
-    if out? then fflush(out)
-
+fn input(): Str {
     let volume = 512
     let buf = malloc<Str>(volume)
     read(0, buf, volume - 1)
