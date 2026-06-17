@@ -310,7 +310,7 @@ impl Expr {
             Expr::Index(arr, idx) => {
                 let typ = arr.infer(ctx)?;
                 let Type::Array(typ) = typ else {
-                    return Err(format!("{typ} != {typ}"));
+                    return Err(format!("array[] != {typ}"));
                 };
                 match idx.infer(ctx)? {
                     Type::Integer => {
