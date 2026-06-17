@@ -266,7 +266,7 @@ impl Expr {
                     {
                         let val = val.infer(ctx)?;
                         if typ.solve(ctx) != val {
-                            return Err(format!("{name}.{key}: {typ} <- {val}"));
+                            return Err(format!("{name}.{key}: {typ} != {val}"));
                         }
                     }
                     match &ctx.global.table[name].1 {
