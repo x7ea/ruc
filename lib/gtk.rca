@@ -14,7 +14,7 @@ extern fn g_signal_connect_object(this: App, event: Str, handle: ()(), object: (
 extern fn gtk_widget_show_all(window: App): ()
 
 
-fn App() {
+fn window(): App {
     gtk_init((), ())
     let this = gtk_window_new(())
     gtk_window_set_default_size(this, 500, 300)
@@ -22,7 +22,7 @@ fn App() {
     this
 }
 
-fn App.button(this: App, content: Str) {
+fn App.button(this: App, content: Str): Elm {
     let button = gtk_button_new_with_label(content)
     gtk_container_add(this, button)
     button
