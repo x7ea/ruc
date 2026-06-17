@@ -503,9 +503,6 @@ impl Type {
                     alias.insert(param.clone(), arg.clone());
                     typ = typ.rewrite(param, arg);
                 }
-                let parent = ctx.global.alias.clone();
-                ctx.global.alias = alias.clone();
-
                 let (mangle, mut unify) = (func.generics(), ctx.global.def[&name].clone());
                 if let Define::Function(params, _) | Define::Declare(params, _) = unify.clone()
                     && let Type::Function(Lambda(_, ret, Some(args))) = typ.clone()
@@ -519,7 +516,11 @@ impl Type {
                         _ => Declare(head, *ret),
                     };
                 };
-                typ = unify.infer(ctx)?;
+                let parent = ctx.global.alias.clone();
+                ctx.global.alias = alias.clone();
+                {
+                    typ = unify.infer(ctx)?;
+                }
                 ctx.global.def.insert(mangle, unify.clone());
                 ctx.global.alias = parent;
             }
