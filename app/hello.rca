@@ -1,6 +1,6 @@
 use std
 
 fn main() {
-    let name = input("> ")
+    let name = input()
     print "Hello: ", name
 }
