@@ -136,6 +136,11 @@ impl Expr {
                 typing!(lhs)
             }
             Expr::Match(val, pats) => {
+                let typ = val.infer(ctx)?;
+                if let Type::Class(Generics(name, _)) = &typ
+                    && let Some((_, Object::Enum(layout))) = ctx.global.table.get(name)
+                {
+                };
                 let mut expr = Expr::Null(Type::Void);
                 for (key, bind, ret) in pats {
                     let acc = Box::new(Expr::Member(val.clone(), key.clone()));
