@@ -86,7 +86,10 @@ impl Define {
 impl Expr {
     fn emit(&self, ctx: &mut Context) -> Result<String, String> {
         macro_rules! op {
-            ($asm: literal, $lhs: expr, $rhs: expr) => {
+            ($asm: literal, $lhs: expr, $rhs: expr) => {{
+                if let Some(expr) = ctx.local.expand.get(self) {
+                    return expr.clone().emit(ctx);
+                }
                 match typ!(self) {
                     Type::Integer | Type::Boolean => format!(
                         "{}\tpush rax\n{}\tmov r10, rax\n\tpop rax\n\t{} rax, r10\n",
@@ -103,7 +106,7 @@ impl Expr {
                     _ => panic!(),
                 }
             };
-        }
+        }}
         macro_rules! cmp {
             ($op: literal, $lhs: expr , $rhs: expr) => {
                 format!(
