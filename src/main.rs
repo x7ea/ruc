@@ -2,6 +2,7 @@ pub mod emit;
 pub mod lexer;
 pub mod parse;
 pub mod typ;
+use strum::AsRefStr;
 
 use derive_more::Unwrap;
 use indexmap::{IndexMap, IndexSet};
@@ -53,7 +54,7 @@ pub enum Define {
     Class(Generics, Object),
 }
 
-#[derive(Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Hash, AsRefStr, PartialEq, Eq)]
 pub enum Expr {
     // Literal
     Integer(i64),
