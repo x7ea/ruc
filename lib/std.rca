@@ -6,5 +6,5 @@ fn Str.add(a: Str, b: Str): Str format a, b
 
 fn input(prompt: Str): Str {
     printf(prompt)
-    get_s("", 512)
+    gets_s("", 512)
 }
