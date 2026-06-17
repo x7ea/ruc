@@ -169,14 +169,16 @@ impl Expr {
                     return Err(format!("not iterable: {typ}"));
                 };
                 let temp = Box::new(tmp!(Type::Integer));
-                let read = Box::new(Expr::Index(arr.clone(), temp.clone()));
                 let inc = Box::new(Expr::Add(temp.clone(), Box::new(Expr::Integer(1))));
-                let body = [Expr::Let(cnt, read), *body, Expr::Let(temp.clone(), inc)];
                 typing!(expands!(Expr::Block(vec![
                     Expr::Let(temp.clone(), Box::new(Expr::Integer(0))),
                     Expr::While(
                         Box::new(Expr::Lt(temp.clone(), len!(arr))),
-                        Box::new(Expr::Block(body.to_vec()))
+                        Box::new(Expr::Block(vec![
+                            Expr::Let(cnt, Box::new(Expr::Index(arr.clone(), temp.clone()))),
+                            Expr::Let(temp.clone(), inc),
+                            *body,
+                        ]))
                     ),
                 ])))
             }
