@@ -205,12 +205,12 @@ impl Expr {
                     Type::Function(Lambda(_, ret, Some(params))) => {
                         let (pl, al) = (params.len(), args.len());
                         if pl != al {
-                            return Err(format!("f(x, ..) {pl} != {al}"));
+                            return Err(format!("arguments length: {pl} != {al}"));
                         }
                         for (param, arg) in params.iter().zip(args) {
                             let arg = arg.infer(ctx)?.solve(ctx);
                             if arg != param.solve(ctx) {
-                                return Err(format!("f(x: T) {param} != {arg} <- arguments"));
+                                return Err(format!("argument types: {param} != {arg}"));
                             }
                         }
                         typing!(*ret.clone())
