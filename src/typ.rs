@@ -138,17 +138,6 @@ impl Expr {
                 typing!(lhs)
             }
             Expr::Match(val, pats) => {
-                let typ = val.infer(ctx)?;
-                if let Type::Class(Generics(name, _)) = &typ
-                    && let Some((_, Object::Enum(layout))) = ctx.global.table.get(name)
-                {
-                    if layout.len() != pats.len() {
-                        let pats = map!(pats, |(x, _, _)| x.to_string()).join(", ");
-                        return Err(format!("lacking cover: {pats}"));
-                    }
-                } else {
-                    return Err(format!("match: Enum != {typ}"));
-                };
                 let mut expr = Expr::Null(Type::Void);
                 for (key, bind, ret) in pats {
                     let acc = Box::new(Expr::Member(val.clone(), key.clone()));
@@ -182,14 +171,16 @@ impl Expr {
                     return Err(format!("not iterable: {typ}"));
                 };
                 let temp = Box::new(tmp!(Type::Integer));
-                let inc = Box::new(Expr::Add(temp.clone(), Box::new(Expr::Integer(1))));
                 typing!(expands!(Expr::Block(vec![
                     Expr::Let(temp.clone(), Box::new(Expr::Integer(0))),
                     Expr::While(
                         Box::new(Expr::Lt(temp.clone(), len!(arr))),
                         Box::new(Expr::Block(vec![
                             Expr::Let(cnt, Box::new(Expr::Index(arr.clone(), temp.clone()))),
-                            Expr::Let(temp.clone(), inc),
+                            Expr::Let(
+                                temp.clone(),
+                                Box::new(Expr::Add(temp.clone(), Box::new(Expr::Integer(1))))
+                            ),
                             *body,
                         ]))
                     ),
