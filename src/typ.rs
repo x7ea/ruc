@@ -11,6 +11,9 @@ impl Define {
                 ));
                 ctx.global.lib.insert(name.clone(), sig.clone());
 
+                if !param.is_empty() {
+                    return Ok(sig);
+                }
                 let parent = ctx.local.clone();
                 ctx.local = Function::default();
                 ctx.local.scope = args.clone();
