@@ -3,7 +3,7 @@ use crate::*;
 impl Define {
     pub fn infer(&self, ctx: &mut Context) -> Result<Type, String> {
         match self {
-            Define::Function(Generics(name, param), args, (Some(body), Some(ret))) => {
+            Define::Function(Generics(name, param), args, (body, ret)) => {
                 let sig = Type::Function(Lambda(
                     param.clone(),
                     Box::new(ret.clone()),
@@ -15,38 +15,15 @@ impl Define {
                 ctx.local = Function::default();
                 ctx.local.scope = args.clone();
 
-                if *ret != body.infer(ctx)? {
-                    return Err(format!("expected: returns {ret}"));
+                let body = body.infer(ctx)?;
+                if *ret != body {
+                    return Err(format!("return: {ret} != {body}"));
                 }
                 ctx.table.insert(name.clone(), ctx.local.clone());
                 ctx.local = parent;
                 Ok(sig)
             }
-            Define::Function(Generics(name, param), args, (Some(body), None)) => {
-                if !param.is_empty() {
-                    let sig = Type::Function(Lambda(
-                        param.clone(),
-                        Box::new(Type::Void),
-                        Some(args.values().cloned().collect()),
-                    ));
-                    ctx.global.lib.insert(name.clone(), sig.clone());
-                    return Ok(sig);
-                }
-                let parent = ctx.local.clone();
-                ctx.local = Function::default();
-                ctx.local.scope = args.clone();
-
-                let sig = Type::Function(Lambda(
-                    param.clone(),
-                    Box::new(body.infer(ctx)?),
-                    Some(args.values().cloned().collect()),
-                ));
-                ctx.table.insert(name.clone(), ctx.local.clone());
-                ctx.global.lib.insert(name.clone(), sig.clone());
-                ctx.local = parent;
-                Ok(sig)
-            }
-            Define::Function(Generics(name, param), args, (None, Some(ret))) => {
+            Define::Declare(Generics(name, param), args, ret) => {
                 let sig = Type::Function(Lambda(
                     param.clone(),
                     Box::new(ret.clone()),
@@ -62,7 +39,6 @@ impl Define {
                 ctx.global.table.insert(name.clone(), val);
                 Ok(Type::Void)
             }
-            _ => panic!(),
         }
     }
 }
