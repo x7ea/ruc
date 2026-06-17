@@ -160,9 +160,8 @@ impl Expr {
                         Box::new(Expr::Block(vec![Expr::Let(bind, check), *body])),
                     )));
                 }
-                let cond = cond.infer(ctx)?;
-                if Type::Boolean != cond {
-                    return Err(format!("while-do test: Bool != {cond}"));
+                if cond.infer(ctx)? != Type::Boolean {
+                    return Err(format!("while-do test: Bool != {}", cond.infer(ctx)?));
                 }
                 body.infer(ctx)
             }
