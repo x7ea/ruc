@@ -48,7 +48,8 @@ fn main() {
 
 #[derive(Clone, PartialEq)]
 pub enum Define {
-    Function(Generics, IndexMap<Name, Type>, (Option<Expr>, Option<Type>)),
+    Function(Generics, IndexMap<Name, Type>, (Expr, Type)),
+    Declare(Generics, IndexMap<Name, Type>, Type),
     Class(Generics, Object),
 }
 
