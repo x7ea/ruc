@@ -1,0 +1,4 @@
+extern fn strcmp(a: Str, b: Str): Bool
+
+fn Str.eq(a: Str, b: Str): Bool strcmp(a, b)
+fn Str.add(a: Str, b: Str): Str format a, b
