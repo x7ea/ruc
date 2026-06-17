@@ -186,7 +186,7 @@ impl Expr {
                 }
                 for (name, val) in &ctx.local.scope {
                     if let Some(typ) = ctx.local.var.get(name)
-                        && typ != val.solve(ctx)
+                        && typ.solve(ctx) != val.solve(ctx)
                     {
                         return Err(format!("duplicated {name}: {typ} != {val}"));
                     }
