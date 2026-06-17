@@ -33,31 +33,19 @@ impl Define {
             } else if let Some(func) = line.strip_prefix("extern fn ") {
                 let (head, body) = once!(func, ":")?;
                 let (name, args) = surround!(&head, "(", ")")?;
-                result.push(Define::Function(
+                result.push(Define::Declare(
                     Generics::parse(&name)?,
                     args!(&args),
-                    (None, Some(Type::parse(&body)?)),
+                    Type::parse(&body)?,
                 ));
-            } else if let Some(func) = line.strip_prefix("fn ")
-                && let Ok((head, body)) = once!(func, ":")
-            {
+            } else if let Some(func) = line.strip_prefix("fn ") {
+                let (head, body) = once!(func, ":")?;
                 let (typ, body) = once!(&body, SPACE)?;
                 let (name, args) = surround!(&head, "(", ")")?;
                 result.push(Define::Function(
                     Generics::parse(&name)?,
                     args!(&args),
-                    (
-                        Some(Expr::Block(vec![Expr::parse(&body)?])),
-                        Some(Type::parse(&typ)?),
-                    ),
-                ));
-            } else if let Some(func) = line.strip_prefix("fn ") {
-                let (head, body) = once!(func, SPACE)?;
-                let (name, args) = surround!(&head, "(", ")")?;
-                result.push(Define::Function(
-                    Generics::parse(&name)?,
-                    args!(&args),
-                    (Some(Expr::Block(vec![Expr::parse(&body)?])), None),
+                    (Expr::Block(vec![Expr::parse(&body)?]), Type::parse(&typ)?),
                 ));
             } else if let Some(head) = line.strip_prefix("struct ") {
                 let (name, args) = surround!(&head, "{", "}")?;
