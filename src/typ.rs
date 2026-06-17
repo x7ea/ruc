@@ -130,8 +130,9 @@ impl Expr {
                     None => typing!(Type::Void),
                     Some(els) if *els == Expr::Null(Type::Void) => typing!(then.clone()),
                     Some(els) => {
-                        if els.infer(ctx)? != then {
-                            return Err(format!("if-else term: {then} != {}", els.infer(ctx)?));
+                        let els = els.infer(ctx)?;
+                        if els != then {
+                            return Err(format!("if-else term: {then} != {els}"));
                         };
                         typing!(then)
                     }
@@ -159,8 +160,9 @@ impl Expr {
                         Box::new(Expr::Block(vec![Expr::Let(bind, check), *body])),
                     )));
                 }
-                if cond.infer(ctx)? != Type::Boolean {
-                    return Err(format!("while-do test: Bool != {}", cond.infer(ctx)?));
+                let cond = cond.infer(ctx)?;
+                if Type::Boolean != cond {
+                    return Err(format!("while-do test: Bool != {cond}"));
                 }
                 body.infer(ctx)
             }
