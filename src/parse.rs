@@ -34,8 +34,7 @@ impl Define {
                 let (head, body) = once!(func, ":")?;
                 let (name, args) = surround!(&head, "(", ")")?;
                 result.push(Define::Declare(
-                    Generics::parse(&name)?,
-                    args!(&args),
+                    (Generics::parse(&name)?, args!(&args)),
                     Type::parse(&body)?,
                 ));
             } else if let Some(func) = line.strip_prefix("fn ")
@@ -44,8 +43,7 @@ impl Define {
                 let (typ, body) = once!(&body, SPACE)?;
                 let (name, args) = surround!(&head, "(", ")")?;
                 result.push(Define::Function(
-                    Generics::parse(&name)?,
-                    args!(&args),
+                    (Generics::parse(&name)?, args!(&args)),
                     (Expr::Block(vec![Expr::parse(&body)?]), Type::parse(&typ)?),
                 ));
             } else if let Some(func) = line.strip_prefix("fn ") {
