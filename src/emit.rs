@@ -15,13 +15,7 @@ impl Define {
             };
         }
         let ctx = &mut Context::default();
-        ctx.global.def = {
-            let mut map = IndexMap::new();
-            for define in defines {
-                map.insert(name!(define), define.clone());
-            }
-            map
-        };
+        ctx.global.def = defines.iter().map(|x| (name!(x), x.clone())).collect();
         ctx.global.lib = {
             let mut map = IndexMap::new();
             for line in Self::CORE {
