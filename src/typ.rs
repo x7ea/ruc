@@ -130,10 +130,8 @@ impl Expr {
                     return typing!(Type::Void);
                 };
                 let els_t = els.infer(ctx)?;
-                if *els != Expr::Null(Type::Void) {
-                    if then != els_t {
-                        return Err(format!("if-else term: {then} != {els_t}"));
-                    }
+                if *els != Expr::Null(Type::Void) && then != els_t {
+                    return Err(format!("if-else term: {then} != {els_t}"));
                 }
                 typing!(then)
             }
