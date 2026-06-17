@@ -147,7 +147,7 @@ impl Expr {
                         layout.swap_remove(key);
                     }
                     if let Some((lacked, _)) = layout.first() {
-                        return Err(format!("not covered: {lacked}"));
+                        return Err(format!("not covered: {name}.{lacked}"));
                     }
                 } else {
                     return Err(format!("match: Enum != {typ}"));
