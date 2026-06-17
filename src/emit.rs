@@ -38,11 +38,11 @@ impl Define {
         for (_, define) in ctx.global.def.clone() {
             text += &define.emit(ctx)?;
         }
-        let data = ctx.global.data.clone();
         let mut lib = String::from("\nsection .text\n\tglobal main\n");
         for symbol in ctx.global.lib.keys() {
             lib += &format!("\textern {symbol}\n");
         }
+        let data = ctx.global.data.clone();
         Ok(format!("section .data\n{data}{lib}{text}\n"))
     }
 }
