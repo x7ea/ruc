@@ -9,6 +9,7 @@ impl Define {
                 match $define.clone() {
                     Define::Function(Generics(func, _), _, _) => func,
                     Define::Class(Generics(class, _), _) => class,
+                    Define::Declare(Generics(lib, _), _, _) => lib,
                 }
                 .clone()
             };
@@ -50,7 +51,7 @@ pub const ABI: [&str; 6] = ["rdi", "rsi", "rdx", "rcx", "r8", "r9"];
 
 impl Define {
     fn emit(&self, ctx: &mut Context) -> Result<String, String> {
-        let Define::Function(Generics(name, params), args, (Some(body), _)) = self else {
+        let Define::Function(Generics(name, params), args, (body, _)) = self else {
             return Ok(String::new());
         };
         if !params.is_empty() {
