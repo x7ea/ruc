@@ -14,5 +14,5 @@ fn decode(this: Peano): Int '
 
 fn main() {
     let one = Peano::Succ(Peano::Zero)
-    print one.add(one).decode()
+    print (one + one).decode()
 }
