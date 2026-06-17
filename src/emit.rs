@@ -150,7 +150,7 @@ impl Expr {
                 }
             }
             Expr::While(cond, body) => {
-                if let Some(expr) = ctx.local.expand.get(&self.clone()) {
+                if let Some(expr) = ctx.local.expand.get(self) {
                     return expr.clone().emit(ctx);
                 }
                 let id = label!();
