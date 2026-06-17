@@ -497,7 +497,6 @@ impl Type {
         }
         match typ.clone() {
             Type::Function(Lambda(params, _, _)) if !params.is_empty() => {
-                use Define::{Declare, Function};
                 let mut alias = IndexMap::new();
                 for (arg, param) in args.iter().zip(&params) {
                     alias.insert(param.clone(), arg.clone());
@@ -512,8 +511,8 @@ impl Type {
                         params.1.into_keys().zip(args).collect(),
                     );
                     unify = match unify {
-                        Function(_, (body, _)) => Function(head, (body, *ret)),
-                        _ => Declare(head, *ret),
+                        Define::Function(_, (body, _)) => Define::Function(head, (body, *ret)),
+                        _ => Define::Declare(head, *ret),
                     };
                 };
                 let parent = ctx.global.alias.clone();
