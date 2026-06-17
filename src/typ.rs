@@ -219,7 +219,7 @@ impl Expr {
                         map!(args, |x| x.infer(ctx), ok)?;
                         typing!(*ret.clone())
                     }
-                    typ => Err(format!("can't call: {typ}")),
+                    typ => Err(format!("callee: {typ}")),
                 }
             }
             Expr::Variable(generics) => {
