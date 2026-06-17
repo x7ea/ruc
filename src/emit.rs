@@ -242,10 +242,10 @@ impl Expr {
                 }
                 _ => expr!(self).emit(ctx),
             },
-            Expr::Init(_, len) => {
-                let setlen = &format!("\tmov qword [rax], {len}\n");
-                Ok(expr!(self).emit(ctx)? + setlen)
-            }
+            Expr::Init(_, len) => Ok(format!(
+                "{}\tmov qword [rax], {len}\n",
+                expr!(self).emit(ctx)?
+            )),
             Expr::Check(expr) => {
                 let is_enum = ctx.local.expand.get(&self.clone());
                 if let Some(expr) = is_enum.cloned() {
