@@ -92,7 +92,7 @@ pub mod name {
         pub fn new(name: &str) -> Result<Name, String> {
             let name = name.trim();
             if name.is_empty() {
-                return Err("empty".to_string());
+                return Err(format!("empty: {name}"));
             }
             let name = name.replace(".", "__");
             fn validate(x: char) -> bool {
