@@ -84,7 +84,10 @@ impl Expr {
                 match ($lhs.infer(ctx)?, $rhs.infer(ctx)?) {
                     ($typ, ret @ $typ) => typing!(ret.clone()),
                     (lhs, rhs) if lhs != rhs => Err(format!("operator term: {lhs} != {rhs}")),
-                    (typ, _) => Err(format!("no operation: {typ}")),
+                    (typ, _) => typing!(expands!(Expr::Call(
+                        Box::new(var!(format!("{typ}.{}", self.as_ref().to_lowercase())),),
+                        vec![*$lhs, *$rhs],
+                    ))),
                 }
             }};
             ($typ: pat, $lhs: expr, $rhs: expr, $ret: expr) => {{
