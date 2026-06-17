@@ -483,12 +483,12 @@ impl Type {
                 }
                 let mangle = func.generics();
                 let mut unify = ctx.global.def[&name].clone();
-                if let Define::Function((_, params), body) = &unify
-                    && let Type::Function(Lambda(_, _, Some(args))) = typ.clone()
+                if let Define::Function((_, params), (body, _)) = unify.clone()
+                    && let Type::Function(Lambda(_, ret, Some(args))) = typ.clone()
                 {
                     let name = Generics(mangle.clone(), Vec::new());
-                    let map = params.keys().cloned().zip(args).collect();
-                    unify = Define::Function((name, map), body.clone());
+                    let map = params.into_keys().zip(args).collect();
+                    unify = Define::Function((name, map), (body, *ret.clone()));
                 };
                 let parent = ctx.global.alias.clone();
                 ctx.global.alias = alias.clone();
