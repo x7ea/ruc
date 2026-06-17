@@ -133,7 +133,7 @@ impl Expr {
 
         match self {
             Expr::If(cond, then, els) => {
-                if let Some(expr) = ctx.local.expand.get(&self.clone()) {
+                if let Some(expr) = ctx.local.expand.get(self) {
                     return expr.clone().emit(ctx);
                 }
                 let id = label!();
