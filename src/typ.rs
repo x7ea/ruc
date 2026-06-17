@@ -15,8 +15,7 @@ impl Define {
                     return Ok(sig);
                 }
                 let parent = ctx.local.clone();
-                ctx.local = Function::default();
-                ctx.local.scope = args.clone();
+                (ctx.local, ctx.local.scope) = (Function::default(), args.clone());
 
                 let body = body.infer(ctx)?;
                 if *ret != body {
