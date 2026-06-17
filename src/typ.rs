@@ -142,7 +142,7 @@ impl Expr {
                 {
                     let (layout_len, pats_len) = (layout.len(), pats.len());
                     if layout_len != pats_len {
-                        return Err(format!("cover: {layout_len} != {pats_len}"));
+                        return Err(format!("lacking cover: {layout_len} != {pats_len}"));
                     }
                 } else {
                     return Err(format!("match: Enum != {typ}"));
