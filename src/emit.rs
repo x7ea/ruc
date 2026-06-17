@@ -282,6 +282,7 @@ impl Expr {
                 let val = format!("\"{val}\", 0")
                     .replace("\\t", "\", 9, \"")
                     .replace("\\n", "\", 10, \"")
+                    .replace("\\r", "\", 13, \"")
                     .replace("\\\"", "\", 34, \"")
                     .replace("\"\", ", "");
                 let name = format!("str.{}", label!());
