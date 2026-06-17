@@ -143,10 +143,9 @@ impl Expr {
                 for (key, bind, ret) in pats {
                     let acc = Box::new(Expr::Member(val.clone(), key.clone()));
                     expr = Expr::If(
-                        Box::new(if let Some(bind) = bind {
-                            Expr::Let(Box::new(bind.clone()), acc)
-                        } else {
-                            Expr::Check(acc)
+                        Box::new(match bind {
+                            Some(bind) => Expr::Let(Box::new(bind.clone()), acc),
+                            None => Expr::Check(acc),
                         }),
                         Box::new(ret.clone()),
                         Some(Box::new(expr)),
