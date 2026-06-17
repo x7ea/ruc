@@ -54,7 +54,7 @@ pub enum Define {
     Class(Generics, Object),
 }
 
-#[derive(Clone, Hash, AsRefStr, PartialEq, Eq)]
+#[derive(Clone, Hash, PartialEq, Eq, AsRefStr)]
 pub enum Expr {
     // Literal
     Integer(i64),
@@ -105,7 +105,7 @@ pub enum Expr {
     Init(Type, usize),
 }
 
-#[derive(Clone, PartialEq, Unwrap, Eq, Hash)]
+#[derive(Clone, PartialEq, Eq, Hash, Unwrap)]
 pub enum Type {
     String,
     Integer,
