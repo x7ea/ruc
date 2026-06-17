@@ -52,8 +52,7 @@ impl Define {
                 let (head, body) = once!(&func, SPACE)?;
                 let (name, args) = surround!(&head, "(", ")")?;
                 result.push(Define::Function(
-                    Generics::parse(&name)?,
-                    args!(&args),
+                    (Generics::parse(&name)?, args!(&args)),
                     (Expr::Block(vec![Expr::parse(&body)?]), Type::Void),
                 ));
             } else if let Some(head) = line.strip_prefix("struct ") {
