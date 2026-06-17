@@ -106,7 +106,7 @@ impl Expr {
                     _ => panic!(),
                 }
             }};
-        }}
+        }
         macro_rules! cmp {
             ($op: literal, $lhs: expr , $rhs: expr) => {
                 format!(
