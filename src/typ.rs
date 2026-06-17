@@ -501,8 +501,7 @@ impl Type {
                 let parent = ctx.global.alias.clone();
                 ctx.global.alias = alias.clone();
 
-                let mangle = func.generics();
-                let mut unify = ctx.global.def[&name].clone();
+                let (mangle, mut unify) = (func.generics(), ctx.global.def[&name].clone());
                 if let Function((_, params), (_, ret)) | Declare((_, params), ret) = unify.clone()
                     && let Type::Function(Lambda(_, _, Some(args))) = typ.clone()
                 {
