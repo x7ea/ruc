@@ -265,7 +265,7 @@ impl Expr {
                     let name = &obj.infer(ctx)?.unwrap_class().0;
                     {
                         let val = val.infer(ctx)?;
-                        if typ.solve(ctx) != val {
+                        if typ != val {
                             return Err(format!("{name}.{key}: {typ} != {val}"));
                         }
                     }
