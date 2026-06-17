@@ -195,7 +195,7 @@ macro_rules! once {
             let last = v.len() - 1;
             Ok((v[..last].join($del), v[last].clone()))
         } else {
-            Err(format!("expected {}", $del))
+            Err(format!("expected: {}", $del))
         }
     }};
 }
