@@ -135,7 +135,7 @@ impl Expr {
                         }
                         typing!(then)
                     }
-                    None => Ok(Type::Void),
+                    None => typing!(Type::Void),
                 }
             }
             Expr::Match(val, pats) => {
