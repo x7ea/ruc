@@ -161,7 +161,7 @@ impl Expr {
                     )));
                 }
                 let cond = cond.infer(ctx)?;
-                if cond != Type::Boolean {
+                if Type::Boolean != cond {
                     return Err(format!("while-do test: Bool != {cond}"));
                 }
                 body.infer(ctx)
