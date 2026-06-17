@@ -141,8 +141,8 @@ impl Expr {
                     && let Some((_, Object::Enum(layout))) = ctx.global.table.get(name)
                 {
                     if layout.len() != pats.len() {
-                        let
-                        return Err(format!("lacking cover: {layout} != {pats}"));
+                        let pats = map!(pats, |x| x.0);
+                        return Err(format!("lacking cover: {pats}"));
                     }
                 } else {
                     return Err(format!("match: Enum != {typ}"));
