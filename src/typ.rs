@@ -164,6 +164,10 @@ impl Expr {
                 body.infer(ctx)
             }
             Expr::For(cnt, arr, body) => {
+                let typ = arr.infer(ctx)?;
+                let Type::Array(_) = typ else {
+                    return Err(format!("not iterable: {typ}"));
+                };
                 let temp = Box::new(tmp!(Type::Integer));
                 let read = Box::new(Expr::Index(arr.clone(), temp.clone()));
                 let inc = Box::new(Expr::Add(temp.clone(), Box::new(Expr::Integer(1))));
