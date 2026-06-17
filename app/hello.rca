@@ -1,6 +1,0 @@
-use std
-
-fn main() {
-    let x = input()
-    print if x == x then "Ecchi" else x
-}
