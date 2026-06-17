@@ -18,7 +18,7 @@ impl Define {
                 (ctx.local, ctx.local.scope) = (Function::default(), args.clone());
 
                 let body = body.infer(ctx)?;
-                if *ret != body {
+                if ret.solve(ctx) != body {
                     return Err(format!("return: {ret} != {body}"));
                 }
                 ctx.table.insert(name.clone(), ctx.local.clone());
