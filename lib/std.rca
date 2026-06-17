@@ -1,10 +1,15 @@
 extern fn strcmp(a: Str, b: Str): Int
-extern fn gets_s(buf: Str, size: Int): Str
+extern fn malloc<T>(size: Int): T
+extern fn read(id: Int, buf: Str, size: Int)
 
 fn Str.eq(a: Str, b: Str): Bool strcmp(a, b) == 0
 fn Str.add(a: Str, b: Str): Str format a, b
 
+extern fn fdopen(id: Int, mode: Str): File
+
 fn input(prompt: Str): Str {
-    printf(prompt)
-    gets_s("", 512)
+    let volume = 512
+    let buf = malloc<Str>(volume)
+    read(0, buf, volume - 1)
+    buf
 }
