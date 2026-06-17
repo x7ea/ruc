@@ -169,8 +169,10 @@ impl Expr {
             Expr::For(cnt, arr, body) => {
                 let temp = Box::new(tmp!(Type::Integer));
                 let read = Box::new(Expr::Index(arr.clone(), temp.clone()));
-                let inc = Box::new(Expr::Add(temp.clone(), Box::new(Expr::Integer(1))));
-                let body = [Expr::Let(cnt, read), *body, Expr::Let(temp.clone(), inc)];
+                let (inc, body) = (
+                    Box::new(Expr::Add(temp.clone(), Box::new(Expr::Integer(1)))),
+                    [Expr::Let(cnt, read), *body, Expr::Let(temp.clone(), inc)],
+                );
                 typing!(expands!(Expr::Block(vec![
                     Expr::Let(temp.clone(), Box::new(Expr::Integer(0))),
                     Expr::While(
