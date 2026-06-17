@@ -1,6 +1,6 @@
 use std
 
 fn main() {
-    let name = input()
-    print "Hello: ", name
+    let x = input()
+    print if x == "Sex\r\n" then "Ecchi" else x
 }
