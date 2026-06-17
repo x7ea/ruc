@@ -85,7 +85,7 @@ impl Expr {
                     ($typ, ret @ $typ) => typing!(ret.clone()),
                     (lhs, rhs) if lhs != rhs => Err(format!("operator term: {lhs} != {rhs}")),
                     (typ, _) => typing!(expands!(Expr::Call(
-                        Box::new(var!(format!("{typ}.{}", self.as_ref().to_lowercase())),),
+                        Box::new(var!(format!("{typ}.{}", self.as_ref().to_lowercase()))),
                         vec![*$lhs, *$rhs],
                     ))),
                 }
