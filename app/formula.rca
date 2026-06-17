@@ -6,13 +6,13 @@ enum Peano {
 fn add(lhs: Peano, rhs: Peano): Peano '
 match rhs {
     zero = clone lhs,
-    succ n = Peano::succ(add(lhs, n))
+    succ n = Peano::Succ(add(lhs, n))
 }
 
 fn decode(this: Peano): Int '
     if let n = this.succ then decode(n) + 1 else 0
 
 fn main() {
-    let one = Peano::succ(Peano::zero)
+    let one = Peano::Succ(Peano::Zero)
     print one.add(one).decode()
 }
