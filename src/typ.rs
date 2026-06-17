@@ -503,7 +503,7 @@ impl Type {
                 let (Define::Function((Generics(_, _), params), (_, ret))
                 | Define::Declare((_, params), ret)) = unify.clone()
                 else {
-                    return Err(format!(""));
+                    panic!()
                 };
                 let name = Generics(mangle.clone(), Vec::new());
                 let map = params.into_keys().zip(args).collect();
