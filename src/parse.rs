@@ -107,11 +107,8 @@ impl Expr {
             let (cond, body) = once!(src, "then")?;
             let cond = Box::new(Expr::parse(&cond)?);
             if let Ok((then, els)) = once!(&body, "else") {
-                Ok(Expr::If(
-                    cond,
-                    Box::new(Expr::parse(&then)?),
-                    Some(Box::new(Expr::parse(&els)?)),
-                ))
+                let els = Some(Box::new(Expr::parse(&els)?));
+                Ok(Expr::If(cond, Box::new(Expr::parse(&then)?), els))
             } else {
                 Ok(Expr::If(cond, Box::new(Expr::parse(&body)?), None))
             }
