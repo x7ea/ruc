@@ -74,15 +74,13 @@ impl Define {
 impl Expr {
     fn parse(src: &str) -> Result<Expr, String> {
         let src = src.trim();
-        fn is_operator(src: &str) -> Result<(String, String, String), String> {
-            let tokens: Vec<String> = lexer(src, SPACE)?;
-            if tokens.len() >= 3 {
-                let pos: usize = tokens.len() - 2;
-                let (lhs, rhs) = (tokens[..pos].join(SPACE), tokens[pos + 1].to_string());
-                Ok((lhs, tokens[pos].to_string(), rhs))
-            } else {
-                Err(String::new())
-            }
+        fn is_operator(tokens: &Vec<String>) -> Option<(String, String, String)> {
+            if tokens.len() < 3 {
+                return None;
+            };
+            let pos: usize = tokens.len() - 2;
+            let (lhs, rhs) = (tokens[..pos].join(SPACE), tokens[pos + 1].to_string());
+            Some((lhs, tokens[pos].to_string(), rhs))
         }
         if let Some(src) = src.strip_prefix("print ") {
             Ok(Expr::Print(true, serial!(src, Expr::parse)))
