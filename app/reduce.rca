@@ -8,7 +8,7 @@ fn reduce<T>(this: [T], lambda: T(T, T)): T {
 
 fn add<T>(a: T, b: T): T a + b
 
-fn main(): () {
+fn main() {
     let x = [8, 5, 4, 6, 2]
     print reduce<Int>(x, add<Int>)
 
