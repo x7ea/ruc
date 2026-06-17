@@ -12,7 +12,7 @@ match rhs {
 fn decode(this: Peano): Int '
     if let n = this.succ then decode(n) + 1 else 0
 
-fn main() {
+fn main(): () {
     let one = Peano::succ(Peano::zero)
     print one.add(one).decode()
 }
