@@ -2,5 +2,5 @@ use std
 
 fn main() {
     let x = input()
-    print if x == "Sex\r\n" then "Ecchi" else x
+    print if x == x then "Ecchi" else x
 }
