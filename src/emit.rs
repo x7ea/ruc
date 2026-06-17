@@ -32,9 +32,7 @@ impl Define {
             }
             map
         };
-        for (_, define) in ctx.global.def.clone() {
-            define.infer(ctx)?;
-        }
+        map!(ctx.global.def.clone(), |(_, x)| x.infer(ctx), ok)?;
         for (_, define) in ctx.global.def.clone() {
             text += &define.emit(ctx)?;
         }
