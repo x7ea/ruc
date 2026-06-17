@@ -140,9 +140,9 @@ impl Expr {
                 if let Type::Class(Generics(name, _)) = &typ
                     && let Some((_, Object::Enum(layout))) = ctx.global.table.get(name)
                 {
-                    let (layout_len, pats_len) = (layout.len(), pats.len());
-                    if layout_len != pats_len {
-                        return Err(format!("lacking cover: {layout_len} != {pats_len}"));
+                    if layout.len() != pats.len() {
+                        let
+                        return Err(format!("lacking cover: {layout} != {pats}"));
                     }
                 } else {
                     return Err(format!("match: Enum != {typ}"));
