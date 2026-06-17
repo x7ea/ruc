@@ -105,18 +105,15 @@ impl Expr {
             }
         } else if let Some(src) = src.strip_prefix("if ") {
             let (cond, body) = once!(src, "then")?;
-            if let Ok((then, r#else)) = once!(&body, "else") {
+            let cond = Box::new(Expr::parse(&cond)?);
+            if let Ok((then, els)) = once!(&body, "else") {
                 Ok(Expr::If(
-                    Box::new(Expr::parse(&cond)?),
+                    cond,
                     Box::new(Expr::parse(&then)?),
-                    Some(Box::new(Expr::parse(&r#else)?)),
+                    Some(Box::new(Expr::parse(&els)?)),
                 ))
             } else {
-                Ok(Expr::If(
-                    Box::new(Expr::parse(&cond)?),
-                    Box::new(Expr::parse(&body)?),
-                    None,
-                ))
+                Ok(Expr::If(cond, Box::new(Expr::parse(&body)?), None))
             }
         } else if let Some(src) = src.strip_prefix("match ") {
             let (expr, pats) = surround!(src, "{", "}")?;
