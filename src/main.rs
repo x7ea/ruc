@@ -48,8 +48,8 @@ fn main() {
 
 #[derive(Clone, PartialEq)]
 pub enum Define {
-    Function((Generics, IndexMap<Name, Type>), (Expr, Type)),
-    Declare((Generics, IndexMap<Name, Type>), Type),
+    Function(Signature, (Expr, Type)),
+    Declare(Signature, Type),
     Class(Generics, Object),
 }
 
@@ -121,6 +121,8 @@ pub struct Lambda(Vec<Type>, Box<Type>, Option<Vec<Type>>);
 
 #[derive(Clone, Hash, Default, PartialEq, Eq)]
 pub struct Generics(Name, Vec<Type>);
+
+type Signature = (Generics, IndexMap<Name, Type>);
 
 #[derive(Clone, PartialEq)]
 pub enum Object {
