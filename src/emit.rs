@@ -198,9 +198,8 @@ impl Expr {
                 ))
             }
             Expr::Variable(var @ Generics(name, _)) => {
-                let method = ctx.local.expand.get(&self.clone());
-                if let Some(expr) = method.cloned() {
-                    return expr.emit(ctx);
+                if let Some(expr) = ctx.local.expand.get(self) {
+                    return expr.clone().emit(ctx);
                 }
                 let env = &ctx.local.var;
                 let mut name = name.clone();
@@ -238,9 +237,8 @@ impl Expr {
                 expr!(self).emit(ctx)?
             )),
             Expr::Check(expr) => {
-                let is_enum = ctx.local.expand.get(&self.clone());
-                if let Some(expr) = is_enum.cloned() {
-                    return expr.emit(ctx);
+                if let Some(expr) = ctx.local.expand.get(self) {
+                    return expr.clone().emit(ctx);
                 }
                 Ok(format!(
                     "{}\tcmp rax, 0\nsetne al\n\tmovzx rax, al\n",
