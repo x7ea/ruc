@@ -73,7 +73,7 @@ impl Expr {
                 Expr::Variable(Generics(Name::new(&$name)?, Vec::new()))
             };
         }
-        macro_rules! temp {
+        macro_rules! tmp {
             ($typ: expr) => {{
                 let name = Name::new(&format!("tmp{}", hash!(&self)))?;
                 var!(Generics(name, vec![$typ.clone()]).generics().to_string())
@@ -166,7 +166,7 @@ impl Expr {
                 body.infer(ctx)
             }
             Expr::For(cnt, arr, body) => {
-                let temp = Box::new(temp!(Type::Integer));
+                let temp = Box::new(tmp!(Type::Integer));
                 let read = Box::new(Expr::Index(arr.clone(), temp.clone()));
                 let inc = Box::new(Expr::Add(temp.clone(), Box::new(Expr::Integer(1))));
                 let body = [Expr::Let(cnt, read), *body, Expr::Let(temp.clone(), inc)];
@@ -290,7 +290,7 @@ impl Expr {
             },
             Expr::Sequence(array) => {
                 let typ = array[0].infer(ctx)?;
-                let temp = temp!(typ.clone());
+                let temp = tmp!(typ.clone());
                 let mut expr = vec![Expr::Let(
                     Box::new(temp.clone()),
                     Box::new(Expr::Init(typ, array.len())),
@@ -340,7 +340,7 @@ impl Expr {
                 typing!(typ.solve(ctx))
             }
             Expr::Enum(typ, key, val) => {
-                let temp = Box::new(temp!(typ.clone()));
+                let temp = Box::new(tmp!(typ.clone()));
                 typing!(expands!(Expr::Block(vec![
                     Expr::Let(temp.clone(), Box::new(Expr::New(typ.clone()))),
                     Expr::Let(
@@ -421,7 +421,7 @@ impl Expr {
             }
             Expr::Clone(expr) => {
                 let typ = expr.infer(ctx)?;
-                let dest = Box::new(temp!(typ));
+                let dest = Box::new(tmp!(typ));
                 typing!(expands!(Expr::Block(vec![
                     Expr::Let(dest.clone(), Box::new(Expr::New(typ.clone()))),
                     Expr::Call(
