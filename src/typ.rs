@@ -113,15 +113,15 @@ impl Expr {
                 ));
                 typing!(if is_output { Type::Void } else { Type::String })
             }
-            Expr::If(cond, then, els) => {
-                if let Expr::Let(bind, check) = *cond {
+            Expr::If(test, then, els) => {
+                if let Expr::Let(bind, check) = *test {
                     return typing!(expands!(Expr::If(
                         Box::new(Expr::Check(check.clone())),
                         Box::new(Expr::Block(vec![Expr::Let(bind, check), *then])),
                         els,
                     )));
                 }
-                let cond = cond.infer(ctx)?;
+                let cond = test.infer(ctx)?;
                 if Type::Boolean != cond {
                     return Err(format!("if-else test: Bool != {cond}"));
                 }
