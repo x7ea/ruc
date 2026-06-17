@@ -199,9 +199,9 @@ impl Expr {
             Ok(Expr::Member(Box::new(obj), Name::new(&key)?))
         } else if let Ok((typ, key)) = once!(src, "::") {
             let typ = Type::parse(&typ)?;
-            if let Ok((key, value)) = surround!(&key, "(", ")") {
+            if let Ok((key, val)) = surround!(&key, "(", ")") {
                 let name = Name::new(&key)?;
-                Ok(Expr::Enum(typ, name, Box::new(Expr::parse(&value)?)))
+                Ok(Expr::Enum(typ, name, Box::new(Expr::parse(&val)?)))
             } else {
                 let name = Name::new(&key)?;
                 Ok(Expr::Enum(typ, name, Box::new(Expr::Null(Type::Void))))
