@@ -500,18 +500,17 @@ impl Type {
                 }
                 let mangle = func.generics();
                 let mut unify = ctx.global.def[&name].clone();
-                if let Define::Function((_, params), (body, _)) = unify.clone()
-                    && let Type::Function(Lambda(_, ret, Some(args))) = typ.clone()
-                {
-                    let name = Generics(mangle.clone(), Vec::new());
-                    let map = params.into_keys().zip(args).collect();
-                    unify = Define::Function((name, map), (body, *ret.clone()));
-                } else if let Define::Declare((_, params), _) = unify.clone()
-                    && let Type::Function(Lambda(_, ret, Some(args))) = typ.clone()
-                {
-                    let name = Generics(mangle.clone(), Vec::new());
-                    let map = params.into_keys().zip(args).collect();
-                    unify = Define::Declare((name, map), *ret.clone())
+                let (Define::Function((_, params), (_, ret)) | Define::Declare((_, params), ret)) =
+                    unify.clone()
+                else {
+                    return Err(format!(""));
+                };
+                let name = Generics(mangle.clone(), Vec::new());
+                let map = params.into_keys().zip(args).collect();
+                unify = match unify {
+                    Define::Function(_, (body, _)) => Define::Function((name, map), (body, ret)),
+                    Define::Declare(_, _) => Define::Declare((name, map), ret),
+                    _ => panic!(),
                 };
                 let parent = ctx.global.alias.clone();
                 ctx.global.alias = alias.clone();
