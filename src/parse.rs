@@ -80,8 +80,11 @@ impl Expr {
                 return Err(String::new());
             }
             let pos: usize = tokens.len() - 2;
-            let (lhs, rhs) = (tokens[..pos].join(SPACE), tokens[pos + 1].to_string());
-            Ok((lhs, tokens[pos].to_string(), rhs))
+            Ok((
+                tokens[..pos].join(SPACE),
+                tokens[pos].to_string(),
+                tokens[pos + 1].to_string(),
+            ))
         }
         if let Some(src) = src.strip_prefix("print ") {
             Ok(Expr::Print(true, serial!(src, Expr::parse)))
