@@ -500,8 +500,8 @@ impl Type {
                 }
                 let mangle = func.generics();
                 let mut unify = ctx.global.def[&name].clone();
-                let (Define::Function((_, params), (_, ret)) | Define::Declare((_, params), ret)) =
-                    unify.clone()
+                let (Define::Function((Generics(_, _), params), (_, ret))
+                | Define::Declare((_, params), ret)) = unify.clone()
                 else {
                     return Err(format!(""));
                 };
