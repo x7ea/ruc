@@ -498,6 +498,9 @@ impl Type {
                     alias.insert(param.clone(), arg.clone());
                     typ = typ.rewrite(param, arg);
                 }
+                let parent = ctx.global.alias.clone();
+                ctx.global.alias = alias.clone();
+
                 let mangle = func.generics();
                 let mut unify = ctx.global.def[&name].clone();
                 if let Function((_, params), (_, ret)) | Declare((_, params), ret) = unify.clone()
@@ -507,17 +510,13 @@ impl Type {
                         Generics(mangle.clone(), Vec::new()),
                         params.into_keys().zip(args).collect(),
                     );
-                    dbg!(&head);
+                    let ret = ret.solve(ctx);
                     unify = match unify {
                         Function(_, (body, _)) => Function(head, (body, ret)),
                         _ => Declare(head, ret),
                     };
                 };
-                let parent = ctx.global.alias.clone();
-                ctx.global.alias = alias.clone();
-                {
-                    typ = unify.infer(ctx)?;
-                }
+                typ = unify.infer(ctx)?;
                 ctx.global.alias = parent;
                 ctx.global.def.insert(mangle, unify.clone());
             }
