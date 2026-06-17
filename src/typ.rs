@@ -207,7 +207,7 @@ impl Expr {
                         for (param, arg) in params.iter().zip(args) {
                             let arg = arg.infer(ctx)?.solve(ctx);
                             if arg != param.solve(ctx) {
-                                return Err(format!("f(x: T) {param} != {arg}"));
+                                return Err(format!("f(x: T) {param} != {arg} <- arguments"));
                             }
                         }
                         typing!(*ret.clone())
@@ -216,7 +216,7 @@ impl Expr {
                         map!(args, |x| x.infer(ctx), ok)?;
                         typing!(*ret.clone())
                     }
-                    typ => Err(format!("not function: {typ}")),
+                    typ => Err(format!("{typ}() <- not function")),
                 }
             }
             Expr::Variable(generics) => {
@@ -307,20 +307,20 @@ impl Expr {
             Expr::Index(arr, idx) => {
                 let typ = arr.infer(ctx)?;
                 let Type::Array(typ) = typ else {
-                    return Err(format!("not array: {typ}"));
+                    return Err(format!("{typ} != {typ}"));
                 };
                 match idx.infer(ctx)? {
                     Type::Integer => {
                         expand!(Expr::Read(array!(arr, idx), *typ.clone(), arr.clone()));
                         typing!(*typ.clone())
                     }
-                    typ => Err(format!("not index: {typ}")),
+                    typ => Err(format!("{typ}")),
                 }
             }
             Expr::Member(obj, key) if key == Name::new("len")? => {
                 let typ = obj.infer(ctx)?;
                 let Type::Array(_) = typ.clone() else {
-                    return Err(format!("no length: {typ}"));
+                    return Err(format!("{typ}.len <- not array"));
                 };
                 typing!(expands!(Expr::Read(
                     Box::new(Expr::Integer(0)),
@@ -330,7 +330,7 @@ impl Expr {
             }
             Expr::New(typ) => {
                 let Type::Class(_) = typ.clone() else {
-                    return Err(format!("no constructor: {typ}"));
+                    return Err(format!("new {typ} <- no constructor"));
                 };
                 let typ = typ.mono(ctx, Generics::default())?;
                 expand!(new!(typ.size(ctx)? / 8));
