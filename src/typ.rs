@@ -506,6 +506,12 @@ impl Type {
                     let name = Generics(mangle.clone(), Vec::new());
                     let map = params.into_keys().zip(args).collect();
                     unify = Define::Function((name, map), (body, *ret.clone()));
+                } else if let Define::Declare((_, params), _) = unify.clone()
+                    && let Type::Function(Lambda(_, ret, Some(args))) = typ.clone()
+                {
+                    let name = Generics(mangle.clone(), Vec::new());
+                    let map = params.into_keys().zip(args).collect();
+                    unify = Define::Declare((name, map), *ret.clone())
                 };
                 let parent = ctx.global.alias.clone();
                 ctx.global.alias = alias.clone();
