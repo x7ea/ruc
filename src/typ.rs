@@ -516,8 +516,8 @@ impl Type {
                     };
                 };
                 typ = unify.infer(ctx)?;
-                ctx.global.alias = parent;
                 ctx.global.def.insert(mangle, unify.clone());
+                ctx.global.alias = parent;
             }
             Type::Class(Generics(name, args)) => {
                 let Some((params, table)) = ctx.global.table.get(&name) else {
