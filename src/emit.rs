@@ -14,9 +14,7 @@ impl Define {
                 .clone()
             };
         }
-        let mut text = String::new();
         let ctx = &mut Context::default();
-
         ctx.global.def = {
             let mut map = IndexMap::new();
             for define in defines {
@@ -33,6 +31,7 @@ impl Define {
             map
         };
         map!(ctx.global.def.clone(), |(_, x)| x.infer(ctx), ok)?;
+        let mut text = String::new();
         for (_, define) in ctx.global.def.clone() {
             text += &define.emit(ctx)?;
         }
