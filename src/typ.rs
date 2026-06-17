@@ -505,8 +505,10 @@ impl Type {
                 else {
                     return Err(format!("monomorphize: {func}"));
                 };
-                let name = Generics(mangle.clone(), Vec::new());
-                let map = params.into_keys().zip(args).collect();
+                let (name, map) = (
+                    Generics(mangle.clone(), Vec::new()),
+                    params.into_keys().zip(args).collect(),
+                );
                 unify = match unify {
                     Define::Function(_, (body, _)) => Define::Function((name, map), (body, ret)),
                     _ => Define::Declare((name, map), ret),
