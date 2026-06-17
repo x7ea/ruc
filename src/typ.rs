@@ -503,11 +503,11 @@ impl Type {
                 if let Function((_, params), (_, ret)) | Declare((_, params), ret) = unify.clone()
                     && let Type::Function(Lambda(_, _, Some(args))) = typ.clone()
                 {
-                    dbg!(&args);
                     let head = (
                         Generics(mangle.clone(), Vec::new()),
                         params.into_keys().zip(args).collect(),
                     );
+                    dbg!(&head);
                     unify = match unify {
                         Function(_, (body, _)) => Function(head, (body, ret)),
                         _ => Declare(head, ret),
