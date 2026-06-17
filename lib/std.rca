@@ -1,4 +1,10 @@
 extern fn strcmp(a: Str, b: Str): Int
+extern fn gets_s(buf: Str, size: Int): Str
 
 fn Str.eq(a: Str, b: Str): Bool strcmp(a, b) == 0
 fn Str.add(a: Str, b: Str): Str format a, b
+
+fn input(prompt: Str): Str {
+    printf(prompt)
+    get_s("", 512)
+}
