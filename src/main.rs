@@ -47,14 +47,14 @@ fn main() {
 
 // Abstract Syntax Tree (AST)
 
-#[derive(Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum Define {
     Function(Signature, (Expr, Type)),
     Declare(Signature, Type),
     Class(Generics, Object),
 }
 
-#[derive(Clone, Hash, PartialEq, Eq, AsRefStr)]
+#[derive(Debug, Clone, Hash, PartialEq, Eq, AsRefStr)]
 pub enum Expr {
     // Literal
     Integer(i64),
@@ -105,7 +105,7 @@ pub enum Expr {
     Init(Type, usize),
 }
 
-#[derive(Clone, PartialEq, Eq, Hash, Unwrap)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Unwrap)]
 pub enum Type {
     String,
     Integer,
@@ -117,28 +117,28 @@ pub enum Type {
     Void,
 }
 
-#[derive(Clone, Hash, PartialEq, Eq)]
+#[derive(Debug, Clone, Hash, PartialEq, Eq)]
 pub struct Lambda(Vec<Type>, Box<Type>, Option<Vec<Type>>);
 
-#[derive(Clone, Hash, Default, PartialEq, Eq)]
+#[derive(Debug, Clone, Hash, Default, PartialEq, Eq)]
 pub struct Generics(Name, Vec<Type>);
 
 type Signature = (Generics, IndexMap<Name, Type>);
 
-#[derive(Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum Object {
     Struct(IndexMap<Name, Type>),
     Enum(IndexMap<Name, Type>),
 }
 
-#[derive(Default)]
+#[derive(Debug, Default)]
 pub struct Context {
     global: Global,
     local: Function,
     table: IndexMap<Name, Function>,
 }
 
-#[derive(Default)]
+#[derive(Debug, Default)]
 pub struct Global {
     idx: usize,
     data: String,
@@ -149,7 +149,7 @@ pub struct Global {
     extrn: IndexSet<Name>,
 }
 
-#[derive(Default, Clone)]
+#[derive(Debug, Default, Clone)]
 pub struct Function {
     var: IndexMap<Name, Type>,
     scope: IndexMap<Name, Type>,
