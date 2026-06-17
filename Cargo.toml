@@ -8,3 +8,4 @@ indexmap = "2.13.0"
 ordered-float = "5.3.0"
 vec1 = "1.12.1"
 derive_more = { version = "2.1.0", features = ["unwrap"] }
+strum = { version = "0.28.0", features = ["derive"] }
