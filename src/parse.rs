@@ -119,14 +119,11 @@ impl Expr {
             let (expr, pats) = surround!(src, "{", "}")?;
             let pats = serial!(&pats, |src| {
                 let (head, ret) = once!(src, "=")?;
+                let ret = Expr::parse(&ret)?;
                 if let Ok((key, bind)) = once!(&head.trim(), SPACE) {
-                    Ok((
-                        Name::new(&key)?,
-                        Some(Expr::parse(&bind)?),
-                        Expr::parse(&ret)?,
-                    ))
+                    Ok((Name::new(&key)?, Some(Expr::parse(&bind)?), ret))
                 } else {
-                    Ok((Name::new(&head)?, None, Expr::parse(&ret)?))
+                    Ok((Name::new(&head)?, None, ret))
                 }
             });
             if let Ok(pats) = pats.try_into() {
