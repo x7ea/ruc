@@ -4,13 +4,13 @@ struct State {
     count: Int
 }
 
-fn inc(this: Elm, data: State) {
+fn inc(this: Elm, data: State): () {
     let data.count = data.count + 1
     let view = format "Number ", data.count
     this.update(view)
 }
 
-fn main() {
+fn main(): () {
     let app = App()
     let data = new State
     app.button("Counter").click<State>(data, inc)
