@@ -505,13 +505,13 @@ impl Type {
                 else {
                     return Err(format!("monomorphize: {func}"));
                 };
-                let (name, map) = (
+                let head = (
                     Generics(mangle.clone(), Vec::new()),
                     params.into_keys().zip(args).collect(),
                 );
                 unify = match unify {
-                    Define::Function(_, (body, _)) => Define::Function((name, map), (body, ret)),
-                    _ => Define::Declare((name, map), ret),
+                    Define::Function(_, (body, _)) => Define::Function(head, (body, ret)),
+                    _ => Define::Declare(head, ret),
                 };
                 let parent = ctx.global.alias.clone();
                 ctx.global.alias = alias.clone();
