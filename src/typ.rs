@@ -28,7 +28,7 @@ impl Define {
             Define::Declare((Generics(name, param), args), ret) => {
                 let sig = Type::Function(Lambda(
                     param.clone(),
-                    Box::new(ret.clone()),
+                    Box::new(ret.solve(ctx)),
                     Some(args.values().cloned().collect()),
                 ));
                 ctx.table.insert(name.clone(), ctx.local.clone());
