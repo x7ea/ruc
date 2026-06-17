@@ -126,9 +126,12 @@ impl Expr {
                     return Err(format!("if-else test: Bool != {cond}"));
                 }
                 if let Some(els) = els {
-                    let [then, els] = [then.infer(ctx)?, els.infer(ctx)?];
-                    if els != Type::Void && then != els {
-                        return Err(format!("if-else term: {then} != {els}"));
+                    let then = then.infer(ctx)?;
+                    if *els != Expr::Null(Type::Void) {
+                        let els = els.infer(ctx)?;
+                        if then != els {
+                            return Err(format!("if-else term: {then} != {els}"));
+                        }
                     }
                     typing!(then.clone())
                 } else {
