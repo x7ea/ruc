@@ -161,10 +161,10 @@ macro_rules! surround {
 
 #[macro_export]
 macro_rules! hash {
-    ($value: expr) => {{
+    ($val: expr) => {{
         use std::hash::{DefaultHasher, Hasher};
         let mut state = DefaultHasher::new();
-        $value.hash(&mut state);
+        $val.hash(&mut state);
         state.finish()
     }};
 }
