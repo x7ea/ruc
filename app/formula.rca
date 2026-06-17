@@ -3,7 +3,7 @@ enum Peano {
     succ: Peano
 }
 
-fn add(lhs: Peano, rhs: Peano): Peano '
+fn Peano.add(lhs: Peano, rhs: Peano): Peano '
 match rhs {
     zero = clone lhs,
     succ n = Peano::Succ(add(lhs, n))
