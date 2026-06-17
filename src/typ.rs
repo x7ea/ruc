@@ -507,17 +507,16 @@ impl Type {
                 ctx.global.alias = alias.clone();
 
                 let (mangle, mut unify) = (func.generics(), ctx.global.def[&name].clone());
-                if let Function((_, params), (_, ret)) | Declare((_, params), ret) = unify.clone()
-                    && let Type::Function(Lambda(_, _, Some(args))) = typ.clone()
+                if let Define::Function(params, _) | Define::Declare(params, _) = unify.clone()
+                    && let Type::Function(Lambda(_, ret, Some(args))) = typ.clone()
                 {
                     let head = (
                         Generics(mangle.clone(), Vec::new()),
-                        params.into_keys().zip(args).collect(),
+                        params.1.into_keys().zip(args).collect(),
                     );
-                    let ret = ret.solve(ctx);
                     unify = match unify {
-                        Function(_, (body, _)) => Function(head, (body, ret)),
-                        _ => Declare(head, ret),
+                        Function(_, (body, _)) => Function(head, (body, *ret)),
+                        _ => Declare(head, *ret),
                     };
                 };
                 typ = unify.infer(ctx)?;
