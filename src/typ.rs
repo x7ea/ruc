@@ -376,7 +376,7 @@ impl Expr {
                         ));
                     }
                 }
-                typing!(typ)
+                typing!(typ.solve(ctx))
             }
             Expr::Check(expr) => {
                 if let Expr::Member(obj, key) = &*expr
