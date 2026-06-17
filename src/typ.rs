@@ -395,7 +395,7 @@ impl Expr {
                 }
                 let typ = expr.infer(ctx)?;
                 let Type::Class(_) = typ else {
-                    return Err(format!("{typ}? <- not nullable"));
+                    return Err(format!("can't null-check: {typ}"));
                 };
                 typing!(Type::Boolean)
             }
