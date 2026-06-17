@@ -286,7 +286,7 @@ impl Expr {
                     }
                     typing!(Type::Void)
                 }
-                other => Err(format!("{} <- ?", other.infer(ctx)?)),
+                other => Err(format!("assign target: {}", other.infer(ctx)?)),
             },
             Expr::Sequence(array) => {
                 let typ = array[0].infer(ctx)?;
