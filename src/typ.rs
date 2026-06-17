@@ -141,7 +141,7 @@ impl Expr {
                     && let Some((_, Object::Enum(layout))) = ctx.global.table.get(name)
                 {
                     if layout.len() != pats.len() {
-                        let pats = map!(pats, |x| x.0);
+                        let pats = map!(pats, |x| x.0).join(", ");
                         return Err(format!("lacking cover: {pats}"));
                     }
                 } else {
