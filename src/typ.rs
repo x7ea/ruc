@@ -434,12 +434,11 @@ impl Expr {
                 op!(Type::Integer, lhs, rhs)
             }
             Expr::Null(typ) => {
-                let typ = typ.solve(ctx);
                 expand!(Expr::Block(vec![
                     Expr::Float(Float::from(0.0)),
                     Expr::Integer(0)
                 ]));
-                typing!(typ)
+                typing!(typ.solve(ctx))
             }
             Expr::Integer(_) => typing!(Type::Integer),
             Expr::Float(_) => typing!(Type::Float),
