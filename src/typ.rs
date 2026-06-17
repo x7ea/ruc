@@ -146,7 +146,7 @@ impl Expr {
                     for (key, _, _) in &pats {
                         layout.swap_remove(key);
                     }
-                    if let Some(lacked) = layout.first() {
+                    if let Some((lacked, _)) = layout.first() {
                         return Err(format!("not covered: {lacked}"));
                     }
                 } else {
