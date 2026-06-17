@@ -1,17 +1,19 @@
 extern fn strcmp(a: Str, b: Str): Int
-extern fn malloc<T>(size: Int): T
-extern fn read(id: Int, buf: Str, size: Int): ()
-extern fn
-
 
 fn Str.eq(a: Str, b: Str): Bool strcmp(a, b) == 0
 fn Str.add(a: Str, b: Str): Str format a, b
 
+extern fn malloc<T>(size: Int): T
+extern fn read(id: Int, buf: Str, size: Int): ()
 extern fn fdopen(id: Int, mode: Str): File
+extern fn fflush(buf: File): ()
 
 fn input(prompt: Str): Str {
-    setvbuf(fdopen(1, "w"), 0, _IONBF, 0);
     printf(prompt)
+
+    let out = fdopen(1, "w")
+    if out? then fflush(out)
+
     let volume = 512
     let buf = malloc<Str>(volume)
     read(0, buf, volume - 1)
