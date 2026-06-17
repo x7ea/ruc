@@ -10,8 +10,8 @@ fn inc(this: Elm, data: State): () {
     this.update(view)
 }
 
-fn main(): () {
-    let app = App()
+fn main() {
+    let app = window()
     let data = new State
     app.button("Counter").click<State>(data, inc)
     app.run()
