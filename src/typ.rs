@@ -128,12 +128,13 @@ impl Expr {
                 let then = then.infer(ctx)?;
                 match els {
                     None => typing!(Type::Void),
-                    Some(els) if *els == Expr::Null(Type::Void) => typing!(then.clone()),
                     Some(els) => {
-                        let els = els.infer(ctx)?;
-                        if then != els {
-                            return Err(format!("if-else term: {then} != {els}"));
-                        };
+                        if *els != Expr::Null(Type::Void) {
+                            let els = els.infer(ctx)?;
+                            if then != els {
+                                return Err(format!("if-else term: {then} != {els}"));
+                            }
+                        }
                         typing!(then)
                     }
                 }
