@@ -127,6 +127,7 @@ impl Expr {
                 }
                 let then = then.infer(ctx)?;
                 match els {
+                    None => typing!(Type::Void),
                     Some(els) if *els == Expr::Null(Type::Void) => typing!(then.clone()),
                     Some(els) => {
                         let els = els.infer(ctx)?;
@@ -135,7 +136,6 @@ impl Expr {
                         };
                         typing!(then)
                     }
-                    None => typing!(Type::Void),
                 }
             }
             Expr::Match(val, pats) => {
