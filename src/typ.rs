@@ -323,7 +323,7 @@ impl Expr {
             Expr::Member(obj, key) if key == Name::new("len")? => {
                 let typ = obj.infer(ctx)?;
                 let Type::Array(_) = typ.clone() else {
-                    return Err(format!("{typ}.len <- not array"));
+                    return Err(format!("no length: {typ}"));
                 };
                 typing!(expands!(Expr::Read(
                     Box::new(Expr::Integer(0)),
@@ -333,7 +333,7 @@ impl Expr {
             }
             Expr::New(typ) => {
                 let Type::Class(_) = typ.clone() else {
-                    return Err(format!("new {typ} <- no constructor"));
+                    return Err(format!("no constructor: {typ}"));
                 };
                 let typ = typ.mono(ctx, Generics::default())?;
                 expand!(new!(typ.size(ctx)? / 8));
