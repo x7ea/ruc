@@ -140,6 +140,8 @@ impl Expr {
                 if let Type::Class(Generics(name, _)) = &typ
                     && let Some((_, Object::Enum(layout))) = ctx.global.table.get(name)
                 {
+                } else {
+                    return Err(format!("match: Enum != {typ}"));
                 };
                 let mut expr = Expr::Null(Type::Void);
                 for (key, bind, ret) in pats {
