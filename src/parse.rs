@@ -78,8 +78,8 @@ impl Expr {
             let tokens: Vec<String> = lexer(src, SPACE)?;
             if tokens.len() >= 3 {
                 let pos: usize = tokens.len() - 2;
-                let lhs = tokens[..pos].join(SPACE);
                 let opr = tokens[pos].to_string();
+                let lhs = tokens[..pos].join(SPACE);
                 let rhs = tokens[pos + 1].to_string();
                 Ok((lhs, opr, rhs))
             } else {
