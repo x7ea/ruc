@@ -315,7 +315,7 @@ impl Expr {
             }
             Expr::Add(lhs, rhs) => Ok(op!("add", lhs, rhs)),
             Expr::Sub(lhs, rhs) => Ok(op!("sub", lhs, rhs)),
-            Expr::Mul(lhs, rhs) => Ok(op!("mul", lhs, rhs)),
+            Expr::Mul(lhs, rhs) => Ok(op!("imul", lhs, rhs)),
             Expr::Eq(lhs, rhs) => Ok(cmp!("e", lhs, rhs)),
             Expr::Ne(lhs, rhs) => Ok(cmp!("ne", lhs, rhs)),
             Expr::Gt(lhs, rhs) => Ok(cmp!("g", lhs, rhs)),
