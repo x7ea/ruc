@@ -130,9 +130,8 @@ impl Expr {
                     None => typing!(Type::Void),
                     Some(els) if *els == Expr::Null(Type::Void) => typing!(then.clone()),
                     Some(els) => {
-                        let els = els.infer(ctx)?;
-                        if els != then {
-                            return Err(format!("if-else term: {then} != {els}"));
+                        if els.infer(ctx)? != then {
+                            return Err(format!("if-else term: {then} != {}", els.infer(ctx)?));
                         };
                         typing!(then)
                     }
