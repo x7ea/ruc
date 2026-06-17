@@ -492,6 +492,7 @@ impl Type {
         }
         match typ.clone() {
             Type::Function(Lambda(params, _, _)) if !params.is_empty() => {
+                use Define::*;
                 let mut alias = IndexMap::new();
                 for (arg, param) in args.iter().zip(&params) {
                     alias.insert(param.clone(), arg.clone());
@@ -499,16 +500,17 @@ impl Type {
                 }
                 let mangle = func.generics();
                 let mut unify = ctx.global.def[&name].clone();
-                if let Define::Function((_, params), (_, ret)) | Define::Declare((_, params), ret) =
-                    unify.clone()
+                if let Function((_, params), (_, ret)) | Declare((_, params), ret) = unify.clone()
+                    && let Type::Function(Lambda(_, _, Some(args))) = typ.clone()
                 {
+                    dbg!(&args);
                     let head = (
                         Generics(mangle.clone(), Vec::new()),
                         params.into_keys().zip(args).collect(),
                     );
                     unify = match unify {
-                        Define::Function(_, (body, _)) => Define::Function(head, (body, ret)),
-                        _ => Define::Declare(head, ret),
+                        Function(_, (body, _)) => Function(head, (body, ret)),
+                        _ => Declare(head, ret),
                     };
                 };
                 let parent = ctx.global.alias.clone();
