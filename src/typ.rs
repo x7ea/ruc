@@ -253,7 +253,7 @@ impl Expr {
                     expand!(Expr::Write(array!(arr, idx), val.clone(), arr.clone()));
                     let [val, typ] = [val.infer(ctx)?, acc.infer(ctx)?];
                     if typ.clone() != val {
-                        return Err(format!("array[index] {typ} != {val}"));
+                        return Err(format!("[{typ}] <- {val}"));
                     }
                     typing!(Type::Void)
                 }
@@ -263,7 +263,7 @@ impl Expr {
                     {
                         let val = val.infer(ctx)?;
                         if typ.solve(ctx) != val {
-                            return Err(format!("{name}.{key}: {typ} != {val}"));
+                            return Err(format!("{name}.{key}: {typ} <- {val}"));
                         }
                     }
                     match &ctx.global.table[name].1 {
@@ -283,7 +283,7 @@ impl Expr {
                     }
                     typing!(Type::Void)
                 }
-                other => Err(format!("can't assign to {}", other.infer(ctx)?)),
+                other => Err(format!("{} <- ?", other.infer(ctx)?)),
             },
             Expr::Sequence(array) => {
                 let typ = array[0].infer(ctx)?;
