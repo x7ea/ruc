@@ -253,7 +253,7 @@ impl Expr {
                     expand!(Expr::Write(array!(arr, idx), val.clone(), arr.clone()));
                     let [val, typ] = [val.infer(ctx)?, acc.infer(ctx)?];
                     if typ.clone() != val {
-                        return Err(format!("array[n] {typ} != {val}"));
+                        return Err(format!("array[index] {typ} != {val}"));
                     }
                     typing!(Type::Void)
                 }
