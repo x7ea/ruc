@@ -500,17 +500,16 @@ impl Type {
                 }
                 let mangle = func.generics();
                 let mut unify = ctx.global.def[&name].clone();
-                let (Define::Function((Generics(_, _), params), (_, ret))
-                | Define::Declare((_, params), ret)) = unify.clone()
+                let (Define::Function((_, params), (_, ret)) | Define::Declare((_, params), ret)) =
+                    unify.clone()
                 else {
-                    panic!()
+                    return Err(format!("monomorphize: {func}"));
                 };
                 let name = Generics(mangle.clone(), Vec::new());
                 let map = params.into_keys().zip(args).collect();
                 unify = match unify {
                     Define::Function(_, (body, _)) => Define::Function((name, map), (body, ret)),
-                    Define::Declare(_, _) => Define::Declare((name, map), ret),
-                    _ => panic!(),
+                    _ => Define::Declare((name, map), ret),
                 };
                 let parent = ctx.global.alias.clone();
                 ctx.global.alias = alias.clone();
