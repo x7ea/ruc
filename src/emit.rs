@@ -121,14 +121,10 @@ impl Expr {
             }};
         }
         macro_rules! typ {
-            ($expr: expr) => {
-                ctx.local.typed[$expr].clone()
-            };
+            ($expr: expr) => {{ ctx.local.typed[$expr].clone() }};
         }
         macro_rules! expr {
-            ($expr: expr) => {
-                ctx.local.expand[$expr].clone()
-            };
+            ($expr: expr) => {{ ctx.local.expand[$expr].clone() }};
         }
 
         match self {
