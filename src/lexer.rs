@@ -212,10 +212,17 @@ macro_rules! map {
 }
 
 #[macro_export]
+macro_rules! var {
+    ($name: expr) => {
+        Expr::Variable(Generics(Name::new(&$name)?, Vec::new()))
+    };
+}
+
+#[macro_export]
 macro_rules! new {
     ($layout: expr) => {
         Expr::Call(
-            Box::new(Expr::Variable(Generics(Name::new("calloc")?, vec![]))),
+            Box::new(var!("calloc")),
             vec![Expr::Integer($layout as i64), Expr::Integer(8)],
         )
     };
