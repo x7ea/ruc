@@ -114,10 +114,9 @@ impl Expr {
                 let (head, ret) = once!(src, "=")?;
                 let ret = Expr::parse(&ret)?;
                 if let Ok((key, bind)) = once!(&head.trim(), SPACE) {
-                    Ok((Name::new(&key)?, Some(Expr::parse(&bind)?), ret))
-                } else {
-                    Ok((Name::new(&head)?, None, ret))
+                    return Ok((Name::new(&key)?, Some(Expr::parse(&bind)?), ret));
                 }
+                Ok((Name::new(&head)?, None, ret))
             });
             Ok(Expr::Match(Box::new(Expr::parse(&expr)?), pats))
         } else if let Some(src) = src.strip_prefix("while ") {
@@ -178,8 +177,7 @@ impl Expr {
                 };
                 return Ok(Expr::Init(Type::parse(&typ)?, len));
             }
-            let arr = serial!(arr, Expr::parse);
-            if let Ok(arr) = arr.try_into() {
+            if let Ok(arr) = serial!(arr, Expr::parse).try_into() {
                 Ok(Expr::Sequence(arr))
             } else {
                 Err(format!("empty array: {src}"))
