@@ -116,11 +116,12 @@ pub mod name {
 
     impl fmt::Display for Generics {
         fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-            let args = map!(self.1, |x| x.to_string()).join(", ");
+            let Generics(name, args) = self.clone();
+            let args = map!(args, |x| x.to_string()).join(", ");
             if args.is_empty() {
-                write!(f, "{}", self.0)
+                write!(f, "{name}")
             } else {
-                write!(f, "{}<{}>", self.0, args)
+                write!(f, "{name}<{args}>")
             }
         }
     }
