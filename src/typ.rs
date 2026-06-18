@@ -549,11 +549,10 @@ impl Type {
             return new.clone();
         }
         match self {
-            Type::Function(Lambda(typ, ret, Some(args))) => Type::Function(Lambda(
-                typ.clone(),
-                Box::new(ret.rewrite(old, new)),
-                Some(map!(args, |x| x.rewrite(old, new))),
-            )),
+            Type::Function(Lambda(typ, ret, Some(args))) => {
+                let args = Some(map!(args, |x| x.rewrite(old, new)));
+                Type::Function(Lambda(typ.clone(), Box::new(ret.rewrite(old, new)), args))
+            }
             Type::Class(Generics(name, args)) => {
                 Type::Class(Generics(name.clone(), map!(args, |x| x.rewrite(old, new))))
             }
