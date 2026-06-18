@@ -203,19 +203,13 @@ macro_rules! once {
 
 #[macro_export]
 macro_rules! map {
-    ($arr: expr, $lambda: expr) => {
-        $arr.iter().map($lambda).collect::<Vec<_>>()
-    };
-    ($arr: expr, $lambda: expr, ok) => {
-        $arr.iter().map($lambda).collect::<Result<Vec<_>, String>>()
-    };
+    ($arr: expr, $lambda: expr) => {{ $arr.iter().map($lambda).collect::<Vec<_>>() }};
+    ($arr: expr, $lambda: expr, ok) => {{ $arr.iter().map($lambda).collect::<Result<Vec<_>, String>>() }};
 }
 
 #[macro_export]
 macro_rules! var {
-    ($name: expr) => {
-        Expr::Variable(Generics(Name::new(&$name)?, Vec::new()))
-    };
+    ($name: expr) => {{ Expr::Variable(Generics(Name::new(&$name)?, Vec::new())) }};
 }
 
 #[macro_export]
