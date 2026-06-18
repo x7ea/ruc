@@ -65,10 +65,7 @@ impl Expr {
             }};
         }
         macro_rules! tmp {
-            ($typ: expr) => {{
-                let name = Name::new(&format!("tmp{}", hash!(&self)))?;
-                var!(Generics(name, vec![$typ.clone()]).generics().to_string())
-            }};
+            ($typ: expr) => {{ var!(&format!("tmp{}", hash!(&self))) }};
         }
         macro_rules! op {
             ($typ: pat, $lhs: expr, $rhs: expr) => {{
