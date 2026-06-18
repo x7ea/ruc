@@ -278,7 +278,7 @@ impl Expr {
                 }
                 acc @ Expr::Member(obj, key) => {
                     let typ = acc.infer(ctx)?;
-                    let name = &obj.infer(ctx)?.unwrap_class().0;
+                    let Generics(name, _) = &obj.infer(ctx)?.unwrap_class();
                     let rhs = val.infer(ctx)?;
                     if typ != rhs {
                         return Err(format!("{name}.{key}: {typ} != {rhs}"));
@@ -568,9 +568,9 @@ impl Type {
 
     fn size(&self, ctx: &Context) -> Result<usize, String> {
         match self {
-            Type::Class(Generics(name, _)) => match &ctx.global.table[name].1 {
-                Object::Struct(layout) => Ok(layout.len() * 8),
-                Object::Enum(_) => Ok(16),
+            Type::Class(Generics(name, _)) => match &ctx.global.table[name] {
+                (_, Object::Struct(layout)) => Ok(layout.len() * 8),
+                (_, Object::Enum(_)) => Ok(16),
             },
             _ => Err(format!("can't clone: {self}")),
         }
