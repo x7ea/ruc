@@ -147,23 +147,26 @@ impl Expr {
         } else if let Ok((lhs, op, rhs)) = is_operator(src) {
             let lhs = Box::new(Expr::parse(&lhs)?);
             let rhs = Box::new(Expr::parse(&rhs)?);
-            Ok(match op.as_str() {
-                "+" => Expr::Add(lhs, rhs),
-                "-" => Expr::Sub(lhs, rhs),
-                "*" => Expr::Mul(lhs, rhs),
-                "/" => Expr::Div(lhs, rhs),
-                "%" => Expr::Mod(lhs, rhs),
-                "==" => Expr::Eq(lhs, rhs),
-                "!=" => Expr::Ne(lhs, rhs),
-                "&" => Expr::And(lhs, rhs),
-                "|" => Expr::Or(lhs, rhs),
-                "^" => Expr::Xor(lhs, rhs),
-                ">" => Expr::Gt(lhs, rhs),
-                "<" => Expr::Lt(lhs, rhs),
-                ">=" => Expr::Ge(lhs, rhs),
-                "<=" => Expr::Le(lhs, rhs),
-                op => return Err(format!("unknown operator: {op}")),
-            })
+            macro_rules! op {
+                ($($op: pat => $expr: ident ,)*) => {
+                    match op.as_str() {
+                        $($op => Ok(Expr::$expr(lhs, rhs)),)*
+                         _  => Err(format!("unknown operator: {op}"))
+                    }
+                };
+            }
+            op!("+" => Add, "-" => Sub,    "*" => Mul,
+            "/" => Div,
+            "%" => Mod,
+            "==" =>Eq,
+            "!=" =>Ne,
+            "&" => And,
+            "|" => Or,
+            "^" => Xor,
+            ">" =>Gt,
+            "<" =>Lt,
+            ">=" =>Ge,
+            "<=" =>Le,)
         } else if src == "()" {
             Ok(Expr::Null(Type::Void))
         } else if let Some(text) = surround!("\"", src, "\"") {
