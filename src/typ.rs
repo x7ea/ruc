@@ -172,16 +172,14 @@ impl Expr {
                 };
                 let temp = Box::new(tmp!(Type::Integer));
                 let inc = Box::new(Expr::Add(temp.clone(), Box::new(Expr::Integer(1))));
+                let each = Box::new(Expr::Block(vec![
+                    Expr::Let(cnt, Box::new(Expr::Index(arr.clone(), temp.clone()))),
+                    Expr::Let(temp.clone(), inc),
+                    *body,
+                ]));
                 typing!(expands!(Expr::Block(vec![
                     Expr::Let(temp.clone(), Box::new(Expr::Integer(0))),
-                    Expr::While(
-                        Box::new(Expr::Lt(temp.clone(), len!(arr))),
-                        Box::new(Expr::Block(vec![
-                            Expr::Let(cnt, Box::new(Expr::Index(arr.clone(), temp.clone()))),
-                            Expr::Let(temp.clone(), inc),
-                            *body,
-                        ]))
-                    ),
+                    Expr::While(Box::new(Expr::Lt(temp.clone(), len!(arr))), each)
                 ])))
             }
             Expr::Block(lines) => {
