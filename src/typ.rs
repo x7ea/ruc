@@ -213,9 +213,9 @@ impl Expr {
             }
             Expr::Call(callee, args) => {
                 if let Some(obj) = args.first()
-                    && let Type::Class(name) = obj.infer(ctx)?
+                    && let Type::Class(Generics(name, _)) = obj.infer(ctx)?
                 {
-                    ctx.local.class = Some(name.0);
+                    ctx.local.class = Some(name);
                 }
                 match callee.infer(ctx)? {
                     Type::Function(Lambda(_, ret, Some(params))) => {
@@ -451,7 +451,7 @@ impl Expr {
             }
             Expr::Null(typ) => {
                 expand!(Expr::Block(vec![
-                    Expr::Float(Float::from(0.0)),
+                    Expr::Float(Float::from(0f64)),
                     Expr::Integer(0)
                 ]));
                 typing!(typ.solve(ctx))
