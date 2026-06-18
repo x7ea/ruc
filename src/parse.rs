@@ -126,11 +126,8 @@ impl Expr {
         } else if let Some(src) = src.strip_prefix("for ") {
             let (head, body) = once!(src, "do")?;
             let (cnt, arr) = once!(&head, "=")?;
-            Ok(Expr::For(
-                Box::new(Expr::parse(&cnt)?),
-                Box::new(Expr::parse(&arr)?),
-                Box::new(Expr::parse(&body)?),
-            ))
+            let (cnt, arr) = (Box::new(Expr::parse(&cnt)?), Box::new(Expr::parse(&arr)?));
+            Ok(Expr::For(cnt, arr, Box::new(Expr::parse(&body)?)))
         } else if let Some(class) = src.strip_prefix("new ") {
             Ok(Expr::New(Type::parse(class)?))
         } else if let Some(expr) = src.strip_prefix("clone ") {
