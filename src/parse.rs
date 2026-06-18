@@ -156,7 +156,7 @@ impl Expr {
                 };
             }
             op!("+"  => Add, "-"  => Sub, "*" => Mul, "/" => Div, "%"  => Mod,
-                "==" => Eq,  "!=" => Ne,  ">" => Gt,  "<" => Lt,  ">=" => Ge, "<=" =>Le,
+                "==" => Eq,  "!=" => Ne,  ">" => Gt,  "<" => Lt,  ">=" => Ge, "<=" => Le,
                 "&"  => And, "|"  => Or,  "^" => Xor,)
         } else if src == "()" {
             Ok(Expr::Null(Type::Void))
