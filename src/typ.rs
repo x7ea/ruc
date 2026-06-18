@@ -13,7 +13,6 @@ impl Define {
                 if param.is_empty() {
                     let parent = ctx.local.clone();
                     (ctx.local, ctx.local.scope) = (Function::default(), args.clone());
-
                     let body = body.infer(ctx)?;
                     if ret.solve(ctx) != body {
                         return Err(format!("return: {ret} != {body}"));
