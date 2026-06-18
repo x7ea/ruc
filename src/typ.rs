@@ -140,9 +140,8 @@ impl Expr {
             Expr::Match(val, pats) => {
                 let typ = val.infer(ctx)?;
                 if let Type::Class(Generics(name, _)) = &typ
-                    && let Some((_, Object::Enum(layout))) = ctx.global.table.get(name)
+                    && let Some((_, Object::Enum(mut layout))) = ctx.global.table.get(name).cloned()
                 {
-                    let mut layout = layout.clone();
                     for (key, _, _) in &pats {
                         layout.swap_remove(key);
                     }
@@ -285,11 +284,9 @@ impl Expr {
                 acc @ Expr::Member(obj, key) => {
                     let typ = acc.infer(ctx)?;
                     let name = &obj.infer(ctx)?.unwrap_class().0;
-                    {
-                        let val = val.infer(ctx)?;
-                        if typ != val {
-                            return Err(format!("{name}.{key}: {typ} != {val}"));
-                        }
+                    let rhs = val.infer(ctx)?;
+                    if typ != rhs {
+                        return Err(format!("{name}.{key}: {typ} != {rhs}"));
                     }
                     match &ctx.global.table[name].1 {
                         Object::Struct(layout) => {
