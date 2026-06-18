@@ -10,19 +10,17 @@ impl Define {
                     Some(args.values().cloned().collect()),
                 ));
                 ctx.global.lib.insert(name.clone(), sig.clone());
+                if param.is_empty() {
+                    let parent = ctx.local.clone();
+                    (ctx.local, ctx.local.scope) = (Function::default(), args.clone());
 
-                if !param.is_empty() {
-                    return Ok(sig);
+                    let body = body.infer(ctx)?;
+                    if ret.solve(ctx) != body {
+                        return Err(format!("return: {ret} != {body}"));
+                    }
+                    ctx.table.insert(name.clone(), ctx.local.clone());
+                    ctx.local = parent;
                 }
-                let parent = ctx.local.clone();
-                (ctx.local, ctx.local.scope) = (Function::default(), args.clone());
-
-                let body = body.infer(ctx)?;
-                if ret.solve(ctx) != body {
-                    return Err(format!("return: {ret} != {body}"));
-                }
-                ctx.table.insert(name.clone(), ctx.local.clone());
-                ctx.local = parent;
                 Ok(sig)
             }
             Define::Declare((Generics(name, param), args), ret) => {
