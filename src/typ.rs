@@ -229,11 +229,11 @@ impl Expr {
                                 return Err(format!("argument types: {param} != {arg}"));
                             }
                         }
-                        typing!(*ret.clone())
+                        typing!(*ret)
                     }
                     Type::Function(Lambda(_, ret, None)) => {
                         map!(args, |x| x.infer(ctx), ok)?;
-                        typing!(*ret.clone())
+                        typing!(*ret)
                     }
                     typ => Err(format!("callee: {typ}")),
                 }
