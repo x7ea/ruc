@@ -498,12 +498,12 @@ impl Type {
                     typ = typ.rewrite(param, arg);
                 }
                 let (mangle, mut unify) = (func.generics(), ctx.global.def[&name].clone());
-                if let Define::Function(params, _) | Define::Declare(params, _) = unify.clone()
+                if let Define::Function((_, params), _) | Define::Declare((_, params), _) = &unify
                     && let Type::Function(Lambda(_, ret, Some(args))) = typ.clone()
                 {
                     let head = (
                         Generics(mangle.clone(), Vec::new()),
-                        params.1.into_keys().zip(args).collect(),
+                        params.keys().cloned().zip(args).collect(),
                     );
                     unify = match unify {
                         Define::Function(_, (body, _)) => Define::Function(head, (body, *ret)),
