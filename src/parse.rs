@@ -155,18 +155,7 @@ impl Expr {
                     }
                 };
             }
-            op!("+" => Add, "-" => Sub,    "*" => Mul,
-            "/" => Div,
-            "%" => Mod,
-            "==" =>Eq,
-            "!=" =>Ne,
-            "&" => And,
-            "|" => Or,
-            "^" => Xor,
-            ">" =>Gt,
-            "<" =>Lt,
-            ">=" =>Ge,
-            "<=" =>Le,)
+            op!("+" => Add, "-" => Sub, "*" => Mul, "/" => Div, "%" => Mod, "==" =>Eq, "!=" =>Ne, "&" => And, "|" => Or, "^" => Xor, ">" =>Gt, "<" =>Lt, ">=" =>Ge, "<=" =>Le,)
         } else if src == "()" {
             Ok(Expr::Null(Type::Void))
         } else if let Some(text) = surround!("\"", src, "\"") {
