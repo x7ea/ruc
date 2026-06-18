@@ -142,9 +142,7 @@ impl Expr {
                 if let Type::Class(Generics(name, _)) = &typ
                     && let Some((_, Object::Enum(mut layout))) = ctx.global.table.get(name).cloned()
                 {
-                    for (key, _, _) in &pats {
-                        layout.swap_remove(key);
-                    }
+                    let _ = map!(pats, |(key, _, _)| layout.swap_remove(key));
                     if let Some((lacked, _)) = layout.first() {
                         return Err(format!("not covered: {name}.{lacked}"));
                     }
