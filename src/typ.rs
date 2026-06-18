@@ -283,13 +283,13 @@ impl Expr {
                     if typ != rhs {
                         return Err(format!("{name}.{key}: {typ} != {rhs}"));
                     }
-                    match &ctx.global.table[name].1 {
-                        Object::Struct(layout) => {
+                    match &ctx.global.table[name] {
+                        (_, Object::Struct(layout)) => {
                             let offset = layout.get_index_of(key).unwrap();
                             let offset = Box::new(Expr::Integer(offset as i64));
                             expand!(Expr::Write(offset, val.clone(), obj.clone()));
                         }
-                        Object::Enum(layout) => {
+                        (_, Object::Enum(layout)) => {
                             let tag = layout.get_index_of(key).unwrap() as i64;
                             let offset = |x| Box::new(Expr::Integer(x));
                             expand!(Expr::Block(vec![
