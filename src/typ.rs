@@ -64,11 +64,6 @@ impl Expr {
                 let _ = expands!($expr);
             }};
         }
-        macro_rules! var {
-            ($name: expr) => {
-                Expr::Variable(Generics(Name::new(&$name)?, Vec::new()))
-            };
-        }
         macro_rules! tmp {
             ($typ: expr) => {{
                 let name = Name::new(&format!("tmp{}", hash!(&self)))?;
