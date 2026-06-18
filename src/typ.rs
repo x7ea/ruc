@@ -441,7 +441,7 @@ impl Expr {
             }
             Expr::Null(typ) => {
                 expand!(Expr::Block(vec![
-                    Expr::Float(Float::from(0f64)),
+                    Expr::Float(Float::from(0.0)),
                     Expr::Integer(0)
                 ]));
                 typing!(typ.solve(ctx))
