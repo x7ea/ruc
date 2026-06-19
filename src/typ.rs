@@ -278,10 +278,10 @@ impl Expr {
                             expand!(Expr::Write(offset, val.clone(), obj.clone()));
                         }
                         (_, Object::Enum(layout)) => {
-                            let tag = layout.get_index_of(key).unwrap() as i64;
+                            let tag = layout.get_index_of(key).unwrap();
                             let offset = |x| Box::new(Expr::Integer(x));
                             expand!(Expr::Block(vec![
-                                Expr::Write(offset(0), offset(tag), obj.clone()),
+                                Expr::Write(offset(0), offset(tag as i64), obj.clone()),
                                 Expr::Write(offset(8), val.clone(), obj.clone()),
                             ]));
                         }
