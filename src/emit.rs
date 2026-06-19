@@ -1,8 +1,6 @@
 use crate::*;
 
 impl Define {
-    const CORE: [&str; 5] = ["calloc", "printf", "g_strdup_printf", "free", "memcpy"];
-
     pub fn compile(defines: &[Self]) -> Result<String, String> {
         macro_rules! name {
             ($define: expr) => {
@@ -16,14 +14,6 @@ impl Define {
         }
         let ctx = &mut Context::default();
         ctx.global.def = defines.iter().map(|x| (name!(x), x.clone())).collect();
-        ctx.global.lib = {
-            let mut map = IndexMap::new();
-            for line in Self::CORE {
-                let sig = Lambda(vec![], Box::new(Type::Void), None);
-                map.insert(Name::new(line)?, Type::Function(sig));
-            }
-            map
-        };
         map!(ctx.global.def.clone(), |(_, x)| x.infer(ctx), ok)?;
         let mut text = String::new();
         for (_, define) in ctx.global.def.clone() {
