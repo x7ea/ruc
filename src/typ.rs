@@ -336,8 +336,6 @@ impl Expr {
                     typ => Err(format!("no length: {typ}")),
                 }
 
-                };
-            }
             Expr::New(typ) => {
                 let Type::Class(_) = typ.clone() else {
                     return Err(format!("no constructor: {typ}"));
