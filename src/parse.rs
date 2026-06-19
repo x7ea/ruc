@@ -30,10 +30,8 @@ impl Define {
             } else if let Some(func) = line.strip_prefix("extern fn ") {
                 let (head, body) = once!(func, ":").unwrap_or((func.to_string(), "()".to_string()));
                 if let Ok((name, args)) = surround!(&head, "(", ")") {
-                    result.push(Define::Declare(
-                        (Generics::parse(&name)?, args!(&args)),
-                        Type::parse(&body)?,
-                    ));
+                    let head = (Generics::parse(&name)?, args!(&args));
+                    result.push(Define::Declare(head, Type::parse(&body)?));
                 } else {
                     result.push(Define::Symbol(Name::new(&head)?, Type::parse(&body)?));
                 }
@@ -42,17 +40,15 @@ impl Define {
             {
                 let (typ, body) = once!(&body, SPACE)?;
                 let (name, args) = surround!(&head, "(", ")")?;
-                result.push(Define::Function(
-                    (Generics::parse(&name)?, args!(&args)),
-                    (Expr::Block(vec![Expr::parse(&body)?]), Type::parse(&typ)?),
-                ));
+                let head = (Generics::parse(&name)?, args!(&args));
+                let body = (Expr::Block(vec![Expr::parse(&body)?]), Type::parse(&typ)?);
+                result.push(Define::Function(head, body));
             } else if let Some(func) = line.strip_prefix("fn ") {
                 let (head, body) = once!(&func, SPACE)?;
                 let (name, args) = surround!(&head, "(", ")")?;
-                result.push(Define::Function(
-                    (Generics::parse(&name)?, args!(&args)),
-                    (Expr::Block(vec![Expr::parse(&body)?]), Type::Void),
-                ));
+                let head = (Generics::parse(&name)?, args!(&args));
+                let body = (Expr::Block(vec![Expr::parse(&body)?]), Type::Void);
+                result.push(Define::Function(head, body));
             } else if let Some(head) = line.strip_prefix("struct ") {
                 let (name, args) = surround!(&head, "{", "}")?;
                 result.push(Define::Class(
