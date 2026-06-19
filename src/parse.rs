@@ -71,16 +71,6 @@ impl Define {
 impl Expr {
     fn parse(src: &str) -> Result<Expr, String> {
         let src = src.trim();
-        fn is_operator(src: &str) -> Option<(String, (String, String))> {
-            if let Ok(tokens) = lexer(src, SPACE)
-                && tokens.len() < 3
-            {
-                let pos: usize = tokens.len() - 2;
-                let term = (tokens[..pos].join(SPACE), tokens[pos + 1].clone());
-                return Some((tokens[pos].clone(), term));
-            }
-            None
-        }
         if let Some(src) = src.strip_prefix("print ") {
             Ok(Expr::Print(true, serial!(src, Expr::parse)))
         } else if let Some(src) = src.strip_prefix("format ") {
@@ -135,14 +125,17 @@ impl Expr {
                 }
             }
             Ok(Expr::Block(block))
-        } else if let Some((op, (lhs, rhs))) = is_operator(src) {
-            let lhs = Box::new(Expr::parse(&lhs)?);
-            let rhs = Box::new(Expr::parse(&rhs)?);
+        } else if let Ok(tokens) = lexer(src, SPACE)
+            && tokens.len() < 3
+        {
+            let pos: usize = tokens.len() - 2;
+            let lhs = Box::new(Expr::parse(&tokens[..pos].join(SPACE))?);
+            let rhs = Box::new(Expr::parse(&tokens[pos + 1])?);
             macro_rules! op {
                 ($($op: pat => $expr: ident ,)*) => {
-                    match op.as_str() {
+                    match tokens[pos].as_str() {
                         $($op => Ok(Expr::$expr(lhs, rhs)),)*
-                         _  => Err(format!("unknown operator: {op}"))
+                        op  => Err(format!("unknown operator: {op}"))
                     }
                 };
             }
