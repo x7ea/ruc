@@ -21,6 +21,17 @@ impl Define {
                     map
                 }};
             }
+            macro_rules! object_declare {
+                ($word: literal, $typ: ident) => {
+                    if let Some(head) = line.strip_prefix(&($word.to_string() + SPACE)) {
+                        let (name, layout) = surround!(&head, "{", "}")?;
+                        result.push(Define::Class(
+                            Generics::parse(&name)?,
+                            Object::$typ(args!(&layout)),
+                        ));
+                    }
+                };
+            }
             if let Some(file) = line.strip_prefix("use ") {
                 let file = file.trim().to_string();
                 let Ok(file) = read_to_string(format!("./lib/{file}.rca")) else {
@@ -51,19 +62,9 @@ impl Define {
                     (Generics::parse(&name)?, args!(&args)),
                     (Expr::Block(vec![Expr::parse(&body)?]), Type::Void),
                 ));
-            } else if let Some(head) = line.strip_prefix("struct ") {
-                let (name, layout) = surround!(&head, "{", "}")?;
-                result.push(Define::Class(
-                    Generics::parse(&name)?,
-                    Object::Struct(args!(&layout)),
-                ));
-            } else if let Some(head) = line.strip_prefix("enum ") {
-                let (name, layout) = surround!(&head, "{", "}")?;
-                result.push(Define::Class(
-                    Generics::parse(&name)?,
-                    Object::Enum(args!(&layout)),
-                ));
             }
+            object_declare!("struct", Struct);
+            object_declare!("enum", Enum);
         }
         Ok(result)
     }
