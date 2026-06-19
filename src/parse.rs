@@ -195,10 +195,8 @@ impl Expr {
                 Ok(Expr::Enum(typ, name, Box::new(Expr::Null(Type::Void))))
             }
         } else if let Ok((func, args)) = surround!(src, "(", ")") {
-            Ok(Expr::Call(
-                Box::new(Expr::parse(&func)?),
-                serial!(&args, Expr::parse),
-            ))
+            let func = Box::new(Expr::parse(&func)?);
+            Ok(Expr::Call(func, serial!(&args, Expr::parse)))
         } else if let Ok((arr, idx)) = surround!(src, "[", "]") {
             let (arr, idx) = (Box::new(Expr::parse(&arr)?), Box::new(Expr::parse(&idx)?));
             Ok(Expr::Index(arr, idx))
