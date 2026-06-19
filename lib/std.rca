@@ -8,7 +8,7 @@ extern fn read(id: Int, buf: Str, size: Int): ()
 
 fn input(): Str {
     let volume = 512
-    let buf = calloc<Str>(volume, 8)
+    let buf = calloc<Str>(volume, 1)
     read(0, buf, volume - 1)
     buf
 }
