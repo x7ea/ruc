@@ -41,8 +41,8 @@ impl Define {
                 ctx.global.table.insert(name.clone(), val);
                 Ok(Type::Void)
             }
-            Define::Symbol(name) => {
-                let sig = Type::Function(Lambda(Vec::new(), Box::new(Type::Void), None));
+            Define::Symbol(name, ret) => {
+                let sig = Type::Function(Lambda(Vec::new(), Box::new(ret.clone()), None));
                 ctx.global.lib.insert(name.clone(), sig);
                 Ok(Type::Void)
             }
