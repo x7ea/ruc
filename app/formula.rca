@@ -1,3 +1,5 @@
+use std
+
 enum Peano {
     zero: (),
     succ: Peano
