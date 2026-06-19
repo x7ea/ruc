@@ -142,10 +142,10 @@ impl Expr {
             op!("+"  => Add, "-"  => Sub, "*" => Mul, "/" => Div, "%"  => Mod,
                 "==" => Eq,  "!=" => Ne,  ">" => Gt,  "<" => Lt,  ">=" => Ge,
                 "<=" => Le,  "&"  => And, "|" => Or,  "^" => Xor,)
-        } else if src == "()" {
-            Ok(Expr::Null(Type::Void))
         } else if let Some(text) = surround!("\"", src, "\"") {
             Ok(Expr::String(text.to_owned()))
+        } else if src == "()" {
+            Ok(Expr::Null(Type::Void))
         } else if let Some(expr) = surround!("(", src, ")") {
             Expr::parse(expr)
         } else if let Some(arr) = surround!("[", src, "]") {
