@@ -325,7 +325,7 @@ impl Expr {
                     typ => Err(format!("index: {typ}")),
                 }
             }
-            Expr::Member(obj, key) if "len" == key.to_string() => match obj.infer(ctx)? {
+            Expr::Len(obj) => match obj.infer(ctx)? {
                 Type::Array(_) => typing!(expands!(Expr::Read(
                     Box::new(Expr::Integer(0)),
                     Type::Integer,
@@ -359,6 +359,9 @@ impl Expr {
             Expr::Member(obj, key) => {
                 let typ = obj.infer(ctx)?;
                 let Type::Class(name) = &typ else {
+                    if "len" == key.to_string() {
+                        return typing!(expands!(Expr::Len(obj)));
+                    }
                     return Err(format!("not class: {typ}"));
                 };
                 let Some((_, class)) = ctx.global.table.get(&name.generics()) else {
