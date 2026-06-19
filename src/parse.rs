@@ -30,7 +30,6 @@ impl Define {
             } else if let Some(func) = line.strip_prefix("extern fn ") {
                 let (head, body) = once!(func, ":").unwrap_or((func.to_string(), "()".to_string()));
                 let (name, args) = surround!(&head, "(", ")")?;
-
                 result.push(Define::Declare(
                     (Generics::parse(&name)?, args!(&args)),
                     Type::parse(&body)?,
