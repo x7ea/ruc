@@ -23,7 +23,7 @@ impl Define {
             }
             macro_rules! object_declare {
                 ($word: literal, $typ: ident) => {
-                    if let Some(head) = line.strip_prefix(&($word.to_string() + SPACE)) {
+                    if let Some(head) = line.strip_prefix($word) {
                         let (name, layout) = surround!(&head, "{", "}")?;
                         result.push(Define::Class(
                             Generics::parse(&name)?,
@@ -63,8 +63,8 @@ impl Define {
                     (Expr::Block(vec![Expr::parse(&body)?]), Type::Void),
                 ));
             }
-            object_declare!("struct", Struct);
-            object_declare!("enum", Enum);
+            object_declare!("struct ", Struct);
+            object_declare!("enum ", Enum);
         }
         Ok(result)
     }
