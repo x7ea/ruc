@@ -14,7 +14,7 @@ extern fn read(id: Int, buf: Str, size: Int)
 
 fn input(): Str {
     let volume = 512
-    let buf = calloc<Str>(volume, 1)
+    let buf = calloc<Str>(1, volume)
     scanf("%s", buf)
     buf
 }
