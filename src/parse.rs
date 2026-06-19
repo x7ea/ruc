@@ -126,7 +126,7 @@ impl Expr {
             }
             Ok(Expr::Block(block))
         } else if let Ok(tokens) = lexer(src, SPACE)
-            && tokens.len() < 3
+            && tokens.len() >= 3
         {
             let pos: usize = tokens.len() - 2;
             let lhs = Box::new(Expr::parse(&tokens[..pos].join(SPACE))?);
