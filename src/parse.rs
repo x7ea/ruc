@@ -135,7 +135,7 @@ impl Expr {
                 }
             }
             Ok(Expr::Block(block))
-        } else if let Ok((lhs, op, rhs)) = is_operator(src) {
+        } else if let Some((op, (lhs, rhs))) = is_operator(src) {
             let lhs = Box::new(Expr::parse(&lhs)?);
             let rhs = Box::new(Expr::parse(&rhs)?);
             macro_rules! op {
