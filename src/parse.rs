@@ -30,6 +30,7 @@ impl Define {
             } else if let Some(func) = line.strip_prefix("extern fn ") {
                 let (head, body) = once!(func, ":").unwrap_or((func.to_string(), "()".to_string()));
                 let (name, args) = surround!(&head, "(", ")")?;
+
                 result.push(Define::Declare(
                     (Generics::parse(&name)?, args!(&args)),
                     Type::parse(&body)?,
@@ -205,9 +206,11 @@ impl Type {
             "()" => Ok(Type::Void),
             x => {
                 if let Ok((ret, args)) = surround!(x, "(", ")") {
-                    let args = (|| Ok::<Vec<Type>, String>(serial!(&args, Type::parse)))().ok();
-                    let lambda = Lambda(Vec::new(), Box::new(Type::parse(&ret)?), args);
-                    Ok(Type::Function(lambda))
+                    Ok(Type::Function(Lambda(
+                        Vec::new(),
+                        Box::new(Type::parse(&ret)?),
+                        Some(serial!(&args, Type::parse)),
+                    )))
                 } else if let Some(typ) = surround!("[", x, "]") {
                     Ok(Type::Array(Box::new(Type::parse(typ)?)))
                 } else {
