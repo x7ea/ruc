@@ -1,6 +1,3 @@
 use std
 
-fn main() {
-    let n = input().atoi()
-    print n * 2
- }
+fn main() print input().atoi() * 2
