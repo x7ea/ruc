@@ -1,5 +1,6 @@
 extern fn atoi(src: Str): Int
 extern fn strcmp(a: Str, b: Str): Int
+extern fn strlen(this: Str): Int
 
 fn Str.eq(a: Str, b: Str): Bool strcmp(a, b) == 0
 fn Str.add(a: Str, b: Str): Str format a, b
