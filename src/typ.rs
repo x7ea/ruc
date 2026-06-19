@@ -335,8 +335,7 @@ impl Expr {
                     ))),
                     typ => Err(format!("no length: {typ}")),
                 }
-                let Type::Array(_) = typ.clone() else {
-                    return;
+
                 };
             }
             Expr::New(typ) => {
