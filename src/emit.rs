@@ -8,7 +8,7 @@ impl Define {
                     Define::Function((Generics(func, _), _), _) => func,
                     Define::Class(Generics(class, _), _) => class,
                     Define::Declare((Generics(lib, _), _), _) => lib,
-                    Define::Symbol(sym) => sym,
+                    Define::Symbol(sym, _) => sym,
                 }
                 .clone()
             };
