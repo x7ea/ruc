@@ -327,14 +327,17 @@ impl Expr {
             }
             Expr::Member(obj, key) if key == Name::new("len")? => {
                 let typ = obj.infer(ctx)?;
+                match obj.infer(ctx)? {
+                    Type::Array(_) => typing!(expands!(Expr::Read(
+                        Box::new(Expr::Integer(0)),
+                        Type::Integer,
+                        obj.clone()
+                    ))),
+                    typ => Err(format!("no length: {typ}")),
+                }
                 let Type::Array(_) = typ.clone() else {
-                    return Err(format!("no length: {typ}"));
+                    return;
                 };
-                typing!(expands!(Expr::Read(
-                    Box::new(Expr::Integer(0)),
-                    Type::Integer,
-                    obj.clone()
-                )))
             }
             Expr::New(typ) => {
                 let Type::Class(_) = typ.clone() else {
