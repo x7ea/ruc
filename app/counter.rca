@@ -1,3 +1,4 @@
+use std
 use gtk
 
 struct State {
@@ -13,6 +14,7 @@ fn inc(this: Elm, data: State) {
 fn main() {
     let app = window()
     let data = new State
-    app.button("Counter").click<State>(data, inc)
+    let data.count = input().atoi()
+    app.button(input()).click<State>(data, inc)
     app.run()
 }
