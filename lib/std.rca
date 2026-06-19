@@ -1,11 +1,12 @@
-extern fn atoi(src: Str): Int
+extern fn calloc<T>(size: Int, byte: Int): T
+extern fn printf(...): ()
+
 extern fn strcmp(a: Str, b: Str): Int
 extern fn strlen(this: Str): Int
 
 fn Str.eq(a: Str, b: Str): Bool strcmp(a, b) == 0
 fn Str.add(a: Str, b: Str): Str format a, b
 
-extern fn calloc<T>(size: Int, byte: Int): T
 extern fn read(id: Int, buf: Str, size: Int): ()
 
 fn input(): Str {
@@ -14,3 +15,5 @@ fn input(): Str {
     read(0, buf, volume - 1)
     buf
 }
+
+extern fn atoi(src: Str): Int
