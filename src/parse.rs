@@ -200,10 +200,8 @@ impl Expr {
                 serial!(&args, Expr::parse),
             ))
         } else if let Ok((arr, idx)) = surround!(src, "[", "]") {
-            Ok(Expr::Index(
-                Box::new(Expr::parse(&arr)?),
-                Box::new(Expr::parse(&idx)?),
-            ))
+            let (arr, idx) = (Box::new(Expr::parse(&arr)?), Box::new(Expr::parse(&idx)?));
+            Ok(Expr::Index(arr, idx))
         } else if let Ok(b) = src.parse::<bool>() {
             Ok(Expr::Boolean(b))
         } else {
