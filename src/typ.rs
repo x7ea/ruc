@@ -325,7 +325,7 @@ impl Expr {
                     typ => Err(format!("index: {typ}")),
                 }
             }
-            Expr::Member(obj, key) if key.to_string() == "len" => match obj.infer(ctx)? {
+            Expr::Member(obj, key) if "len" == key.to_string() => match obj.infer(ctx)? {
                 Type::Array(_) => typing!(expands!(Expr::Read(
                     Box::new(Expr::Integer(0)),
                     Type::Integer,
