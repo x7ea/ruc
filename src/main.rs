@@ -69,6 +69,7 @@ pub enum Expr {
     // Array
     Sequence(Vec1<Expr>),
     Index(Box<Expr>, Box<Expr>),
+    Len(Box<Expr>),
     // Object
     New(Type),
     Enum(Type, Name, Box<Expr>),
