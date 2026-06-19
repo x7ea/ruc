@@ -331,6 +331,10 @@ impl Expr {
                     Type::Integer,
                     obj.clone()
                 ))),
+                Type::String => typing!(expands!(Expr::Call(
+                    Box::new(var!("strlen")),
+                    vec![*obj.clone()]
+                ))),
                 typ => Err(format!("no length: {typ}")),
             },
             Expr::New(typ) => {
