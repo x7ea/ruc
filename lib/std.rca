@@ -1,5 +1,5 @@
 extern fn calloc<T>(size: Int, byte: Int): T
-extern fn printf(...): ()
+extern fn printf(...)
 
 extern fn strcmp(a: Str, b: Str): Int
 extern fn strlen(this: Str): Int
@@ -7,7 +7,7 @@ extern fn strlen(this: Str): Int
 fn Str.eq(a: Str, b: Str): Bool strcmp(a, b) == 0
 fn Str.add(a: Str, b: Str): Str format a, b
 
-extern fn read(id: Int, buf: Str, size: Int): ()
+extern fn read(id: Int, buf: Str, size: Int)
 
 fn input(): Str {
     let volume = 512
