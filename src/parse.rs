@@ -89,10 +89,8 @@ impl Expr {
             Ok(Expr::Print(false, serial!(src, Expr::parse)))
         } else if let Some(src) = src.strip_prefix("let ") {
             if let Ok((name, val)) = once!(src, "=") {
-                return Ok(Expr::Let(
-                    Box::new(Expr::parse(&name)?),
-                    Box::new(Expr::parse(&val)?),
-                ));
+                let (name, val) = (Box::new(Expr::parse(&name)?), Box::new(Expr::parse(&val)?));
+                return Ok(Expr::Let(name, val));
             }
             let (name, typ) = once!(src, ":")?;
             let typ = Box::new(Expr::Null(Type::parse(&typ)?));
