@@ -12,7 +12,10 @@ impl Define {
                 ctx.global.lib.insert(name.clone(), sig.clone());
                 if param.is_empty() {
                     let parent = ctx.local.clone();
-                    (ctx.local, ctx.local.scope) = (Function::default(), args.clone());
+                    ctx.local = Function {
+                        scope: args.clone(),
+                        ..Function::default()
+                    };
                     let body = body.infer(ctx)?;
                     if ret.solve(ctx) != body {
                         return Err(format!("return: {ret} != {body}"));
