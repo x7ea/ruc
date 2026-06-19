@@ -40,23 +40,29 @@ impl Define {
             {
                 let (typ, body) = once!(&body, SPACE)?;
                 let (name, args) = surround!(&head, "(", ")")?;
-                let head = (Generics::parse(&name)?, args!(&args));
-                let body = (Expr::Block(vec![Expr::parse(&body)?]), Type::parse(&typ)?);
-                result.push(Define::Function(head, body));
+                result.push(Define::Function(
+                    (Generics::parse(&name)?, args!(&args)),
+                    (Expr::Block(vec![Expr::parse(&body)?]), Type::parse(&typ)?),
+                ));
             } else if let Some(func) = line.strip_prefix("fn ") {
                 let (head, body) = once!(&func, SPACE)?;
                 let (name, args) = surround!(&head, "(", ")")?;
-                let head = (Generics::parse(&name)?, args!(&args));
-                let body = (Expr::Block(vec![Expr::parse(&body)?]), Type::Void);
-                result.push(Define::Function(head, body));
+                result.push(Define::Function(
+                    (Generics::parse(&name)?, args!(&args)),
+                    (Expr::Block(vec![Expr::parse(&body)?]), Type::Void),
+                ));
             } else if let Some(head) = line.strip_prefix("struct ") {
                 let (name, layout) = surround!(&head, "{", "}")?;
-                let (name, layout) = (Generics::parse(&name)?, Object::Struct(args!(&layout)));
-                result.push(Define::Class(name, layout));
+                result.push(Define::Class(
+                    Generics::parse(&name)?,
+                    Object::Struct(args!(&layout)),
+                ));
             } else if let Some(head) = line.strip_prefix("enum ") {
                 let (name, layout) = surround!(&head, "{", "}")?;
-                let (name, layout) = (Generics::parse(&name)?, Object::Enum(args!(&layout)));
-                result.push(Define::Class(name, layout));
+                result.push(Define::Class(
+                    Generics::parse(&name)?,
+                    Object::Enum(args!(&layout)),
+                ));
             }
         }
         Ok(result)
