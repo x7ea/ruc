@@ -439,7 +439,7 @@ impl Expr {
                 typing!(expands!(Expr::Block(vec![
                     Expr::Let(dest.clone(), Box::new(Expr::New(typ.clone()))),
                     Expr::Call(
-                        Box::new(var!("memcpy")),
+                        Box::new(var!("memcpy", typ.clone())),
                         vec![*dest.clone(), *expr, Expr::Integer(typ.size(ctx)? as i64)]
                     ),
                     *dest.clone()
