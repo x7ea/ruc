@@ -138,13 +138,11 @@ impl Expr {
                 ($($op: pat => $expr: ident ,)*) => {
                     match tokens[pos].as_str() {
                         $($op => Ok(Expr::$expr(lhs, rhs)),)*
-                        op  => Err(format!("unknown operator: {op}"))
+                        op => Err(format!("unknown operator: {op}"))
                     }
                 };
             }
-            op!("+"  => Add, "-"  => Sub, "*" => Mul, "/" => Div, "%"  => Mod,
-                "==" => Eq,  "!=" => Ne,  ">" => Gt,  "<" => Lt,  ">=" => Ge,
-                "<=" => Le,  "&"  => And, "|" => Or,  "^" => Xor,)
+            op!("+" => Add, "-" => Sub, "*" => Mul, "/" => Div, "%" => Mod, "==" => Eq, "!=" => Ne, ">" => Gt, "<" => Lt, ">=" => Ge, "<=" => Le, "&" => And, "|" => Or, "^" => Xor,)
         } else if let Some(text) = surround!("\"", src, "\"") {
             Ok(Expr::String(text.to_owned()))
         } else if src == "()" {
