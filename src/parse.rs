@@ -51,8 +51,8 @@ impl Define {
                 result.push(Define::Function(head, body));
             } else if let Some(head) = line.strip_prefix("struct ") {
                 let (name, layout) = surround!(&head, "{", "}")?;
-                let (name, layout) = (Generics::parse(&name)?, Object::Enum(args!(&layout)));
-                result.push(Define::Struct(name, layout));
+                let (name, layout) = (Generics::parse(&name)?, Object::Struct(args!(&layout)));
+                result.push(Define::Class(name, layout));
             } else if let Some(head) = line.strip_prefix("enum ") {
                 let (name, layout) = surround!(&head, "{", "}")?;
                 let (name, layout) = (Generics::parse(&name)?, Object::Enum(args!(&layout)));
