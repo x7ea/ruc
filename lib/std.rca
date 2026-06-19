@@ -9,6 +9,10 @@ extern fn strlen(this: Str): Int
 
 fn Str.eq(a: Str, b: Str): Bool strcmp(a, b) == 0
 fn Str.ne(a: Str, b: Str): Bool strcmp(a, b) != 0
+fn Str.lt(a: Str, b: Str): Bool strcmp(a, b) == 1
+fn Str.gt(a: Str, b: Str): Bool strcmp(a, b) == -1
+fn Str.le(a: Str, b: Str): Bool strcmp(a, b) > -1
+fn Str.ge(a: Str, b: Str): Bool strcmp(a, b) < 1
 
 fn Str.add(a: Str, b: Str): Str format a, b
 
