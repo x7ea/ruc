@@ -205,11 +205,9 @@ impl Type {
             "()" => Ok(Type::Void),
             x => {
                 if let Ok((ret, args)) = surround!(x, "(", ")") {
-                    Ok(Type::Function(Lambda(
-                        Vec::new(),
-                        Box::new(Type::parse(&ret)?),
-                        Some(serial!(&args, Type::parse)),
-                    )))
+                    let args = (|| Ok::<Vec<Type>, String>(serial!(&args, Type::parse)))().ok();
+                    let lambda = Lambda(Vec::new(), Box::new(Type::parse(&ret)?), args);
+                    Ok(Type::Function(lambda))
                 } else if let Some(typ) = surround!("[", x, "]") {
                     Ok(Type::Array(Box::new(Type::parse(typ)?)))
                 } else {
