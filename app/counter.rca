@@ -1,5 +1,4 @@
 use gtk
-use std
 
 struct State {
     count: Int
@@ -14,6 +13,6 @@ fn inc(this: Elm, data: State) {
 fn main() {
     let app = window()
     let data = new State
-    app.button(input()).click<State>(data, inc)
+    app.button("Counter").click<State>(data, inc)
     app.run()
 }
