@@ -1,3 +1,4 @@
+extern fn atoi(src: Str): Int
 extern fn strcmp(a: Str, b: Str): Int
 
 fn Str.eq(a: Str, b: Str): Bool strcmp(a, b) == 0
