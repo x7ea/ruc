@@ -50,17 +50,13 @@ impl Define {
                 let body = (Expr::Block(vec![Expr::parse(&body)?]), Type::Void);
                 result.push(Define::Function(head, body));
             } else if let Some(head) = line.strip_prefix("struct ") {
-                let (name, args) = surround!(&head, "{", "}")?;
-                result.push(Define::Class(
-                    Generics::parse(&name)?,
-                    Object::Struct(args!(&args)),
-                ));
+                let (name, layout) = surround!(&head, "{", "}")?;
+                let (name, layout) = (Generics::parse(&name)?, Object::Enum(args!(&layout)));
+                result.push(Define::Struct(name, layout));
             } else if let Some(head) = line.strip_prefix("enum ") {
-                let (name, args) = surround!(&head, "{", "}")?;
-                result.push(Define::Class(
-                    Generics::parse(&name)?,
-                    Object::Enum(args!(&args)),
-                ));
+                let (name, layout) = surround!(&head, "{", "}")?;
+                let (name, layout) = (Generics::parse(&name)?, Object::Enum(args!(&layout)));
+                result.push(Define::Class(name, layout));
             }
         }
         Ok(result)
