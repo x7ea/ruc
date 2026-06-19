@@ -71,13 +71,13 @@ impl Define {
 impl Expr {
     fn parse(src: &str) -> Result<Expr, String> {
         let src = src.trim();
-        fn is_operator(src: &str) -> Option<(String, String, String)> {
+        fn is_operator(src: &str) -> Option<(String, (String, String))> {
             if let Ok(tokens) = lexer(src, SPACE)
                 && tokens.len() < 3
             {
                 let pos: usize = tokens.len() - 2;
-                let (lhs, rhs) = (tokens[..pos].join(SPACE), tokens[pos + 1].clone());
-                return Some((lhs, tokens[pos].clone(), rhs));
+                let term = (tokens[..pos].join(SPACE), tokens[pos + 1].clone());
+                return Some((tokens[pos].clone(), term));
             }
             None
         }
