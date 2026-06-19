@@ -51,6 +51,7 @@ fn main() {
 pub enum Define {
     Function(Signature, (Expr, Type)),
     Declare(Signature, Type),
+    Symbol(Name),
     Class(Generics, Object),
 }
 
