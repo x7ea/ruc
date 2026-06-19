@@ -96,7 +96,7 @@ impl Expr {
             }
             let (name, typ) = once!(src, ":")?;
             let typ = Box::new(Expr::Null(Type::parse(&typ)?));
-            Ok(Expr::Let(Box::new(Expr::parse(&name)?, typ)))
+            Ok(Expr::Let(Box::new(Expr::parse(&name)?), typ))
         } else if let Some(src) = src.strip_prefix("if ") {
             let (cond, body) = once!(src, "then")?;
             let cond = Box::new(Expr::parse(&cond)?);
