@@ -285,16 +285,12 @@ impl Expr {
                 ctx.global.data += &format!("\t{name} db {val}\n");
                 Ok(format!("\tmov rax, {name}\n"))
             }
-            Expr::Div(lhs, rhs) => {
-                if typ!(self) == Type::Float {
-                    return Ok(op!("div", lhs, rhs));
-                }
-                Ok(format!(
-                    "{}\tpush rax\n{}\tmov rsi, rax\n\tpop rax\n\tcqo\n\tidiv rsi\n",
-                    lhs.emit(ctx)?,
-                    rhs.emit(ctx)?,
-                ))
-            }
+            Expr::Div(lhs, rhs) if typ!(self) == Type::Float => Ok(op!("div", lhs, rhs)),
+            Expr::Div(lhs, rhs) => Ok(format!(
+                "{}\tpush rax\n{}\tmov rsi, rax\n\tpop rax\n\tcqo\n\tidiv rsi\n",
+                lhs.emit(ctx)?,
+                rhs.emit(ctx)?,
+            )),
             Expr::Mod(_, _) => Ok(format!(
                 "{}\tadd rdx, rsi\n\tmov rax, rdx\n\tcqo\n\tidiv rsi\n\tmov rax, rdx\n",
                 expr!(self).emit(ctx)?
