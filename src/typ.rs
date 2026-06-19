@@ -471,10 +471,8 @@ impl Expr {
 impl Type {
     fn mono(self, ctx: &mut Context, func: Generics) -> Result<Type, String> {
         let mut typ = self.solve(ctx);
-        let Generics(name, mut args) = func.clone();
-        for arg in args.iter_mut() {
-            *arg = arg.solve(ctx);
-        }
+        let Generics(name, args) = func.clone();
+        let args = map!(args, |x| x.solve(ctx));
         match typ.clone() {
             Type::Function(Lambda(params, _, _)) if !params.is_empty() => {
                 let mut alias = IndexMap::new();
