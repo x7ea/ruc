@@ -19,8 +19,7 @@ pub fn lexer(src: &str, del: &str) -> Result<Vec<String>, String> {
             && [" < ", " > ", " >=", " <="].contains(&op)
         {
             if del == SPACE {
-                tokens.push(current.clone());
-                tokens.push(op.trim().to_string());
+                tokens.append(&mut vec![current.clone(), op.trim().to_string()]);
                 current.clear();
             } else {
                 current += op;
