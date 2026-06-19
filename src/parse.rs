@@ -79,8 +79,8 @@ impl Expr {
             let pos: usize = tokens.len() - 2;
             Ok((
                 tokens[..pos].join(SPACE),
-                tokens[pos].to_owned(),
-                tokens[pos + 1].to_owned(),
+                tokens[pos].clone(),
+                tokens[pos + 1].clone(),
             ))
         }
         if let Some(src) = src.strip_prefix("print ") {
