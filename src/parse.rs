@@ -39,7 +39,7 @@ impl Define {
                 }};
             }
             macro_rules! body {
-                ($body: expr) => {{ Expr::Block(vec![Expr::parse(&$body)?]) }};
+                ($body: expr, $typ: expr) => {{ (Expr::Block(vec![Expr::parse(&$body)?]), Type::parse(&$typ)?) }};
             }
             if let Some(file) = line.strip_prefix("use ") {
                 let file = file.trim().to_string();
@@ -59,13 +59,10 @@ impl Define {
                 && let Ok((head, body)) = once!(func, ":")
             {
                 let (typ, body) = once!(&body, SPACE)?;
-                result.push(Define::Function(
-                    head!(head),
-                    (body!(body), Type::parse(&typ)?),
-                ));
+                result.push(Define::Function(head!(head), body!(body, typ)));
             } else if let Some(func) = line.strip_prefix("fn ") {
                 let (head, body) = once!(&func, SPACE)?;
-                result.push(Define::Function(head!(head), (body!(body), Type::Void)));
+                result.push(Define::Function(head!(head), body!(body, "()")));
             }
             object_declare!("struct ", Struct);
             object_declare!("enum ", Enum);
