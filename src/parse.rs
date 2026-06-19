@@ -142,7 +142,11 @@ impl Expr {
                     }
                 };
             }
-            op!("+" => Add, "-" => Sub, "*" => Mul, "/" => Div, "%" => Mod, "==" => Eq, "!=" => Ne, ">" => Gt, "<" => Lt, ">=" => Ge, "<=" => Le, "&" => And, "|" => Or, "^" => Xor,)
+            op!(
+                "+"  => Add, "-"  => Sub, "*" => Mul, "/" => Div, "%" => Mod,
+                "==" => Eq , "!=" => Ne,  ">" => Gt,  "<" => Lt,  ">=" => Ge, "<=" => Le,
+                "&"  => And, "|"  => Or,  "^" => Xor,
+            )
         } else if let Some(text) = surround!("\"", src, "\"") {
             Ok(Expr::String(text.to_owned()))
         } else if src == "()" {
