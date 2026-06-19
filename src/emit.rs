@@ -49,7 +49,6 @@ impl Define {
             return Ok(String::new());
         }
         ctx.local = ctx.table[name].clone();
-
         let (mut ptr, mut alloc) = (8, String::new());
         let (mut idx, mut xmm) = (0, 0);
         for (arg, (_, typ)) in args.iter().enumerate() {
@@ -73,7 +72,6 @@ impl Define {
         }
         let body = body.emit(ctx)?;
         ctx.table.insert(name.clone(), ctx.local.clone());
-
         let var = ctx.local.var.len() * 8;
         let pro = format!(
             "\tpush rbp\n\tmov rbp, rsp\n\tsub rsp, {}\n",
