@@ -1,19 +1,28 @@
 use std
 
 struct Object<T> {
-    markerCount: Int,
-    prototypeRawData: T,
-    messageReceiver: Object<T>(Object<T>)
+    raw: T,
+    prpto: Receiver
 }
 
-fn defaultReceiver
+enum IntegerMessage {
+    Inc: (),
+    add: Object<Int>,
+}
 
-fn Object.new<T>(raw: T): Object<T> {
+enum StringMessage {
+    print,
+    add: Object<Int>,
+}
+
+fn defaultReceiver<T>(Object<T>):
+
+fn Object<T>(raw: T): Object<T> {
 
 
 }
 
 
 fn main() {
-
+    Object<Int>(5)
 }
