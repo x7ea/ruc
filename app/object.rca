@@ -5,17 +5,20 @@ struct Object<T> {
     prpto: Receiver
 }
 
-enum IntegerMessage {
-    Inc: (),
-    add: Object<Int>,
+struct Message<T> {
+    name: Str,
+    args: [Object<Int>]
 }
 
-enum StringMessage {
-    print,
-    add: Object<Int>,
+fn IntegerReceiver(
+    this: Object<Int>,
+    message: Message<Int>
+): Object<Int> {
+    let name = message.name
+    if name == "=" then let this.raw = args[0].raw
+    if name == "+" then let this.raw = this.raw + args[0].raw
+    clone this
 }
-
-fn defaultReceiver<T>(Object<T>):
 
 fn Object<T>(raw: T): Object<T> {
 
