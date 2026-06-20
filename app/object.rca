@@ -1,0 +1,19 @@
+use std
+
+struct Object<T> {
+    markerCount: Int,
+    prototypeRawData: T,
+    messageReceiver: Object<T>(Object<T>)
+}
+
+fn defaultReceiver
+
+fn Object.new<T>(raw: T): Object<T> {
+
+
+}
+
+
+fn main() {
+
+}
