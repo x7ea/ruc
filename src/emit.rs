@@ -6,8 +6,8 @@ impl Define {
             ($define: expr) => {
                 match $define.clone() {
                     Define::Function((Generics(func, _), _), _) => func,
-                    Define::Class(Generics(class, _), _) => class,
                     Define::Declare((Generics(lib, _), _), _) => lib,
+                    Define::Class(Generics(class, _), _) => class,
                     Define::Symbol(sym, _) => sym,
                 }
                 .clone()
