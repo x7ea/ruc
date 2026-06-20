@@ -2,7 +2,7 @@ use std
 
 struct Object<T> {
     raw: T,
-    prpto: Receiver
+    prpto: Object<T>(Object<T>, Message<T>)
 }
 
 struct Message<T> {
@@ -15,14 +15,16 @@ fn IntegerReceiver(
     message: Message<Int>
 ): Object<Int> {
     let name = message.name
-    if name == "=" then let this.raw = args[0].raw
-    if name == "+" then let this.raw = this.raw + args[0].raw
+    if name == "=" then let this.raw = message.args[0].raw
+    if name == "+" then let this.raw = this.raw + message.args[0].raw
     clone this
 }
 
-fn Object<T>(raw: T): Object<T> {
-
-
+fn IntegerObject(raw: Int): Object<Int> {
+    let this = new Object<Int>
+    let this.prpto = IntegerReceiver
+    let this.raw = raw
+    this
 }
 
 
