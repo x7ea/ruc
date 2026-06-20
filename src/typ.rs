@@ -221,7 +221,7 @@ impl Expr {
                         }
                         for (param, arg) in params.iter().zip(args) {
                             let arg = arg.infer(ctx)?.solve(ctx);
-                            if arg != param.solve(ctx) {
+                            if param.solve(ctx) != arg {
                                 return Err(format!("argument types: {param} != {arg}"));
                             }
                         }
