@@ -39,6 +39,5 @@ fn IntegerObject(raw: Int): Object<Int> {
 
 
 fn main() {
-    let obj = IntegerObject(5)
-    obj.send(Message<Int>("inc"))
+    print IntegerObject(5).send(Message<Int>("inc")).raw
 }
