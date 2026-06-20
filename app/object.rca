@@ -2,7 +2,7 @@ use std
 
 struct Object<T> {
     raw: T,
-    prpto: Object<T>(Object<T>, Message<T>)
+    proto: Object<T>(Object<T>, Message<T>)
 }
 
 struct Message<T> {
@@ -10,24 +10,34 @@ struct Message<T> {
     args: [Object<Int>]
 }
 
+fn Message<T>(name: Str) {
+    let this = Message<T>
+    let this.name = name
+    this
+}
+
+fn Object.send<T>(this: Object<T>, message: Message<T>): Object<T> this.proto(Object<T>, message: Message<T>)
+
 fn IntegerReceiver(
     this: Object<Int>,
     message: Message<Int>
 ): Object<Int> {
     let name = message.name
-    if name == "=" then let this.raw = message.args[0].raw
-    if name == "+" then let this.raw = this.raw + message.args[0].raw
+    if name == "" then let this.raw = message.args[0].raw
+    if name == "is" then let this.raw = message.args[0].raw
+    if name == "add" then let this.raw = this.raw + message.args[0].raw
     clone this
 }
 
 fn IntegerObject(raw: Int): Object<Int> {
     let this = new Object<Int>
-    let this.prpto = IntegerReceiver
+    let this.proto = IntegerReceiver
     let this.raw = raw
     this
 }
 
 
 fn main() {
-    Object<Int>(5)
+    let obj = IntegerObject(5)
+    obj.send(Message<Int>("inc"))
 }
