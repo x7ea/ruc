@@ -10,23 +10,23 @@ struct Message<T> {
     args: [Object<Int>]
 }
 
-fn Message<T>(name: Str) {
-    let this = Message<T>
+fn Work<T>(name: Str): Message<T> {
+    let this = new Message<T>
     let this.name = name
     this
 }
 
-fn Object.send<T>(this: Object<T>, message: Message<T>): Object<T> this.proto(Object<T>, message: Message<T>)
+fn Object.send<T>(this: Object<T>, message: Message<T>): Object<T> this.proto(this, message)
 
 fn IntegerReceiver(
     this: Object<Int>,
     message: Message<Int>
 ): Object<Int> {
     let name = message.name
-    let arg = message.args[0]
+    let args = message.args
     if name == "inc" then let this.raw = this.raw + 1
-    if name == "add" then let this.raw = this.raw + arg.raw
-    if name == "is" then let this.raw = arg.raw
+    if name == "add" then let this.raw = this.raw + arg[0].raw
+    if name == "is"  then let this.raw = arg[0].raw
     clone this
 }
 
@@ -39,5 +39,5 @@ fn IntegerObject(raw: Int): Object<Int> {
 
 
 fn main() {
-    print IntegerObject(5).send(Message<Int>("inc")).raw
+    print IntegerObject(5).send(Work<Int>("inc")).raw
 }
