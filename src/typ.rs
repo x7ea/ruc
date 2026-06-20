@@ -215,9 +215,9 @@ impl Expr {
                 }
                 match callee.infer(ctx)? {
                     Type::Function(Lambda(_, ret, Some(params))) => {
-                        let (params_len, args_len) = (params.len(), args.len());
-                        if params_len != args_len {
-                            return Err(format!("arguments length: {params_len} != {args_len}"));
+                        let (pl, al) = (params.len(), args.len());
+                        if pl != al {
+                            return Err(format!("arguments length: {pl} != {al}"));
                         }
                         for (param, arg) in params.iter().zip(args) {
                             let arg = arg.infer(ctx)?.solve(ctx);
