@@ -23,9 +23,10 @@ fn IntegerReceiver(
     message: Message<Int>
 ): Object<Int> {
     let name = message.name
-    if name == "" then let this.raw = message.args[0].raw
-    if name == "is" then let this.raw = message.args[0].raw
-    if name == "add" then let this.raw = this.raw + message.args[0].raw
+    let arg = message.args[0]
+    if name == "inc" then let this.raw = this.raw + 1
+    if name == "add" then let this.raw = this.raw + arg.raw
+    if name == "is" then let this.raw = arg.raw
     clone this
 }
 
