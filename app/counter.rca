@@ -1,5 +1,4 @@
-use std
-use gtk
+use std, gtk
 
 struct State {
     count: Int
