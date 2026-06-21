@@ -42,7 +42,7 @@ impl Define {
                 ($body: expr, $typ: expr) => {{ (Expr::Block(vec![Expr::parse(&$body)?]), Type::parse(&$typ)?) }};
             }
             if let Some(file) = line.strip_prefix("use ") {
-                for file in serial!(file.trim(), |x: &str| Ok(x.to_owned())) {
+                for file in serial!(file, |x: &str| Ok(x.trim().to_owned())) {
                     let Ok(file) = read_to_string(format!("./lib/{file}.rca")) else {
                         return Err(format!("undefined library: {file}"));
                     };
