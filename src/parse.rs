@@ -42,11 +42,12 @@ impl Define {
                 ($body: expr, $typ: expr) => {{ (Expr::Block(vec![Expr::parse(&$body)?]), Type::parse(&$typ)?) }};
             }
             if let Some(file) = line.strip_prefix("use ") {
-                let file = file.trim().to_string();
-                let Ok(file) = read_to_string(format!("./lib/{file}.rca")) else {
-                    return Err(format!("undefined library: {file}"));
-                };
-                result.append(&mut Define::parse(&file)?);
+                for file in serial!(file.trim(), |x: &str| Ok(x.to_owned())) {
+                    let Ok(file) = read_to_string(format!("./lib/{file}.rca")) else {
+                        return Err(format!("undefined library: {file}"));
+                    };
+                    result.append(&mut Define::parse(&file)?);
+                }
             } else if let Some(func) = line.strip_prefix("extern fn ") {
                 let (head, body) = once!(func, ":").unwrap_or((func.to_string(), "()".to_string()));
                 if let Ok((name, args)) = surround!(&head, "(", ")") {
