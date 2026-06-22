@@ -236,9 +236,7 @@ impl Generics {
 
 impl Display for Type {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        fn comma(x: &[Type]) -> String {
-            map!(x, |x: &Type| x.to_string()).join(", ")
-        }
+        let comma = |x: &[Type]| map!(x, |x: &Type| x.to_string()).join(", ");
         match self {
             Type::Integer => write!(f, "Int"),
             Type::String => write!(f, "Str"),
