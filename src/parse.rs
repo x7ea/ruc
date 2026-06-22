@@ -102,11 +102,14 @@ impl Expr {
                 let (head, ret) = once!(src, "=")?;
                 let ret = Expr::parse(&ret)?;
                 if let Ok((key, bind)) = once!(&head.trim(), SPACE) {
-                    return Ok((Name::new(&key)?, Some(Expr::parse(&bind)?), ret));
+                    return Ok((Name::new(&key)?, (Some(Expr::parse(&bind)?), ret)));
                 }
-                Ok((Name::new(&head)?, None, ret))
+                Ok((Name::new(&head)?, (None, ret)))
             });
-            Ok(Expr::Match(Box::new(Expr::parse(&expr)?), pats))
+            Ok(Expr::Match(
+                Box::new(Expr::parse(&expr)?),
+                pats.into_iter().collect(),
+            ))
         } else if let Some(src) = src.strip_prefix("while ") {
             let (cond, body) = once!(src, "do")?;
             let (cond, body) = (Box::new(Expr::parse(&cond)?), Box::new(Expr::parse(&body)?));
