@@ -54,7 +54,7 @@ pub enum Define {
     Function(Signature, (Expr, Type)),
     Declare(Signature, Type),
     Symbol(Name, Type),
-    Class(Generics, Object),
+    Class(Generic, Object),
 }
 
 #[derive(Debug, Clone, Hash, PartialEq, Eq, AsRefStr)]
@@ -66,7 +66,7 @@ pub enum Expr {
     String(String),
     Null(Type),
     // Reference
-    Variable(Generics),
+    Variable(Generic),
     Let(Box<Expr>, Box<Expr>),
     Call(Box<Expr>, Vec<Expr>),
     // Array
@@ -116,7 +116,7 @@ pub enum Type {
     Boolean,
     Float,
     Array(Box<Type>),
-    Class(Generics),
+    Class(Generic),
     Function(Lambda),
     Void,
 }
@@ -125,9 +125,9 @@ pub enum Type {
 pub struct Lambda(Vec<Type>, Box<Type>, Option<Vec<Type>>);
 
 #[derive(Debug, Clone, Hash, Default, PartialEq, Eq)]
-pub struct Generics(Name, Vec<Type>);
+pub struct Generic(Name, Vec<Type>);
 
-type Signature = (Generics, IndexMap<Name, Type>);
+type Signature = (Generic, IndexMap<Name, Type>);
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Object {
