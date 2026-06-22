@@ -62,9 +62,8 @@ impl Expr {
         macro_rules! expands {
             ($expr: expr) => {{
                 let expr = $expr.clone();
-                let typ = expr.infer(ctx)?;
                 ctx.local.expand.insert(self.clone(), expr.clone());
-                typ.clone()
+                expr.infer(ctx)?
             }};
         }
         macro_rules! expand {
