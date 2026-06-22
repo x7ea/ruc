@@ -136,10 +136,11 @@ impl Expr {
             Expr::Match(val, pats) => {
                 let typ = val.infer(ctx)?;
                 if let Type::Class(Generics(name, _)) = &typ
-                    && let Some((_, Object::Enum(mut layout))) = ctx.global.table.get(name).cloned()
+                    && let (_, Object::Enum(layout)) = ctx.global.table[name]
                 {
-                    let _ = map!(pats, |(key, _, _)| layout.swap_remove(key));
-                    if let Some((lacked, _)) = layout.first() {
+                    let keys: Vec<Name> = pats.iter().map(|x| x.0).collect();
+                    let layout: Vec<&Name> = layout.keys().filter(|x| keys.contains(x)).collect();
+                    if let Some(lacked) = layout.first() {
                         return Err(format!("not covered: {name}.{lacked}"));
                     }
                 } else {
