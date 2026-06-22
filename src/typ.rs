@@ -81,7 +81,7 @@ impl Expr {
                     (lhs, rhs) if lhs != rhs => Err(format!("operator term: {lhs} != {rhs}")),
                     (typ, _) => typing!(expands!(Expr::Call(
                         Box::new(var!(format!("{typ}.{}", self.as_ref().to_lowercase()))),
-                        vec![*$lhs.clone(), *$rhs.clone()],
+                        vec![*$lhs, *$rhs],
                     ))),
                 }
             }};
@@ -91,7 +91,7 @@ impl Expr {
             }};
         }
 
-        match &(self.clone()) {
+        match self.clone() {
             Expr::Print(is_output, vals) => {
                 let mut fmt = String::new();
                 for i in vals.iter() {
@@ -106,17 +106,17 @@ impl Expr {
                 is_output.then(|| fmt += "\\n");
                 let handler = ["g_strdup_printf", "printf"];
                 expand!(Expr::Call(
-                    Box::new(var!(handler[*is_output as usize])),
+                    Box::new(var!(handler[is_output as usize])),
                     [vec![Expr::String(fmt)], vals.to_vec()].concat(),
                 ));
-                typing!(if *is_output { Type::Void } else { Type::String })
+                typing!(if is_output { Type::Void } else { Type::String })
             }
             Expr::If(cond, then, els) => {
-                if let Expr::Let(bind, check) = *cond.clone() {
+                if let Expr::Let(bind, check) = *cond {
                     return typing!(expands!(Expr::If(
                         Box::new(Expr::Check(check.clone())),
-                        Box::new(Expr::Block(vec![Expr::Let(bind, check), *then.clone()])),
-                        els.clone(),
+                        Box::new(Expr::Block(vec![Expr::Let(bind, check), *then])),
+                        els,
                     )));
                 }
                 let cond = cond.infer(ctx)?;
@@ -128,7 +128,7 @@ impl Expr {
                     return typing!(Type::Void);
                 };
                 let rhs = els.infer(ctx)?;
-                if **els != Expr::Null(Type::Void) && lhs != rhs {
+                if *els != Expr::Null(Type::Void) && lhs != rhs {
                     return Err(format!("if-else term: {lhs} != {rhs}"));
                 }
                 typing!(lhs)
@@ -160,10 +160,10 @@ impl Expr {
                 typing!(expands!(expr))
             }
             Expr::While(cond, body) => {
-                if let Expr::Let(bind, check) = *cond.clone() {
+                if let Expr::Let(bind, check) = *cond {
                     return typing!(expands!(Expr::While(
                         Box::new(Expr::Check(check.clone())),
-                        Box::new(Expr::Block(vec![Expr::Let(bind, check), *body.clone()])),
+                        Box::new(Expr::Block(vec![Expr::Let(bind, check), *body])),
                     )));
                 }
                 let cond = cond.infer(ctx)?;
@@ -180,9 +180,9 @@ impl Expr {
                 let temp = Box::new(tmp!(Type::Integer));
                 let inc = Box::new(Expr::Add(temp.clone(), Box::new(Expr::Integer(1))));
                 let each = Box::new(Expr::Block(vec![
-                    Expr::Let(*cnt, Box::new(Expr::Index(arr.clone(), temp.clone()))),
+                    Expr::Let(cnt, Box::new(Expr::Index(arr.clone(), temp.clone()))),
                     Expr::Let(temp.clone(), inc),
-                    *body.clone(),
+                    *body,
                 ]));
                 typing!(expands!(Expr::Block(vec![
                     Expr::Let(temp.clone(), Box::new(Expr::Integer(0))),
@@ -233,7 +233,8 @@ impl Expr {
                     typ => Err(format!("callee: {typ}")),
                 }
             }
-            Expr::Variable(generics @ Generics(name, args)) => {
+            Expr::Variable(generics) => {
+                let Generics(name, args) = generics.clone();
                 if let Some(obj) = &ctx.local.class {
                     let name = Name::new(&format!("{obj}.{name}"))?;
                     if ctx.global.lib.contains_key(&name) {
@@ -241,15 +242,15 @@ impl Expr {
                     }
                     ctx.local.class = None;
                 }
-                if let Some(typ) = ctx.global.lib.get(name) {
+                if let Some(typ) = ctx.global.lib.get(&name) {
                     typing!(typ.clone().mono(ctx, generics)?)
-                } else if let Some(typ) = ctx.local.scope.get(name) {
+                } else if let Some(typ) = ctx.local.scope.get(&name) {
                     typing!(typ.clone().solve(ctx))
                 } else {
                     Err(format!("undefined: {name}"))
                 }
             }
-            Expr::Let(name, val) => match &**name {
+            Expr::Let(name, val) => match &*name {
                 Expr::Variable(Generics(name, _)) => {
                     let val = val.infer(ctx)?;
                     if let Some(typ) = ctx.local.scope.get(name) {
@@ -344,7 +345,7 @@ impl Expr {
                 let Type::Class(_) = typ.clone() else {
                     return Err(format!("no constructor: {typ}"));
                 };
-                let typ = typ.mono(ctx, &Generics::default())?;
+                let typ = typ.mono(ctx, Generics::default())?;
                 expand!(new!(typ.size(ctx)? / 8));
                 typing!(typ.solve(ctx))
             }
@@ -363,7 +364,7 @@ impl Expr {
                 let typ = obj.infer(ctx)?;
                 let Type::Class(name) = &typ else {
                     if "len" == key.to_string() {
-                        return typing!(expands!(Expr::Len(obj.clone())));
+                        return typing!(expands!(Expr::Len(obj)));
                     }
                     return Err(format!("not class: {typ}"));
                 };
@@ -371,12 +372,12 @@ impl Expr {
                     return Err(format!("undefined: {name}"));
                 };
                 let (Object::Struct(layout) | Object::Enum(layout)) = class;
-                let Some(typ) = layout.get(key).cloned() else {
+                let Some(typ) = layout.get(&key).cloned() else {
                     return Err(format!("undefined: {name}.{key}"));
                 };
                 match class {
                     Object::Struct(layout) => {
-                        let offset = Expr::Integer(layout.get_index_of(key).unwrap() as i64);
+                        let offset = Expr::Integer(layout.get_index_of(&key).unwrap() as i64);
                         expand!(Expr::Read(Box::new(offset), typ.clone(), obj.clone()));
                     }
                     Object::Enum(_) => {
@@ -391,7 +392,7 @@ impl Expr {
                 typing!(typ.solve(ctx))
             }
             Expr::Check(expr) => {
-                if let Expr::Member(obj, key) = &**expr
+                if let Expr::Member(obj, key) = &*expr
                     && let Type::Class(Generics(name, _)) = &obj.infer(ctx)?
                     && let Some((_, Object::Enum(layout))) = ctx.global.table.get(name)
                 {
@@ -438,11 +439,7 @@ impl Expr {
                     Expr::Let(dest.clone(), Box::new(Expr::New(typ.clone()))),
                     Expr::Call(
                         Box::new(var!("memcpy", typ.clone())),
-                        vec![
-                            *dest.clone(),
-                            *expr.clone(),
-                            Expr::Integer(typ.size(ctx)? as i64)
-                        ]
+                        vec![*dest.clone(), *expr, Expr::Integer(typ.size(ctx)? as i64)]
                     ),
                     *dest.clone()
                 ])))
@@ -462,7 +459,7 @@ impl Expr {
             Expr::Float(_) => typing!(Type::Float),
             Expr::String(_) => typing!(Type::String),
             Expr::Boolean(val) => {
-                expand!(Expr::Integer(if *val { 1 } else { 0 }));
+                expand!(Expr::Integer(if val { 1 } else { 0 }));
                 typing!(Type::Boolean)
             }
             Expr::Add(lhs, rhs)
@@ -483,7 +480,7 @@ impl Expr {
 }
 
 impl Type {
-    fn mono(&self, ctx: &mut Context, func: &Generics) -> Result<Type, String> {
+    fn mono(self, ctx: &mut Context, func: Generics) -> Result<Type, String> {
         let mut typ = self.solve(ctx);
         let Generics(name, args) = func.clone();
         let args = map!(args, |x| x.solve(ctx));
