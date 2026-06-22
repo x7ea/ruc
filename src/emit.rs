@@ -33,7 +33,7 @@ pub const ABI: [&str; 6] = ["rdi", "rsi", "rdx", "rcx", "r8", "r9"];
 
 impl Define {
     fn emit(&self, ctx: &mut Context) -> Result<String, String> {
-        let Define::Function((Generics(name, params), args), (body, _)) = self else {
+        let Define::Function((Generic(name, params), args), (body, _)) = self else {
             return Ok(String::new());
         };
         if !params.is_empty() {
@@ -176,7 +176,7 @@ impl Expr {
                     callee.emit(ctx)?
                 ))
             }
-            Expr::Variable(var @ Generics(name, _)) => {
+            Expr::Variable(var @ Generic(name, _)) => {
                 if let Some(expr) = ctx.local.expand.get(self) {
                     return expr.clone().emit(ctx);
                 }
@@ -197,7 +197,7 @@ impl Expr {
                 }
             }
             Expr::Let(name, val) => match &**name {
-                Expr::Variable(Generics(name, _)) => {
+                Expr::Variable(Generic(name, _)) => {
                     let env = &ctx.local.var;
                     let (typ, idx) = (env[name].clone(), env.get_index_of(name).unwrap());
                     let (val, addr) = (val.emit(ctx)?, (idx + 1) * 8);
