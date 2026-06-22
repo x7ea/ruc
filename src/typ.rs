@@ -136,10 +136,11 @@ impl Expr {
             Expr::Match(val, pats) => {
                 let typ = val.infer(ctx)?;
                 if let Type::Class(Generics(name, _)) = &typ
-                    && let (_, Object::Enum(layout)) = &ctx.global.table[name]
+                    && let (_, Object::Enum(mut layout)) = ctx.global.table[name].clone()
                 {
-                    if let Some(lack) = pats.iter().filter(|x| !layout.contains_key(&x.0)).next() {
-                        return Err(format!("not covered: {name}.{}", lack.0));
+                    let _ = map!(pats, |(x, _, _)| layout.shift_remove(x));
+                    if let Some((lacked, _)) = layout.first() {
+                        return Err(format!("not covered: {name}.{lacked}"));
                     }
                 } else {
                     return Err(format!("match: Enum != {typ}"));
