@@ -15,15 +15,14 @@ pub fn lexer(src: &str, del: &str) -> Result<Vec<String>, String> {
             idx += 1;
             continue;
         }
-        if src
-            .get(idx..idx + 4)
-            .and_then(|op| [" <=", " >= "].contains(op))
-            .is_some()
-            || src
-                .get(idx..idx + 4)
-                .and_then(|op| [" <=", " >= "].contains(&op))
-                .is_some()
-        {
+        macro_rules! special_syntax {
+            ($pat: expr) => {
+                src.get(idx..idx + $pat[0].len())
+                    .is_some_and(|op| $pat.contains(&op))
+                    .is_some()
+            };
+        }
+        if special_syntax!([" < ", " > "]) || special_syntax!([" <= ", " >= "]) {
             if del == SPACE {
                 tokens.append(&mut vec![current.clone(), op.trim().to_string()]);
                 current.clear();
