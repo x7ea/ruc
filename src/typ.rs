@@ -134,7 +134,7 @@ impl Expr {
                 typing!(lhs)
             }
             Expr::Match(val, pats) => {
-                let typ = val.infer(ctx)?;
+                let typ = val.infer(ctx)?.solve(ctx);
                 if let Type::Class(Generics(name, _)) = &typ
                     && let (_, Object::Enum(mut layout)) = ctx.global.table[name].clone()
                 {
