@@ -138,8 +138,9 @@ impl Expr {
                 if let Type::Class(Generics(name, _)) = &typ
                     && let (_, Object::Enum(layout)) = &ctx.global.table[name]
                 {
-                    let find = |x: &&Name| pats.iter().any(|(y, _, _)| *x != y);
-                    if let Some(lacked) = layout.keys().filter(find).next() {
+                    if let Some((lacked, _, _)) =
+                        pats.iter().filter(|x| !layout.contains_key(&x.0)).next()
+                    {
                         return Err(format!("not covered: {name}.{lacked}"));
                     }
                 } else {
