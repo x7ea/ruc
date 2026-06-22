@@ -15,7 +15,6 @@ use {
 
 use std::process::exit;
 use std::{
-    collections::BTreeMap,
     hash::Hash,
     io::{Read, Write, stdin, stdout},
 };
