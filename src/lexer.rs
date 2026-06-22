@@ -113,9 +113,9 @@ pub mod name {
         }
     }
 
-    impl fmt::Display for Generics {
+    impl fmt::Display for Generic {
         fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-            let Generics(name, args) = self.clone();
+            let Generic(name, args) = self.clone();
             let args = map!(args, |x| x.to_string()).join(", ");
             if args.is_empty() {
                 write!(f, "{name}")
@@ -125,9 +125,9 @@ pub mod name {
         }
     }
 
-    impl Generics {
+    impl Generic {
         pub fn generics(&self) -> Name {
-            let Generics(name, typ) = self;
+            let Generic(name, typ) = self;
             if typ.is_empty() {
                 return name.clone();
             }
