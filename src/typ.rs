@@ -81,7 +81,7 @@ impl Expr {
                     (lhs, rhs) if lhs != rhs => Err(format!("operator term: {lhs} != {rhs}")),
                     (typ, _) => typing!(expands!(Expr::Call(
                         Box::new(var!(format!("{typ}.{}", self.as_ref().to_lowercase()))),
-                        vec![**$lhs, **$rhs],
+                        vec![*$lhs.clone(), *$rhs.clone()],
                     ))),
                 }
             }};
@@ -112,11 +112,11 @@ impl Expr {
                 typing!(if *is_output { Type::Void } else { Type::String })
             }
             Expr::If(cond, then, els) => {
-                if let Expr::Let(bind, check) = **cond {
+                if let Expr::Let(bind, check) = *cond.clone() {
                     return typing!(expands!(Expr::If(
                         Box::new(Expr::Check(check.clone())),
-                        Box::new(Expr::Block(vec![Expr::Let(bind, check), **then])),
-                        *els,
+                        Box::new(Expr::Block(vec![Expr::Let(bind, check), *then.clone()])),
+                        els.clone(),
                     )));
                 }
                 let cond = cond.infer(ctx)?;
@@ -160,10 +160,10 @@ impl Expr {
                 typing!(expands!(expr))
             }
             Expr::While(cond, body) => {
-                if let Expr::Let(bind, check) = **cond {
+                if let Expr::Let(bind, check) = *cond.clone() {
                     return typing!(expands!(Expr::While(
                         Box::new(Expr::Check(check.clone())),
-                        Box::new(Expr::Block(vec![Expr::Let(bind, check), **body])),
+                        Box::new(Expr::Block(vec![Expr::Let(bind, check), *body.clone()])),
                     )));
                 }
                 let cond = cond.infer(ctx)?;
