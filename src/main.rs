@@ -13,9 +13,12 @@ use {
     parse::SPACE,
 };
 
-use std::hash::Hash;
-use std::io::{Read, Write, stdin, stdout};
 use std::process::exit;
+use std::{
+    collections::BTreeMap,
+    hash::Hash,
+    io::{Read, Write, stdin, stdout},
+};
 
 fn main() {
     macro_rules! error {
@@ -79,7 +82,7 @@ pub enum Expr {
     // Control
     Print(bool, Vec<Expr>),
     If(Box<Expr>, Box<Expr>, Option<Box<Expr>>),
-    Match(Box<Expr>, Vec<(Name, Option<Expr>, Expr)>),
+    Match(Box<Expr>, BTreeMap<Name, (Option<Expr>, Expr)>),
     For(Box<Expr>, Box<Expr>, Box<Expr>),
     While(Box<Expr>, Box<Expr>),
     Block(Vec<Expr>),
