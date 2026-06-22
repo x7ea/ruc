@@ -233,8 +233,7 @@ impl Expr {
                     typ => Err(format!("callee: {typ}")),
                 }
             }
-            Expr::Variable(generics) => {
-                let Generics(name, args) = generics.clone();
+            Expr::Variable(Generics(name, args)) => {
                 if let Some(obj) = &ctx.local.class {
                     let name = Name::new(&format!("{obj}.{name}"))?;
                     if ctx.global.lib.contains_key(&name) {
@@ -243,7 +242,7 @@ impl Expr {
                     ctx.local.class = None;
                 }
                 if let Some(typ) = ctx.global.lib.get(&name) {
-                    typing!(typ.clone().mono(ctx, generics)?)
+                    typing!(typ.clone().mono(ctx, Generics(name, args))?)
                 } else if let Some(typ) = ctx.local.scope.get(&name) {
                     typing!(typ.clone().solve(ctx))
                 } else {
