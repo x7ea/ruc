@@ -84,7 +84,7 @@ pub mod name {
         "match",
     ];
 
-    #[derive(Debug, Clone, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
+    #[derive(Debug, Clone, Default, PartialEq, Eq, Hash)]
     pub struct Name(String);
 
     impl Name {
