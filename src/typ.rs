@@ -91,7 +91,7 @@ impl Expr {
             }};
         }
 
-        match &self.clone() {
+        match &(self.clone()) {
             Expr::Print(is_output, vals) => {
                 let mut fmt = String::new();
                 for i in vals.iter() {
@@ -182,7 +182,7 @@ impl Expr {
                 let each = Box::new(Expr::Block(vec![
                     Expr::Let(*cnt, Box::new(Expr::Index(arr.clone(), temp.clone()))),
                     Expr::Let(temp.clone(), inc),
-                    **body,
+                    *body.clone(),
                 ]));
                 typing!(expands!(Expr::Block(vec![
                     Expr::Let(temp.clone(), Box::new(Expr::Integer(0))),
@@ -363,7 +363,7 @@ impl Expr {
                 let typ = obj.infer(ctx)?;
                 let Type::Class(name) = &typ else {
                     if "len" == key.to_string() {
-                        return typing!(expands!(Expr::Len(*obj)));
+                        return typing!(expands!(Expr::Len(obj.clone())));
                     }
                     return Err(format!("not class: {typ}"));
                 };
@@ -438,7 +438,11 @@ impl Expr {
                     Expr::Let(dest.clone(), Box::new(Expr::New(typ.clone()))),
                     Expr::Call(
                         Box::new(var!("memcpy", typ.clone())),
-                        vec![*dest.clone(), **expr, Expr::Integer(typ.size(ctx)? as i64)]
+                        vec![
+                            *dest.clone(),
+                            *expr.clone(),
+                            Expr::Integer(typ.size(ctx)? as i64)
+                        ]
                     ),
                     *dest.clone()
                 ])))
@@ -479,7 +483,7 @@ impl Expr {
 }
 
 impl Type {
-    fn mono(self, ctx: &mut Context, func: &Generics) -> Result<Type, String> {
+    fn mono(&self, ctx: &mut Context, func: &Generics) -> Result<Type, String> {
         let mut typ = self.solve(ctx);
         let Generics(name, args) = func.clone();
         let args = map!(args, |x| x.solve(ctx));
