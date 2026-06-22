@@ -242,7 +242,7 @@ impl Expr {
                     ctx.local.class = None;
                 }
                 if let Some(typ) = ctx.global.lib.get(&name) {
-                    typing!(typ.clone().mono(ctx, Generics(name, args))?)
+                    typing!(typ.clone().mono(ctx, &Generics(name, args))?)
                 } else if let Some(typ) = ctx.local.scope.get(&name) {
                     typing!(typ.clone().solve(ctx))
                 } else {
@@ -344,7 +344,7 @@ impl Expr {
                 let Type::Class(_) = typ.clone() else {
                     return Err(format!("no constructor: {typ}"));
                 };
-                let typ = typ.mono(ctx, Generics::default())?;
+                let typ = typ.mono(ctx, &Generics::default())?;
                 expand!(new!(typ.size(ctx)? / 8));
                 typing!(typ.solve(ctx))
             }
@@ -479,9 +479,12 @@ impl Expr {
 }
 
 impl Type {
-    fn mono(self, ctx: &mut Context, func: Generics) -> Result<Type, String> {
+    fn mono(
+        self,
+        ctx: &mut Context,
+        func @ Generics(name, args): &Generics,
+    ) -> Result<Type, String> {
         let mut typ = self.solve(ctx);
-        let Generics(name, args) = func.clone();
         let args = map!(args, |x| x.solve(ctx));
         match typ.clone() {
             Type::Function(Lambda(params, _, _)) if !params.is_empty() => {
@@ -490,7 +493,7 @@ impl Type {
                     alias.insert(param.clone(), arg.clone());
                     typ = typ.rewrite(param, arg);
                 }
-                let (mangle, mut unify) = (func.generics(), ctx.global.def[&name].clone());
+                let (mangle, mut unify) = (func.generics(), ctx.global.def[name].clone());
                 if let Define::Function((_, params), _) | Define::Declare((_, params), _) = &unify
                     && let Type::Function(Lambda(_, ret, Some(args))) = typ.clone()
                 {
