@@ -138,14 +138,18 @@ impl Expr {
                 if let Type::Class(Generics(name, _)) = &typ
                     && let (_, Object::Enum(layout)) = &ctx.global.table[name]
                 {
-                    if let Some(lacked) = layout.keys().filter(|x| pats.contains_key(*x)).next() {
+                    if let Some(lacked) = layout
+                        .keys()
+                        .filter(|x| pats.iter().any(|(y, _, _)| *x != y))
+                        .next()
+                    {
                         return Err(format!("not covered: {name}.{lacked}"));
                     }
                 } else {
                     return Err(format!("match: Enum != {typ}"));
                 };
                 let mut expr = Expr::Null(Type::Void);
-                for (key, (bind, ret)) in pats {
+                for (key, bind, ret) in pats {
                     let acc = Box::new(Expr::Member(val.clone(), key.clone()));
                     expr = Expr::If(
                         Box::new(match bind {
