@@ -51,7 +51,7 @@ impl Define {
             } else if let Some(func) = line.strip_prefix("extern fn ") {
                 let (head, body) = once!(func, ":").unwrap_or((func.to_string(), "()".to_string()));
                 if let Ok((name, args)) = surround!(&head, "(", ")") {
-                    let head = (Generics::parse(&name)?, args!(&args));
+                    let head = (Generic::parse(&name)?, args!(&args));
                     result.push(Define::Declare(head, Type::parse(&body)?));
                 } else {
                     result.push(Define::Symbol(Name::new(&head)?, Type::parse(&body)?));
@@ -196,7 +196,7 @@ impl Expr {
         } else if let Ok(b) = src.parse::<bool>() {
             Ok(Expr::Boolean(b))
         } else {
-            Ok(Expr::Variable(Generics::parse(src)?))
+            Ok(Expr::Variable(Generic::parse(src)?))
         }
     }
 }
@@ -216,20 +216,20 @@ impl Type {
                 } else if let Some(typ) = surround!("[", x, "]") {
                     Ok(Type::Array(Box::new(Type::parse(typ)?)))
                 } else {
-                    Ok(Type::Class(Generics::parse(x)?))
+                    Ok(Type::Class(Generic::parse(x)?))
                 }
             }
         }
     }
 }
 
-impl Generics {
-    pub fn parse(src: &str) -> Result<Generics, String> {
+impl Generic {
+    pub fn parse(src: &str) -> Result<Generic, String> {
         let x = src.trim();
         if let Some((var, args)) = surround!("<", ">", x) {
-            Ok(Generics(Name::new(var)?, serial!(args, Type::parse)))
+            Ok(Generic(Name::new(var)?, serial!(args, Type::parse)))
         } else {
-            Ok(Generics(Name::new(x)?, vec![]))
+            Ok(Generic(Name::new(x)?, vec![]))
         }
     }
 }
@@ -244,8 +244,8 @@ impl Display for Type {
             Type::Boolean => write!(f, "Bool"),
             Type::Void => write!(f, "()"),
             Type::Array(typ) => write!(f, "[{typ}]"),
-            Type::Class(Generics(name, args)) if args.is_empty() => write!(f, "{name}"),
-            Type::Class(Generics(name, args)) => write!(f, "{name}<{}>", comma(args)),
+            Type::Class(Generic(name, args)) if args.is_empty() => write!(f, "{name}"),
+            Type::Class(Generic(name, args)) => write!(f, "{name}<{}>", comma(args)),
             Type::Function(Lambda(_, ret, Some(args))) => write!(f, "{ret}({})", comma(args)),
             Type::Function(Lambda(_, ret, None)) => write!(f, "{ret}()"),
         }
