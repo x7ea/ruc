@@ -247,10 +247,8 @@ impl Expr {
                 ))
             }
             Expr::Integer(val) => Ok(format!("\tmov rax, {val}\n")),
+            Expr::Float(val) if *val == Float(0.0) => Ok("\tpxor xmm0, xmm0\n".to_string()),
             Expr::Float(val) => {
-                if *val == Float(0.0) {
-                    return Ok("\tpxor xmm0, xmm0\n".to_string());
-                }
                 let name = format!("float.{}", label!());
                 ctx.global.data += &format!("\t{name} dq {val:?}\n");
                 Ok(format!("\tmovsd xmm0, [{name}]\n"))
