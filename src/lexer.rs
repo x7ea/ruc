@@ -17,13 +17,10 @@ pub fn lexer(src: &str, del: &str) -> Result<Vec<String>, String> {
         }
         if let Some(op) = src.get(idx..idx + 3)
             && [" < ", " > ", " <=", " >="].contains(&op)
+            && (del, level) == (SPACE, 0)
         {
-            if del == SPACE {
-                tokens.append(&mut vec![current.clone(), op.trim().to_string()]);
-                current.clear();
-            } else {
-                current += op;
-            }
+            tokens.append(&mut vec![current.clone(), op.trim().to_string()]);
+            current.clear();
             idx += 3;
             continue;
         }
