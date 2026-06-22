@@ -26,7 +26,7 @@ impl Define {
                     if let Some(head) = line.strip_prefix($word) {
                         let (name, layout) = surround!(&head, "{", "}")?;
                         result.push(Define::Class(
-                            Generics::parse(&name)?,
+                            Generic::parse(&name)?,
                             Object::$typ(args!(&layout)),
                         ));
                     }
@@ -35,7 +35,7 @@ impl Define {
             macro_rules! head {
                 ($head: expr) => {{
                     let (name, args) = surround!(&$head, "(", ")")?;
-                    (Generics::parse(&name)?, args!(&args))
+                    (Generic::parse(&name)?, args!(&args))
                 }};
             }
             macro_rules! body {
