@@ -206,8 +206,7 @@ impl Expr {
             Expr::Let(name, val) => match &**name {
                 Expr::Variable(Generics(name, _)) => {
                     let env = &ctx.local.var;
-                    let typ = env[name].clone();
-                    let idx = env.get_index_of(name).unwrap();
+                    let (typ, idx) = (env[name].clone(), env.get_index_of(name).unwrap());
                     let (val, addr) = (val.emit(ctx)?, (idx + 1) * 8);
                     if typ == Type::Float {
                         Ok(format!("{val}\tmovsd [rbp-{addr}], xmm0\n"))
