@@ -16,8 +16,6 @@ fn Str.ge(a: Str, b: Str): Bool strcmp(a, b) < 1
 
 fn Str.add(a: Str, b: Str): Str format a, b
 
-extern fn read(id: Int, buf: Str, size: Int)
-
 fn input(): Str {
     let buf = calloc<Str>(1, 512)
     scanf("%s", buf)
