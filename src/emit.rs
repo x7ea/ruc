@@ -16,6 +16,7 @@ impl Define {
         let ctx = &mut Context::default();
         ctx.global.def = defines.iter().map(|x| (name!(x), x.clone())).collect();
         map!(defines, |x| x.infer(ctx), ok)?;
+
         let mut text = String::new();
         for (_, define) in ctx.global.def.clone() {
             text += &define.emit(ctx)?;
