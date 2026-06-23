@@ -91,6 +91,9 @@ impl Expr {
             }};
         }
 
+        if let Some(typ) = ctx.local.typed.get(self) {
+            return Ok(typ.clone());
+        }
         match self.clone() {
             Expr::Print(is_output, vals) => {
                 let mut fmt = String::new();
