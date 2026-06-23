@@ -34,8 +34,8 @@ impl Define {
                 Ok(sig)
             }
             Define::Class(Generic(name, args), layout) => {
-                let val = (args.clone(), layout.clone());
-                ctx.global.table.insert(name.clone(), val);
+                let obj = (args.clone(), layout.clone());
+                ctx.global.table.insert(name.clone(), obj);
                 Ok(Type::Void)
             }
             Define::Symbol(name, ret) => {
