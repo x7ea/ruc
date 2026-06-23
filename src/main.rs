@@ -13,10 +13,10 @@ use {
     parse::SPACE,
 };
 
-use std::process::exit;
 use std::{
     hash::Hash,
     io::{Read, Write, stdin, stdout},
+    process::exit,
 };
 
 fn main() {
