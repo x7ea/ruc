@@ -23,4 +23,3 @@ fn input(): Str {
 }
 
 extern fn atoi(src: Str): Int
-extern fn sqrt(n: Float): Float
