@@ -8,7 +8,7 @@ impl Define {
                     (params.clone(), Box::new(ret.clone())),
                     Some(args.values().cloned().collect()),
                 ));
-                ctx.global.lib[name] = sig.clone();
+                ctx.global.lib.insert(name.clone(), sig.clone());
                 if params.is_empty() {
                     let parent = ctx.local.clone();
                     ctx.local = Function {
@@ -19,7 +19,7 @@ impl Define {
                     if ret.solve(ctx) != body {
                         return Err(format!("return: {ret} != {body}"));
                     }
-                    ctx.table[name] = ctx.local.clone();
+                    ctx.table.insert(name.clone(), ctx.local.clone());
                     ctx.local = parent;
                 }
                 Ok(sig)
@@ -30,17 +30,18 @@ impl Define {
                     Some(args.values().cloned().collect()),
                 ));
                 ctx.global.extrn.insert(name.clone());
-                ctx.global.lib[name] = sig.clone();
+                ctx.global.lib.insert(name.clone(), sig.clone());
                 Ok(sig)
             }
             Define::Class(Generic(name, args), layout) => {
-                ctx.global.table[name] = (args.clone(), layout.clone());
+                let val = (args.clone(), layout.clone());
+                ctx.global.table.insert(name.clone(), val);
                 Ok(Type::Void)
             }
             Define::Symbol(name, ret) => {
                 let sig = Type::Function(Lambda((Vec::new(), Box::new(ret.clone())), None));
+                ctx.global.lib.insert(name.clone(), sig.clone());
                 ctx.global.extrn.insert(name.clone());
-                ctx.global.lib[name] = sig.clone();
                 Ok(sig)
             }
         }
@@ -52,14 +53,14 @@ impl Expr {
         macro_rules! typing {
             ($typ: expr) => {{
                 let typ = $typ.clone();
-                ctx.local.typed[self] = typ.clone();
+                ctx.local.typed.insert(self.clone(), typ.clone());
                 Ok::<Type, String>(typ)
             }};
         }
         macro_rules! expands {
             ($expr: expr) => {{
                 let expr = $expr.clone();
-                ctx.local.expand[self] = expr.clone();
+                ctx.local.expand.insert(self.clone(), expr.clone());
                 expr.infer(ctx)?
             }};
         }
@@ -202,7 +203,7 @@ impl Expr {
                     {
                         return Err(format!("duplicated {name}: {typ} != {val}"));
                     }
-                    ctx.local.var[name] = val.clone();
+                    ctx.local.var.insert(name.clone(), val.clone());
                 }
                 ctx.local.scope = parent;
                 typing!(ret.clone())
@@ -259,7 +260,7 @@ impl Expr {
                             return Err(format!("{name}: {typ} != {val}"));
                         }
                     } else {
-                        ctx.local.scope[name] = val.clone();
+                        ctx.local.scope.insert(name.clone(), val.clone());
                     }
                     typing!(Type::Void)
                 }
@@ -480,10 +481,10 @@ impl Type {
             Type::Function(Lambda((params, _), _)) if !params.is_empty() => {
                 let mut alias = IndexMap::new();
                 for (arg, param) in args.iter().zip(&params) {
-                    alias[param] = arg.clone();
+                    alias.insert(param.clone(), arg.clone());
                     typ = typ.rewrite(param, arg);
                 }
-                let (mangle, mut unify) = (&func.generics(), ctx.global.def[name].clone());
+                let (mangle, mut unify) = (func.generics(), ctx.global.def[name].clone());
                 if let Define::Function((_, params), _) | Define::Declare((_, params), _) = &unify
                     && let Type::Function(Lambda((_, ret), Some(args))) = typ.clone()
                 {
@@ -501,7 +502,7 @@ impl Type {
                 {
                     typ = unify.infer(ctx)?;
                 }
-                ctx.global.def[mangle] = unify.clone();
+                ctx.global.def.insert(mangle, unify.clone());
                 ctx.global.alias = parent;
             }
             Type::Class(Generic(name, args)) => {
@@ -522,8 +523,8 @@ impl Type {
                     Object::Enum(_) => Object::Enum(layout).clone(),
                     Object::Struct(_) => Object::Struct(layout).clone(),
                 };
-                let mangle = &Generic(name.clone(), args).generics();
-                ctx.global.table[mangle] = (vec![], unify);
+                let mangle = Generic(name.clone(), args).generics();
+                ctx.global.table.insert(mangle.clone(), (vec![], unify));
             }
             _ => {}
         }
