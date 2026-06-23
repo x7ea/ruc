@@ -22,7 +22,7 @@ impl Define {
             text += &define.emit(ctx)?;
         }
         let mut lib = String::from("\nsection .text\n\tglobal main\n");
-        for symbol in ctx.global.lib.keys() {
+        for symbol in ctx.global.extrn.clone() {
             lib += &format!("\textern {symbol}\n");
         }
         let data = ctx.global.data.clone();
