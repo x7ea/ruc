@@ -474,7 +474,7 @@ impl Expr {
 }
 
 impl Type {
-    fn mono(self, ctx: &mut Context, Generic(name, args): Generic) -> Result<Type, String> {
+    fn mono(&self, ctx: &mut Context, Generic(name, args): Generic) -> Result<Type, String> {
         let mut typ = self.solve(ctx);
         let args = map!(args, |x| x.solve(ctx));
         match typ.clone() {
