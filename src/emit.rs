@@ -246,6 +246,7 @@ impl Expr {
                     }
                 ))
             }
+            Expr::Integer(val) if *val == 0 => Ok("\txor rax, rax\n".to_string()),
             Expr::Integer(val) => Ok(format!("\tmov rax, {val}\n")),
             Expr::Float(val) if *val == Float(0.0) => Ok("\tpxor xmm0, xmm0\n".to_string()),
             Expr::Float(val) => {
