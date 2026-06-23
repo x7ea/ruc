@@ -483,8 +483,7 @@ impl Type {
                     alias.insert(param.clone(), arg.clone());
                     typ = typ.rewrite(param, arg);
                 }
-                let mangle = Generic(name.clone(), args).generics();
-                let mut unify = ctx.global.def[&name].clone();
+                let (mut unify, mangle) = (&ctx.global.def[&name], Generic(name, args).generics());
                 if let Define::Function((_, params), _) | Define::Declare((_, params), _) = &unify
                     && let Type::Function(Lambda((_, ret), Some(args))) = typ.clone()
                 {
@@ -492,7 +491,7 @@ impl Type {
                         Generic(mangle.clone(), Vec::new()),
                         params.keys().cloned().zip(args).collect(),
                     );
-                    unify = match unify {
+                    unify = match unify.clone() {
                         Define::Function(_, (body, _)) => Define::Function(head, (body, *ret)),
                         _ => Define::Declare(head, *ret),
                     };
