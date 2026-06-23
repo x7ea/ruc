@@ -2,13 +2,17 @@ use crate::*;
 
 impl Define {
     pub fn infer(&self, ctx: &mut Context) -> Result<Type, String> {
+        let sig = match self {
+            Define::Function((Generic(_, param), args), (_, ret))
+            | Define::Declare((Generic(_, param), args), ret) => Type::Function(Lambda(
+                param.clone(),
+                Box::new(ret.clone()),
+                Some(args.values().cloned().collect()),
+            )),
+            _ => Type::Void,
+        };
         match self {
             Define::Function((Generic(name, param), args), (body, ret)) => {
-                let sig = Type::Function(Lambda(
-                    param.clone(),
-                    Box::new(ret.clone()),
-                    Some(args.values().cloned().collect()),
-                ));
                 ctx.global.lib.insert(name.clone(), sig.clone());
                 if param.is_empty() {
                     let parent = ctx.local.clone();
@@ -26,11 +30,6 @@ impl Define {
                 Ok(sig)
             }
             Define::Declare((Generic(name, param), args), ret) => {
-                let sig = Type::Function(Lambda(
-                    param.clone(),
-                    Box::new(ret.solve(ctx)),
-                    Some(args.values().cloned().collect()),
-                ));
                 ctx.table.insert(name.clone(), ctx.local.clone());
                 ctx.global.lib.insert(name.clone(), sig.clone());
                 ctx.global.extrn.insert(name.clone());
