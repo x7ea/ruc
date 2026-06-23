@@ -202,7 +202,7 @@ impl Expr {
                     {
                         return Err(format!("duplicated {name}: {typ} != {val}"));
                     }
-                    ctx.local.var.insert(name.clone(), val.clone());
+                    ctx.local.var[name] = val.clone();
                 }
                 ctx.local.scope = parent;
                 typing!(ret.clone())
