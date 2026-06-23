@@ -29,7 +29,7 @@ impl Define {
                 }
                 Ok(sig)
             }
-            Define::Declare((Generic(name, param), args), ret) => {
+            Define::Declare((Generic(name, _), _), _) => {
                 ctx.table.insert(name.clone(), ctx.local.clone());
                 ctx.global.lib.insert(name.clone(), sig.clone());
                 ctx.global.extrn.insert(name.clone());
