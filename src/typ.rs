@@ -259,7 +259,7 @@ impl Expr {
                             return Err(format!("{name}: {typ} != {val}"));
                         }
                     } else {
-                        ctx.local.scope.insert(name.clone(), val.clone());
+                        ctx.local.scope[name] = val.clone();
                     }
                     typing!(Type::Void)
                 }
@@ -480,7 +480,7 @@ impl Type {
             Type::Function(Lambda((params, _), _)) if !params.is_empty() => {
                 let mut alias = IndexMap::new();
                 for (arg, param) in args.iter().zip(&params) {
-                    alias.insert(param.clone(), arg.clone());
+                    alias[param] = arg.clone();
                     typ = typ.rewrite(param, arg);
                 }
                 let (mangle, mut unify) = (func.generics(), ctx.global.def[name].clone());
@@ -501,7 +501,7 @@ impl Type {
                 {
                     typ = unify.infer(ctx)?;
                 }
-                ctx.global.def.insert(mangle, unify.clone());
+                ctx.global.def[&mangle] = unify.clone();
                 ctx.global.alias = parent;
             }
             Type::Class(Generic(name, args)) => {
@@ -523,7 +523,7 @@ impl Type {
                     Object::Struct(_) => Object::Struct(layout).clone(),
                 };
                 let mangle = Generic(name.clone(), args).generics();
-                ctx.global.table.insert(mangle.clone(), (vec![], unify));
+                ctx.global.table[mangle] = (vec![], unify);
             }
             _ => {}
         }
