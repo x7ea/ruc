@@ -19,8 +19,7 @@ fn Str.add(a: Str, b: Str): Str format a, b
 extern fn read(id: Int, buf: Str, size: Int)
 
 fn input(): Str {
-    let volume = 512
-    let buf = calloc<Str>(1, volume)
+    let buf = calloc<Str>(1, 512)
     scanf("%s", buf)
     buf
 }
