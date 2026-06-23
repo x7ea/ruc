@@ -483,7 +483,7 @@ impl Type {
                     alias[param] = arg.clone();
                     typ = typ.rewrite(param, arg);
                 }
-                let (mangle, mut unify) = (func.generics(), ctx.global.def[name].clone());
+                let (mangle, mut unify) = (&func.generics(), ctx.global.def[name].clone());
                 if let Define::Function((_, params), _) | Define::Declare((_, params), _) = &unify
                     && let Type::Function(Lambda((_, ret), Some(args))) = typ.clone()
                 {
@@ -501,7 +501,7 @@ impl Type {
                 {
                     typ = unify.infer(ctx)?;
                 }
-                ctx.global.def[&mangle] = unify.clone();
+                ctx.global.def[mangle] = unify.clone();
                 ctx.global.alias = parent;
             }
             Type::Class(Generic(name, args)) => {
@@ -522,7 +522,7 @@ impl Type {
                     Object::Enum(_) => Object::Enum(layout).clone(),
                     Object::Struct(_) => Object::Struct(layout).clone(),
                 };
-                let mangle = Generic(name.clone(), args).generics();
+                let mangle = &Generic(name.clone(), args).generics();
                 ctx.global.table[mangle] = (vec![], unify);
             }
             _ => {}
