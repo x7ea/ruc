@@ -483,7 +483,10 @@ impl Type {
                     alias.insert(param.clone(), arg.clone());
                     typ = typ.rewrite(param, arg);
                 }
-                let (mut unify, mangle) = (&ctx.global.def[&name], Generic(name, args).generics());
+                let (mut unify, mangle) = (
+                    ctx.global.def[&name].clone(),
+                    Generic(name, args).generics(),
+                );
                 if let Define::Function((_, params), _) | Define::Declare((_, params), _) = &unify
                     && let Type::Function(Lambda((_, ret), Some(args))) = typ.clone()
                 {
