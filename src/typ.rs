@@ -327,18 +327,11 @@ impl Expr {
                     typ => Err(format!("index: {typ}")),
                 }
             }
-            Expr::Len(obj) => match obj.infer(ctx)? {
-                Type::Array(_) => typing!(expands!(Expr::Read(
-                    Box::new(Expr::Integer(0)),
-                    Type::Integer,
-                    obj.clone()
-                ))),
-                Type::String => typing!(expands!(Expr::Call(
-                    Box::new(var!("strlen")),
-                    vec![*obj.clone()]
-                ))),
-                typ => Err(format!("no length: {typ}")),
-            },
+            Expr::Len(obj) => typing!(expands!(match obj.infer(ctx)? {
+                Type::String => Expr::Call(Box::new(var!("strlen")), vec![*obj.clone()]),
+                Type::Array(_) => Expr::Read(Box::new(Expr::Integer(0)), Type::Integer, obj),
+                typ => return Err(format!("no length: {typ}")),
+            })),
             Expr::New(typ) => {
                 let Type::Class(_) = typ.clone() else {
                     return Err(format!("no constructor: {typ}"));
