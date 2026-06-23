@@ -105,11 +105,10 @@ impl Expr {
                 }
                 is_output.then(|| fmt += "\\n");
                 let handler = ["g_strdup_printf", "printf"];
-                expand!(Expr::Call(
+                typing!(expands!(Expr::Call(
                     Box::new(var!(handler[is_output as usize])),
                     [vec![Expr::String(fmt)], vals.to_vec()].concat(),
-                ));
-                typing!(if is_output { Type::Void } else { Type::String })
+                )))
             }
             Expr::If(cond, then, els) => {
                 if let Expr::Let(bind, check) = *cond {
