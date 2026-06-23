@@ -1,8 +1,8 @@
 extern fn calloc<T>(size: Int, byte: Int): T
 extern fn memcpy<T>(src: T, dst: T, size: Int)
+extern fn scanf(fmt: Str, buf: Str)
 extern fn g_strdup_printf: Str
 extern fn printf
-extern fn scanf
 
 extern fn strcmp(a: Str, b: Str): Int
 extern fn strlen(this: Str): Int
