@@ -40,8 +40,8 @@ impl Define {
             }
             Define::Symbol(name, ret) => {
                 let sig = Type::Function(Lambda((Vec::new(), Box::new(ret.clone())), None));
-                ctx.global.extrn.insert(name.clone());
                 ctx.global.lib.insert(name.clone(), sig);
+                ctx.global.extrn.insert(name.clone());
                 Ok(Type::Void)
             }
         }
