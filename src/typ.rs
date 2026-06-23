@@ -39,8 +39,8 @@ impl Define {
             }
             Define::Symbol(name, ret) => {
                 let sig = Type::Function(Lambda((Vec::new(), Box::new(ret.clone())), None));
-                ctx.global.lib.insert(name.clone(), sig.clone());
                 ctx.global.extrn.insert(name.clone());
+                ctx.global.lib[name] = sig.clone();
                 Ok(sig)
             }
         }
@@ -52,14 +52,14 @@ impl Expr {
         macro_rules! typing {
             ($typ: expr) => {{
                 let typ = $typ.clone();
-                ctx.local.typed.insert(self.clone(), typ.clone());
+                ctx.local.typed[self] = typ.clone();
                 Ok::<Type, String>(typ)
             }};
         }
         macro_rules! expands {
             ($expr: expr) => {{
                 let expr = $expr.clone();
-                ctx.local.expand.insert(self.clone(), expr.clone());
+                ctx.local.expand[self] = expr.clone();
                 expr.infer(ctx)?
             }};
         }
