@@ -475,6 +475,7 @@ impl Expr {
 
 impl Type {
     fn mono(&self, ctx: &mut Context, Generic(name, args): Generic) -> Result<Type, String> {
+        let mangle = Generic(name.clone(), args.clone()).generics();
         let (mut typ, args) = (self.solve(ctx), map!(args, |x| x.solve(ctx)));
         match typ.clone() {
             Type::Function(Lambda((params, _), _)) if !params.is_empty() => {
@@ -484,7 +485,6 @@ impl Type {
                     typ = typ.rewrite(param, arg);
                 }
                 let mut unify = ctx.global.def[&name].clone();
-                let mangle = Generic(name, args).generics();
                 if let Define::Function((_, params), _) | Define::Declare((_, params), _) = &unify
                     && let Type::Function(Lambda((_, ret), Some(args))) = typ.clone()
                 {
@@ -523,7 +523,6 @@ impl Type {
                     Object::Enum(_) => Object::Enum(layout).clone(),
                     Object::Struct(_) => Object::Struct(layout).clone(),
                 };
-                let mangle = Generic(name.clone(), args).generics();
                 ctx.global.table.insert(mangle.clone(), (vec![], unify));
             }
             _ => {}
