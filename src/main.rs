@@ -2,11 +2,11 @@ pub mod emit;
 pub mod lexer;
 pub mod parse;
 pub mod typ;
-use strum::AsRefStr;
 
 use derive_more::Unwrap;
 use indexmap::{IndexMap, IndexSet};
 use ordered_float::OrderedFloat as Float;
+use strum::AsRefStr;
 use vec1::Vec1;
 use {
     lexer::{lexer, name::Name},
