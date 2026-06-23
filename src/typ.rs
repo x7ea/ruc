@@ -25,7 +25,6 @@ impl Define {
                 Ok(sig)
             }
             Define::Declare((Generic(name, params), args), ret) => {
-                ctx.table.insert(name.clone(), ctx.local.clone());
                 let sig = Type::Function(Lambda(
                     (params.clone(), Box::new(ret.clone())),
                     Some(args.values().cloned().collect()),
@@ -41,6 +40,7 @@ impl Define {
             }
             Define::Symbol(name, ret) => {
                 let sig = Type::Function(Lambda((Vec::new(), Box::new(ret.clone())), None));
+                ctx.global.extrn.insert(name.clone());
                 ctx.global.lib.insert(name.clone(), sig);
                 Ok(Type::Void)
             }
