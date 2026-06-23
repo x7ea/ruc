@@ -8,7 +8,7 @@ impl Define {
                     (params.clone(), Box::new(ret.clone())),
                     Some(args.values().cloned().collect()),
                 ));
-                ctx.global.lib.insert(name.clone(), sig.clone());
+                ctx.global.lib[name] = sig.clone();
                 if params.is_empty() {
                     let parent = ctx.local.clone();
                     ctx.local = Function {
@@ -19,7 +19,7 @@ impl Define {
                     if ret.solve(ctx) != body {
                         return Err(format!("return: {ret} != {body}"));
                     }
-                    ctx.table.insert(name.clone(), ctx.local.clone());
+                    ctx.table[name] = ctx.local.clone();
                     ctx.local = parent;
                 }
                 Ok(sig)
