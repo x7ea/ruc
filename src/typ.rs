@@ -30,7 +30,7 @@ impl Define {
                     Some(args.values().cloned().collect()),
                 ));
                 ctx.global.extrn.insert(name.clone());
-                ctx.global.lib.insert(name.clone(), sig.clone());
+                ctx.global.lib[name] = sig.clone();
                 Ok(sig)
             }
             Define::Class(Generic(name, args), layout) => {
