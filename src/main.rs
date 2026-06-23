@@ -2,22 +2,21 @@ pub mod emit;
 pub mod lexer;
 pub mod parse;
 pub mod typ;
-
-use derive_more::Unwrap;
-use indexmap::{IndexMap, IndexSet};
-use ordered_float::OrderedFloat as Float;
-use strum::AsRefStr;
-use vec1::Vec1;
 use {
     lexer::{lexer, name::Name},
     parse::SPACE,
 };
 
+use derive_more::Unwrap;
+use indexmap::{IndexMap, IndexSet};
+use ordered_float::OrderedFloat as Float;
 use std::{
     hash::Hash,
     io::{Read, Write, stdin, stdout},
     process::exit,
 };
+use strum::AsRefStr;
+use vec1::Vec1;
 
 fn main() {
     macro_rules! error {
