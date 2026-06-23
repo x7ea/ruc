@@ -42,7 +42,7 @@ impl Define {
                 let sig = Type::Function(Lambda((Vec::new(), Box::new(ret.clone())), None));
                 ctx.global.lib.insert(name.clone(), sig);
                 ctx.global.extrn.insert(name.clone());
-                Ok(Type::Void)
+                Ok(sig)
             }
         }
     }
