@@ -1,8 +1,5 @@
 extern fn calloc<T>(size: Int, byte: Int): T
 extern fn memcpy<T>(src: T, dst: T, size: Int)
-extern fn scanf(fmt: Str, buf: Str)
-extern fn g_strdup_printf: Str
-extern fn printf
 
 extern fn strcmp(a: Str, b: Str): Int
 extern fn strlen(this: Str): Int
@@ -16,6 +13,7 @@ fn Str.ge(a: Str, b: Str): Bool strcmp(a, b) < 1
 
 fn Str.add(a: Str, b: Str): Str format a, b
 
+extern fn scanf(fmt: Str, buf: Str)
 fn input(): Str {
     let buf = calloc<Str>(1, 512)
     scanf("%s", buf)
@@ -23,3 +21,5 @@ fn input(): Str {
 }
 
 extern fn atoi(src: Str): Int
+extern fn g_strdup_printf: Str
+extern fn printf
