@@ -8,8 +8,7 @@ pub const SPACE: &str = " ";
 
 impl Define {
     pub fn parse(src: &str) -> Result<Vec<Define>, String> {
-        let src = src.trim().replace("'\n", SPACE);
-        let mut result = Vec::new();
+        let (src, mut result) = (src.trim().replace("'\n", SPACE), Vec::new());
         for line in lexer(&src, "\n")? {
             macro_rules! args {
                 ($args: expr) => {{
