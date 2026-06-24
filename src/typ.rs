@@ -559,6 +559,9 @@ impl Type {
         for (old, new) in &ctx.global.alias {
             typ = typ.rewrite(old, new);
         }
+        for (i, new) in &ctx.local.solve {
+            typ = typ.rewrite(&Type::Any(*i), new);
+        }
         typ
     }
 
