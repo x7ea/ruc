@@ -117,8 +117,8 @@ pub enum Type {
     Array(Box<Type>),
     Class(Generic),
     Function(Lambda),
-    Any(usize),
     Void,
+    Any,
 }
 
 #[derive(Debug, Clone, Hash, PartialEq, Eq)]
