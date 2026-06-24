@@ -159,6 +159,6 @@ pub struct Function {
     scope: IndexMap<Name, Type>,
     typed: IndexMap<Expr, Type>,
     expand: IndexMap<Expr, Expr>,
-    solve: IndexMap<Expr, Expr>,
+    solve: IndexMap<usize, Type>,
     class: Option<Name>,
 }
