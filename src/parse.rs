@@ -3,7 +3,6 @@ use std::{
     fmt::{self, Display},
     fs::read_to_string,
 };
-
 pub const SPACE: &str = " ";
 
 impl Define {
