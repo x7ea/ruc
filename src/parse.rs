@@ -238,6 +238,7 @@ impl Display for Type {
             Type::Float => write!(f, "Float"),
             Type::Boolean => write!(f, "Bool"),
             Type::Void => write!(f, "()"),
+            Type::Any(_) => write!(f, "?"),
             Type::Array(typ) => write!(f, "[{typ}]"),
             Type::Class(Generic(name, args)) if args.is_empty() => write!(f, "{name}"),
             Type::Class(Generic(name, args)) => write!(f, "{name}<{}>", comma(args)),
