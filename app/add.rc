@@ -1,3 +1,5 @@
+use std
+
 fn inc(n): Int n + 1
 
 fn main() print 1.inc()
