@@ -56,7 +56,7 @@ pub enum Define {
     Class(Generic, Object),
 }
 
-#[derive(Debug, Clone, Hash, PartialEq, Eq, AsRefStr)]
+#[derive(Debug, Clone, Hash, PartialEq, Eq, AsRefStr, Unwrap)]
 pub enum Expr {
     // Literal
     Integer(i64),
