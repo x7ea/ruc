@@ -43,12 +43,7 @@ impl Define {
                 }};
             }
             macro_rules! body {
-                ($body: expr, $typ: expr) => {{
-                    (
-                        Expr::Block(vec![Expr::parse(&$body)?]),
-                        Type::parse(&$typ.to_string())?,
-                    )
-                }};
+                ($body: expr, $typ: expr) => {{ (Expr::Block(vec![Expr::parse(&$body)?]), $typ) }};
             }
             if let Some(file) = line.strip_prefix("use ") {
                 for file in serial!(file, |x: &str| Ok(x.trim().to_owned())) {
@@ -68,11 +63,13 @@ impl Define {
             } else if let Some(func) = line.strip_prefix("fn ")
                 && let Ok((head, body)) = once!(func, ":")
             {
-                let (typ, body) = once!(&body, SPACE)?;
-                result.push(Define::Function(head!(head), body!(body, typ)));
+                let body = once!(&body, SPACE)
+                    .map(|(typ, body)| Ok(body!(body, Type::parse(&typ)?)))??;
+                result.push(Define::Function(head!(head)), body);
             } else if let Some(func) = line.strip_prefix("fn ") {
                 let (head, body) = once!(&func, SPACE)?;
-                result.push(Define::Function(head!(head), body!(body, count)));
+                result.push(Define::Function(head!(head), body!(body, Type::Any(count))));
+                count += 1;
             }
             object_declare!("struct ", Struct);
             object_declare!("enum ", Enum);
@@ -220,8 +217,6 @@ impl Type {
                     Ok(Type::Function(Lambda((Vec::new(), ret), Some(args))))
                 } else if let Some(typ) = surround!("[", src, "]") {
                     Ok(Type::Array(Box::new(Type::parse(typ)?)))
-                } else if let Ok(i) = src.parse::<usize>() {
-                    Ok(Type::Any(i))
                 } else {
                     Ok(Type::Class(Generic::parse(src)?))
                 }
