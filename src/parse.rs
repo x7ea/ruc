@@ -63,9 +63,8 @@ impl Define {
             } else if let Some(func) = line.strip_prefix("fn ")
                 && let Ok((head, body)) = once!(func, ":")
             {
-                let body = once!(&body, SPACE)
-                    .map(|(typ, body)| Ok(body!(body, Type::parse(&typ)?)))??;
-                result.push(Define::Function(head!(head)), body);
+                let (typ, body) = once!(&body, SPACE).map(|(typ, x)| (Type::parse(&typ), x))?;
+                result.push(Define::Function(head!(head), body!(body, typ?)));
             } else if let Some(func) = line.strip_prefix("fn ") {
                 let (head, body) = once!(&func, SPACE)?;
                 result.push(Define::Function(head!(head), body!(body, Type::Any(count))));
