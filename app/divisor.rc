@@ -1,7 +1,6 @@
 use std
 
-
-fn gcd(a, b) {
+fn gcd(a: Int, b) {
     while b != 0 do {
         let t = a % b
         let a = b
@@ -10,11 +9,9 @@ fn gcd(a, b) {
     a
 }
 
-fn inc(n) n * 2
-fn inc_and_print(n) print inc(n)
-
 fn main() {
     print "Greatest Common Divisor"
     let a = input().atoi()
     let b = input().atoi()
+    print gcd(a, b)
 }
