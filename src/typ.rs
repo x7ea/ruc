@@ -64,6 +64,12 @@ impl Expr {
                 expr.infer(ctx)?
             }};
         }
+        macro_rules! solve {
+            ($typ: expr, $i: expr) => {{
+                ctx.local.solve.insert($i, $typ.clone());
+                typing!($typ)
+            }};
+        }
         macro_rules! expand {
             ($expr: expr) => {{
                 let _ = expands!($expr);
@@ -76,7 +82,7 @@ impl Expr {
             ($typ: pat, $lhs: expr, $rhs: expr) => {{
                 match ($lhs.infer(ctx)?, $rhs.infer(ctx)?) {
                     ($typ, ret @ $typ) => typing!(ret.clone()),
-                    (Type::Any, ret @ $typ) | (ret @ $typ, Type::Any) => typing!(ret.clone()),
+                    (Type::Any(i), ret @ $typ) | (ret @ $typ, Type::Any(i)) => solve!(ret, i),
                     (lhs, rhs) if lhs != rhs => Err(format!("operator term: {lhs} != {rhs}")),
                     (typ, _) => typing!(expands!(Expr::Call(
                         Box::new(var!(format!("{typ}.{}", self.as_ref()))),
@@ -128,7 +134,7 @@ impl Expr {
                 match els {
                     Some(els) => {
                         let rhs = els.infer(ctx)?;
-                        if *els != Expr::Null(Type::Any) && lhs != rhs {
+                        if *els != Expr::Null(Type::Any(_)) && lhs != rhs {
                             return Err(format!("if-else term: {lhs} != {rhs}"));
                         }
                         typing!(lhs)
