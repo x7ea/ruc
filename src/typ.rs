@@ -85,7 +85,6 @@ impl Expr {
             ($typ: pat, $lhs: expr, $rhs: expr) => {{
                 match ($lhs.infer(ctx)?, $rhs.infer(ctx)?) {
                     ($typ, ret @ $typ) => typing!(ret),
-                    (ret @ Type::Any(_), Type::Any(_)) => typing!(ret),
                     (Type::Any(i), ret @ $typ) | (ret @ $typ, Type::Any(i)) => solve!(ret, i),
                     (lhs, rhs) if lhs != rhs => Err(format!("operator term: {lhs} != {rhs}")),
                     (typ, _) => typing!(expands!(Expr::Call(
