@@ -1,5 +1,5 @@
 use std
 
-fn inc(n) n + 1
+fn inc(n) n + 1.1
 
-fn main() print inc(1)
+fn main() print inc(1.0)
