@@ -567,7 +567,7 @@ impl Type {
         }
         if let Type::Function(Lambda((mut param, ret), Some(args))) = typ.clone() {
             let mut count = 0;
-            for arg in args {
+            for arg in [args, vec![*ret]].concat() {
                 if let Type::Any(_) = arg {
                     let name = Type::Class(var!(format!("T{count}")).unwrap_variable());
                     typ = typ.rewrite(&arg, &name);
