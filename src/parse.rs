@@ -9,7 +9,7 @@ pub const SPACE: &str = " ";
 impl Define {
     pub fn parse(src: &str) -> Result<Vec<Define>, String> {
         let src = src.trim().replace("'\n", SPACE);
-        let mut result = Vec::new();
+        let (mut result, mut count) = (Vec::new(), 0);
         for line in lexer(&src, "\n")? {
             macro_rules! args {
                 ($args: expr) => {{
@@ -18,7 +18,7 @@ impl Define {
                         if let Ok((name, typ)) = once!(&arg, ":") {
                             map.insert(Name::new(&name)?, Type::parse(&typ)?);
                         } else {
-                            map.insert(Name::new(&arg)?, Type::Any);
+                            map.insert(Name::new(&arg)?, Type::Any(count));
                         }
                     }
                     map
