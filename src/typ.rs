@@ -16,11 +16,7 @@ impl Define {
                         ..Function::default()
                     };
                     let body = body.infer(ctx)?;
-                    ctx.local.solve.insert(0, body.clone());
-
-                    let sig = sig.solve(ctx);
-                    ctx.global.lib.insert(name.clone(), sig.clone());
-                    if !matches!(ret, Type::Any(_)) && *ret != body {
+                    if ret.solve(ctx) != body {
                         return Err(format!("return: {ret} != {body}"));
                     }
                     ctx.table.insert(name.clone(), ctx.local.clone());
@@ -68,12 +64,6 @@ impl Expr {
                 expr.infer(ctx)?
             }};
         }
-        macro_rules! solve {
-            ($typ: expr, $i: expr) => {{
-                ctx.local.solve.insert($i, $typ.clone());
-                typing!($typ)
-            }};
-        }
         macro_rules! expand {
             ($expr: expr) => {{
                 let _ = expands!($expr);
@@ -85,9 +75,7 @@ impl Expr {
         macro_rules! op {
             ($typ: pat, $lhs: expr, $rhs: expr) => {{
                 match ($lhs.infer(ctx)?, $rhs.infer(ctx)?) {
-                    ($typ, ret @ $typ) => typing!(ret),
-                    (ret @ Type::Any(_), Type::Any(_)) => typing!(ret),
-                    (Type::Any(i), ret @ $typ) | (ret @ $typ, Type::Any(i)) => solve!(ret, i),
+                    ($typ, ret @ $typ) => typing!(ret.clone()),
                     (lhs, rhs) if lhs != rhs => Err(format!("operator term: {lhs} != {rhs}")),
                     (typ, _) => typing!(expands!(Expr::Call(
                         Box::new(var!(format!("{typ}.{}", self.as_ref()))),
@@ -139,7 +127,7 @@ impl Expr {
                 match els {
                     Some(els) => {
                         let rhs = els.infer(ctx)?;
-                        if *els != Expr::Null(Type::Any(usize::MAX)) && lhs != rhs {
+                        if *els != Expr::Null(Type::Void) && lhs != rhs {
                             return Err(format!("if-else term: {lhs} != {rhs}"));
                         }
                         typing!(lhs)
@@ -159,7 +147,7 @@ impl Expr {
                 } else {
                     return Err(format!("match: Enum != {typ}"));
                 };
-                let mut expr = Expr::Null(Type::Any(usize::MAX));
+                let mut expr = Expr::Null(Type::Void);
                 for (key, bind, ret) in pats {
                     let acc = Box::new(Expr::Member(val.clone(), key.clone()));
                     expr = Expr::If(
@@ -234,10 +222,6 @@ impl Expr {
                         }
                         for (param, arg) in params.iter().zip(args) {
                             let arg = arg.infer(ctx)?.solve(ctx);
-                            if let Type::Any(i) = arg {
-                                ctx.local.solve.insert(i, param.clone());
-                                continue;
-                            }
                             if param.solve(ctx) != arg {
                                 return Err(format!("argument types: {param} != {arg}"));
                             }
@@ -567,9 +551,6 @@ impl Type {
         let mut typ = self.clone();
         for (old, new) in &ctx.global.alias {
             typ = typ.rewrite(old, new);
-        }
-        for (i, new) in &ctx.local.solve {
-            typ = typ.rewrite(&Type::Any(*i), new);
         }
         typ
     }
