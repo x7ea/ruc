@@ -134,7 +134,7 @@ impl Expr {
                 match els {
                     Some(els) => {
                         let rhs = els.infer(ctx)?;
-                        if *els != Expr::Null(Type::Any(_)) && lhs != rhs {
+                        if *els != Expr::Null(Type::Any(usize::MAX)) && lhs != rhs {
                             return Err(format!("if-else term: {lhs} != {rhs}"));
                         }
                         typing!(lhs)
@@ -154,7 +154,7 @@ impl Expr {
                 } else {
                     return Err(format!("match: Enum != {typ}"));
                 };
-                let mut expr = Expr::Null(Type::Void);
+                let mut expr = Expr::Null(Type::Any(usize::MAX));
                 for (key, bind, ret) in pats {
                     let acc = Box::new(Expr::Member(val.clone(), key.clone()));
                     expr = Expr::If(
