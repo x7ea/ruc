@@ -1,6 +1,6 @@
 use std
 
-fn inc(n) n * 2
-fn inc_and_print(n) print inc(n)
+fn double(n) n * 2
+fn process(n) print double(n)
 
-fn main() input().atoi().inc_and_print()
+fn main() input().atoi().process()
