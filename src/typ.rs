@@ -22,7 +22,7 @@ impl Define {
                     ctx.table.insert(name.clone(), ctx.local.clone());
                     ctx.local = parent;
                 }
-                Ok(sig)
+                Ok(sig.solve(ctx))
             }
             Define::Declare((Generic(name, params), args), ret) => {
                 let sig = Type::Function(Lambda(
