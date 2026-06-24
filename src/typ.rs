@@ -576,8 +576,8 @@ impl Type {
                     count += 1
                 }
             }
-            let Lambda((_, ret), Some(args)) = typ.unwrap_function();
-            typ = Type::Function(Lambda((_, ret), Some(args)));
+            let Lambda((_, ret), args) = typ.unwrap_function();
+            typ = Type::Function(Lambda((param, ret), args));
         }
         dbg!(&typ);
         typ
