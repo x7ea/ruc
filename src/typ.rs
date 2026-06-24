@@ -65,9 +65,9 @@ impl Expr {
             }};
         }
         macro_rules! expand {
-            ($expr: expr) => {{
+            ($expr: expr) => {
                 let _ = expands!($expr);
-            }};
+            };
         }
         macro_rules! tmp {
             ($typ: expr) => {{ var!(&format!("tmp{}", hash!(&self))) }};
