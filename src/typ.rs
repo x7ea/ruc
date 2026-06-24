@@ -76,6 +76,7 @@ impl Expr {
             ($typ: pat, $lhs: expr, $rhs: expr) => {{
                 match ($lhs.infer(ctx)?, $rhs.infer(ctx)?) {
                     ($typ, ret @ $typ) => typing!(ret.clone()),
+                    (Type::Any, ret @ $typ) | (ret @ $typ, Type::Any) => typing!(ret.clone()),
                     (lhs, rhs) if lhs != rhs => Err(format!("operator term: {lhs} != {rhs}")),
                     (typ, _) => typing!(expands!(Expr::Call(
                         Box::new(var!(format!("{typ}.{}", self.as_ref()))),
