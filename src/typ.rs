@@ -565,6 +565,16 @@ impl Type {
         for (i, new) in &ctx.local.solve {
             typ = typ.rewrite(&Type::Any(*i), new);
         }
+        if let Type::Function(Lambda((param, ret), Some(args))) = typ.clone() {
+            let mut count = 0;
+            for arg in args {
+                if let Type::Any(_) = arg {
+                    let name = Type::Class(var!(format!("T{count}")).unwrap_variable());
+                    typ = typ.rewrite(&arg, &name);
+                    count += 1
+                }
+            }
+        }
         typ
     }
 
