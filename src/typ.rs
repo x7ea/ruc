@@ -4,7 +4,7 @@ impl Define {
     pub fn infer(&self, ctx: &mut Context) -> Result<Type, String> {
         match self {
             Define::Function((Generic(name, params), args), (body, ret)) => {
-                let sig = Type::Function(Lambda(
+                let mut sig = Type::Function(Lambda(
                     (params.clone(), Box::new(ret.clone())),
                     Some(args.values().cloned().collect()),
                 ));
@@ -16,13 +16,16 @@ impl Define {
                         ..Function::default()
                     };
                     let body = body.infer(ctx)?;
+                    sig = sig.solve(ctx);
                     if ret.solve(ctx) != body {
                         return Err(format!("return: {ret} != {body}"));
                     }
                     ctx.table.insert(name.clone(), ctx.local.clone());
                     ctx.local = parent;
                 }
-                Ok(sig.solve(ctx))
+                dbg!(&sig);
+                ctx.global.lib.insert(name.clone(), sig.clone());
+                Ok(sig)
             }
             Define::Declare((Generic(name, params), args), ret) => {
                 let sig = Type::Function(Lambda(
