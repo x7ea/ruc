@@ -19,6 +19,7 @@ impl Define {
                             map.insert(Name::new(&name)?, Type::parse(&typ)?);
                         } else {
                             map.insert(Name::new(&arg)?, Type::Any(count));
+                            count += 1
                         }
                     }
                     map
