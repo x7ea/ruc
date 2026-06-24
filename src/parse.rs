@@ -15,8 +15,11 @@ impl Define {
                 ($args: expr) => {{
                     let mut map = IndexMap::new();
                     for arg in lexer($args, ",")? {
-                        let (name, typ) = once!(&arg, ":")?;
-                        map.insert(Name::new(&name)?, Type::parse(&typ)?);
+                        if let Ok((name, typ)) = once!(&arg, ":") {
+                            map.insert(Name::new(&name)?, Type::parse(&typ)?);
+                        } else {
+                            map.insert(Name::new(&arg)?, Type::Any);
+                        }
                     }
                     map
                 }};
