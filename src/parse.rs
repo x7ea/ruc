@@ -43,7 +43,12 @@ impl Define {
                 }};
             }
             macro_rules! body {
-                ($body: expr, $typ: expr) => {{ (Expr::Block(vec![Expr::parse(&$body)?]), Type::parse(&$typ)?) }};
+                ($body: expr, $typ: expr) => {{
+                    (
+                        Expr::Block(vec![Expr::parse(&$body)?]),
+                        Type::parse(&$typ.to_string())?,
+                    )
+                }};
             }
             if let Some(file) = line.strip_prefix("use ") {
                 for file in serial!(file, |x: &str| Ok(x.trim().to_owned())) {
@@ -67,7 +72,7 @@ impl Define {
                 result.push(Define::Function(head!(head), body!(body, typ)));
             } else if let Some(func) = line.strip_prefix("fn ") {
                 let (head, body) = once!(&func, SPACE)?;
-                result.push(Define::Function(head!(head), body!(body, "()")));
+                result.push(Define::Function(head!(head), body!(body, count)));
             }
             object_declare!("struct ", Struct);
             object_declare!("enum ", Enum);
@@ -209,14 +214,16 @@ impl Type {
             "Bool" => Ok(Type::Boolean),
             "Float" => Ok(Type::Float),
             "()" => Ok(Type::Void),
-            x => {
-                if let Ok((ret, args)) = surround!(x, "(", ")") {
+            src => {
+                if let Ok((ret, args)) = surround!(src, "(", ")") {
                     let (ret, args) = (Box::new(Type::parse(&ret)?), serial!(&args, Type::parse));
                     Ok(Type::Function(Lambda((Vec::new(), ret), Some(args))))
-                } else if let Some(typ) = surround!("[", x, "]") {
+                } else if let Some(typ) = surround!("[", src, "]") {
                     Ok(Type::Array(Box::new(Type::parse(typ)?)))
+                } else if let Ok(i) = src.parse::<usize>() {
+                    Ok(Type::Any(i))
                 } else {
-                    Ok(Type::Class(Generic::parse(x)?))
+                    Ok(Type::Class(Generic::parse(src)?))
                 }
             }
         }
