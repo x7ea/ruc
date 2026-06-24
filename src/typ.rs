@@ -571,17 +571,6 @@ impl Type {
         for (i, new) in &ctx.local.solve {
             typ = typ.rewrite(&Type::Any(*i), new);
         }
-        if let Type::Function(Lambda((mut param, ret), Some(args))) = typ.clone() {
-            for arg in [args, vec![*ret]].concat() {
-                let name = Type::Class(var!("T").unwrap_variable());
-                if let Type::Any(_) = arg {
-                    typ = typ.rewrite(&arg, &name);
-                }
-                param.push(name);
-            }
-            let Lambda((_, ret), args) = typ.unwrap_function();
-            typ = Type::Function(Lambda((param, ret), args));
-        }
         typ
     }
 
