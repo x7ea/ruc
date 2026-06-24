@@ -56,7 +56,7 @@ pub enum Define {
     Class(Generic, Object),
 }
 
-#[derive(Debug, Clone, Hash, PartialEq, Eq, AsRefStr, Unwrap)]
+#[derive(Debug, Clone, Hash, PartialEq, Eq, AsRefStr)]
 pub enum Expr {
     // Literal
     Integer(i64),
@@ -117,7 +117,6 @@ pub enum Type {
     Array(Box<Type>),
     Class(Generic),
     Function(Lambda),
-    Any(usize),
     Void,
 }
 
@@ -159,6 +158,5 @@ pub struct Function {
     scope: IndexMap<Name, Type>,
     typed: IndexMap<Expr, Type>,
     expand: IndexMap<Expr, Expr>,
-    solve: IndexMap<usize, Type>,
     class: Option<Name>,
 }
