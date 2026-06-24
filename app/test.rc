@@ -1,8 +1,6 @@
 use std
 
-fn add(a, b) a + b
-
 fn inc(n) n * 2
 fn inc_and_print(n) print inc(n)
 
-fn main() add<Int>(1, 2)
+fn main() input().atoi().inc_and_print()
