@@ -1,0 +1,4 @@
+use std
+
+fn inc(n) n + 1
+fn main() print input().atoi().inc()
