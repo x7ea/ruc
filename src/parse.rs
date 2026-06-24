@@ -9,18 +9,14 @@ pub const SPACE: &str = " ";
 impl Define {
     pub fn parse(src: &str) -> Result<Vec<Define>, String> {
         let src = src.trim().replace("'\n", SPACE);
-        let (mut result, mut count) = (Vec::new(), 1);
+        let mut result = Vec::new();
         for line in lexer(&src, "\n")? {
             macro_rules! args {
                 ($args: expr) => {{
                     let mut map = IndexMap::new();
                     for arg in lexer($args, ",")? {
-                        if let Ok((name, typ)) = once!(&arg, ":") {
-                            map.insert(Name::new(&name)?, Type::parse(&typ)?);
-                        } else {
-                            map.insert(Name::new(&arg)?, Type::Any(count));
-                            count += 1
-                        }
+                        let (name, typ) = once!(&arg, ":")?;
+                        map.insert(Name::new(&name)?, Type::parse(&typ)?);
                     }
                     map
                 }};
@@ -43,7 +39,7 @@ impl Define {
                 }};
             }
             macro_rules! body {
-                ($body: expr, $typ: expr) => {{ (Expr::Block(vec![Expr::parse(&$body)?]), $typ) }};
+                ($body: expr, $typ: expr) => {{ (Expr::Block(vec![Expr::parse(&$body)?]), Type::parse(&$typ)?) }};
             }
             if let Some(file) = line.strip_prefix("use ") {
                 for file in serial!(file, |x: &str| Ok(x.trim().to_owned())) {
@@ -63,11 +59,11 @@ impl Define {
             } else if let Some(func) = line.strip_prefix("fn ")
                 && let Ok((head, body)) = once!(func, ":")
             {
-                let (typ, body) = once!(&body, SPACE).map(|(typ, x)| (Type::parse(&typ), x))?;
-                result.push(Define::Function(head!(head), body!(body, typ?)));
+                let (typ, body) = once!(&body, SPACE)?;
+                result.push(Define::Function(head!(head), body!(body, typ)));
             } else if let Some(func) = line.strip_prefix("fn ") {
                 let (head, body) = once!(&func, SPACE)?;
-                result.push(Define::Function(head!(head), body!(body, Type::Any(0))));
+                result.push(Define::Function(head!(head), body!(body, "()")));
             }
             object_declare!("struct ", Struct);
             object_declare!("enum ", Enum);
@@ -209,14 +205,14 @@ impl Type {
             "Bool" => Ok(Type::Boolean),
             "Float" => Ok(Type::Float),
             "()" => Ok(Type::Void),
-            src => {
-                if let Ok((ret, args)) = surround!(src, "(", ")") {
+            x => {
+                if let Ok((ret, args)) = surround!(x, "(", ")") {
                     let (ret, args) = (Box::new(Type::parse(&ret)?), serial!(&args, Type::parse));
                     Ok(Type::Function(Lambda((Vec::new(), ret), Some(args))))
-                } else if let Some(typ) = surround!("[", src, "]") {
+                } else if let Some(typ) = surround!("[", x, "]") {
                     Ok(Type::Array(Box::new(Type::parse(typ)?)))
                 } else {
-                    Ok(Type::Class(Generic::parse(src)?))
+                    Ok(Type::Class(Generic::parse(x)?))
                 }
             }
         }
@@ -242,7 +238,6 @@ impl Display for Type {
             Type::Float => write!(f, "Float"),
             Type::Boolean => write!(f, "Bool"),
             Type::Void => write!(f, "()"),
-            Type::Any(_) => write!(f, "?"),
             Type::Array(typ) => write!(f, "[{typ}]"),
             Type::Class(Generic(name, args)) if args.is_empty() => write!(f, "{name}"),
             Type::Class(Generic(name, args)) => write!(f, "{name}<{}>", comma(args)),
