@@ -17,6 +17,7 @@ impl Define {
                     };
                     let body = body.infer(ctx)?;
                     ctx.local.solve.insert(0, body.clone());
+
                     let sig = sig.solve(ctx);
                     ctx.global.lib.insert(name.clone(), sig.clone());
                     if !matches!(ret, Type::Any(_)) && *ret != body {
