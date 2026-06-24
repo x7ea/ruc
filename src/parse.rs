@@ -9,7 +9,7 @@ pub const SPACE: &str = " ";
 impl Define {
     pub fn parse(src: &str) -> Result<Vec<Define>, String> {
         let src = src.trim().replace("'\n", SPACE);
-        let (mut result, mut count) = (Vec::new(), 0);
+        let (mut result, mut count) = (Vec::new(), 1);
         for line in lexer(&src, "\n")? {
             macro_rules! args {
                 ($args: expr) => {{
@@ -67,8 +67,7 @@ impl Define {
                 result.push(Define::Function(head!(head), body!(body, typ?)));
             } else if let Some(func) = line.strip_prefix("fn ") {
                 let (head, body) = once!(&func, SPACE)?;
-                result.push(Define::Function(head!(head), body!(body, Type::Any(count))));
-                count += 1;
+                result.push(Define::Function(head!(head), body!(body, Type::Any(0))));
             }
             object_declare!("struct ", Struct);
             object_declare!("enum ", Enum);
