@@ -13,6 +13,7 @@ fn inc(this: Elm, data: State) {
 fn main() {
     let app = window()
     let data = new State
+    let data.count = 1145141919810
     app.button("Counter").click<State>(data, inc)
     app.run()
 }
