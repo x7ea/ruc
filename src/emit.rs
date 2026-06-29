@@ -77,7 +77,7 @@ impl Expr {
     fn emit(&self, ctx: &mut Context) -> Result<String, String> {
         macro_rules! op {
             ($asm: literal, $lhs: expr, $rhs: expr) => {
-                match typ!(&**$lhs) {
+                match typ!(&**$rhs) {
                     Type::Integer | Type::Boolean => format!(
                         "{}\tpush rax\n{}\tmov r10, rax\n\tpop rax\n\t{} rax, r10\n",
                         $lhs.emit(ctx)?,
