@@ -6,6 +6,18 @@ fn expr(): Int {
         let a = expr()
         let b = expr()
         a + b
+    } else if strcmp(token, "+") == 0 then {
+        let a = expr()
+        let b = expr()
+        a - b
+    } else if strcmp(token, "*") == 0 then {
+        let a = expr()
+        let b = expr()
+        a * b
+    } else if strcmp(token, "/") == 0 then {
+        let a = expr()
+        let b = expr()
+        a / b
     } else {
         token.atoi()
     }
