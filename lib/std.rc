@@ -11,6 +11,7 @@ extern fn printf
 fn Str.add(a: Str, b: Str): Str format a, b
 fn Str.eq(a: Str, b: Str): Bool {
     let flag = strcmp(a, b)
+    print flag
     flag == 0
 }
 
