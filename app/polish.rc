@@ -2,7 +2,7 @@ use std
 
 fn expr(): Int {
     let token = input()
-    if token == "+" then {
+    if strcmp(token, "+") == 0 then {
         expr() + expr()
     } else {
         token.atoi()
