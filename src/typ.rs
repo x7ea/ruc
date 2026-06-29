@@ -502,6 +502,7 @@ impl Type {
                 {
                     typ = unify.infer(ctx)?;
                 }
+                ctx.global.extrn.shift_remove(&mangle);
                 ctx.global.def.insert(mangle, unify.clone());
                 ctx.global.alias = parent;
             }
