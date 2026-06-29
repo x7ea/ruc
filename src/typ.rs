@@ -499,7 +499,7 @@ impl Type {
                 };
                 let parent = ctx.global.alias.clone();
                 ctx.global.alias = alias.clone();
-                {
+                if let Define::Declare(_, _) = unify {
                     typ = unify.infer(ctx)?;
                 }
                 ctx.global.def.insert(mangle, unify.clone());
