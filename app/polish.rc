@@ -2,7 +2,7 @@ use std
 
 fn expr(): Int {
     let token = input()
-    if strcmp(token, "+") == 0 then {
+    if token == "+" then {
         let a = expr()
         let b = expr()
         a + b
