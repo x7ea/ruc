@@ -10,7 +10,7 @@ extern fn printf
 
 fn Str.add(a: Str, b: Str): Str format a, b
 fn Str.eq(a: Str, b: Str): Bool {
-    let flag = strcmp(a, b)
+    let flag = strcmp(clone a, clone b)
     flag == 0
 }
 
