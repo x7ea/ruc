@@ -29,7 +29,9 @@ impl Define {
                     (params.clone(), Box::new(ret.clone())),
                     Some(args.values().cloned().collect()),
                 ));
-                ctx.global.extrn.insert(name.clone());
+                if params.is_empty() {
+                    ctx.global.extrn.insert(name.clone());
+                }
                 ctx.global.lib.insert(name.clone(), sig.clone());
                 Ok(sig)
             }
