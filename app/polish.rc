@@ -1,0 +1,14 @@
+use std
+
+fn expr(): Int {
+    let token = input()
+    if token == "+" then {
+        expr() + expr()
+    } else {
+        token.atoi()
+    }
+}
+
+fn main() {
+    print expr()
+}
