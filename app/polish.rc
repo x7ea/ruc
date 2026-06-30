@@ -1,7 +1,8 @@
 use std
 
-fn expr(): Int {
+fn expr(rule: Map<Str, Int>): Int {
     let token = input()
+    rule.get<Str, Int>("A")
     if token == "add" then {
         let a = expr()
         let b = expr()
@@ -23,7 +24,17 @@ fn expr(): Int {
     }
 }
 
+fn add(a: Int, b: Int): Int a + b
+fn sub(a: Int, b: Int): Int a - b
+fn mul(a: Int, b: Int): Int a * b
+fn div(a: Int, b: Int): Int a / b
+
 fn main() {
+    let rule = Map<Str, Int>(
+        ["+", "-", "*", "/", "0"],
+        [add, sub, mul, div, ]
+    )
+
     print "[Calc] Polish-notation"
     print expr()
 }
