@@ -107,7 +107,7 @@ pub enum Expr {
     Write(Box<Expr>, Box<Expr>, Box<Expr>),
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Unwrap)]
+#[derive(Clone, PartialEq, Eq, Hash, Unwrap)]
 pub enum Type {
     String,
     Integer,
