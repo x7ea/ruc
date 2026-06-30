@@ -362,7 +362,6 @@ impl Expr {
                     }
                     return Err(format!("not class: {typ}"));
                 };
-                dbg!(name.generics());
                 let Some((_, class)) = ctx.global.table.get(&name.generics()) else {
                     return Err(format!("undefined: {name}"));
                 };
