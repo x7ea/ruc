@@ -37,9 +37,9 @@ fn Map.get<K, V>(this: Map<K, V>, key: K): V {
     while (index <= this.keys.len) & (this.keys[index] != key) do {
         let index = index + 1
     }
-    let value: T
+    let value: V
     if index != key.len then {
-        let value = this.value[index]
+        let value = this.values[index]
     }
     value
 }
