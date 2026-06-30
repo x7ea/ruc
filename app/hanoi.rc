@@ -5,7 +5,7 @@ fn hanoi(n: Int, from: Str, to: Str, aux: Str) {
         print "1: ", from, " -> ",  to
     } else {
         hanoi(n - 1, from, aux, to)
-        print n, ": " from, " -> ",  to
+        print n, ": ", from, " -> ",  to
         hanoi(n - 1, aux, to, from)
     }
 }
