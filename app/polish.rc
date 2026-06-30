@@ -2,7 +2,8 @@ use std
 
 fn expr(rule: Map<Str, Int(Int, Int)>): Int {
     let token = input()
-    if let func = rule.get<Str, Int(Int, Int)>(token).some then {
+    if let func = get<Str, Int(Int, Int)>'
+    (rule, token).some then {
         let a = expr(rule)
         let b = expr(rule)
         func(a, b)
