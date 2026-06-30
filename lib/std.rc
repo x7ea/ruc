@@ -23,7 +23,7 @@ struct Map<K, V> {
     value: [V]
 }
 
-fn Map.new<K, V>(key: [K], value: [V]): Map<K, V> {
+fn Map<K, V>(key: [K], value: [V]): Map<K, V> {
     let this = new Map<K, V>
     let this.key = key
     let this.value = value
