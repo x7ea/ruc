@@ -4,8 +4,8 @@ fn expr(rule: Map<Str, Int(Int, Int)>): Int {
     let token = input()
     let func = rule.get<Str, Int(Int, Int)>(token)
     if func? then {
-        let a = expr()
-        let b = expr()
+        let a = expr(rule)
+        let b = expr(rule)
         func(a, b)
     } else {
         token.atoi()
