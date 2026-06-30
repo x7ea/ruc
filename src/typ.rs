@@ -403,7 +403,7 @@ impl Expr {
                     return typing!(Type::Boolean);
                 }
                 let typ = expr.infer(ctx)?;
-                let Type::Class(_) = typ else {
+                if matches!(typ, Type::Integer | Type::Float | Type::Boolean) {
                     return Err(format!("can't null-check: {typ}"));
                 };
                 typing!(Type::Boolean)
