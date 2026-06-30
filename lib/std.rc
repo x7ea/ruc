@@ -20,6 +20,11 @@ fn input(): Str {
     buf
 }
 
+enum Option<T> {
+    some: T,
+    none: ()
+}
+
 struct Map<K, V> {
     keys: [K],
     values: [V]
@@ -37,9 +42,9 @@ fn Map.get<K, V>(this: Map<K, V>, key: K): V {
     while (index <= this.keys.len) & (this.keys[index] != key) do {
         let index = index + 1
     }
-    let value: V
     if index != key.len then {
-        let value = this.values[index]
+        Option::Some(this.values[index])
+    } else {
+        Option::None
     }
-    value
 }
