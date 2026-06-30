@@ -1,0 +1,21 @@
+use std
+
+enum Peano {
+    zero: (),
+    succ: Peano
+}
+
+fn Peano.add(lhs: Peano, rhs: Peano): Peano '
+match rhs {
+    zero = clone lhs,
+    succ n = Peano::Succ(add(lhs, n))
+}
+
+fn decode(this: Peano): Int '
+    if let n = this.succ then decode(n) + 1 else 0
+
+fn main() {
+    let one = Peano::Succ(Peano::Zero)
+    let proof = one + one
+    print proof.decode()
+}
