@@ -131,7 +131,7 @@ pub mod name {
             if typ.is_empty() {
                 return name.clone();
             }
-            Name(format!("{name}.{:x}", hash!(typ)))
+            Name(format!("{name}.{typ:?}"))
         }
     }
 }
