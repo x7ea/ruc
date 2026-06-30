@@ -13,6 +13,7 @@ fn hanoi(n: Int, from: Str, to: Str, aux: Str) {
 }
 
 fn main() {
+    print "Hanoi tower"
     let n = input().atoi()
     hanoi(n, "A", "B", "C")
 }
