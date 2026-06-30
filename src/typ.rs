@@ -402,7 +402,10 @@ impl Expr {
                     ));
                     return typing!(Type::Boolean);
                 }
-                expr.infer(ctx)?;
+                let typ = expr.infer(ctx)?;
+                if let Type::Integer | Type::Float | Type::Boolean = typ {
+                    return Err(format!("can't null-check: {typ}"));
+                };
                 typing!(Type::Boolean)
             }
             Expr::Init(typ, len) => {
