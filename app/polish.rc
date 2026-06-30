@@ -22,7 +22,6 @@ fn main() {
         ["+", "-", "*", "/"],
         [add, sub, mul, div]
     )
-
     print "[Calc] Polish-notation"
-    print expr()
+    print expr(rule)
 }
