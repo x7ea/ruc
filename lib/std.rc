@@ -39,10 +39,10 @@ fn Map<K, V>(keys: [K], values: [V]): Map<K, V> {
 
 fn Map.get<K, V>(this: Map<K, V>, key: K): Option<V> {
     let index = 0
-    while (index <= this.keys.len) & (this.keys[index] != key) do {
+    while (index < this.keys.len) & (this.keys[index] != key) do {
         let index = index + 1
     }
-    if index != key.len then {
+    if index != this.keys.len then {
         Option<V>::Some(this.values[index])
     } else {
         Option<V>::None
