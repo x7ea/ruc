@@ -362,11 +362,11 @@ impl Expr {
                     }
                     return Err(format!("not class: {typ}"));
                 };
-                let name = &name.generics();
-                if !ctx.global.table.contains_key(name) {
+                let unify = &name.generics();
+                if !ctx.global.table.contains_key(unify) {
                     Expr::New(typ).infer(ctx)?;
                 }
-                let (_, class) = ctx.global.table[name].clone();
+                let (_, class) = ctx.global.table[unify].clone();
                 let (Object::Struct(layout) | Object::Enum(layout)) = &class;
                 let Some(typ) = layout.get(&key).cloned() else {
                     return Err(format!("undefined: {name}.{key}"));
