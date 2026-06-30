@@ -32,8 +32,8 @@ struct Map<K, V> {
 
 fn Map<K, V>(keys: [K], values: [V]): Map<K, V> {
     let this = new Map<K, V>
-    let this.keys = keys
     let this.values = values
+    let this.keys = keys
     this
 }
 
