@@ -131,7 +131,8 @@ pub mod name {
             if typ.is_empty() {
                 return name.clone();
             }
-            Name(format!("{name}.{typ:?}"))
+            let typ = map!(typ, |x| format!("{x:?}")).join("_");
+            Name(format!("{name}.{typ}"))
         }
     }
 }
