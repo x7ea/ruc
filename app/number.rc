@@ -15,7 +15,6 @@ fn decode(this: Peano): Int '
     if let n = this.succ then decode(n) + 1 else 0
 
 fn main() {
-    let one = Peano::Succ(Peano::Zero)
-    let proof = one + one
-    print proof.decode()
+    let proof = Peano::Succ(Peano::Zero) + Peano::Succ(Peano::Zero)
+    print "1+1=", proof.decode()
 }
