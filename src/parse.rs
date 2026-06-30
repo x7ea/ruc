@@ -166,6 +166,9 @@ impl Expr {
             Ok(Expr::Float(Float(f)))
         } else if let Some(class) = src.strip_suffix("?") {
             Ok(Expr::Check(Box::new(Expr::parse(class)?)))
+        } else if let Ok((arr, idx)) = surround!(src, "[", "]") {
+            let (arr, idx) = (Box::new(Expr::parse(&arr)?), Box::new(Expr::parse(&idx)?));
+            Ok(Expr::Index(arr, idx))
         } else if let Ok((obj, key)) = once!(src, ".", right) {
             let obj = Expr::parse(&obj)?;
             if let Ok(Expr::Call(callee, arg)) = Expr::parse(&key) {
@@ -184,9 +187,6 @@ impl Expr {
         } else if let Ok((func, args)) = surround!(src, "(", ")") {
             let func = Box::new(Expr::parse(&func)?);
             Ok(Expr::Call(func, serial!(&args, Expr::parse)))
-        } else if let Ok((arr, idx)) = surround!(src, "[", "]") {
-            let (arr, idx) = (Box::new(Expr::parse(&arr)?), Box::new(Expr::parse(&idx)?));
-            Ok(Expr::Index(arr, idx))
         } else if let Ok(b) = src.parse::<bool>() {
             Ok(Expr::Boolean(b))
         } else {
