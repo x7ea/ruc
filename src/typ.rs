@@ -364,7 +364,7 @@ impl Expr {
                 };
                 let unify = &name.generics();
                 if !ctx.global.table.contains_key(unify) {
-                    Expr::New(typ).infer(ctx)?;
+                    Expr::New(typ.clone()).infer(ctx)?;
                 }
                 let (_, class) = ctx.global.table[unify].clone();
                 let (Object::Struct(layout) | Object::Enum(layout)) = &class;
