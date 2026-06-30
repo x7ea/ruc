@@ -2,4 +2,7 @@ use std
 
 fn main() {
     print "Hello, world!"
+
+    let a = Map<Str, Int>(["A", "B"], [1, 2])
+    print a.get<Str, Int>("B")
 }
