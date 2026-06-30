@@ -43,8 +43,8 @@ fn Map.get<K, V>(this: Map<K, V>, key: K): Option<V> {
         let index = index + 1
     }
     if index != key.len then {
-        Option::Some(this.values[index])
+        Option<V>::Some(this.values[index])
     } else {
-        Option::None
+        Option<V>::None
     }
 }
