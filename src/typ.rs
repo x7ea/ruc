@@ -336,10 +336,10 @@ impl Expr {
                 typ => return Err(format!("no length: {typ}")),
             })),
             Expr::New(typ) => {
-                let Type::Class(_) = typ.clone() else {
+                let Type::Class(generics) = typ.clone() else {
                     return Err(format!("no constructor: {typ}"));
                 };
-                let typ = typ.mono(ctx, Generic::default())?;
+                let typ = typ.mono(ctx, generics)?;
                 expand!(new!(typ.size(ctx)? / 8));
                 typing!(typ.solve(ctx))
             }
