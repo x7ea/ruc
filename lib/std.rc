@@ -35,9 +35,12 @@ fn Map<K, V>(keys: [K], values: [V]): Map<K, V> {
 fn Map.get<K, V>(this: Map<K, V>, key: K): V {
     let index = 0
     let keys = this.keys
-    while (index < key.len) & (keys[index] != key) do {
+    while (index <= keys.len) & (keys[index] != key) do {
         let index = index + 1
     }
-    let values = this.values
-    values[index]
+    let value: T
+    if index != key.len then {
+        [index]
+    }
+    value
 }
