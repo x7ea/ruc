@@ -17,3 +17,23 @@ fn input(): Str {
     scanf("%s", buf)
     buf
 }
+
+struct Map<K, V> {
+    key: [K],
+    value: [V]
+}
+
+fn Map.new<K, V>(key: [K], value: [V]): Map<K, V> {
+    let this = new Map<K, V>
+    let this.key = key
+    let this.value = value
+    this
+}
+
+fn Map.get<K, V>(this: Map<K, V>, key: K): V {
+    let index = 0
+    while (index < this.key.len) & (this.key[index] != key) do {
+        let index = index + 1
+    }
+    this.value[index]
+}
