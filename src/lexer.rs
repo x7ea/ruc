@@ -91,14 +91,16 @@ pub mod name {
             if name.is_empty() {
                 return Err(format!("empty: {name}"));
             }
-            let name = name.replace(".", "__");
+            if let Some((class, name)) = name.split_once(".") {
+                return Ok(Name::new(name)?.class(Type::parse(class)?));
+            }
             fn validate(x: char) -> bool {
                 x == '_' || x.is_ascii_alphabetic() || x.is_ascii_digit()
             }
             if !name.chars().all(validate) {
                 return Err(format!("invalid: {name}"));
             }
-            if RESERVED.contains(&name.as_str()) {
+            if RESERVED.contains(&name) {
                 return Err(format!("reserved: {name}"));
             }
             Ok(Name(name.to_lowercase()))
