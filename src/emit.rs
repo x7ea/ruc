@@ -71,7 +71,6 @@ impl Define {
         Ok(format!("{name}:\n{pro}{alloc}{body}\tleave\n\tret\n\n"))
     }
 }
-
 impl Expr {
     fn emit(&self, ctx: &mut Context) -> Result<String, String> {
         macro_rules! op {
@@ -115,7 +114,6 @@ impl Expr {
         macro_rules! expr {
             ($expr: expr) => {{ ctx.local.expand[$expr].clone() }};
         }
-
         match self {
             Expr::If(cond, then, els) => {
                 if let Some(expr) = ctx.local.expand.get(self) {
