@@ -290,6 +290,29 @@ impl Expr {
     }
 }
 
+impl Generic {
+    pub fn generics(&self) -> Name {
+        let Generic(name, typ) = self;
+        if typ.is_empty() {
+            return name.clone();
+        }
+        let typ = map!(typ, |x| format!("{x:?}")).concat();
+        Name(format!("{name}.{typ}"))
+    }
+}
+
+impl fmt::Display for Generic {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let Generic(name, args) = self.clone();
+        if args.is_empty() {
+            write!(f, "{name}")
+        } else {
+            let args = map!(args, |x| x.to_string()).join(", ");
+            write!(f, "{name}<{args}>")
+        }
+    }
+}
+
 #[macro_export]
 macro_rules! new {
     ($layout: expr) => {
