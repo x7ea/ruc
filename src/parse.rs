@@ -191,6 +191,7 @@ impl Expr {
         }
     }
 }
+
 impl Type {
     pub fn parse(src: &str) -> Result<Type, String> {
         match src.trim() {
@@ -212,12 +213,58 @@ impl Type {
         }
     }
 }
+impl fmt::Display for Type {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let comma = |x: &[Type]| map!(x, |x: &Type| x.to_string()).join(", ");
+        match self {
+            Type::Integer => write!(f, "Int"),
+            Type::String => write!(f, "Str"),
+            Type::Float => write!(f, "Float"),
+            Type::Boolean => write!(f, "Bool"),
+            Type::Void => write!(f, "()"),
+            Type::Array(typ) => write!(f, "[{typ}]"),
+            Type::Class(Generic(name, args)) if args.is_empty() => write!(f, "{name}"),
+            Type::Class(Generic(name, args)) => write!(f, "{name}<{}>", comma(args)),
+            Type::Function(Lambda((_, ret), Some(args))) => write!(f, "{ret}({})", comma(args)),
+            Type::Function(Lambda((_, ret), None)) => write!(f, "{ret}()"),
+        }
+    }
+}
+impl fmt::Debug for Type {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let mangle = |x: &[Type]| map!(x, |x: &Type| format!("{x:?}")).concat();
+        match self {
+            Type::Integer => write!(f, "I"),
+            Type::String => write!(f, "S"),
+            Type::Float => write!(f, "F"),
+            Type::Boolean => write!(f, "B"),
+            Type::Void => write!(f, "V"),
+            Type::Array(typ) => write!(f, "A{typ:?}"),
+            Type::Class(Generic(name, args)) if args.is_empty() => write!(f, "C{name}"),
+            Type::Class(Generic(name, args)) => write!(f, "C{name}{}", mangle(args)),
+            Type::Function(Lambda((_, ret), Some(args))) => write!(f, "L{ret:?}{}", mangle(args)),
+            Type::Function(Lambda((_, ret), None)) => write!(f, "L{ret:?}"),
+        }
+    }
+}
+
 impl Generic {
     fn parse(src: &str) -> Result<Generic, String> {
         if let Some((var, args)) = surround!("<", ">", src.trim()) {
             Ok(Generic(Name::new(var)?, serial!(args, Type::parse)))
         } else {
             Ok(Generic(Name::new(src.trim())?, vec![]))
+        }
+    }
+}
+impl fmt::Display for Generic {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let Generic(name, args) = self.clone();
+        if args.is_empty() {
+            write!(f, "{name}")
+        } else {
+            let args = map!(args, |x| x.to_string()).join(", ");
+            write!(f, "{name}<{args}>")
         }
     }
 }
