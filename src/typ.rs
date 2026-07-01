@@ -552,12 +552,10 @@ impl Type {
         typ
     }
     fn size(&self, ctx: &Context) -> Result<usize, String> {
-        match self {
-            Type::Class(Generic(name, _)) => match &ctx.global.table[name] {
-                (_, Object::Struct(layout)) => Ok(layout.len() * 8),
-                (_, Object::Enum(_)) => Ok(16),
-            },
-            _ => Err(format!("can't clone: {self}")),
+        let Generic(name, _) = &self.clone().unwrap_class();
+        match &ctx.global.table[name] {
+            (_, Object::Struct(layout)) => Ok(layout.len() * 8),
+            (_, Object::Enum(_)) => Ok(16),
         }
     }
 }
