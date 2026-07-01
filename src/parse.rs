@@ -257,3 +257,33 @@ impl Debug for Type {
         }
     }
 }
+
+#[macro_export]
+macro_rules! serial {
+    ($arr: expr, $lambda: expr) => {
+        lexer($arr, ",")?
+            .iter()
+            .map(|x| $lambda(&x))
+            .collect::<Result<Vec<_>, String>>()?
+    };
+}
+#[macro_export]
+macro_rules! once {
+    ($v: expr, $del: expr) => {{
+        let v = lexer($v, $del)?;
+        if v.len() >= 2 {
+            Ok((v[0].clone(), v[1..].join($del)))
+        } else {
+            Err(format!("expected: {}", $del))
+        }
+    }};
+    ($v: expr,$del: literal, right) => {{
+        let v = lexer($v, $del)?;
+        if v.len() >= 2 {
+            let last = v.len() - 1;
+            Ok((v[..last].join($del), v[last].clone()))
+        } else {
+            Err(format!("expected: {}", $del))
+        }
+    }};
+}
