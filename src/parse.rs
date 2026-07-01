@@ -69,7 +69,6 @@ impl Define {
         Ok(result)
     }
 }
-
 impl Expr {
     fn parse(src: &str) -> Result<Expr, String> {
         let src = src.trim();
@@ -194,7 +193,6 @@ impl Expr {
         }
     }
 }
-
 impl Type {
     pub fn parse(src: &str) -> Result<Type, String> {
         match src.trim() {
@@ -216,7 +214,6 @@ impl Type {
         }
     }
 }
-
 impl Generic {
     pub fn parse(src: &str) -> Result<Generic, String> {
         if let Some((var, args)) = surround!("<", ">", src.trim()) {
@@ -226,7 +223,6 @@ impl Generic {
         }
     }
 }
-
 impl Display for Type {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let comma = |x: &[Type]| map!(x, |x: &Type| x.to_string()).join(", ");
@@ -244,7 +240,6 @@ impl Display for Type {
         }
     }
 }
-
 impl Debug for Type {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let mangle = |x: &[Type]| map!(x, |x: &Type| format!("{x:?}")).concat();
