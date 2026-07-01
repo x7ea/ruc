@@ -164,35 +164,6 @@ macro_rules! hash {
     }};
 }
 #[macro_export]
-macro_rules! serial {
-    ($arr: expr, $lambda: expr) => {
-        lexer($arr, ",")?
-            .iter()
-            .map(|x| $lambda(&x))
-            .collect::<Result<Vec<_>, String>>()?
-    };
-}
-#[macro_export]
-macro_rules! once {
-    ($v: expr, $del: expr) => {{
-        let v = lexer($v, $del)?;
-        if v.len() >= 2 {
-            Ok((v[0].clone(), v[1..].join($del)))
-        } else {
-            Err(format!("expected: {}", $del))
-        }
-    }};
-    ($v: expr,$del: literal, right) => {{
-        let v = lexer($v, $del)?;
-        if v.len() >= 2 {
-            let last = v.len() - 1;
-            Ok((v[..last].join($del), v[last].clone()))
-        } else {
-            Err(format!("expected: {}", $del))
-        }
-    }};
-}
-#[macro_export]
 macro_rules! map {
     ($arr: expr, $lambda: expr) => {{ $arr.iter().map($lambda).collect::<Vec<_>>() }};
     ($arr: expr, $lambda: expr, ok) => {{ $arr.iter().map($lambda).collect::<Result<Vec<_>, String>>() }};
@@ -201,28 +172,4 @@ macro_rules! map {
 macro_rules! var {
     ($name: expr) => {{ Expr::Variable(Generic(Name::new(&$name)?, Vec::new())) }};
     ($name: expr, $typ: expr) => {{ Expr::Variable(Generic(Name::new(&$name)?, vec![$typ])) }};
-}
-#[macro_export]
-macro_rules! new {
-    ($layout: expr) => {
-        Expr::Call(
-            Box::new(var!("calloc")),
-            vec![Expr::Integer($layout as i64), Expr::Integer(8)],
-        )
-    };
-}
-#[macro_export]
-macro_rules! len {
-    ($arr: expr) => {
-        Box::new(Expr::Member($arr.clone(), Name::new("len")?))
-    };
-}
-#[macro_export]
-macro_rules! array {
-    ($arr: expr, $idx: expr) => {
-        Box::new(Expr::Add(
-            Box::new(Expr::Mod($idx.clone(), len!($arr))),
-            Box::new(Expr::Integer(1)),
-        ))
-    };
 }
