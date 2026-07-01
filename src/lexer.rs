@@ -76,14 +76,12 @@ pub fn lexer(src: &str, del: &str) -> Result<Vec<String>, String> {
 }
 
 pub mod name {
-    use crate::*;
-    use std::fmt;
+    use {crate::*, std::fmt};
 
     const RESERVED: [&str; 12] = [
         "print", "format", "let", "new", "clone", "if", "then", "else", "for", "while", "do",
         "match",
     ];
-
     #[derive(Debug, Clone, Default, PartialEq, Eq, Hash)]
     pub struct Name(String);
 
@@ -106,13 +104,11 @@ pub mod name {
             Ok(Name(name.to_lowercase()))
         }
     }
-
     impl fmt::Display for Name {
         fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
             write!(f, "{}", self.0)
         }
     }
-
     impl fmt::Display for Generic {
         fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
             let Generic(name, args) = self.clone();
@@ -124,7 +120,6 @@ pub mod name {
             }
         }
     }
-
     impl Generic {
         pub fn generics(&self) -> Name {
             let Generic(name, typ) = self;
@@ -159,7 +154,6 @@ macro_rules! surround {
         })
     };
 }
-
 #[macro_export]
 macro_rules! hash {
     ($val: expr) => {{
@@ -169,7 +163,6 @@ macro_rules! hash {
         state.finish()
     }};
 }
-
 #[macro_export]
 macro_rules! serial {
     ($arr: expr, $lambda: expr) => {
@@ -179,7 +172,6 @@ macro_rules! serial {
             .collect::<Result<Vec<_>, String>>()?
     };
 }
-
 #[macro_export]
 macro_rules! once {
     ($v: expr, $del: expr) => {{
@@ -200,19 +192,16 @@ macro_rules! once {
         }
     }};
 }
-
 #[macro_export]
 macro_rules! map {
     ($arr: expr, $lambda: expr) => {{ $arr.iter().map($lambda).collect::<Vec<_>>() }};
     ($arr: expr, $lambda: expr, ok) => {{ $arr.iter().map($lambda).collect::<Result<Vec<_>, String>>() }};
 }
-
 #[macro_export]
 macro_rules! var {
     ($name: expr) => {{ Expr::Variable(Generic(Name::new(&$name)?, Vec::new())) }};
     ($name: expr, $typ: expr) => {{ Expr::Variable(Generic(Name::new(&$name)?, vec![$typ])) }};
 }
-
 #[macro_export]
 macro_rules! new {
     ($layout: expr) => {
@@ -222,14 +211,12 @@ macro_rules! new {
         )
     };
 }
-
 #[macro_export]
 macro_rules! len {
     ($arr: expr) => {
         Box::new(Expr::Member($arr.clone(), Name::new("len")?))
     };
 }
-
 #[macro_export]
 macro_rules! array {
     ($arr: expr, $idx: expr) => {
