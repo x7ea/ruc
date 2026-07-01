@@ -292,12 +292,11 @@ impl Expr {
 
 impl Generic {
     pub fn generics(&self) -> Name {
-        let Generic(name, typ) = self;
-        if typ.is_empty() {
-            return name.clone();
+        let Generic(mut name, typ) = self.clone();
+        for typ in typ {
+            name = name.class(typ);
         }
-        let typ = map!(typ, |x| format!("{x:?}")).concat();
-        Name(format!("{name}.{typ}"))
+        name
     }
 }
 
