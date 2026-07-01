@@ -28,7 +28,6 @@ impl Define {
         Ok(format!("section .data\n{data}{lib}{text}\n"))
     }
 }
-
 pub const ABI: [&str; 6] = ["rdi", "rsi", "rdx", "rcx", "r8", "r9"];
 
 impl Define {
