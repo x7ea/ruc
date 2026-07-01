@@ -16,7 +16,6 @@ impl Define {
         let ctx = &mut Context::default();
         ctx.global.def = defines.iter().map(|x| (name!(x), x.clone())).collect();
         map!(defines, |x| x.infer(ctx), ok)?;
-
         let mut text = String::from("\n");
         for (_, define) in ctx.global.def.clone() {
             text += &define.emit(ctx)?;
@@ -64,7 +63,6 @@ impl Define {
         }
         let body = body.emit(ctx)?;
         ctx.table.insert(name.clone(), ctx.local.clone());
-
         let var = ctx.local.var.len() * 8;
         let pro = format!(
             "\tpush rbp\n\tmov rbp, rsp\n\tsub rsp, {}\n",
