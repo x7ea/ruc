@@ -299,7 +299,6 @@ impl Generic {
         name
     }
 }
-
 impl fmt::Display for Generic {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let Generic(name, args) = self.clone();
