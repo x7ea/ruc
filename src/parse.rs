@@ -213,7 +213,7 @@ impl Type {
     }
 }
 impl Generic {
-    pub fn parse(src: &str) -> Result<Generic, String> {
+    fn parse(src: &str) -> Result<Generic, String> {
         if let Some((var, args)) = surround!("<", ">", src.trim()) {
             Ok(Generic(Name::new(var)?, serial!(args, Type::parse)))
         } else {
