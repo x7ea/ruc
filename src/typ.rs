@@ -428,6 +428,9 @@ impl Expr {
             }
             Expr::Clone(expr) => {
                 let typ = expr.infer(ctx)?;
+                let Type::Class(_) = typ else {
+                    return Err(format!("can't clone: {typ}"));
+                };
                 let dest = Box::new(tmp!(typ));
                 typing!(expands!(Expr::Block(vec![
                     Expr::Let(dest.clone(), Box::new(Expr::New(typ.clone()))),
