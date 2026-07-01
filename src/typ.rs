@@ -474,7 +474,6 @@ impl Expr {
         }
     }
 }
-
 impl Type {
     fn mono(&self, ctx: &mut Context, Generic(name, args): Generic) -> Result<Type, String> {
         let (mut typ, args) = (self.solve(ctx), map!(args, |x| x.solve(ctx)));
@@ -531,7 +530,6 @@ impl Type {
         }
         Ok(typ.solve(ctx))
     }
-
     fn rewrite(&self, old: &Type, new: &Type) -> Type {
         if self == old {
             return new.clone();
@@ -548,7 +546,6 @@ impl Type {
             _ => self.clone(),
         }
     }
-
     fn solve(&self, ctx: &mut Context) -> Type {
         let mut typ = self.clone();
         for (old, new) in &ctx.global.alias {
@@ -556,7 +553,6 @@ impl Type {
         }
         typ
     }
-
     fn size(&self, ctx: &Context) -> Result<usize, String> {
         match self {
             Type::Class(Generic(name, _)) => match &ctx.global.table[name] {
