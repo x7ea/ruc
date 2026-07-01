@@ -1,5 +1,4 @@
 use crate::*;
-
 impl Define {
     pub fn infer(&self, ctx: &mut Context) -> Result<Type, String> {
         match self {
@@ -47,7 +46,6 @@ impl Define {
         }
     }
 }
-
 impl Expr {
     fn infer(&self, ctx: &mut Context) -> Result<Type, String> {
         macro_rules! typing {
@@ -88,7 +86,6 @@ impl Expr {
                 typing!($ret.clone())
             }};
         }
-
         if let Some(typ) = ctx.local.typed.get(self) {
             return Ok(typ.clone());
         }
