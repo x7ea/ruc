@@ -76,7 +76,7 @@ pub fn lexer(src: &str, del: &str) -> Result<Vec<String>, String> {
 }
 
 pub mod name {
-    use {crate::*, std::fmt};
+    use crate::*;
 
     const RESERVED: [&str; 12] = [
         "print", "format", "let", "new", "clone", "if", "then", "else", "for", "while", "do",
@@ -103,31 +103,13 @@ pub mod name {
             }
             Ok(Name(name.to_lowercase()))
         }
+        pub fn class(&self, typ: Type) -> Name {
+            Name(format!("{self}.{typ:?}"))
+        }
     }
     impl fmt::Display for Name {
         fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
             write!(f, "{}", self.0)
-        }
-    }
-    impl fmt::Display for Generic {
-        fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-            let Generic(name, args) = self.clone();
-            if args.is_empty() {
-                write!(f, "{name}")
-            } else {
-                let args = map!(args, |x| x.to_string()).join(", ");
-                write!(f, "{name}<{args}>")
-            }
-        }
-    }
-    impl Generic {
-        pub fn generics(&self) -> Name {
-            let Generic(name, typ) = self;
-            if typ.is_empty() {
-                return name.clone();
-            }
-            let typ = map!(typ, |x| format!("{x:?}")).concat();
-            Name(format!("{name}.{typ}"))
         }
     }
 }
