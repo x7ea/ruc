@@ -1,5 +1,5 @@
 use std
 
 fn main() {
-    print "Hello, world!"
+    print clone "Hello, world!"
 }
