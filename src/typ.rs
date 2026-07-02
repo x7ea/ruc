@@ -225,7 +225,7 @@ impl Expr {
                         typing!(*ret)
                     }
                     Type::Function(Lambda((_, ret), None)) => {
-                        map!(args, |x| x.infer(ctx), ok)?;
+                        map!({ args }, |x| x.infer(ctx))?;
                         typing!(*ret)
                     }
                     typ => Err(format!("callee: {typ}")),
