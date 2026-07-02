@@ -1,13 +1,11 @@
 use std
 
-fn move(n: Int, from: Str, to: Str) print n, ": ", from, " -> ", to
-
 fn hanoi(n: Int, from: Str, to: Str, aux: Str) {
     if n == 1 then {
-        move(n, from, to)
+        print n, ": ", from, " -> ", to
     } else {
         hanoi(n - 1, from, aux, to)
-        move(n, from, to)
+        print n, ": ", from, " -> ", to
         hanoi(n - 1, aux, to, from)
     }
 }
