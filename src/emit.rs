@@ -188,7 +188,7 @@ impl Expr {
                     }
                 } else {
                     if !ctx.global.extrn.contains(&name) {
-                        name = var.generics();
+                        name = var.generic();
                     }
                     Ok(format!("\tlea rax, [{name}]\n"))
                 }
@@ -290,7 +290,7 @@ impl Expr {
 }
 
 impl Generic {
-    pub fn generics(&self) -> Name {
+    pub fn generic(&self) -> Name {
         let Generic(mut name, typ) = self.clone();
         for typ in typ {
             name = name.class(typ);
