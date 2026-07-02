@@ -358,7 +358,7 @@ impl Expr {
                     }
                     return Err(format!("not class: {typ}"));
                 };
-                let unify = &name.generics();
+                let unify = &name.generic();
                 if !ctx.global.table.contains_key(unify) {
                     Expr::New(typ.clone()).infer(ctx)?;
                 }
@@ -476,7 +476,7 @@ impl Expr {
 impl Type {
     fn mono(&self, ctx: &mut Context, Generic(name, args): Generic) -> Result<Type, String> {
         let (mut typ, args) = (self.solve(ctx), map!(args, |x| x.solve(ctx)));
-        let mangle = Generic(name.clone(), args.clone()).generics();
+        let mangle = Generic(name.clone(), args.clone()).generic();
         match typ.clone() {
             Type::Function(Lambda((params, _), _)) if !params.is_empty() => {
                 let mut alias = IndexMap::new();
