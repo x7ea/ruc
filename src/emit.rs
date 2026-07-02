@@ -223,7 +223,7 @@ impl Expr {
                 let id = label!();
                 let [addr, offset] = [addr.emit(ctx)?, offset.emit(ctx)?];
                 Ok(format!(
-                    "{addr}\tpxor xmm0, xmm0\n\tcmp rax, 0\n\tje null.{id}\n\tpush rax\n{offset}\tpop r11\n\tlea rax, [r11+rax*8]\n{}\tnull.{id}",
+                    "{addr}\tpxor xmm0, xmm0\n\tcmp rax, 0\n\tje null.{id}\n\tpush rax\n{offset}\tpop r10\n\tlea rax, [r10+rax*8]\n{}\tnull.{id}",
                     if *typ == Type::Float {
                         "\tmovsd xmm0, [rax]\n"
                     } else {
@@ -235,11 +235,11 @@ impl Expr {
                 let id = label!();
                 let [addr, offset, val] = [addr.emit(ctx)?, offset.emit(ctx)?, val.emit(ctx)?];
                 Ok(format!(
-                    "{addr}\tpxor xmm0, xmm0\n\tcmp rax, 0\n\tje null.{id}\n\tpush rax\n{offset}\tpop r11\n\tlea r11, [r11+rax*8]\n\tpush r11\n{val}\tpop r11\n{}\tnull.{id}",
+                    "{addr}\tpxor xmm0, xmm0\n\tcmp rax, 0\n\tje null.{id}\n\tpush rax\n{offset}\tpop r10\n\tlea r10, [r10+rax*8]\n\tpush r10\n{val}\tpop r10\n{}\tnull.{id}",
                     if typ!(self) == Type::Float {
-                        "\tmovsd [r11], xmm0\n"
+                        "\tmovsd [r10], xmm0\n"
                     } else {
-                        "\tmov [r11], rax\n"
+                        "\tmov [r10], rax\n"
                     }
                 ))
             }
