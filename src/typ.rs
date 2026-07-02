@@ -77,7 +77,7 @@ impl Expr {
                     ($typ, ret @ $typ) => typing!(ret.clone()),
                     (lhs, rhs) if lhs != rhs => Err(format!("operator term: {lhs} != {rhs}")),
                     (typ, _) => typing!(expands!(Expr::Call(
-                        Box::new(var!(format!("{typ}.{}", self.as_ref()))),
+                        Box::new(var!(Name::new(self.as_ref())?.class(typ))),
                         vec![*$lhs, *$rhs],
                     ))),
                 }
