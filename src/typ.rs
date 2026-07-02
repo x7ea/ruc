@@ -207,10 +207,8 @@ impl Expr {
                 typing!(ret.clone())
             }
             Expr::Call(callee, args) => {
-                if let Some(obj) = args.first()
-                    && let Type::Class(Generic(name, _)) = obj.infer(ctx)?
-                {
-                    ctx.local.class = Some(name);
+                if let Some(obj) = args.first() {
+                    ctx.local.class = Some(obj.infer(ctx)?);
                 }
                 match callee.infer(ctx)? {
                     Type::Function(Lambda((_, ret), Some(params))) => {
@@ -235,7 +233,7 @@ impl Expr {
             }
             Expr::Variable(Generic(name, args)) => {
                 if let Some(obj) = &ctx.local.class {
-                    let name = Name::new(&format!("{obj}.{name}"))?;
+                    let name = name.class(obj.clone());
                     if ctx.global.lib.contains_key(&name) {
                         return typing!(expands!(Expr::Variable(Generic(name, args))));
                     }
