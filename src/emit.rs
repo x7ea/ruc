@@ -15,7 +15,7 @@ impl Define {
         }
         let ctx = &mut Context::default();
         ctx.global.def = defines.iter().map(|x| (name!(x), x.clone())).collect();
-        map!(defines, |define| define.infer(ctx), ok)?;
+        map!({ defines }, |define| define.infer(ctx))?;
         let mut text = String::from("\n");
         for (_, define) in ctx.global.def.clone() {
             text += &define.emit(ctx)?;
@@ -142,7 +142,7 @@ impl Expr {
                     body.emit(ctx)?,
                 ))
             }
-            Expr::Block(lines) => Ok(map!(lines, |line| line.emit(ctx), ok)?.concat()),
+            Expr::Block(lines) => Ok(map!({ lines }, |line| line.emit(ctx))?.concat()),
             Expr::Call(callee, args) => {
                 let mut push = String::new();
                 for arg in args.iter().rev() {
@@ -336,7 +336,7 @@ macro_rules! hash {
 #[macro_export]
 macro_rules! map {
     ($arr: expr, $lambda: expr) => {{ $arr.iter().map($lambda).collect::<Vec<_>>() }};
-    ($arr: expr, $lambda: expr, ok) => {{ $arr.iter().map($lambda).collect::<Result<Vec<_>, String>>() }};
+    ($arr: block, $lambda: expr) => {{ $arr.iter().map($lambda).collect::<Result<Vec<_>, String>>() }};
 }
 #[macro_export]
 macro_rules! var {
