@@ -68,8 +68,8 @@ impl Expr {
                 let _ = expands!($expr);
             };
         }
-        macro_rules! tmp {
-            ($typ: expr) => {{ var!(&format!("tmp{}", hash!(&self))) }};
+        macro_rules! temp {
+            ($typ: expr) => {{ var!(&format!("temp{}", hash!(&self))) }};
         }
         macro_rules! op {
             ($typ: pat, $lhs: expr, $rhs: expr) => {{
@@ -177,7 +177,7 @@ impl Expr {
                 let Type::Array(_) = typ else {
                     return Err(format!("not iterable: {typ}"));
                 };
-                let temp = Box::new(tmp!(Type::Integer));
+                let temp = Box::new(temp!(Type::Integer));
                 let inc = Box::new(Expr::Add(temp.clone(), Box::new(Expr::Integer(1))));
                 let each = Box::new(Expr::Block(vec![
                     Expr::Let(cnt, Box::new(Expr::Index(arr.clone(), temp.clone()))),
@@ -296,7 +296,7 @@ impl Expr {
             },
             Expr::Sequence(array) => {
                 let typ = array[0].infer(ctx)?;
-                let temp = tmp!(typ.clone());
+                let temp = temp!(typ.clone());
                 let mut expr = vec![Expr::Let(
                     Box::new(temp.clone()),
                     Box::new(Expr::Init(typ, array.len())),
@@ -340,7 +340,7 @@ impl Expr {
                 typing!(typ.solve(ctx))
             }
             Expr::Enum(typ, key, val) => {
-                let temp = Box::new(tmp!(typ.clone()));
+                let temp = Box::new(temp!(typ.clone()));
                 typing!(expands!(Expr::Block(vec![
                     Expr::Let(temp.clone(), Box::new(Expr::New(typ.clone()))),
                     Expr::Let(
@@ -429,7 +429,7 @@ impl Expr {
                 let Type::Class(_) = typ else {
                     return Err(format!("can't clone: {typ}"));
                 };
-                let dest = Box::new(tmp!(typ));
+                let dest = Box::new(temp!(typ));
                 typing!(expands!(Expr::Block(vec![
                     Expr::Let(dest.clone(), Box::new(Expr::New(typ.clone()))),
                     Expr::Call(
