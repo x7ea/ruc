@@ -142,7 +142,7 @@ impl Expr {
                     body.emit(ctx)?,
                 ))
             }
-            Expr::Block(lines) => Ok(map!(lines, |x| x.emit(ctx), ok)?.concat()),
+            Expr::Block(lines) => Ok(map!(lines, |line| line.emit(ctx), ok)?.concat()),
             Expr::Call(callee, args) => {
                 let mut push = String::new();
                 for arg in args.iter().rev() {
