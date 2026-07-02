@@ -208,7 +208,7 @@ impl Expr {
             }
             Expr::Call(callee, args) => {
                 if let Some(obj) = args.first() {
-                    ctx.local.class = Some(obj.infer(ctx)?.without_generics());
+                    ctx.local.class = Some(obj.infer(ctx)?.without_generic());
                 }
                 match callee.infer(ctx)? {
                     Type::Function(Lambda((_, ret), Some(params))) => {
@@ -332,10 +332,10 @@ impl Expr {
                 typ => return Err(format!("no length: {typ}")),
             })),
             Expr::New(typ) => {
-                let Type::Class(generics) = typ.clone() else {
+                let Type::Class(generic) = typ.clone() else {
                     return Err(format!("no constructor: {typ}"));
                 };
-                let typ = typ.mono(ctx, generics)?;
+                let typ = typ.mono(ctx, generic)?;
                 expand!(new!(typ.size(ctx)? / 8));
                 typing!(typ.solve(ctx))
             }
@@ -545,14 +545,14 @@ impl Type {
             _ => self.clone(),
         }
     }
-    fn without_generics(&self) -> Type {
+    fn without_generic(&self) -> Type {
         match self {
             Type::Function(Lambda((_, ret), Some(args))) => {
-                let args = Some(map!(args, |x| x.without_generics()));
-                Type::Function(Lambda((Vec::new(), Box::new(ret.without_generics())), args))
+                let args = Some(map!(args, |x| x.without_generic()));
+                Type::Function(Lambda((Vec::new(), Box::new(ret.without_generic())), args))
             }
             Type::Class(Generic(name, _)) => Type::Class(Generic(name.clone(), Vec::new())),
-            Type::Array(typ) => Type::Array(Box::new(typ.without_generics())),
+            Type::Array(typ) => Type::Array(Box::new(typ.without_generic())),
             _ => self.clone(),
         }
     }
