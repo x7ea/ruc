@@ -11,7 +11,7 @@ use derive_more::Unwrap;
 use indexmap::{IndexMap, IndexSet};
 use ordered_float::OrderedFloat as Float;
 use std::{
-    fmt,
+    fmt::{self, Debug, Display},
     hash::Hash,
     io::{Read, Write, stdin, stdout},
     process::exit,
