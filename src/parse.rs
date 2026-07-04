@@ -139,8 +139,6 @@ impl Expr {
                 };
             }
             op!("+" => Add, "-" => Sub, "*" => Mul, "/" => Div, "%" => Mod, "==" => Eq, "!=" => Ne, ">" => Gt, "<" => Lt, ">=" => Ge, "<=" => Le, "&" => And, "|" => Or, "^" => Xor,)
-        } else if let Some(text) = surround!("\"", src, "\"") {
-            Ok(Expr::String(text.to_owned()))
         } else if src == "()" {
             Ok(Expr::Null(Type::Void))
         } else if let Some(expr) = surround!("(", src, ")") {
@@ -184,6 +182,8 @@ impl Expr {
         } else if let Ok((func, args)) = surround!(src, "(", ")") {
             let func = Box::new(Expr::parse(&func)?);
             Ok(Expr::Call(func, serial!(&args, Expr::parse)))
+        } else if let Some(text) = surround!("\"", src, "\"") {
+            Ok(Expr::String(text.to_owned()))
         } else if let Ok(b) = src.parse::<bool>() {
             Ok(Expr::Boolean(b))
         } else {
