@@ -4,7 +4,17 @@ fn main() {
     let runtime = viewkit_runtime(1)
 
     if runtime? then {
-        print "ViewKit runtime created"
+        print "begin: ", runtime.begin_tree(100)
+        print "text: ", runtime.text(101, "Hello from Ruca")
+        print "commit: ", runtime.commit_tree()
+
+        print "window: ", runtime.run_window(
+            "ViewKit in Ruca example application",
+            800.0,
+            600.0,
+            true
+        )
+
         print "destroy: ", runtime.destroy()
     } else {
         print "ViewKit runtime creation failed"
