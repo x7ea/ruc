@@ -1,14 +1,13 @@
 extern fn ruca_vk_runtime_create(component_instance_id: Int): VkRuntime
 extern fn ruca_vk_runtime_destroy(runtime: VkRuntime): Int
-
 extern fn ruca_vk_tree_begin(runtime: VkRuntime, root_node_id: Int): Int
-extern fn ruca_vk_push_text(runtime: VkRuntime, node_id: Int, content: Str): Int
 extern fn ruca_vk_tree_commit(runtime: VkRuntime): Int
+extern fn ruca_vk_push_card(runtime: VkRuntime, node_id: Int, title: Str, body: Str): Int
 extern fn ruca_vk_runtime_run_window(runtime: VkRuntime, title: Str, width: Float, height: Float, resizable: Bool): Int
 
 fn viewkit_runtime(component_instance_id: Int): VkRuntime ruca_vk_runtime_create(component_instance_id)
-fn VkRuntime.destroy(this: VkRuntime): Int ruca_vk_runtime_destroy(this)
-fn VkRuntime.begin_tree(this: VkRuntime, root_node_id: Int): Int ruca_vk_tree_begin(this, root_node_id)
-fn VkRuntime.text(this: VkRuntime, node_id: Int, content: Str): Int ruca_vk_push_text(this, node_id, content)
-fn VkRuntime.commit_tree(this: VkRuntime): Int ruca_vk_tree_commit(this)
-fn VkRuntime.run_window(this: VkRuntime, title: Str, width: Float, height: Float, resizable: Bool): Int ruca_vk_runtime_run_window(this, title, width, height, resizable)
+fn viewkit_destroy(runtime: VkRuntime): Int ruca_vk_runtime_destroy(runtime)
+fn viewkit_begin(runtime: VkRuntime, root_node_id: Int): Int ruca_vk_tree_begin(runtime, root_node_id)
+fn viewkit_commit(runtime: VkRuntime): Int ruca_vk_tree_commit(runtime)
+fn viewkit_card(runtime: VkRuntime, node_id: Int, title: Str, body: Str): Int ruca_vk_push_card(runtime, node_id, title, body)
+fn viewkit_run_window(runtime: VkRuntime, title: Str, width: Float, height: Float, resizable: Bool): Int ruca_vk_runtime_run_window(runtime, title, width, height, resizable)
