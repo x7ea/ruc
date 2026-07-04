@@ -213,7 +213,7 @@ impl Type {
         }
     }
 }
-impl fmt::Display for Type {
+impl Display for Type {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let comma = |x: &[Type]| map!(x, |x: &Type| x.to_string()).join(", ");
         match self {
@@ -230,7 +230,7 @@ impl fmt::Display for Type {
         }
     }
 }
-impl fmt::Debug for Type {
+impl Debug for Type {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let mangle = |x: &[Type]| map!(x, |x: &Type| format!("{x:?}")).concat();
         match self {
@@ -257,7 +257,7 @@ impl Generic {
         }
     }
 }
-impl fmt::Display for Generic {
+impl Display for Generic {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let Generic(name, args) = self.clone();
         if args.is_empty() {
