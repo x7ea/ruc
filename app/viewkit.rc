@@ -1,0 +1,12 @@
+use std, viewkit
+
+fn main() {
+    let runtime = viewkit_runtime(1)
+
+    if runtime? then {
+        print "ViewKit runtime created"
+        print "destroy: ", runtime.destroy()
+    } else {
+        print "ViewKit runtime creation failed"
+    }
+}

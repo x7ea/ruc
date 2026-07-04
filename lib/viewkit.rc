@@ -1,0 +1,5 @@
+extern fn ruca_vk_runtime_create(component_instance_id: Int): VkRuntime
+extern fn ruca_vk_runtime_destroy(runtime: VkRuntime): Int
+
+fn viewkit_runtime(component_instance_id: Int): VkRuntime ruca_vk_runtime_create(component_instance_id)
+fn VkRuntime.destroy(this: VkRuntime): Int ruca_vk_runtime_destroy(this)
