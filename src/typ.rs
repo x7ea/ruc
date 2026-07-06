@@ -336,7 +336,7 @@ impl Expr {
                     return Err(format!("no constructor: {typ}"));
                 };
                 let typ = typ.mono(ctx, generic)?;
-                expand!(new!(typ.size(ctx)? / 8));
+                expand!(new!(typ.size(ctx) / 8));
                 typing!(typ.solve(ctx))
             }
             Expr::Enum(typ, key, val) => {
@@ -434,7 +434,7 @@ impl Expr {
                     Expr::Let(dest.clone(), Box::new(Expr::New(typ.clone()))),
                     Expr::Call(
                         Box::new(var!("memcpy", typ.clone())),
-                        vec![*dest.clone(), *expr, Expr::Integer(typ.size(ctx)? as i64)]
+                        vec![*dest.clone(), *expr, Expr::Integer(typ.size(ctx) as i64)]
                     ),
                     *dest.clone()
                 ])))
@@ -563,11 +563,11 @@ impl Type {
         }
         typ
     }
-    fn size(&self, ctx: &Context) -> Result<usize, String> {
+    fn size(&self, ctx: &Context) -> usize {
         let Generic(name, _) = &self.clone().unwrap_class();
         match &ctx.global.table[name] {
-            (_, Object::Struct(layout)) => Ok(layout.len() * 8),
-            (_, Object::Enum(_)) => Ok(16),
+            (_, Object::Struct(layout)) => layout.len() * 8,
+            (_, Object::Enum(_)) => 16,
         }
     }
 }
