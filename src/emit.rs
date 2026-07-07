@@ -147,10 +147,9 @@ impl Expr {
                 let mut push = String::new();
                 for arg in args.iter().rev() {
                     push += &arg.emit(ctx)?;
-                    if typ!(arg) == Type::Float {
-                        push += "\tsub rsp, 8\n\tmovsd [rsp], xmm0\n"
-                    } else {
-                        push += "\tpush rax\n"
+                    match typ!(arg) {
+                        Type::Float => push += "\tsub rsp, 8\n\tmovsd [rsp], xmm0\n",
+                        _ => push += "\tpush rax\n",
                     };
                 }
                 let mut mov = String::new();
@@ -181,10 +180,9 @@ impl Expr {
                 let mut name = name.clone();
                 if let Some(addr) = env.get_index_of(&name) {
                     let (typ, addr) = (env[&name].clone(), (addr + 1) * 8);
-                    if typ == Type::Float {
-                        Ok(format!("\tmovsd xmm0, [rbp-{addr}]\n"))
-                    } else {
-                        Ok(format!("\tmov rax, [rbp-{addr}]\n"))
+                    match typ {
+                        Type::Float => Ok(format!("\tmovsd xmm0, [rbp-{addr}]\n")),
+                        _ => Ok(format!("\tmov rax, [rbp-{addr}]\n")),
                     }
                 } else {
                     if !ctx.global.extrn.contains(&name) {
@@ -198,10 +196,9 @@ impl Expr {
                     let env = &ctx.local.var;
                     let (typ, idx) = (env[name].clone(), env.get_index_of(name).unwrap());
                     let (val, addr) = (val.emit(ctx)?, (idx + 1) * 8);
-                    if typ == Type::Float {
-                        Ok(format!("{val}\tmovsd [rbp-{addr}], xmm0\n"))
-                    } else {
-                        Ok(format!("{val}\tmov [rbp-{addr}], rax\n"))
+                    match typ {
+                        Type::Float => Ok(format!("{val}\tmovsd [rbp-{addr}], xmm0\n")),
+                        _ => Ok(format!("{val}\tmov [rbp-{addr}], rax\n")),
                     }
                 }
                 _ => expr!(self).emit(ctx),
@@ -224,11 +221,10 @@ impl Expr {
                 let [addr, offset] = [addr.emit(ctx)?, offset.emit(ctx)?];
                 Ok(format!(
                     "{addr}\tpxor xmm0, xmm0\n\tcmp rax, 0\n\tje null.{id}\n\tpush rax\n{offset}\tpop r10\n\tlea rax, [r10+rax*8]\n{}\tnull.{id}",
-                    if *typ == Type::Float {
-                        "\tmovsd xmm0, [rax]\n"
-                    } else {
-                        "\tmov rax, [rax]\n"
-                    },
+                    match typ {
+                        Type::Float => "\tmovsd xmm0, [rax]\n",
+                        _ => "\tmov rax, [rax]\n",
+                    }
                 ))
             }
             Expr::Write(offset, val, addr) => {
@@ -236,10 +232,9 @@ impl Expr {
                 let [addr, offset, val] = [addr.emit(ctx)?, offset.emit(ctx)?, val.emit(ctx)?];
                 Ok(format!(
                     "{addr}\tpxor xmm0, xmm0\n\tcmp rax, 0\n\tje null.{id}\n\tpush rax\n{offset}\tpop r10\n\tlea r10, [r10+rax*8]\n\tpush r10\n{val}\tpop r10\n{}\tnull.{id}",
-                    if typ!(self) == Type::Float {
-                        "\tmovsd [r10], xmm0\n"
-                    } else {
-                        "\tmov [r10], rax\n"
+                    match typ!(self) {
+                        Type::Float => "\tmovsd [r10], xmm0\n",
+                        _ => "\tmov [r10], rax\n",
                     }
                 ))
             }
