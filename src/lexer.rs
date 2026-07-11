@@ -78,7 +78,7 @@ pub mod name {
         "print", "format", "let", "new", "clone", "if", "then", "else", "for", "while", "do",
         "match",
     ];
-    #[derive(Debug, Clone, Default, PartialEq, Eq, Hash)]
+    #[derive(Debug, Clone, Default, Eq, Hash)]
     pub struct Name(String);
 
     impl Name {
