@@ -169,14 +169,14 @@ impl Expr {
             if let Ok(Expr::Call(callee, arg)) = Expr::parse(&key) {
                 return Ok(Expr::Call(callee.clone(), [vec![obj], arg].concat()));
             }
-            Ok(Expr::Member(Box::new(obj), Name::new(&key)?))
+            Ok(Expr::Member(Box::new(obj), Name::new(&key.to_lowercase())?))
         } else if let Ok((typ, key)) = once!(src, "::") {
             let typ = Type::parse(&typ)?;
             if let Ok((key, val)) = surround!(&key, "(", ")") {
-                let name = Name::new(&key)?;
+                let name = Name::new(&key.to_lowercase())?;
                 Ok(Expr::Enum(typ, name, Box::new(Expr::parse(&val)?)))
             } else {
-                let name = Name::new(&key)?;
+                let name = Name::new(&key.to_lowercase())?;
                 Ok(Expr::Enum(typ, name, Box::new(Expr::Null(Type::Void))))
             }
         } else if let Ok((func, args)) = surround!(src, "(", ")") {
