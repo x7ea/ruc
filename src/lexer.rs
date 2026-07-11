@@ -105,6 +105,11 @@ pub mod name {
             Name(format!("{self}.{typ:?}"))
         }
     }
+    impl PartialEq for Name {
+        fn eq(&self, other: &Self) -> bool {
+            self.to_string().to_lowercase() == other.to_string().to_lowercase()
+        }
+    }
     impl Display for Name {
         fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
             write!(f, "{}", self.0)
