@@ -113,11 +113,16 @@ impl Expr {
         macro_rules! expr {
             ($expr: expr) => {{ ctx.local.expand[$expr].clone() }};
         }
-        match self {
-            Expr::If(cond, then, els) => {
+        macro_rules! expand {
+            () => {
                 if let Some(expr) = ctx.local.expand.get(self) {
                     return expr.clone().emit(ctx);
                 }
+            };
+        }
+        match self {
+            Expr::If(cond, then, els) => {
+                expand!();
                 let id = label!();
                 let [cond, then] = [cond.emit(ctx)?, then.emit(ctx)?];
                 if let Some(els) = els {
@@ -132,9 +137,7 @@ impl Expr {
                 }
             }
             Expr::While(cond, body) => {
-                if let Some(expr) = ctx.local.expand.get(self) {
-                    return expr.clone().emit(ctx);
-                }
+                expand!();
                 let id = label!();
                 Ok(format!(
                     "while.{id}:\n{}\tcmp rax, 0\n\tje do.{id}\n{}\tjmp while.{id}\ndo.{id}:\n",
@@ -173,9 +176,7 @@ impl Expr {
                 ))
             }
             Expr::Variable(var @ Generic(name, _)) => {
-                if let Some(expr) = ctx.local.expand.get(self) {
-                    return expr.clone().emit(ctx);
-                }
+                expand!();
                 let env = &ctx.local.var;
                 let mut name = name.clone();
                 if let Some(addr) = env.get_index_of(&name) {
@@ -208,9 +209,7 @@ impl Expr {
                 expr!(self).emit(ctx)?
             )),
             Expr::Check(expr) => {
-                if let Some(expr) = ctx.local.expand.get(self) {
-                    return expr.clone().emit(ctx);
-                }
+                expand!();
                 Ok(format!(
                     "{}\tcmp rax, 0\nsetne al\n\tmovzx rax, al\n",
                     expr.emit(ctx)?
