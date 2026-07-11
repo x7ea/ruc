@@ -99,7 +99,7 @@ pub mod name {
             if RESERVED.contains(&name) {
                 return Err(format!("reserved: {name}"));
             }
-            Ok(Name(name.to_lowercase()))
+            Ok(Name(name.to_owned()))
         }
         pub fn class(&self, typ: Type) -> Name {
             Name(format!("{self}.{typ:?}"))
