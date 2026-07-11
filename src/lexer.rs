@@ -78,7 +78,7 @@ pub mod name {
         "print", "format", "let", "new", "clone", "if", "then", "else", "for", "while", "do",
         "match",
     ];
-    #[derive(Debug, Clone, Default, Eq, Hash)]
+    #[derive(Debug, Clone, Default, PartialEq, Eq, Hash)]
     pub struct Name(String);
 
     impl Name {
@@ -103,11 +103,6 @@ pub mod name {
         }
         pub fn class(&self, typ: Type) -> Name {
             Name(format!("{self}.{typ:?}"))
-        }
-    }
-    impl PartialEq for Name {
-        fn eq(&self, other: &Self) -> bool {
-            self.to_string().to_lowercase() == other.to_string().to_lowercase()
         }
     }
     impl Display for Name {
