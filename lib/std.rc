@@ -8,10 +8,10 @@ extern fn atoi(src: Str): Int
 extern fn g_strdup_printf: Str
 extern fn printf
 
-fn Str.add(a: Str, b: Str): Str format a, b
+fn Str.Add(a: Str, b: Str): Str format a, b
 
-fn Str.eq(a: Str, b: Str): Bool strcmp(a, b) == 0
-fn Str.ne(a: Str, b: Str): Bool strcmp(a, b) != 0
+fn Str.Eq(a: Str, b: Str): Bool strcmp(a, b) == 0
+fn Str.Ne(a: Str, b: Str): Bool strcmp(a, b) != 0
 
 extern fn scanf(fmt: Str, buf: Str)
 fn input(): Str {
