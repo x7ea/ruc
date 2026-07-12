@@ -240,7 +240,7 @@ impl Expr {
                     ctx.local.class = None;
                 }
                 if let Some(typ) = ctx.global.lib.get(&name) {
-                    let args = map!(args, |arg| arg.clone().solve(ctx));
+                    let args = map!(args.clone(), |arg| arg.solve(ctx));
                     typing!(typ.clone().mono(ctx, Generic(name, args))?)
                 } else if let Some(typ) = ctx.local.scope.get(&name) {
                     typing!(typ.clone().solve(ctx))
