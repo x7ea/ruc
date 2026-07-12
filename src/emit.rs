@@ -219,7 +219,7 @@ impl Expr {
                 let id = label!();
                 let [addr, offset] = [addr.emit(ctx)?, offset.emit(ctx)?];
                 Ok(format!(
-                    "{addr}\tpxor xmm0, xmm0\n\tcmp rax, 0\n\tje .Lnull{id}\n\tpush rax\n{offset}\tpop r10\n\tlea rax, [r10+rax*8]\n{}.Lnull{id}\n",
+                    "{addr}\tpxor xmm0, xmm0\n\tcmp rax, 0\n\tje .Lnull{id}\n\tpush rax\n{offset}\tpop r10\n\tlea rax, [r10+rax*8]\n{}.Lnull{id}:\n",
                     match typ {
                         Type::Float => "\tmovsd xmm0, [rax]\n",
                         _ => "\tmov rax, [rax]\n",
@@ -230,7 +230,7 @@ impl Expr {
                 let id = label!();
                 let [addr, offset, val] = [addr.emit(ctx)?, offset.emit(ctx)?, val.emit(ctx)?];
                 Ok(format!(
-                    "{addr}\tpxor xmm0, xmm0\n\tcmp rax, 0\n\tje .Lnull{id}\n\tpush rax\n{offset}\tpop r10\n\tlea r10, [r10+rax*8]\n\tpush r10\n{val}\tpop r10\n{}.Lnull{id}\n",
+                    "{addr}\tpxor xmm0, xmm0\n\tcmp rax, 0\n\tje .Lnull{id}\n\tpush rax\n{offset}\tpop r10\n\tlea r10, [r10+rax*8]\n\tpush r10\n{val}\tpop r10\n{}.Lnull{id}:\n",
                     match typ!(self) {
                         Type::Float => "\tmovsd [r10], xmm0\n",
                         _ => "\tmov [r10], rax\n",
