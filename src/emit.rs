@@ -140,7 +140,7 @@ impl Expr {
                 expand!();
                 let id = label!();
                 Ok(format!(
-                    "while.{id}:\n{}\tcmp rax, 0\n\tje do.{id}\n{}\tjmp while.{id}\ndo.{id}:\n",
+                    ".Lwhile{id}:\n{}\tcmp rax, 0\n\tje .Ldo{id}\n{}\tjmp .Lwhile{id}\n.Ldo{id}:\n",
                     cond.emit(ctx)?,
                     body.emit(ctx)?,
                 ))
