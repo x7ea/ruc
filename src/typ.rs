@@ -481,8 +481,8 @@ impl Type {
             Type::Function(Lambda((params, _), _)) if !params.is_empty() => {
                 let mut alias = IndexMap::new();
                 for (arg, param) in args.iter().zip(&params) {
-                    alias.insert(param.clone(), arg.clone());
-                    typ = typ.rewrite(param, arg);
+                    alias.insert(param.clone(), arg.solve(ctx));
+                    typ = typ.rewrite(param, &arg.solve(ctx));
                 }
                 let mut unify = ctx.global.def[&name].clone();
                 if let Define::Function((_, params), _) | Define::Declare((_, params), _) = &unify
