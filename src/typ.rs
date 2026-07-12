@@ -475,14 +475,14 @@ impl Expr {
 }
 impl Type {
     fn mono(&self, ctx: &mut Context, Generic(name, args): Generic) -> Result<Type, String> {
-        let mut typ = self.solve(ctx);
+        let (mut typ,args) = (self.solve(ctx),map!(args,|x|x.solve(ctx)));
         let mangle = Generic(name.clone(), args.clone()).generic();
         match typ.clone() {
             Type::Function(Lambda((params, _), _)) if !params.is_empty() => {
                 let mut alias = IndexMap::new();
                 for (arg, param) in args.iter().zip(&params) {
-                    alias.insert(param.clone(), arg.solve(ctx));
-                    typ = typ.rewrite(param, &arg.solve(ctx));
+                    alias.insert(param.clone(), arg.clone());
+                    typ = typ.rewrite(param, arg);
                 }
                 let mut unify = ctx.global.def[&name].clone();
                 if let Define::Function((_, params), _) | Define::Declare((_, params), _) = &unify
