@@ -479,7 +479,7 @@ impl Type {
         let mangle = Generic(name.clone(), args.clone()).generic();
         match typ.clone() {
             Type::Function(Lambda((params, _), _)) if !params.is_empty() => {
-                let mut alias = IndexMap::new();
+                let mut alias = ctx.global.alias.clone();
                 for (arg, param) in args.iter().zip(&params) {
                     alias.insert(param.clone(), arg.clone());
                     typ = typ.rewrite(param, arg);
