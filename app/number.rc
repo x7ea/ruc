@@ -18,5 +18,5 @@ fn main() {
     let one = Peano::Succ(Peano::Zero)
     let proof = one + one
 
-    print "1+1=", proof.decode()
+    print "1 + 1 = ", proof.decode()
 }
