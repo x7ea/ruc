@@ -37,16 +37,11 @@ fn Map<K, V>(keys: [K], values: [V]): Map<K, V> {
     this
 }
 
-fn Map.index<K, V>(this: Map<K, V>, key: K): Int {
+fn Map.get<K, V>(this: Map<K, V>, key: K): Option<V> {
     let index = 0
     while (index < this.keys.len) & (this.keys[index] != key) do {
         let index = index + 1
     }
-    index
-}
-
-fn Map.get<K, V>(this: Map<K, V>, key: K): Option<V> {
-    let index = this.index<K, V>(key)
     if index != this.keys.len then {
         Option<V>::Some(this.values[index])
     } else {
@@ -55,7 +50,10 @@ fn Map.get<K, V>(this: Map<K, V>, key: K): Option<V> {
 }
 
 fn Map.insert<K, V>(this: Map<K, V>, key: K, value: V) {
-    let index = this.index<K, V>(key)
+    let index = 0
+    while (index < this.keys.len) & (this.keys[index] != key) do {
+        let index = index + 1
+    }
     if index != this.keys.len then {
         let this.values[index] = value
     }
