@@ -239,8 +239,10 @@ impl Expr {
                     }
                     ctx.local.class = None;
                 }
-                if let Some(typ) = ctx.global.lib.get(&name) {
-                    typing!(typ.clone().mono(ctx, Generic(name, args))?)
+                if let Some(typ) = ctx.global.lib.get(&name).cloned() {
+                    let name = Generic(name, map!(args, |x| x.solve(ctx)));
+                    expand!(Expr::Variable(name.clone()));
+                    typing!(typ.mono(ctx, name)?)
                 } else if let Some(typ) = ctx.local.scope.get(&name) {
                     typing!(typ.clone().solve(ctx))
                 } else {
