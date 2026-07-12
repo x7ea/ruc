@@ -127,12 +127,12 @@ impl Expr {
                 let [cond, then] = [cond.emit(ctx)?, then.emit(ctx)?];
                 if let Some(els) = els {
                     Ok(format!(
-                        "{cond}\tcmp rax, 0\n\tje else.{id}\n{then}\tjmp if.{id}\nelse.{id}:\n{}if.{id}:\n",
+                        "{cond}\tcmp rax, 0\n\tje .Lelse{id}\n{then}\tjmp .Lif{id}\n.Lelse{id}:\n{}.Lif{id}:\n",
                         els.emit(ctx)?,
                     ))
                 } else {
                     Ok(format!(
-                        "{cond}\tcmp rax, 0\n\tje if.{id}\n{then}if.{id}:\n"
+                        "{cond}\tcmp rax, 0\n\tje .Lif{id}\n{then}.Lif{id}:\n"
                     ))
                 }
             }
