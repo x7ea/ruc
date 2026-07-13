@@ -506,9 +506,7 @@ impl Type {
                 ctx.global.alias = parent;
             }
             Type::Class(Generic(name, args)) => {
-                let Some((params, table)) = ctx.global.table.get(&name) else {
-                    return Err(format!("undefined: {name}"));
-                };
+                let (params, table) = &ctx.global.table[&name];
                 let layout = {
                     let (Object::Enum(layout) | Object::Struct(layout)) = &table;
                     let mut layout = layout.clone();
