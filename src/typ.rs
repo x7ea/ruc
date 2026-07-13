@@ -269,9 +269,8 @@ impl Expr {
                     typing!(Type::Void)
                 }
                 acc @ Expr::Member(obj, key) => {
-                    let typ = acc.infer(ctx)?;
+                    let [typ, rhs] = [acc.infer(ctx)?, val.infer(ctx)?];
                     let Generic(name, _) = &obj.infer(ctx)?.unwrap_class();
-                    let rhs = val.infer(ctx)?;
                     if typ != rhs {
                         return Err(format!("{name}.{key}: {typ} != {rhs}"));
                     }
