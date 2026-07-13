@@ -352,10 +352,11 @@ impl Expr {
             Expr::Member(obj, key) => {
                 let typ = obj.infer(ctx)?;
                 let Type::Class(name) = &typ else {
-                    if "len" == key.to_string() {
-                        return typing!(expands!(Expr::Len(obj)));
-                    }
-                    return Err(format!("not class: {typ}"));
+                    return if "len" == key.to_string() {
+                        typing!(expands!(Expr::Len(obj)))
+                    } else {
+                        Err(format!("not class: {typ}"))
+                    };
                 };
                 let unify = &name.generic();
                 if !ctx.global.table.contains_key(unify) {
