@@ -123,17 +123,15 @@ impl Expr {
         match self {
             Expr::If(cond, then, els) => {
                 expand!();
-                let [id, cond, then] = [label!(), cond.emit(ctx)?, then.emit(ctx)?];
+                let [id, then] = [label!(), then.emit(ctx)?];
+                let cond = format!("{}\tcmp rax, 0\n", cond.emit(ctx)?);
                 if let Some(els) = els {
-                    Ok(format!(
-                        "{cond}\tcmp rax, 0\n\tje .Lelse{id}\n{then}\tjmp .Lif{id}\n.Lelse{id}:\n{}.Lif{id}:\n",
+                    return Ok(format!(
+                        "{cond}\tje .Lelse{id}\n{then}\tjmp .Lif{id}\n.Lelse{id}:\n{}.Lif{id}:\n",
                         els.emit(ctx)?,
-                    ))
-                } else {
-                    Ok(format!(
-                        "{cond}\tcmp rax, 0\n\tje .Lif{id}\n{then}.Lif{id}:\n"
-                    ))
+                    ));
                 }
+                Ok(format!("{cond}\tje .Lif{id}\n{then}.Lif{id}:\n"))
             }
             Expr::While(cond, body) => {
                 expand!();
