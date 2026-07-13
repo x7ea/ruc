@@ -480,7 +480,7 @@ impl Type {
         match typ.clone() {
             Type::Function(Lambda((params, _), _)) if !params.is_empty() => {
                 let mut alias = IndexMap::new();
-                for (arg, param) in args.iter().zip(&params) {
+                for (param, arg) in params.iter().zip(&args) {
                     alias.insert(param.clone(), arg.clone());
                     typ = typ.rewrite(param, arg);
                 }
