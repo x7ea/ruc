@@ -123,7 +123,8 @@ impl Expr {
         match self {
             Expr::If(cond, then, els) => {
                 expand!();
-                let [id, cond, then] = [label!(), cond.emit(ctx)?, then.emit(ctx)?];
+                let id = label!();
+                let [cond, then] = [cond.emit(ctx)?, then.emit(ctx)?];
                 if let Some(els) = els {
                     Ok(format!(
                         "{cond}\tcmp rax, 0\n\tje .Lelse{id}\n{then}\tjmp .Lif{id}\n.Lelse{id}:\n{}.Lif{id}:\n",
