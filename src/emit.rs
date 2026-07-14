@@ -113,16 +113,11 @@ impl Expr {
         macro_rules! expr {
             ($expr: expr) => {{ ctx.local.expand[$expr].clone() }};
         }
-        macro_rules! expand {
-            () => {
-                if let Some(expr) = ctx.local.expand.get(self) {
-                    return expr.clone().emit(ctx);
-                }
-            };
-        }
         match self {
             Expr::If(cond, then, els) => {
-                expand!();
+                if let Some(expr) = ctx.local.expand.get(self) {
+                    return expr.clone().emit(ctx);
+                };
                 let [id, then] = [label!(), then.emit(ctx)?];
                 let cond = format!("{}\tcmp rax, 0\n", cond.emit(ctx)?);
                 if let Some(els) = els {
@@ -134,7 +129,9 @@ impl Expr {
                 Ok(format!("{cond}\tje .Lif{id}\n{then}.Lif{id}:\n"))
             }
             Expr::While(cond, body) => {
-                expand!();
+                if let Some(expr) = ctx.local.expand.get(self) {
+                    return expr.clone().emit(ctx);
+                };
                 let id = label!();
                 Ok(format!(
                     ".Lwhile{id}:\n{}\tcmp rax, 0\n\tje .Ldo{id}\n{}\tjmp .Lwhile{id}\n.Ldo{id}:\n",
@@ -173,7 +170,9 @@ impl Expr {
                 ))
             }
             Expr::Variable(var @ Generic(name, _)) => {
-                expand!();
+                if let Some(expr) = ctx.local.expand.get(self) {
+                    return expr.clone().emit(ctx);
+                };
                 let env = &ctx.local.var;
                 let mut name = name.clone();
                 if let Some(addr) = env.get_index_of(&name) {
@@ -206,7 +205,9 @@ impl Expr {
                 expr!(self).emit(ctx)?
             )),
             Expr::Check(expr) => {
-                expand!();
+                if let Some(expr) = ctx.local.expand.get(self) {
+                    return expr.clone().emit(ctx);
+                };
                 Ok(format!(
                     "{}\tcmp rax, 0\nsetne al\n\tmovzx rax, al\n",
                     expr.emit(ctx)?
