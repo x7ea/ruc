@@ -56,17 +56,17 @@ impl Expr {
                 Ok::<Type, String>(typ)
             }};
         }
-        macro_rules! expands {
-            ($expr: expr) => {{
-                let expr = $expr.clone();
-                ctx.local.expand.insert(self.clone(), expr.clone());
-                expr.infer(ctx)?
-            }};
-        }
         macro_rules! expand {
             ($expr: expr) => {
-                let _ = expands!($expr);
+                let expr = $expr.clone();
+                ctx.local.expand.insert(self.clone(), expr.clone());
             };
+        }
+        macro_rules! expands {
+            ($expr: expr) => {{
+                expand!($expr);
+                $expr.infer(ctx)?
+            }};
         }
         macro_rules! temp {
             ($typ: expr) => {{ var!(&format!("temp{}", hash!(&self))) }};
