@@ -173,6 +173,7 @@ impl Expr {
                 ))
             }
             Expr::Variable(var @ Generic(name, _)) => {
+                dbg!(&name);
                 expand!();
                 let env = &ctx.local.var;
                 let mut name = name.clone();
