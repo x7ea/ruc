@@ -280,7 +280,6 @@ impl Expr {
         }
     }
 }
-
 impl Generic {
     pub fn generic(&self) -> Name {
         let Generic(mut name, typ) = self.clone();
