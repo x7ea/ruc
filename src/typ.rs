@@ -64,7 +64,7 @@ impl Expr {
         }
         macro_rules! expands {
             ($expr: expr) => {{
-                expand!($expr);
+                expand!($expr.clone());
                 $expr.infer(ctx)?
             }};
         }
