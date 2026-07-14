@@ -241,7 +241,7 @@ impl Expr {
                 }
                 if let Some(typ) = ctx.global.lib.get(&name).cloned() {
                     let var = Expr::Variable(Generic(name.clone(), map!(args, |x| x.solve(ctx))));
-                    if self != var {
+                    if &self != &&var {
                         ctx.local.expand.insert(self.clone(), var);
                     }
                     typing!(typ.mono(ctx, Generic(name, args))?)
