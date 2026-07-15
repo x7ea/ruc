@@ -63,6 +63,7 @@ impl Define {
         }
         let body = body.emit(ctx)?;
         ctx.table.insert(name.clone(), ctx.local.clone());
+
         let var = ctx.local.var.len() * 8;
         let pro = format!(
             "\tpush rbp\n\tmov rbp, rsp\n\tsub rsp, {}\n",
