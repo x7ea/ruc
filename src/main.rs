@@ -54,6 +54,7 @@ pub enum Define {
     Symbol(Name, Type),
     Class(Generic, Object),
 }
+
 #[derive(Debug, Clone, Hash, PartialEq, Eq, AsRefStr)]
 pub enum Expr {
     // Literal
@@ -105,6 +106,7 @@ pub enum Expr {
     Read(Box<Expr>, Type, Box<Expr>),
     Write(Box<Expr>, Box<Expr>, Box<Expr>),
 }
+
 #[derive(Clone, PartialEq, Eq, Hash, Unwrap)]
 pub enum Type {
     String,
@@ -116,6 +118,7 @@ pub enum Type {
     Function(Lambda),
     Void,
 }
+
 #[derive(Debug, Clone, Hash, PartialEq, Eq)]
 pub struct Lambda((Vec<Type>, Box<Type>), Option<Vec<Type>>);
 
@@ -129,12 +132,14 @@ pub enum Object {
     Struct(IndexMap<Name, Type>),
     Enum(IndexMap<Name, Type>),
 }
+
 #[derive(Debug, Default)]
 pub struct Context {
     global: Global,
     local: Function,
     table: IndexMap<Name, Function>,
 }
+
 #[derive(Debug, Default)]
 pub struct Global {
     idx: usize,
@@ -145,6 +150,7 @@ pub struct Global {
     alias: IndexMap<Type, Type>,
     extrn: IndexSet<Name>,
 }
+
 #[derive(Debug, Default, Clone)]
 pub struct Function {
     var: IndexMap<Name, Type>,
