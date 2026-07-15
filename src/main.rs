@@ -31,19 +31,13 @@ fn main() {
             }
         };
     }
-    use std::thread::Builder;
-    let build = || {
-        let code = {
-            let mut buffer = String::new();
-            error!(stdin().read_to_string(&mut buffer));
-            buffer.trim().to_owned()
-        };
-        let output = error!(Define::compile(&error!(Define::parse(&code))));
-        error!(stdout().write_all(output.as_bytes()));
+    let code = {
+        let mut buffer = String::new();
+        error!(stdin().read_to_string(&mut buffer));
+        buffer.trim().to_owned()
     };
-    let thread = Builder::new().stack_size(8 * 1024 * 1024);
-    let thread = thread.spawn(build).unwrap();
-    thread.join().unwrap();
+    let output = error!(Define::compile(&error!(Define::parse(&code))));
+    error!(stdout().write_all(output.as_bytes()));
 }
 
 // Abstract Syntax Tree (AST)
