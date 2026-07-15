@@ -47,6 +47,7 @@ impl Define {
         }
     }
 }
+
 impl Expr {
     fn infer(&self, ctx: &mut Context) -> Result<Type, String> {
         macro_rules! typing {
