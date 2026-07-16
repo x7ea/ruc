@@ -100,7 +100,10 @@ impl Expr {
                         Type::Integer => "%ld",
                         Type::String => "%s",
                         Type::Float => "%g",
-                        _ => return Err(format!("can't print: {typ}")),
+                        _ => {
+                            vals = todo!();
+                            "%s"
+                        }
                     }
                 }
                 is_output.then(|| fmt += "\\n");
