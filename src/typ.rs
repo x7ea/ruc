@@ -92,9 +92,9 @@ impl Expr {
             return Ok(typ.clone());
         }
         match self.clone() {
-            Expr::Print(is_output, vals) => {
+            Expr::Print(is_output, mut vals) => {
                 let mut fmt = String::new();
-                for i in vals.iter() {
+                for i in vals.iter_mut() {
                     let typ = i.infer(ctx)?;
                     fmt += match typ {
                         Type::Integer => "%ld",
