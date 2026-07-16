@@ -101,7 +101,8 @@ impl Expr {
                         Type::String => "%s",
                         Type::Float => "%g",
                         _ => {
-                            vals = todo!();
+                            *i =
+                                Expr::Call(Box::new(var!(self.as_ref(), { typ })), vec![i.clone()]);
                             "%s"
                         }
                     }
