@@ -94,21 +94,7 @@ impl Expr {
         match self.clone() {
             Expr::Print(is_output, mut vals) => {
                 let mut fmt = String::new();
-                for val in vals.iter_mut() {
-                    let typ = val.infer(ctx)?;
-                    fn fmt(typ: &Type) -> Result<String,String> {
-                        match typ {
-                            Type::Integer => String::from("%ld"),
-                            Type::String => String::from("%s")
-                            Type::Float => String::from("%g")
-                            _ => {
-                                let fmter = Box::new(var!("display", { typ }));
-                                *val = Expr::Call(fmter, vec![val.clone()]);
-                                fmt.push_str("%s")
-                            }
-                        }
-                    }
-                }
+                for val in vals.iter_mut() {}
                 is_output.then(|| fmt += "\\n");
                 let handler = ["g_strdup_printf", "printf"];
                 typing!(expands!(Expr::Call(
@@ -480,6 +466,20 @@ impl Expr {
             | Expr::Le(lhs, rhs) => op!(Type::Integer, lhs, rhs, Type::Boolean),
             Expr::And(lhs, rhs) | Expr::Or(lhs, rhs) | Expr::Xor(lhs, rhs) => {
                 op!(Type::Boolean, lhs, rhs)
+            }
+        }
+    }
+
+    fn fmtgen(&mut self, ctx: &mut Context) -> Result<String, String> {
+        let typ = self.infer(ctx)?;
+        match typ {
+            Type::Integer => Ok(String::from("%ld")),
+            Type::String => Ok(String::from("%s")),
+            Type::Float => Ok(String::from("%g")),
+            _ => {
+                let fmter = Box::new(var!("display", { typ }));
+                *self = Expr::Call(fmter, vec![self.clone()]);
+                self.fmtgen(ctx)
             }
         }
     }
