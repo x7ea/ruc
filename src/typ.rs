@@ -96,14 +96,16 @@ impl Expr {
                 let mut fmt = String::new();
                 for val in vals.iter_mut() {
                     let typ = val.infer(ctx)?;
-                    match typ {
-                        Type::Integer => fmt += "%ld",
-                        Type::String => fmt += "%s",
-                        Type::Float => fmt += "%g",
-                        _ => {
-                            let fmter = Box::new(var!("display", { typ }));
-                            *val = Expr::Call(fmter, vec![val.clone()]);
-                            fmt.push_str("%s")
+                    fn fmt(typ: &Type) -> Result<String,String> {
+                        match typ {
+                            Type::Integer => String::from("%ld"),
+                            Type::String => String::from("%s")
+                            Type::Float => String::from("%g")
+                            _ => {
+                                let fmter = Box::new(var!("display", { typ }));
+                                *val = Expr::Call(fmter, vec![val.clone()]);
+                                fmt.push_str("%s")
+                            }
                         }
                     }
                 }
