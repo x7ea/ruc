@@ -39,7 +39,8 @@ fn Map<K, V>(keys: [K], values: [V]): Map<K, V> {
 
 fn Map.index<K, V>(this: Map<K, V>, key: K): Int {
     let index = 0
-    while (index < this.keys.len) & (this.keys[index] != key) do {
+    while (index < this.keys.len) '
+        & (this.keys[index] != key) do {
         let index = index + 1
     }
     index
