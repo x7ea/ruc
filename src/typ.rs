@@ -94,14 +94,15 @@ impl Expr {
         match self.clone() {
             Expr::Print(is_output, mut vals) => {
                 let mut fmt = String::new();
-                for i in vals.iter_mut() {
-                    let typ = i.infer(ctx)?;
+                for val in vals.iter_mut() {
+                    let typ = val.infer(ctx)?;
                     fmt += match typ {
                         Type::Integer => "%ld",
                         Type::String => "%s",
                         Type::Float => "%g",
                         _ => {
-                            *i = Expr::Call(Box::new(var!("display", { typ })), vec![i.clone()]);
+                            let fmter = Box::new(var!("display", { typ }));
+                            *val = Expr::Call(fmter, vec![val.clone()]);
                             "%s"
                         }
                     }
