@@ -21,10 +21,8 @@ impl Define {
                 ($word: literal, $typ: ident) => {
                     if let Some(head) = line.strip_prefix($word) {
                         let (name, layout) = surround!(&head, "{", "}")?;
-                        result.push(Define::Class(
-                            Generic::parse(&name)?,
-                            Object::$typ(args!(&layout)),
-                        ));
+                        let (name, layout) = (Generic::parse(&name)?, Object::$typ(args!(&layout)));
+                        result.push(Define::Class(name, layout));
                     }
                 };
             }
