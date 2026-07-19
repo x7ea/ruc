@@ -211,6 +211,7 @@ impl Type {
         }
     }
 }
+
 impl Display for Type {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let comma = |x: &[Type]| map!(x, |x: &Type| x.to_string()).join(", ");
@@ -255,6 +256,7 @@ impl Generic {
         }
     }
 }
+
 impl Display for Generic {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let Generic(name, args) = self.clone();
