@@ -88,6 +88,7 @@ impl Expr {
                 typing!($ret.clone())
             }};
         }
+
         if let Some(typ) = ctx.local.typed.get(self) {
             return Ok(typ.clone());
         }
