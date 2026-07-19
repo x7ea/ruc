@@ -186,7 +186,7 @@ impl Expr {
             }
             Expr::Block(lines) => {
                 let parent = ctx.local.scope.clone();
-                let ret = map!({ &lines }, |x| x.infer(ctx))?[lines.len() - 1].clone();
+                let ret = map!({ &lines }, |x| x.infer(ctx))?.last().unwrap_or(&Type:Void);
                 for (name, val) in &ctx.local.scope {
                     if let Some(typ) = ctx.local.var.get(name)
                         && typ != val
