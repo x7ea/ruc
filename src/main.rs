@@ -76,7 +76,7 @@ pub enum Expr {
     Match(Box<Expr>, Vec<(Name, Option<Expr>, Expr)>),
     For(Box<Expr>, Box<Expr>, Box<Expr>),
     While(Box<Expr>, Box<Expr>),
-    Block(Vec<Expr>),
+    Block(Vec1<Expr>),
     // Operator
     Add(Box<Expr>, Box<Expr>),
     Sub(Box<Expr>, Box<Expr>),
