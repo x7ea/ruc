@@ -1,5 +1,5 @@
 extern fn calloc<T>(nmemb: Int, size: Int): T
-extern fn memcpy<T>(dest: T, src: T, n: Int)
+extern fn memcpy<T>(dst: T, src: T, n: Int)
 
 extern fn strcmp(a: Str, b: Str): Int
 extern fn strlen(this: Str): Int
