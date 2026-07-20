@@ -74,25 +74,27 @@ extern fn fwrite(file: File, buf: Str, n: Int): Int
 
 extern fn fseek(file: File, offset: Int, whence: Int)
 extern fn ftell(file: File): Int
+extern fn rewind(file: File)
 
 fn read_file(path: Str): Str {
-    let file = fopen(path, "r")
-    let size = {
-        fseek(file, 0, 2)
-        ftell(file)
-    }
+    let fp = fopen(path, "r")
+
+    fseek(fp, 0, 2)
+    let size = ftell(fp)
+    rewind(fp)
+
     let buf = calloc<Str>(size, 1)
-    if file? then {
-        fread(file, buf, size)
-        fclose(file)
+    if fp? then {
+        fread(fp, buf, size)
+        fclose(fp)
     }
     buf
 }
 
 fn write_file(path: Str, content: Str) {
-    let file = fopen(path, "w")
-    if file? then {
-        fwrite(file, content, content.len)
-        fclose(file)
+    let fp = fopen(path, "w")
+    if fp? then {
+        fwrite(fp, content, content.len)
+        fclose(fp)
     }
 }
