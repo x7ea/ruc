@@ -76,19 +76,21 @@ extern fn fseek(fp: File, offset: Int, whence: Int)
 extern fn ftell(fp: File): Int
 extern fn rewind(fp: File)
 
-fn read_file(path: Str): Str {
+fn read_file(path: Str): Option<Str> {
     let fp = fopen(path, "r")
-
-    fseek(fp, 0, 2)
-    let size = ftell(fp)
-    rewind(fp)
-
-    let buf = calloc<Str>(size, 1)
     if fp? then {
+        fseek(fp, 0, 2)
+        let size = ftell(fp)
+        rewind(fp)
+
+        let buf = calloc<Str>(size, 1)
         fread(buf, 1, size, fp)
         fclose(fp)
+
+        Option<Str>::Some(buf)
+    } else {
+        Option<Str>::None
     }
-    buf
 }
 
 fn write_file(path: Str, content: Str) {
