@@ -13,6 +13,8 @@ fn Str.add(a: Str, b: Str): Str format a, b
 fn Str.eq(a: Str, b: Str): Bool strcmp(a, b) == 0
 fn Str.ne(a: Str, b: Str): Bool strcmp(a, b) != 0
 
+fn Bool.display(this: Bool): Str if this then "true" else "false"
+
 extern fn scanf(fmt: Str, buf: Str)
 fn input(): Str {
     let buf = calloc<Str>(512, 1)
