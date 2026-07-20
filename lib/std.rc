@@ -94,7 +94,7 @@ fn read_fp(path: Str): Str {
 fn write_fp(path: Str, content: Str) {
     let fp = fopen(path, "w")
     if fp? then {
-        fwrite(fp, content, content.len)
+        fwrite(content, 1, content.len, fp)
         fclose(fp)
     }
 }
