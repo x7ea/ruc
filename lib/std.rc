@@ -61,3 +61,5 @@ fn Map.insert<K, V>(this: Map<K, V>, key: K, value: V) {
         let this.values[index] = value
     }
 }
+
+extern fn mkdir(path: Str)
