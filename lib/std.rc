@@ -73,9 +73,13 @@ extern fn fread(file: File, buf: Str, n: Int): Int
 extern fn fwrite(file: File, buf: Str, n: Int): Int
 
 fn read_file(path: Str): Str {
-    let size = 512 * 8
-    let buf = calloc<Str>(size, 1)
     let file = fopen(path, "r")
+
+fseek(fp, 0, 2);
+
+    size = ftell(fp);
+
+    let buf = calloc<Str>(512, 1)
     if file? then {
         fread(file, buf, size)
         fclose(file)
