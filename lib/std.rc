@@ -72,6 +72,9 @@ extern fn fclose(file: File)
 extern fn fread(file: File, buf: Str, n: Int): Int
 extern fn fwrite(file: File, buf: Str, n: Int): Int
 
+extern fn fseek(file: File, offset: Int, whence: Int)
+extern fn ftell(file: File): Int
+
 fn read_file(path: Str): Str {
     let file = fopen(path, "r")
 
