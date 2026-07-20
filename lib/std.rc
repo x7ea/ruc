@@ -86,7 +86,7 @@ fn read_file(path: Str): Str {
 fn write_file(path: Str, content: Str) {
     let file = fopen(path, "w")
     if file? then {
-        fwrite(file, content, size)
+        fwrite(file, content, content.len)
         fclose(file)
     }
 }
