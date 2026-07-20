@@ -85,7 +85,7 @@ fn read_fp(path: Str): Str {
 
     let buf = calloc<Str>(size, 1)
     if fp? then {
-        fread(buf, size, gp)
+        fread(buf, 1, size, gp)
         fclose(fp)
     }
     buf
