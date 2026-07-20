@@ -84,8 +84,6 @@ fn read_file(path: Str): Str {
 }
 
 fn write_file(path: Str, content: Str) {
-    let size = 512 * 8
-    let buf = calloc<Str>(size, 1)
     let file = fopen(path, "w")
     if file? then {
         fwrite(file, content, size)
