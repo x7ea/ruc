@@ -64,3 +64,18 @@ fn Map.insert<K, V>(this: Map<K, V>, key: K, value: V) {
 
 extern fn mkdir(path: Str)
 extern fn rmdir(path: Str)
+extern fn rename(old: Str, new: Str)
+
+extern fn fopen(path: Str, mode: Str): File
+extern fn fclose(file: File)
+
+extern fn fread(file: File, buf: Str, n: Int): Int
+extern fn fwrite(file: File, buf: Str, n: Int): Int
+
+fn read_file(path: Str): Str {
+    let file = fopen(path, "r")
+    let buf = calloc<Str>(1024, 1)
+    let n = fread(file, buf, 1024)
+    fclose(file)
+    n
+}
