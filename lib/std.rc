@@ -86,7 +86,10 @@ fn read_file(path: Str): Option<Str> {
         let buf = calloc<Str>(size, 1)
         fread(buf, 1, size, fp)
         fclose(fp)
-        buf
+
+        Option<Str>::Some(buf)
+    } else {
+        Option<Str>::None
     }
 }
 
