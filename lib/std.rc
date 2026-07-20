@@ -67,16 +67,16 @@ extern fn rmdir(path: Str)
 extern fn rename(src: Str, dst: Str)
 
 extern fn fopen(path: Str, mode: Str): File
-extern fn fclose(file: File)
+extern fn fclose(fp: File)
 
-extern fn fread(file: File, buf: Str, n: Int): Int
-extern fn fwrite(file: File, buf: Str, n: Int): Int
+extern fn fread(buf: Str, size: Int, byte: Int, fp: File): Int
+extern fn fwrite(buf: Str, size: Int, byte: Int, fp: File): Int
 
-extern fn fseek(file: File, offset: Int, whence: Int)
-extern fn ftell(file: File): Int
-extern fn rewind(file: File)
+extern fn fseek(fp: File, offset: Int, whence: Int)
+extern fn ftell(fp: File): Int
+extern fn rewind(fp: File)
 
-fn read_file(path: Str): Str {
+fn read_fp(path: Str): Str {
     let fp = fopen(path, "r")
 
     fseek(fp, 0, 2)
@@ -85,13 +85,13 @@ fn read_file(path: Str): Str {
 
     let buf = calloc<Str>(size, 1)
     if fp? then {
-        fread(fp, buf, size)
+        fread(buf, size, gp)
         fclose(fp)
     }
     buf
 }
 
-fn write_file(path: Str, content: Str) {
+fn write_fp(path: Str, content: Str) {
     let fp = fopen(path, "w")
     if fp? then {
         fwrite(fp, content, content.len)
