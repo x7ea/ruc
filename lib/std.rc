@@ -76,7 +76,7 @@ fn read_file(path: Str): Str {
     let size = 512 * 8
     let buf = calloc<Str>(size, 1)
     let file = fopen(path, "r")
-    if file? {
+    if file? then {
         fread(file, buf, size)
         fclose(file)
     }
