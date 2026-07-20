@@ -1,5 +1,5 @@
 use std
 
 fn main() {
-    print read_file("README.md").some?
+    print read_file("README.md").some
 }
