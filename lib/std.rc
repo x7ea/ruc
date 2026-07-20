@@ -77,12 +77,11 @@ extern fn ftell(file: File): Int
 
 fn read_file(path: Str): Str {
     let file = fopen(path, "r")
-
-fseek(fp, 0, 2);
-
-    size = ftell(fp);
-
-    let buf = calloc<Str>(512, 1)
+    let size = {
+        fseek(file, 0, 2)
+        ftell(file)
+    }
+    let buf = calloc<Str>(size, 1)
     if file? then {
         fread(file, buf, size)
         fclose(file)
