@@ -63,3 +63,4 @@ fn Map.insert<K, V>(this: Map<K, V>, key: K, value: V) {
 }
 
 extern fn mkdir(path: Str)
+extern fn rmdir(path: Str)
