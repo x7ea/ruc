@@ -76,7 +76,7 @@ extern fn fseek(fp: File, offset: Int, whence: Int)
 extern fn ftell(fp: File): Int
 extern fn rewind(fp: File)
 
-fn read_fp(path: Str): Str {
+fn read_file(path: Str): Str {
     let fp = fopen(path, "r")
 
     fseek(fp, 0, 2)
@@ -91,7 +91,7 @@ fn read_fp(path: Str): Str {
     buf
 }
 
-fn write_fp(path: Str, content: Str) {
+fn write_file(path: Str, content: Str) {
     let fp = fopen(path, "w")
     if fp? then {
         fwrite(content, 1, content.len, fp)
