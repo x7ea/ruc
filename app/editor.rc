@@ -11,7 +11,7 @@ fn main(argc: Int, argv: [Str]) {
     if command == "read" then {
         match read_file(src) {
             Some buf = print buf,
-            none = print "undefined: " + src
+            None = print "undefined: " + src
         }
     } else if command == "write" then {
         let content = input()
