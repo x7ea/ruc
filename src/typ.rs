@@ -296,7 +296,7 @@ impl Expr {
                 let temp = temp!(typ.clone());
                 let mut expr = vec![Expr::Let(
                     Box::new(temp.clone()),
-                    Box::new(Expr::Init(typ, array.len())),
+                    Box::new(Expr::Init(typ, Box::new(Expr::Integer(array.len() as i64)))),
                 )];
                 for (idx, val) in array.iter().enumerate() {
                     expr.push(Expr::Let(
