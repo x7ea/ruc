@@ -341,8 +341,8 @@ macro_rules! var {
     }};
     ($name: expr, $args: expr, $typ: expr) => {{
         Expr::Variable(Generic(
-            Name::new($name)?.class(&$typ.remove_generic()),
-            [args, $typ.generic_args()].concat(),
+            Name::new($name)?,
+            [$args, $typ.generic_args()].concat(),
         ))
     }};
 }
