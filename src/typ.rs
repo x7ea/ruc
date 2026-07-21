@@ -208,6 +208,7 @@ impl Expr {
                         *callee = var!(name.to_string().as_str(), args, typ);
                     }
                 }
+                dbg!(&callee);
                 match callee.infer(ctx)? {
                     Type::Function(Lambda((_, ret), Some(params))) => {
                         let (pl, al) = (params.len(), args.len());
@@ -483,6 +484,7 @@ impl Expr {
             Type::Float => Ok(String::from("%g")),
             _ => {
                 let fmter = Box::new(var!("display", &typ));
+                dbg!(fmter);
                 *self = Expr::Call(fmter, vec![self.clone()]);
                 self.fmtgen(ctx)
             }
