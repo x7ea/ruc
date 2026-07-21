@@ -203,7 +203,7 @@ impl Expr {
             Expr::Call(callee, mut args) => {
                 if let Some(obj) = args.first() {
                     let typ = obj.infer(ctx)?;
-                    args.push(typ.generic_args());
+                    args.append(&mut typ.generic_args());
                     ctx.local.class = Some(typ.remove_generic());
                 }
                 match callee.infer(ctx)? {
