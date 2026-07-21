@@ -82,7 +82,7 @@ fn Map.index<K, V>(this: Map<K, V>, key: K): Int {
 }
 
 fn Map.get<K, V>(this: Map<K, V>, key: K): Option<V> {
-    let index = this.index<K, V>(key)
+    let index = this.index(key)
     if index != this.keys.len then {
         Option<V>::Some(this.values[index])
     } else {
@@ -91,7 +91,7 @@ fn Map.get<K, V>(this: Map<K, V>, key: K): Option<V> {
 }
 
 fn Map.insert<K, V>(this: Map<K, V>, key: K, value: V) {
-    let index = this.index<K, V>(key)
+    let index = this.index(key)
     if index != this.keys.len then {
         let this.values[index] = value
     }
