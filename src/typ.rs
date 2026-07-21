@@ -200,9 +200,11 @@ impl Expr {
                 ctx.local.scope = parent;
                 typing!(ret.clone())
             }
-            Expr::Call(callee, args) => {
+            Expr::Call(callee, mut args) => {
                 if let Some(obj) = args.first() {
-                    ctx.local.class = Some(obj.infer(ctx)?.remove_generic());
+                    let typ = obj.infer(ctx)?;
+                    args.push(typ.generic_args());
+                    ctx.local.class = Some(typ.remove_generic());
                 }
                 match callee.infer(ctx)? {
                     Type::Function(Lambda((_, ret), Some(params))) => {
@@ -234,7 +236,6 @@ impl Expr {
                     ctx.local.class = None;
                 }
                 if let Some(typ) = ctx.global.lib.get(&name).cloned() {
-                    let args = [args, typ.generic_args()].concat();
                     let var = Expr::Variable(Generic(name.clone(), map!(args, |x| x.solve(ctx))));
                     if self != &var {
                         ctx.local.expand.insert(self.clone(), var);
