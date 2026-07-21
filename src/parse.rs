@@ -146,11 +146,10 @@ impl Expr {
             if let Ok((typ, len)) = once!(arr, ";") {
                 return Ok(Expr::Init(Type::parse(&typ)?, Box::new(Expr::parse(&len)?)));
             }
-            if let Ok(arr) = serial!(arr, Expr::parse).try_into() {
-                Ok(Expr::Sequence(arr))
-            } else {
-                Err(format!("empty array: {src}"))
-            }
+            let Ok(arr) = serial!(arr, Expr::parse).try_into() else {
+                return Err(format!("empty array: {src}"));
+            };
+            Ok(Expr::Sequence(arr))
         } else if let Ok(i) = src.parse::<i64>() {
             Ok(Expr::Integer(i))
         } else if let Ok(f) = src.parse::<f64>() {
