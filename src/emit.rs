@@ -296,12 +296,7 @@ impl Generic {
 
 #[macro_export]
 macro_rules! new {
-    ($layout: expr) => {
-        Expr::Call(
-            Box::new(var!("calloc")),
-            vec![Expr::Integer($layout as i64), Expr::Integer(8)],
-        )
-    };
+    ($layout: expr) => {{ Expr::Call(Box::new(var!("calloc")), vec![$layout, Expr::Integer(8)]) }};
 }
 #[macro_export]
 macro_rules! len {
