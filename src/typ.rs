@@ -200,13 +200,11 @@ impl Expr {
                 ctx.local.scope = parent;
                 typing!(ret.clone())
             }
-            Expr::Call(mut callee, args) => {
-                if let Some(obj) = args.first() {
-                    let typ = obj.infer(ctx)?;
+            Expr::Call(callee, args) => {
+                if let Some(obj) = args.first()
+                    && let Ok(typ) = obj.infer(ctx)
+                {
                     ctx.local.class = Some(typ.remove_generic());
-                    if let Expr::Variable(Generic(name, args)) = *callee.clone() {
-                        *callee = var!(name.to_string().as_str(), args, typ);
-                    }
                 }
                 match callee.infer(ctx)? {
                     Type::Function(Lambda((_, ret), Some(params))) => {
