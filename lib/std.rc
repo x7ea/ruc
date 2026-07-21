@@ -52,6 +52,14 @@ fn Vec.push<T>(this: Vec<T>, value: T) {
     this.raw = clone buf
 }
 
+fn Vec.display<T>(this: Vec<T>) {
+    let fmt = "[ "
+    for data = this.raw do {
+        let fmt = format fmt, data, ", "
+    }
+    fmt + "]"
+}
+
 struct Map<K, V> {
     keys: [K],
     values: [V]
