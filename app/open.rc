@@ -5,7 +5,7 @@ fn main(argc: Int, argv: [Str]) {
     let src = argv[1]
 
     if command == "read" then {
-        if let buf = read_file(src).some {
+        if let buf = read_file(src).some then {
             print "Edit: ", src
             print buf
         } else {
