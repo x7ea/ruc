@@ -230,9 +230,9 @@ impl Expr {
                 if let Some(class) = &ctx.local.class {
                     let name = name.class(&class.remove_generic());
                     if ctx.global.lib.contains_key(&name) {
+                        args.append(&mut class.generic_args());
                         return typing!(expands!(Expr::Variable(Generic(name, args))));
                     }
-                    args.append(&mut class.generic_args());
                     ctx.local.class = None;
                 }
                 if let Some(typ) = ctx.global.lib.get(&name).cloned() {
