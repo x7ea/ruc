@@ -5,16 +5,18 @@ fn main(argc: Int, argv: [Str]) {
         print "Ruca Editor"
         exit(1)
     }
-    let command = argv[0]
+    let cmd = argv[0]
     let src = argv[1]
 
-    if command == "read" then {
+    if cmd == "read" then {
         match read_file(src) {
             Some buf = print buf,
             None = print "undefined: " + src
         }
-    } else if command == "write" then {
+    } else if cmd == "write" then {
         let content = input()
         write_file(src, content)
+    } else {
+        print "unknown: " + cmd
     }
 }
