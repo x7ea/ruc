@@ -78,7 +78,7 @@ impl Expr {
                     ($typ, ret @ $typ) => typing!(ret.clone()),
                     (lhs, rhs) if lhs != rhs => Err(format!("operator term: {lhs} != {rhs}")),
                     (typ, _) => typing!(expands!(Expr::Call(
-                        Box::new(var!(&self.as_ref().to_lowercase(), &typ)),
+                        Box::new(var!(&self.as_ref().to_lowercase(), { &typ })),
                         vec![*$lhs, *$rhs],
                     ))),
                 }
@@ -431,7 +431,7 @@ impl Expr {
                 typing!(expands!(Expr::Block(vec![
                     Expr::Let(dest.clone(), Box::new(Expr::New(typ.clone()))),
                     Expr::Call(
-                        Box::new(var!("memcpy", { typ.clone() })),
+                        Box::new(var!("memcpy", typ.clone())),
                         vec![*dest.clone(), *expr, Expr::Integer(typ.size(ctx) as i64)]
                     ),
                     *dest.clone()
@@ -478,7 +478,7 @@ impl Expr {
             Type::String => Ok(String::from("%s")),
             Type::Float => Ok(String::from("%g")),
             _ => {
-                let fmter = Box::new(var!("display", &typ));
+                let fmter = Box::new(var!("display", { &typ }));
                 *self = Expr::Call(fmter, vec![self.clone()]);
                 self.fmtgen(ctx)
             }
