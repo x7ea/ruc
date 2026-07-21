@@ -204,8 +204,8 @@ impl Expr {
             },
             Expr::Init(_, len) => Ok(format!(
                 "{}\tpush rax\n{}\tmov r10, rax\n\tpop rax\n\tmov qword [rax], r10\n",
-                len.emit(ctx)?,
-                expr!(self).emit(ctx)?
+                expr!(self).emit(ctx)?,
+                len.emit(ctx)?
             )),
             Expr::Check(expr) => {
                 if let Some(expr) = ctx.local.expand.get(self) {
