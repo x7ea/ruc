@@ -1,5 +1,6 @@
 extern fn calloc<T>(nmemb: Int, size: Int): T
 extern fn memcpy<T>(dst: T, src: T, n: Int)
+extern fn free<T>(ptr: T)
 
 extern fn strcmp(a: Str, b: Str): Int
 extern fn strlen(this: Str): Int
@@ -47,6 +48,7 @@ fn Vec.push<T>(this: Vec<T>, value: T) {
         let buf[index] = data
         let index = index + 1
     }
+    free(this.raw)
     let buf[index] = value
     let this.raw = buf
 }
