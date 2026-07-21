@@ -562,10 +562,10 @@ impl Type {
 
     fn remove_generic(&self) -> Type {
         match self {
-            Type::Function(Lambda((_removed, ret), Some(args))) => {
-                let args = Some(map!(args, |x| x.remove_generic()));
-                Type::Function(Lambda((Vec::new(), Box::new(ret.remove_generic())), args))
-            }
+            Type::Function(Lambda((_removed, ret), Some(args))) => Type::Function(Lambda(
+                (Vec::new(), Box::new(ret.remove_generic())),
+                Some(map!(args, |x| x.remove_generic())),
+            )),
             Type::Class(Generic(name, _removed)) => Type::Class(Generic(name.clone(), Vec::new())),
             Type::Array(typ) => Type::Array(Box::new(typ.remove_generic())),
             _ => self.clone(),
