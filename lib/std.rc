@@ -48,7 +48,6 @@ fn Vec.push<T>(this: Vec<T>, value: T) {
         let buf[index] = data
         let index = index + 1
     }
-    free<[T]>(this.raw)
     let buf[index] = value
     let this.raw = buf
 }
