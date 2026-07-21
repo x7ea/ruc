@@ -572,6 +572,13 @@ impl Type {
         }
     }
 
+    fn args(&self) -> Vec<Type> {
+        match self {
+            Type::Class(Generic(name, generic)) => generic,
+            _ => Vec::new(),
+        }
+    }
+
     fn solve(&self, ctx: &mut Context) -> Type {
         let mut typ = self.clone();
         for (old, new) in &ctx.global.alias {
