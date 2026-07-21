@@ -205,7 +205,7 @@ impl Expr {
                     let typ = obj.infer(ctx)?;
                     ctx.local.class = Some(typ.remove_generic());
                     if let Expr::Variable(Generic(name, args)) = *callee.clone() {
-                        *callee = var!(name.to_string().as_str(), args, &typ);
+                        *callee = var!(name.to_string().as_str(), args, typ);
                     }
                 }
                 match callee.infer(ctx)? {
