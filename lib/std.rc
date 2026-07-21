@@ -49,7 +49,7 @@ fn Vec.push<T>(this: Vec<T>, value: T) {
         let index = index + 1
     }
     let buf[index] = value
-    this.raw = clone buf
+    let this.raw = clone buf
 }
 
 fn Vec.display<T>(this: Vec<T>) {
