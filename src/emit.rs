@@ -289,7 +289,7 @@ impl Generic {
     pub fn generic(&self) -> Name {
         let Generic(mut name, typ) = self.clone();
         for typ in typ {
-            name = name.class(typ);
+            name = name.class(&typ);
         }
         name
     }
