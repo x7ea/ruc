@@ -227,7 +227,7 @@ impl Expr {
             }
             Expr::Variable(Generic(name, args)) => {
                 if let Some(obj) = &ctx.local.class {
-                    let name = name.class(&obj);
+                    let name = name.class(obj);
                     if ctx.global.lib.contains_key(&name) {
                         return typing!(expands!(Expr::Variable(Generic(name, args))));
                     }
@@ -235,7 +235,7 @@ impl Expr {
                 }
                 if let Some(typ) = ctx.global.lib.get(&name).cloned() {
                     let var = Expr::Variable(Generic(name.clone(), map!(args, |x| x.solve(ctx))));
-                    if &self != &&var {
+                    if self != &var {
                         ctx.local.expand.insert(self.clone(), var);
                     }
                     typing!(typ.mono(ctx, Generic(name, args))?)
