@@ -202,7 +202,11 @@ impl Expr {
             }
             Expr::Call(callee, args) => {
                 if let Some(obj) = args.first() {
-                    ctx.local.class = Some(obj.infer(ctx)?.remove_generic());
+                    let typ = obj.infer(ctx)?;
+                    ctx.local.class = Some(typ.remove_generic());
+                    if let Expr::Variable(Generic(name, args)) = *callee.clone() {
+                        *callee = var!(name.to_string().as_str(), args, &typ);
+                    }
                 }
                 match callee.infer(ctx)? {
                     Type::Function(Lambda((_, ret), Some(params))) => {
