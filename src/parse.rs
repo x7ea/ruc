@@ -98,7 +98,7 @@ impl Expr {
                     let name = Name::new(&key.to_lowercase())?;
                     return Ok((name, Some(Expr::parse(&bind)?), ret));
                 }
-                Ok((Name::new(&head)?, None, ret))
+                Ok((Name::new(&head.to_lowercase())?, None, ret))
             });
             Ok(Expr::Match(Box::new(Expr::parse(&expr)?), pats))
         } else if let Some(src) = src.strip_prefix("while ") {
