@@ -115,6 +115,7 @@ impl Expr {
         macro_rules! expr {
             ($expr: expr) => {{ ctx.local.expand[$expr].clone() }};
         }
+
         match self {
             Expr::If(cond, then, els) => {
                 if let Some(expr) = ctx.local.expand.get(self) {
