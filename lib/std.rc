@@ -35,7 +35,7 @@ struct Vec<T> {
 
 
 fn Vec<T>(value: [T]): Vec<T> {
-    let this = new Map<T>
+    let this = new Vec<T>
     let this.raw = value
     this
 }
