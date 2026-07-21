@@ -73,18 +73,17 @@ impl Expr {
             ($typ: expr) => {{ var!(&format!("temp{}", hash!(&self))) }};
         }
         macro_rules! op {
-            ($typ: pat, $lhs: expr, $rhs: expr) => {
+            ($typ: pat, $lhs: expr, $rhs: expr) => {{
+                let op = &self.as_ref().to_lowercase();
                 match ($lhs.infer(ctx)?, $rhs.infer(ctx)?) {
                     ($typ, ret @ $typ) => typing!(ret.clone()),
-                    (lhs, rhs) if lhs != rhs => {
-                        Err(format!("operator `{}` term: {lhs} != {rhs}", self.as_ref()))
-                    }
+                    (lhs, rhs) if lhs != rhs => Err(format!("{op} term: {lhs} != {rhs}",)),
                     (typ, _) => typing!(expands!(Expr::Call(
-                        Box::new(var!(&self.as_ref().to_lowercase(), &typ)),
+                        Box::new(var!(op, &typ)),
                         vec![*$lhs, *$rhs],
                     ))),
                 }
-            };
+            }};
             ($typ: pat, $lhs: expr, $rhs: expr, $ret: expr) => {{
                 op!($typ, $lhs, $rhs)?;
                 typing!($ret.clone())
