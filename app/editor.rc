@@ -1,7 +1,7 @@
 use std
 
 fn main(argc: Int, argv: [Str]) {
-    if argc < 3 {
+    if argc < 3 then {
         print "Ruca Editor"
         exit(1)
     }
