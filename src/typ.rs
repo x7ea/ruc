@@ -574,7 +574,7 @@ impl Type {
 
     fn args(&self) -> Vec<Type> {
         match self {
-            Type::Class(Generic(name, generic)) => generic,
+            Type::Class(Generic(name, generic)) => generic.clone(),
             _ => Vec::new(),
         }
     }
