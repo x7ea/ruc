@@ -486,22 +486,6 @@ impl Expr {
     }
 }
 
-macro_rules! each_type {
-    ($self: expr, $proc: expr) => {
-        match $self {
-            Type::Function(Lambda((typ, ret), Some(args))) => Type::Function(Lambda(
-                (typ.clone(), Box::new($proc(ret))),
-                Some(map!(args, $proc)),
-            )),
-            Type::Class(Generic(name, args)) => {
-                Type::Class(Generic(name.clone(), map!(args, $proc)))
-            }
-            Type::Array(typ) => Type::Array(Box::new($proc(typ))),
-            _ => $self.clone(),
-        }
-    };
-}
-
 impl Type {
     fn mono(&self, ctx: &mut Context, Generic(name, args): Generic) -> Result<Type, String> {
         let (mut typ, args) = (self.solve(ctx), map!(args, |x| x.solve(ctx)));
@@ -563,7 +547,17 @@ impl Type {
         if self == old {
             return new.clone();
         }
-        each_type!(self, |x: &Type| x.rewrite(old, new))
+        match self {
+            Type::Function(Lambda((typ, ret), Some(args))) => {
+                let args = Some(map!(args, |x| x.rewrite(old, new)));
+                Type::Function(Lambda((typ.clone(), Box::new(ret.rewrite(old, new))), args))
+            }
+            Type::Class(Generic(name, args)) => {
+                Type::Class(Generic(name.clone(), map!(args, |x| x.rewrite(old, new))))
+            }
+            Type::Array(typ) => Type::Array(Box::new(typ.rewrite(old, new))),
+            _ => self.clone(),
+        }
     }
 
     fn remove_generic(&self) -> Type {
@@ -580,7 +574,7 @@ impl Type {
 
     fn args(&self) -> Vec<Type> {
         match self {
-            Type::Class(Generic(name, generic)) => generic.clone(),
+            Type::Class(Generic(_, generic)) => generic.clone(),
             _ => Vec::new(),
         }
     }
