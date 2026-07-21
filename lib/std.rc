@@ -29,6 +29,22 @@ enum Option<T> {
     none: ()
 }
 
+struct Vec<T> {
+    raw: [T]
+}
+
+fn Vec.push<T>(this: Vec<T>, value: T) {
+    let buf = [T; this.len + 1]
+
+    let index = 0
+    for data = this.raw do {
+        let buf[index] = data
+        let index = index + 1
+    }
+    let buf[index] = value
+    this.raw = clone buf
+}
+
 struct Map<K, V> {
     keys: [K],
     values: [V]
