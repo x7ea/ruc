@@ -478,7 +478,7 @@ impl Expr {
             Type::String => Ok(String::from("%s")),
             Type::Float => Ok(String::from("%g")),
             _ => {
-                let fmter = Box::new(var!("display", { typ }));
+                let fmter = Box::new(var!("display", { typ.clone() }));
                 *self = Expr::Call(fmter, vec![self.clone()]);
                 self.fmtgen(ctx)
             }
