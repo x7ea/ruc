@@ -339,5 +339,5 @@ macro_rules! var {
             $typ.generic_args(),
         ))
     }};
-    ($name: expr, $arg: expr, $typ: expr) => {{ Expr::Variable(Generic(Name::new($name)?, $args + $typ.generic_args())) }};
+    ($name: expr, $arg: expr, $typ: expr) => {{ Expr::Variable(Generic(Name::new($name)?, $args + &$typ.generic_args())) }};
 }
