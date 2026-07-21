@@ -4,7 +4,7 @@ run() {
     gcc main.o $(pkg-config --cflags --libs gtk+-3.0) -no-pie -z noexecstack -O3 -rdynamic -o main
 }
 
-for src in $@; do
-    run src
+for src; do
+    run $src
     ./main
 done
