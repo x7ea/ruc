@@ -33,7 +33,6 @@ struct Vec<T> {
     raw: [T]
 }
 
-
 fn Vec<T>(value: [T]): Vec<T> {
     let this = new Vec<T>
     let this.raw = value
