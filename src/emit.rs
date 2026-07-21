@@ -332,11 +332,11 @@ macro_rules! map {
 #[macro_export]
 macro_rules! var {
     ($name: expr) => {{ Expr::Variable(Generic(Name::new(&$name)?, Vec::new())) }};
-    ($name: expr, $arg: block) => {{ Expr::Variable(Generic(Name::new(&$name)?, vec![$arg])) }};
-    ($name: expr, $typ: expr) => {{
+    ($name: expr, $typ: block) => {{
         Expr::Variable(Generic(
             Name::new($name)?.class(&$typ.remove_generic()),
             $typ.generic_args(),
         ))
     }};
+    ($name: expr, $arg: expr) => {{ Expr::Variable(Generic(Name::new(&$name)?, vec![$arg])) }};
 }
