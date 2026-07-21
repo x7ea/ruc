@@ -204,9 +204,6 @@ impl Expr {
                 if let Some(obj) = args.first() {
                     let typ = obj.infer(ctx)?;
                     ctx.local.class = Some(typ.remove_generic());
-                    if let Expr::Variable(Generic(name, args)) = *callee.clone() {
-                        *callee = var!(name, args, typ);
-                    }
                 }
                 match callee.infer(ctx)? {
                     Type::Function(Lambda((_, ret), Some(params))) => {
@@ -229,12 +226,13 @@ impl Expr {
                     typ => Err(format!("callee: {typ}")),
                 }
             }
-            Expr::Variable(Generic(name, args)) => {
+            Expr::Variable(Generic(name, mut args)) => {
                 if let Some(class) = &ctx.local.class {
                     let name = name.class(&class.remove_generic());
                     if ctx.global.lib.contains_key(&name) {
                         return typing!(expands!(Expr::Variable(Generic(name, args))));
                     }
+                    args.append(&mut class.generic_args());
                     ctx.local.class = None;
                 }
                 if let Some(typ) = ctx.global.lib.get(&name).cloned() {
