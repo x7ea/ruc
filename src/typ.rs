@@ -403,7 +403,7 @@ impl Expr {
                 typing!(Type::Boolean)
             }
             Expr::Init(typ, len) => {
-                expand!(new!(len + 1));
+                expand!(new!(Expr::Add(len, Box::new(Expr::Integer(1)))));
                 typing!(Type::Array(Box::new(typ.clone())))
             }
             Expr::Read(addr, typ, offset) => {
