@@ -95,7 +95,8 @@ impl Expr {
                 let (head, ret) = once!(src, "=")?;
                 let ret = Expr::parse(&ret)?;
                 if let Ok((key, bind)) = once!(&head.trim(), SPACE) {
-                    return Ok((Name::new(&key)?, Some(Expr::parse(&bind)?), ret));
+                    let name = Name::new(&key.to_lowercase())?;
+                    return Ok((name, Some(Expr::parse(&bind)?), ret));
                 }
                 Ok((Name::new(&head)?, None, ret))
             });
