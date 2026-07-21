@@ -33,6 +33,13 @@ struct Vec<T> {
     raw: [T]
 }
 
+
+fn Vec<T>(value: [T]): Vec<T> {
+    let this = new Map<T>
+    let this.raw = value
+    this
+}
+
 fn Vec.push<T>(this: Vec<T>, value: T) {
     let buf = [T; this.len + 1]
 
