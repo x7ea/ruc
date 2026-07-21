@@ -4,7 +4,7 @@ fn main() {
     print "Hello, world!"
 
     let a = Vec<Int>([1, 2])
-    print a
+    print a.display<Int>()
 
     a.push(3)
     print a
