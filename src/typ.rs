@@ -479,7 +479,6 @@ impl Expr {
             Type::Float => Ok(String::from("%g")),
             _ => {
                 let fmter = Box::new(var!("display", { &typ }));
-                dbg!(&fmter);
                 *self = Expr::Call(fmter, vec![self.clone()]);
                 self.fmtgen(ctx)
             }
