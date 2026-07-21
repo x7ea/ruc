@@ -88,7 +88,7 @@ pub mod name {
                 return Err(format!("empty: {name}"));
             }
             if let Some((class, name)) = name.split_once(".") {
-                return Ok(Name::new(name)?.class(Type::parse(class)?));
+                return Ok(Name::new(name)?.class(&Type::parse(class)?));
             }
             fn validate(x: char) -> bool {
                 x == '_' || x.is_ascii_alphabetic() || x.is_ascii_digit()
