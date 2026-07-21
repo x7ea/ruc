@@ -2,7 +2,7 @@ use std
 
 fn main() {
     let a = Vec<Int>([1, 2])
-    print a.display<Int>()
+    print a
 
     a.push<Int>(3)
     print a
