@@ -1,8 +1,8 @@
 use std
 
 fn main(argc: Int, argv: [Str]) {
-    if argc < 10 {
-        print "Editor"
+    if argc < 2 {
+        print "Ruca Editor"
         exit(1)
     }
     let command = argv[0]
