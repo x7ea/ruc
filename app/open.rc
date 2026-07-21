@@ -1,5 +1,6 @@
 use std
 
-fn main() {
-    print read_file("README.md").some
+fn main(argc: Int, argv: [Str]) {
+    let file = argv[0]
+    print read_file(file).some
 }
