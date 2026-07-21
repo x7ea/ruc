@@ -595,3 +595,17 @@ impl Type {
         }
     }
 }
+
+macro_rules! each_type {
+    ($self: expr, $proc: expr) => {
+        match $self {
+            Type::Function(Lambda((typ, ret), Some(args))) => Type::Function(Lambda(
+                (typ.clone(), Box::new($proc(ret))),
+                Some(map!(args, $proc)),
+            )),
+            Type::Class(Generic(name, args)) => Type::Class(Generic(name.clone(), $proc)),
+            Type::Array(typ) => Type::Array(Box::new($proc(ret))),
+            _ => self.clone(),
+        }
+    };
+}
