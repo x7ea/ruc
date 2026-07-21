@@ -41,7 +41,7 @@ fn Vec<T>(value: [T]): Vec<T> {
 }
 
 fn Vec.push<T>(this: Vec<T>, value: T) {
-    let buf = [T; this.len + 1]
+    let buf = [T; this.raw.len + 1]
 
     let index = 0
     for data = this.raw do {
