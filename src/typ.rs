@@ -231,13 +231,15 @@ impl Expr {
             }
             Expr::Variable(Generic(name, args)) => {
                 if let Some(obj) = &ctx.local.class {
-                    let name = name.class(obj);
+                    let name = name.class(obj.remove_generic());
                     if ctx.global.lib.contains_key(&name) {
                         return typing!(expands!(Expr::Variable(Generic(name, args))));
                     }
                     ctx.local.class = None;
                 }
                 if let Some(typ) = ctx.global.lib.get(&name).cloned() {
+                    *callee = var!(name, args, typ);
+
                     let var = Expr::Variable(Generic(name.clone(), map!(args, |x| x.solve(ctx))));
                     if self != &var {
                         ctx.local.expand.insert(self.clone(), var);
