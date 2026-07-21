@@ -10,7 +10,7 @@ fn main(argc: Int, argv: [Str]) {
 
     if command == "read" then {
         match read_file(src) {
-            some buf = print buf,
+            Some buf = print buf,
             none = print "undefined: " + src
         }
     } else if command == "write" then {
