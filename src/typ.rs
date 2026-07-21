@@ -202,7 +202,7 @@ impl Expr {
             }
             Expr::Call(callee, args) => {
                 if let Some(obj) = args.first() {
-                    ctx.local.class = Some(obj.infer(ctx)?.without_generic());
+                    ctx.local.class = Some(obj.infer(ctx)?.remove_generic());
                 }
                 match callee.infer(ctx)? {
                     Type::Function(Lambda((_, ret), Some(params))) => {
@@ -560,14 +560,14 @@ impl Type {
         }
     }
 
-    fn without_generic(&self) -> Type {
+    fn remove_generic(&self) -> Type {
         match self {
             Type::Function(Lambda((_removed, ret), Some(args))) => {
-                let args = Some(map!(args, |x| x.without_generic()));
-                Type::Function(Lambda((Vec::new(), Box::new(ret.without_generic())), args))
+                let args = Some(map!(args, |x| x.remove_generic()));
+                Type::Function(Lambda((Vec::new(), Box::new(ret.remove_generic())), args))
             }
             Type::Class(Generic(name, _removed)) => Type::Class(Generic(name.clone(), Vec::new())),
-            Type::Array(typ) => Type::Array(Box::new(typ.without_generic())),
+            Type::Array(typ) => Type::Array(Box::new(typ.remove_generic())),
             _ => self.clone(),
         }
     }
