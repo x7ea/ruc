@@ -493,7 +493,9 @@ macro_rules! each_type {
                 (typ.clone(), Box::new($proc(ret))),
                 Some(map!(args, $proc)),
             )),
-            Type::Class(Generic(name, args)) => Type::Class(Generic(name.clone(), $proc)),
+            Type::Class(Generic(name, args)) => {
+                Type::Class(Generic(name.clone(), map!(args, $proc)))
+            }
             Type::Array(typ) => Type::Array(Box::new($proc(typ))),
             _ => $self.clone(),
         }
@@ -561,7 +563,7 @@ impl Type {
         if self == old {
             return new.clone();
         }
-        each_type!(self, |x| x.rewrite(old, new))
+        each_type!(self, |x: &Type| x.rewrite(old, new))
     }
 
     fn remove_generic(&self) -> Type {
