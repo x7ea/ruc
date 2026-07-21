@@ -52,7 +52,7 @@ fn Vec.push<T>(this: Vec<T>, value: T) {
     let this.raw = clone buf
 }
 
-fn Vec.display(this: Vec<T>): Str {
+fn Vec.display<T>(this: Vec<T>): Str {
     let fmt = "[ "
     for data = this.raw do {
         let fmt = format fmt, data, ", "
