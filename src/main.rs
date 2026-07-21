@@ -96,7 +96,7 @@ pub enum Expr {
     Xor(Box<Expr>, Box<Expr>),
     // Low-layer IR
     Clone(Box<Expr>),
-    Init(Type, Expr),
+    Init(Type, Box<Expr>),
     Read(Box<Expr>, Type, Box<Expr>),
     Write(Box<Expr>, Box<Expr>, Box<Expr>),
 }
