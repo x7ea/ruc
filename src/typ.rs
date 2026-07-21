@@ -200,7 +200,7 @@ impl Expr {
                 ctx.local.scope = parent;
                 typing!(ret.clone())
             }
-            Expr::Call(callee, args) => {
+            Expr::Call(mut callee, args) => {
                 if let Some(obj) = args.first() {
                     let typ = obj.infer(ctx)?;
                     ctx.local.class = Some(typ.remove_generic());
