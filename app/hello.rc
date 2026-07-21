@@ -2,10 +2,4 @@ use std
 
 fn main() {
     print "Hello, world!"
-
-    let a = Vec<Int>([1, 2])
-    print a.display<Int>()
-
-    a.push<Int>(3)
-    print a.display<Int>()
 }
