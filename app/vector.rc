@@ -5,5 +5,5 @@ fn main() {
     print a.display<Int>()
 
     a.push<Int>(3)
-    print a.display<Int>()
+    print a
 }
