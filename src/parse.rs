@@ -258,10 +258,9 @@ impl Display for Generic {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let Generic(name, args) = self.clone();
         if args.is_empty() {
-            write!(f, "{name}")
-        } else {
-            let args = map!(args, |x| x.to_string()).join(", ");
-            write!(f, "{name}<{args}>")
+            return write!(f, "{name}");
         }
+        let args = map!(args, |x| x.to_string()).join(", ");
+        write!(f, "{name}<{args}>")
     }
 }
