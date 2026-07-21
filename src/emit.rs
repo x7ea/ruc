@@ -203,7 +203,8 @@ impl Expr {
                 _ => expr!(self).emit(ctx),
             },
             Expr::Init(_, len) => Ok(format!(
-                "{}\tmov qword [rax], {len}\n",
+                "{}\tpush rax\n{}\tmov r10, rax\n\tpop rax\n\tmov qword [rax], r10\n",
+                len.emit(ctx)?,
                 expr!(self).emit(ctx)?
             )),
             Expr::Check(expr) => {
