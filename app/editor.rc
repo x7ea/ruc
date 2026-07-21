@@ -10,7 +10,7 @@ fn main(argc: Int, argv: [Str]) {
 
     if command == "read" then {
         if let buf = read_file(src).some then {
-            print "Edit: ", src
+            print "Read: ", src
             print buf
         } else {
             print "undefined: ", src
