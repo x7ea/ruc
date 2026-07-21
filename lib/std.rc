@@ -4,6 +4,8 @@ extern fn memcpy<T>(dst: T, src: T, n: Int)
 extern fn strcmp(a: Str, b: Str): Int
 extern fn strlen(this: Str): Int
 
+extern fn exit(status_code: Int)
+
 extern fn atoi(src: Str): Int
 extern fn g_strdup_printf: Str
 extern fn printf
