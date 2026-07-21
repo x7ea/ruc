@@ -287,8 +287,8 @@ impl Expr {
 
 impl Generic {
     pub fn generic(&self) -> Name {
-        let Generic(mut name, typ) = self.clone();
-        for typ in typ {
+        let Generic(mut name, args) = self.clone();
+        for typ in args {
             name = name.class(&typ);
         }
         name
