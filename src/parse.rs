@@ -12,7 +12,7 @@ impl Define {
                     let mut map = IndexMap::new();
                     for arg in lexer($args, ",")? {
                         let (name, typ) = once!(&arg, ":")?;
-                        map.insert(Name::new(&name)?, Type::parse(&typ)?);
+                        map.insert(Name::new(&name.to_lowercase())?, Type::parse(&typ)?);
                     }
                     map
                 }};
