@@ -582,7 +582,7 @@ impl Type {
         }
     }
 
-    fn solve(&self, ctx: &mut Context) -> Type {
+    fn solve(&self, ctx: &Context) -> Type {
         let mut typ = self.clone();
         for (old, new) in &ctx.global.alias {
             typ = typ.rewrite(old, new);
