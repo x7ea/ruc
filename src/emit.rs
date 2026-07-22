@@ -213,7 +213,7 @@ impl Expr {
                     return expr.clone().emit(ctx);
                 };
                 Ok(format!(
-                    "{}\tcmp rax, 0\nsetne al\n\tmovzx rax, al\n",
+                    "{}\tcmp rax, 0\n\tsetne al\n\tmovzx rax, al\n",
                     expr.emit(ctx)?
                 ))
             }
