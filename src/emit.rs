@@ -10,7 +10,6 @@ impl Define {
                     Define::Class(Generic(class, _), _) => class,
                     Define::Symbol(sym, _) => sym,
                 }
-                .clone()
             };
         }
         let ctx = &mut Context::default();
