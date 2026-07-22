@@ -208,13 +208,13 @@ impl Expr {
                 expr!(self).emit(ctx)?,
                 len.emit(ctx)?
             )),
-            Expr::Check(expr) => {
+            Expr::Check(obj) => {
                 if let Some(expr) = ctx.local.expand.get(self) {
                     return expr.clone().emit(ctx);
                 };
                 Ok(format!(
                     "{}\tcmp rax, 0\n\tsetne al\n\tmovzx rax, al\n",
-                    expr.emit(ctx)?
+                    obj.emit(ctx)?
                 ))
             }
             Expr::Read(offset, typ, addr) => {
