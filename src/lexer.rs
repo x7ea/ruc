@@ -156,8 +156,7 @@ macro_rules! once {
     ($v: expr, $del: literal, right) => {{
         let v = lexer($v, $del)?;
         if v.len() >= 2 {
-            let last = v.len() - 1;
-            Ok((v[..last].join($del), v[last].clone()))
+            Ok((v[..v.len() - 1].join($del), v[v.len() - 1].clone()))
         } else {
             Err(format!("expected: {}", $del))
         }
