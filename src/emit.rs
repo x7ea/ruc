@@ -1,5 +1,3 @@
-use std::format;
-
 use crate::*;
 
 impl Define {
