@@ -3,7 +3,7 @@ use std
 fn main(argc: Int, argv: [Str]) {
     if argc < 3 then {
         print "Ruca Editor"
-        return　2　
+        return
     }
     let cmd = argv[0]
     let src = argv[1]
