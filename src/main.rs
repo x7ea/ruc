@@ -61,6 +61,7 @@ pub enum Expr {
     Variable(Generic),
     Let(Box<Expr>, Box<Expr>),
     Call(Box<Expr>, Vec<Expr>),
+    Return(Box<Expr>),
     // Array
     Sequence(Vec1<Expr>),
     Index(Box<Expr>, Box<Expr>),
