@@ -114,6 +114,10 @@ impl Expr {
             Ok(Expr::New(Type::parse(class)?))
         } else if let Some(expr) = src.strip_prefix("clone ") {
             Ok(Expr::Clone(Box::new(Expr::parse(expr)?)))
+        } else if let Some(expr) = src.strip_prefix("return ") {
+            Ok(Expr::Return(Box::new(Expr::parse(expr)?)))
+        } else if src == "return" {
+            Ok(Expr::Return(Box::new(Expr::Null(Type::Void))))
         } else if let Some(x) = surround!("{", src, "}") {
             let mut block = vec![];
             for line in lexer(x, "\n")? {
