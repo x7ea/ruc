@@ -72,13 +72,17 @@ fn Map<K, V>(keys: [K], values: [V]): Map<K, V> {
     this
 }
 
-fn Map.index_of<K, V>(this: Map<K, V>, key: K): Int {
+fn Map.index_of<K, V>(this: Map<K, V>, key: K): Option<Int> {
     let index = 0
     while (index < this.keys.len) '
         & (this.keys[index] != key) do {
         let index = index + 1
     }
-    index
+    if index != this.keys.len then {
+         Option<Int>::Some(index)
+    } else {
+        Option<V>::None
+    }
 }
 
 fn Map.get<K, V>(this: Map<K, V>, key: K): Option<V> {
