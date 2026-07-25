@@ -113,19 +113,18 @@ extern fn rewind(fp: File)
 
 fn read_file(path: Str): Option<Str> {
     let fp = fopen(path, "r")
-    if fp? then {
-        fseek(fp, 0, 2)
-        let size = ftell(fp)
-        rewind(fp)
-
-        let buf = calloc<Str>(size, 1)
-        fread(buf, 1, size, fp)
-        fclose(fp)
-
-        Option<Str>::Some(buf)
-    } else {
+    if fp? == false then {
         Option<Str>::None
     }
+    fseek(fp, 0, 2)
+    let size = ftell(fp)
+    rewind(fp)
+
+    let buf = calloc<Str>(size, 1)
+    fread(buf, 1, size, fp)
+    fclose(fp)
+
+    Option<Str>::Some(buf)
 }
 
 fn write_file(path: Str, content: Str) {
