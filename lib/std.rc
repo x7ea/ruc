@@ -114,7 +114,7 @@ extern fn rewind(fp: File)
 
 fn read_file(path: Str): Option<Str> {
     let fp = fopen(path, "r")
-    if !fp? then {
+    if fp? then () else {
         return Option<Str>::None
     }
     fseek(fp, 0, 2)
