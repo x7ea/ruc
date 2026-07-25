@@ -119,7 +119,7 @@ impl Expr {
         } else if src == "return" {
             Ok(Expr::Return(Box::new(Expr::Null(Type::Void))))
         } else if let Some(x) = surround!("{", src, "}") {
-            let mut block = vec![];
+            let mut block = Vec::new();
             for line in lexer(x, "\n")? {
                 let (line, _) = once!(&line, ";").unwrap_or((line, String::new()));
                 if !line.trim().is_empty() {
@@ -253,7 +253,7 @@ impl Generic {
         if let Some((var, args)) = surround!("<", ">", src.trim()) {
             return Ok(Generic(Name::new(var)?, serial!(args, Type::parse)));
         }
-        Ok(Generic(Name::new(src.trim())?, vec![]))
+        Ok(Generic(Name::new(src.trim())?, Vec::new()))
     }
 }
 
