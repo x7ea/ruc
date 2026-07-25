@@ -1,3 +1,5 @@
+use std::format;
+
 use crate::*;
 
 impl Define {
@@ -143,6 +145,7 @@ impl Expr {
                 ))
             }
             Expr::Block(lines) => Ok(map!({ lines }, |line| line.emit(ctx))?.concat()),
+            Expr::Return(val) => Ok(format!("{}\tleave\n\tret\n", val.emit(ctx)?)),
             Expr::Call(callee, args) => {
                 let mut push = String::new();
                 for arg in args.iter().rev() {
