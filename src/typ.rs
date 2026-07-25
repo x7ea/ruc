@@ -548,7 +548,7 @@ impl Type {
                     Object::Enum(_) => Object::Enum(layout).clone(),
                     Object::Struct(_) => Object::Struct(layout).clone(),
                 };
-                ctx.global.table.insert(mangle.clone(), (vec![], unify));
+                ctx.global.table.insert(mangle.clone(), (Vec::new(), unify));
             }
             _ => {}
         }
