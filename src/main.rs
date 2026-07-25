@@ -95,6 +95,7 @@ pub enum Expr {
     And(Box<Expr>, Box<Expr>),
     Or(Box<Expr>, Box<Expr>),
     Xor(Box<Expr>, Box<Expr>),
+    Not(Box<Expr>),
     // Low-layer IR
     Clone(Box<Expr>),
     Init(Type, Box<Expr>),
