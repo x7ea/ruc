@@ -81,7 +81,7 @@ impl Expr {
                     (lhs, rhs) if lhs != rhs => Err(format!("{op} term: {lhs} != {rhs}",)),
                     (typ, _) => typing!(expands!(Expr::Call(
                         Box::new(var!(op, &typ)),
-                        vec![*$lhs, *$rhs],
+                        vec![*$lhs.clone(), *$rhs],
                     ))),
                 }
             }};
@@ -479,7 +479,7 @@ impl Expr {
             Expr::And(lhs, rhs) | Expr::Or(lhs, rhs) | Expr::Xor(lhs, rhs) => {
                 op!(Type::Boolean, lhs, rhs)
             }
-            Expr::Not(bool) => op!(Type::Boolean, &Box::new(Expr::Null(Type::Boolean)), bool),
+            Expr::Not(bool) => op!(Type::Boolean, Box::new(Expr::Null(Type::Boolean)), bool),
         }
     }
 
