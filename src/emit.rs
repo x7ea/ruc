@@ -269,9 +269,7 @@ impl Expr {
                 "{}\tadd rdx, rsi\n\tmov rax, rdx\n\tcqo\n\tidiv rsi\n\tmov rax, rdx\n",
                 expr!(self).emit(ctx)?
             )),
-            Expr::Not(bool) => Ok(
-                format!("{}\tnot rax\n", bool.emit(ctx)?)
-            )
+            Expr::Not(bool) => Ok(format!("{}\tnot rax\n", bool.emit(ctx)?)),
             Expr::Add(lhs, rhs) => Ok(op!("add", lhs, rhs)),
             Expr::Sub(lhs, rhs) => Ok(op!("sub", lhs, rhs)),
             Expr::Mul(lhs, rhs) => Ok(op!("mul", lhs, rhs)),
