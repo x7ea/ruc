@@ -479,7 +479,10 @@ impl Expr {
             Expr::And(lhs, rhs) | Expr::Or(lhs, rhs) | Expr::Xor(lhs, rhs) => {
                 op!(Type::Boolean, lhs, rhs)
             }
-            Expr::Not(bool) => op!(Type::Boolean, Box::new(Expr::Null(Type::Boolean)), bool),
+            Expr::Not(bool) => {
+                let typ = Box::new(Expr::Null(Type::Boolean));
+                op!(Type::Boolean, typ, bool)
+            }
         }
     }
 
