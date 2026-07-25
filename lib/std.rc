@@ -86,17 +86,14 @@ fn Map.index_of<K, V>(this: Map<K, V>, key: K): Option<Int> {
 }
 
 fn Map.get<K, V>(this: Map<K, V>, key: K): Option<V> {
-    let index = this.index_of(key)
-    if let index = index.some then {
-        Option<V>::Some(this.values[index])
-    } else {
-        Option<V>::None
+    match this.index_of(key) {
+        Some index = Option<V>::Some(this.values[index]),
+        None = Option<V>::None
     }
 }
 
 fn Map.insert<K, V>(this: Map<K, V>, key: K, value: V) {
-    let index = this.index_of(key)
-    if let index = index.some then {
+    if let index = this.index_of(key).some then {
         let this.values[index] = value
     }
 }
