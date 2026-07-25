@@ -160,6 +160,8 @@ impl Expr {
             Ok(Expr::Float(Float(f)))
         } else if let Some(class) = src.strip_suffix("?") {
             Ok(Expr::Check(Box::new(Expr::parse(class)?)))
+        } else if let Some(bool) = src.strip_prefix("!") {
+            Ok(Expr::Not(Box::new(Expr::parse(bool)?)))
         } else if let Ok((arr, idx)) = surround!(src, "[", "]") {
             let (arr, idx) = (Box::new(Expr::parse(&arr)?), Box::new(Expr::parse(&idx)?));
             Ok(Expr::Index(arr, idx))
