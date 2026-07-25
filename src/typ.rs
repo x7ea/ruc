@@ -81,7 +81,7 @@ impl Expr {
                     (lhs, rhs) if lhs != rhs => Err(format!("{op} term: {lhs} != {rhs}",)),
                     (typ, _) => typing!(expands!(Expr::Call(
                         Box::new(var!(op, &typ)),
-                        vec![*$lhs.clone(), *$rhs],
+                        vec![*$lhs, *$rhs],
                     ))),
                 }
             }};
