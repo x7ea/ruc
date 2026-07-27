@@ -296,7 +296,6 @@ impl Expr {
                         if typ.clone() != val {
                             return Err(format!("array: {typ} != {val}"));
                         }
-                        typing!(Type::Void)
                     }
                     acc @ Expr::Member(obj, key) => {
                         let [typ, rhs] = [acc.infer(ctx)?, val.infer(ctx)?];
