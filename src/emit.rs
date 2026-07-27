@@ -142,13 +142,7 @@ impl Expr {
                     body.emit(ctx)?,
                 ))
             }
-            Expr::Block(lines) => {
-                let mut block = map!({ lines }, |line| line.emit(ctx))?.concat();
-                if let Some(raii) = ctx.local.expand.get(self) {
-                    block += &raii.clone().emit(ctx)?;
-                }
-                Ok(block)
-            }
+            Expr::Block(lines) => Ok(map!({ lines }, |line| line.emit(ctx))?.concat()),
             Expr::Return(val) => Ok(format!("{}\tleave\n\tret\n", val.emit(ctx)?)),
             Expr::Call(callee, args) => {
                 let mut push = String::new();
