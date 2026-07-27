@@ -199,17 +199,15 @@ impl Expr {
                     }
                     ctx.local.var.insert(name.clone(), val.clone());
                 }
-                if !ctx.local.raii.is_empty() {
-                    let mut free = Vec::new();
-                    for var in ctx.local.raii.clone() {
-                        ctx.local.raii.shift_remove(&var);
-                        free.push(Expr::Call(
-                            Box::new(var!("free", { ctx.local.scope[&var].clone() })),
-                            vec![Expr::Variable(Generic(var, Vec::new()))],
-                        ))
-                    }
-                    expand!(Expr::Block(free));
+                let mut free = Vec::new();
+                for var in ctx.local.raii.clone() {
+                    ctx.local.raii.shift_remove(&var);
+                    free.push(Expr::Call(
+                        Box::new(var!("free", { ctx.local.scope[&var].clone() })),
+                        vec![Expr::Variable(Generic(var, Vec::new()))],
+                    ))
                 }
+                expand!(Expr::Block(free));
                 ctx.local.scope = parent;
                 typing!(ret.clone())
             }
