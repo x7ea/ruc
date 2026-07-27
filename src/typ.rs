@@ -197,6 +197,9 @@ impl Expr {
                     {
                         return Err(format!("duplicated {name}: {typ} != {val}"));
                     }
+                    if let Type::Class(_) = val {
+                        ctx.local.raii.insert(name.clone());
+                    }
                     ctx.local.var.insert(name.clone(), val.clone());
                 }
                 ctx.local.scope = parent;
