@@ -204,8 +204,8 @@ impl Expr {
                     for var in ctx.local.raii.clone() {
                         ctx.local.raii.shift_remove(&var);
                         free.push(Expr::Call(
-                            Box::new(var!("free", { ctx.local.scope[&var].clone() })),
-                            vec![Expr::Variable(Generic(var, Vec::new()))],
+                            Box::new(var!("free", { var.infer(ctx)? })),
+                            vec![var],
                         ))
                     }
                     expand!(Expr::Block(free));
