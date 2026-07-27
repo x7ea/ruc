@@ -145,7 +145,7 @@ impl Expr {
             Expr::Block(lines) => {
                 let mut block = map!({ lines }, |line| line.emit(ctx))?.concat();
                 if let Some(raii) = ctx.local.expand.get(self) {
-                    block += &raii.emit(ctx)?;
+                    block += &raii.clone().emit(ctx)?;
                 }
                 Ok(block)
             }
