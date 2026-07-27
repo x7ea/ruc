@@ -201,7 +201,7 @@ impl Expr {
                 }
                 if !ctx.local.raii.is_empty() {
                     let mut free = Vec::new();
-                    for var in &ctx.local.raii {
+                    for var in ctx.local.raii.iter() {
                         ctx.local.raii.shift_remove(var);
                         free.push(Expr::Call(
                             Box::new(var!("free", { ctx.local.scope[var].clone() })),
