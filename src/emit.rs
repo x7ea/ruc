@@ -143,7 +143,11 @@ impl Expr {
                 ))
             }
             Expr::Block(lines) => {
-                Ok(map!({ lines }, |line| line.emit(ctx))?.concat() + &expr!(self).emit(ctx)?)
+                let mut block = map!({ lines }, |line| line.emit(ctx))?.concat();
+                if let Some(raii) = ctx.local.expand.get(self) {
+                    block += &raii.emit(ctx)?;
+                }
+                Ok(block)
             }
             Expr::Return(val) => Ok(format!("{}\tleave\n\tret\n", val.emit(ctx)?)),
             Expr::Call(callee, args) => {
