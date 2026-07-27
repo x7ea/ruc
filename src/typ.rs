@@ -207,6 +207,7 @@ impl Expr {
                         vec![Expr::Variable(Generic(var.clone(), Vec::new()))],
                     ))
                 }
+                expand!(Expr::Block(free));
                 ctx.local.scope = parent;
                 typing!(ret.clone())
             }
