@@ -200,6 +200,12 @@ impl Expr {
 
                     ctx.local.var.insert(name.clone(), val.clone());
                 }
+                for var in &ctx.local.raii {
+                    Expr::Call(
+                        Box::new(var!("free", { ctx.local.scope[var] })),
+                        vec![Expr::Variable(Generic(var, Vec::new()))],
+                    )
+                }
                 ctx.local.scope = parent;
                 typing!(ret.clone())
             }
