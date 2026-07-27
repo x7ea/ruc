@@ -262,11 +262,7 @@ impl Expr {
                     }
                     typing!(typ.mono(ctx, Generic(name, args))?)
                 } else if let Some(typ) = ctx.local.scope.get(&name) {
-                    let typ = typ.solve(ctx);
-                    if let Type::Class(_) = typ {
-                        ctx.local.raii.insert(name.clone());
-                    }
-                    typing!(typ)
+                    typing!(typ.solve(ctx))
                 } else {
                     Err(format!("undefined: {name}"))
                 }
