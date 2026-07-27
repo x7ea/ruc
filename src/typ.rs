@@ -280,9 +280,6 @@ impl Expr {
                                 return Err(format!("{name}: {typ} != {val}"));
                             }
                         } else {
-                            if let Type::Class(_) = val {
-                                ctx.local.raii.insert(name.clone());
-                            }
                             ctx.local.scope.insert(name.clone(), val.clone());
                         }
                     }
