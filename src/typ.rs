@@ -289,7 +289,7 @@ impl Expr {
                 acc @ Expr::Index(arr, idx) => {
                     expand!(Expr::Write(array!(arr, idx), val.clone(), arr.clone()));
                     if let Expr::Variable(Generic(name, _)) = *val.clone() {
-                        ctx.local.raii.shift_remove(name.clone());
+                        ctx.local.raii.shift_remove(name);
                     }
                     let [val, typ] = [val.infer(ctx)?, acc.infer(ctx)?];
 
