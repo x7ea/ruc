@@ -197,7 +197,6 @@ impl Expr {
                     {
                         return Err(format!("duplicated {name}: {typ} != {val}"));
                     }
-
                     ctx.local.var.insert(name.clone(), val.clone());
                 }
                 let mut free = Vec::new();
