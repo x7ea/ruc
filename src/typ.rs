@@ -273,7 +273,7 @@ impl Expr {
             }
             Expr::Let(name, val) => {
                 if let Type::Class(_) = val.infer(ctx)? {
-                    ctx.local.raii.insert(name);
+                    ctx.local.raii.insert(*name.clone());
                 }
                 match &*name {
                     Expr::Variable(Generic(name, _)) => {
