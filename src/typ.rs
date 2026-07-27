@@ -288,7 +288,11 @@ impl Expr {
                 }
                 acc @ Expr::Index(arr, idx) => {
                     expand!(Expr::Write(array!(arr, idx), val.clone(), arr.clone()));
+                    if let Expr::Variable(Generic(name, _)) = *val.clone() {
+                        ctx.local.raii.insert(name.clone());
+                    }
                     let [val, typ] = [val.infer(ctx)?, acc.infer(ctx)?];
+
                     if typ.clone() != val {
                         return Err(format!("array: {typ} != {val}"));
                     }
