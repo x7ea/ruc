@@ -270,59 +270,60 @@ impl Expr {
                     Err(format!("undefined: {name}"))
                 }
             }
-            Expr::Let(name, val) => match &*name {
-                Expr::Variable(Generic(name, _)) => {
-                    let val = val.infer(ctx)?;
-                    if let Some(typ) = ctx.local.scope.get(name) {
-                        let typ = typ.clone().solve(ctx);
-                        if val != typ {
-                            return Err(format!("{name}: {typ} != {val}"));
-                        }
-                    } else {
-                        if let Type::Class(_) = val {
-                            ctx.local.raii.insert(name.clone());
-                        }
-                        ctx.local.scope.insert(name.clone(), val.clone());
-                    }
-                    typing!(Type::Void)
+            Expr::Let(name, val) => {
+                if let Expr::Variable(Generic(name, _)) = &*val.clone() {
+                    ctx.local.raii.shift_remove(name);
                 }
-                acc @ Expr::Index(arr, idx) => {
-                    expand!(Expr::Write(array!(arr, idx), val.clone(), arr.clone()));
-                    if let Expr::Variable(Generic(name, _)) = &*val.clone() {
-                        ctx.local.raii.shift_remove(name);
+                match &*name {
+                    Expr::Variable(Generic(name, _)) => {
+                        let val = val.infer(ctx)?;
+                        if let Some(typ) = ctx.local.scope.get(name) {
+                            let typ = typ.clone().solve(ctx);
+                            if val != typ {
+                                return Err(format!("{name}: {typ} != {val}"));
+                            }
+                        } else {
+                            if let Type::Class(_) = val {
+                                ctx.local.raii.insert(name.clone());
+                            }
+                            ctx.local.scope.insert(name.clone(), val.clone());
+                        }
                     }
-                    let [val, typ] = [val.infer(ctx)?, acc.infer(ctx)?];
+                    acc @ Expr::Index(arr, idx) => {
+                        expand!(Expr::Write(array!(arr, idx), val.clone(), arr.clone()));
+                        let [val, typ] = [val.infer(ctx)?, acc.infer(ctx)?];
 
-                    if typ.clone() != val {
-                        return Err(format!("array: {typ} != {val}"));
-                    }
-                    typing!(Type::Void)
-                }
-                acc @ Expr::Member(obj, key) => {
-                    let [typ, rhs] = [acc.infer(ctx)?, val.infer(ctx)?];
-                    let Generic(name, _) = &obj.infer(ctx)?.unwrap_class();
-                    if typ != rhs {
-                        return Err(format!("{name}.{key}: {typ} != {rhs}"));
-                    }
-                    match &ctx.global.table[name] {
-                        (_, Object::Struct(layout)) => {
-                            let offset = layout.get_index_of(key).unwrap();
-                            let offset = Box::new(Expr::Integer(offset as i64));
-                            expand!(Expr::Write(offset, val.clone(), obj.clone()));
+                        if typ.clone() != val {
+                            return Err(format!("array: {typ} != {val}"));
                         }
-                        (_, Object::Enum(layout)) => {
-                            let tag = layout.get_index_of(key).unwrap();
-                            let offset = |x| Box::new(Expr::Integer(x));
-                            expand!(Expr::Block(vec![
-                                Expr::Write(offset(0), offset(tag as i64), obj.clone()),
-                                Expr::Write(offset(8), val.clone(), obj.clone()),
-                            ]));
+                        typing!(Type::Void)
+                    }
+                    acc @ Expr::Member(obj, key) => {
+                        let [typ, rhs] = [acc.infer(ctx)?, val.infer(ctx)?];
+                        let Generic(name, _) = &obj.infer(ctx)?.unwrap_class();
+                        if typ != rhs {
+                            return Err(format!("{name}.{key}: {typ} != {rhs}"));
+                        }
+                        match &ctx.global.table[name] {
+                            (_, Object::Struct(layout)) => {
+                                let offset = layout.get_index_of(key).unwrap();
+                                let offset = Box::new(Expr::Integer(offset as i64));
+                                expand!(Expr::Write(offset, val.clone(), obj.clone()));
+                            }
+                            (_, Object::Enum(layout)) => {
+                                let tag = layout.get_index_of(key).unwrap();
+                                let offset = |x| Box::new(Expr::Integer(x));
+                                expand!(Expr::Block(vec![
+                                    Expr::Write(offset(0), offset(tag as i64), obj.clone()),
+                                    Expr::Write(offset(8), val.clone(), obj.clone()),
+                                ]));
+                            }
                         }
                     }
-                    typing!(Type::Void)
+                    other => return Err(format!("assign target: {}", other.infer(ctx)?)),
                 }
-                other => Err(format!("assign target: {}", other.infer(ctx)?)),
-            },
+                typing!(Type::Void)
+            }
             Expr::Sequence(array) => {
                 let typ = array[0].infer(ctx)?;
                 let temp = temp!(typ.clone());
