@@ -197,9 +197,7 @@ impl Expr {
                     {
                         return Err(format!("duplicated {name}: {typ} != {val}"));
                     }
-                    if let Type::Class(_) = val {
-                        ctx.local.raii.insert(name.clone());
-                    }
+
                     ctx.local.var.insert(name.clone(), val.clone());
                 }
                 ctx.local.scope = parent;
@@ -254,7 +252,11 @@ impl Expr {
                     }
                     typing!(typ.mono(ctx, Generic(name, args))?)
                 } else if let Some(typ) = ctx.local.scope.get(&name) {
-                    typing!(typ.clone().solve(ctx))
+                    let typ = typ.clone().solve(ctx);
+                    if let Type::Class(_) = typ {
+                        ctx.local.raii.insert(name.clone());
+                    }
+                    typing!(typ)
                 } else {
                     Err(format!("undefined: {name}"))
                 }
