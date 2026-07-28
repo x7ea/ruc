@@ -151,7 +151,6 @@ pub struct Global {
 pub struct Function {
     var: IndexMap<Name, Type>,
     scope: IndexMap<Name, Type>,
-    raii: IndexSet<Expr>,
     typed: IndexMap<Expr, Type>,
     expand: IndexMap<Expr, Expr>,
     class: Option<Type>,
