@@ -495,20 +495,17 @@ impl Expr {
 
     fn fmtgen(&mut self, ctx: &mut Context) -> Result<String, String> {
         let typ = self.infer(ctx)?;
+        let custom = |fmt: &str| {
+            let fmter = Box::new(var!(fmt, &typ));
+            *self = Expr::Call(fmter, vec![self.clone()]);
+            self.fmtgen(ctx)
+        };
         match typ {
             Type::Integer => Ok(String::from("%ld")),
             Type::String => Ok(String::from("%s")),
             Type::Float => Ok(String::from("%g")),
-            Type::Array(typ) => {
-                let fmter = Box::new(var!("Vec", &typ));
-                *self = Expr::Call(fmter, vec![self.clone()]);
-                self.fmtgen(ctx)
-            }
-            _ => {
-                let fmter = Box::new(var!("display", &typ));
-                *self = Expr::Call(fmter, vec![self.clone()]);
-                self.fmtgen(ctx)
-            }
+            Type::Array(typ) => custom("Vec"),
+            _ => custom("display"),
         }
     }
 }
