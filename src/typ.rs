@@ -439,12 +439,12 @@ impl Expr {
                     Expr::Let(dest.clone(), Box::new(Expr::New(typ.clone()))),
                     Expr::Call(
                         Box::new(var!("memcpy", { typ.clone() })),
-                        match expr.infer(ctx)? {
-                            Type::Class(_) => Expr::Integer(typ.size(ctx) as i64),
+                        vec![*dest.clone(), *expr, match expr.infer(ctx)? {
+                            typ@Type::Class(_) => Expr::Integer(typ.size(ctx) as i64),
                             Type::Array(_) => Expr::Mul(len!(expr), Box::new(Expr::Integer(8))),
-                            _ => return Err(format!("can't clone: {typ}")),
+                            typ => return Err(format!("can't clone: {typ}")),
                         },
-                        *dest.clone()
+                        *dest.clone()]
                     )
                 ])))
             }
