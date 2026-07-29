@@ -435,8 +435,8 @@ impl Expr {
             }
             Expr::Clone(expr) => {
                 let dest = Box::new(temp!(typ));
-                let typ = expr.infer(ctx)? ;
-                let size = match typ{
+                let typ = expr.infer(ctx)?;
+                let size = match typ.clone() {
                     Type::Array(_) => Expr::Mul(len!(expr), Box::new(Expr::Integer(8))),
                     typ @ Type::Class(_) => Expr::Integer(typ.size(ctx) as i64),
                     typ => return Err(format!("can't clone: {typ}")),
