@@ -5,7 +5,7 @@ fn main() {
     let b = a
     let c = clone a
     let b[0] = 100
-    print Vec<Int>(a)
-    print Vec<Int>(b)
-    print Vec<Int>(c)
+    print a[0]
+    print b[0]
+    print c[0]
 }
