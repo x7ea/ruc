@@ -445,8 +445,8 @@ impl Expr {
                     Expr::Let(dest.clone(), Box::new(Expr::New(typ.clone()))),
                     Expr::Call(
                         Box::new(var!("memcpy", { typ.clone() })),
-                        vec![*dest.clone(), *expr, size, *dest.clone()]
-                    )
+                        vec![*dest.clone(), *expr, size,]
+                    ), *dest.clone()
                 ])))
             }
             Expr::Mod(lhs, rhs) => {
