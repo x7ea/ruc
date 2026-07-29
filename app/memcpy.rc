@@ -1,0 +1,11 @@
+use std
+
+fn main() {
+    let a = [1, 2]
+    let b = a
+    let c = clone a
+    let b[0] = 100
+    print Vec<Int>(a)
+    print Vec<Int>(b)
+    print Vec<Int>(c)
+}
