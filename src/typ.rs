@@ -440,7 +440,7 @@ impl Expr {
                     Type::Array(typ) => (
                         Expr::Init(*typ, len!(expr)),
                         Expr::Mul(
-                            Expr::Add(len!(expr), Box::new(Expr::Integer(1))),
+                            Box::new(Expr::Add(len!(expr), Box::new(Expr::Integer(1)))),
                             Box::new(Expr::Integer(8)),
                         ),
                     ),
