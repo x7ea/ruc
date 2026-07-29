@@ -433,35 +433,21 @@ impl Expr {
                 addr.infer(ctx)?;
                 typing!(val.infer(ctx)?)
             }
-            Expr::Clone(expr) => match expr.infer(ctx)? {
-                Type::Class(_) => {
-                    let dest = Box::new(temp!(typ));
-                    typing!(expands!(Expr::Block(vec![
-                        Expr::Let(dest.clone(), Box::new(Expr::New(typ.clone()))),
-                        Expr::Call(
-                            Box::new(var!("memcpy", { typ.clone() })),
-                            vec![*dest.clone(), *expr, Expr::Integer(typ.size(ctx) as i64)]
-                        ),
+            Expr::Clone(expr) => {
+                let dest = Box::new(temp!(typ));
+                typing!(expands!(Expr::Block(vec![
+                    Expr::Let(dest.clone(), Box::new(Expr::New(typ.clone()))),
+                    Expr::Call(
+                        Box::new(var!("memcpy", { typ.clone() })),
+                        match expr.infer(ctx)? {
+                            Type::Class(_) => Expr::Integer(typ.size(ctx) as i64),
+                            Type::Array(_) => Expr::Mul(len!(expr), Box::new(Expr::Integer(8))),
+                            _ => return Err(format!("can't clone: {typ}")),
+                        },
                         *dest.clone()
-                    ])))
-                }
-                Type::Array(_) => {
-                    let dest = Box::new(temp!(typ));
-                    typing!(expands!(Expr::Block(vec![
-                        Expr::Let(dest.clone(), Box::new(Expr::New(typ.clone()))),
-                        Expr::Call(
-                            Box::new(var!("memcpy", { typ.clone() })),
-                            vec![
-                                *dest.clone(),
-                                *expr,
-                                Expr::Mul(len!(expr), Box::new(Expr::Integer(8)))
-                            ]
-                        ),
-                        *dest.clone()
-                    ])))
-                }
-                _ => Err(format!("can't clone: {typ}")),
-            },
+                    )
+                ])))
+            }
             Expr::Mod(lhs, rhs) => {
                 expand!(Expr::Div(lhs.clone(), rhs.clone()));
                 op!(Type::Integer, lhs, rhs)
