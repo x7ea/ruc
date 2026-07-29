@@ -6,5 +6,5 @@ fn main() {
     let c = clone a
     let b[0] = 100
     
-    print a, b, c
+    print a
 }
