@@ -498,6 +498,7 @@ impl Expr {
         let mut custom = |fmt: &str, typ: Type| {
             let fmter = Box::new(var!(fmt, &typ));
             *self = Expr::Call(fmter, vec![self.clone()]);
+            dbg!(&ctx.global.lib);
             self.fmtgen(ctx)
         };
         match typ {
