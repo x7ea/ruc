@@ -439,7 +439,10 @@ impl Expr {
                 let (init, size) = match typ.clone() {
                     Type::Array(typ) => (
                         Expr::Init(*typ, len!(expr)),
-                        Expr::Mul(len!(expr), Box::new(Expr::Integer(8))),
+                        Expr::Mul(
+                            Expr::Add(len!(expr), Box::new(Expr::Integer(1))),
+                            Box::new(Expr::Integer(8)),
+                        ),
                     ),
                     typ @ Type::Class(_) => {
                         (Expr::New(typ.clone()), Expr::Integer(typ.size(ctx) as i64))
