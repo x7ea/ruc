@@ -103,7 +103,7 @@ pub enum Expr {
     Write(Box<Expr>, Box<Expr>, Box<Expr>),
 }
 
-#[derive(Clone, PartialEq, Eq, Hash, Unwrap)]
+#[derive(Clone, PartialEq, Default, Eq, Hash, Unwrap)]
 pub enum Type {
     String,
     Integer,
@@ -112,6 +112,7 @@ pub enum Type {
     Array(Box<Type>),
     Class(Generic),
     Function(Lambda),
+    #[default]
     Void,
 }
 
