@@ -269,9 +269,3 @@ impl Display for Generic {
         write!(f, "{name}<{args}>")
     }
 }
-
-impl Default for Type {
-    fn default() -> Self {
-        Type::Void
-    }
-}
