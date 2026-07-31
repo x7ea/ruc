@@ -2,7 +2,7 @@ use std
 
 fn main(argc: Int, argv: [Str]) {
     if argc < 3 then {
-        print "Ruca Editor"
+        print "Ruc Editor"
         return
     }
     let cmd = argv[0]
