@@ -1,0 +1,10 @@
+use std
+
+fn main() {
+    let a = [1, 2]
+    let b = clone a
+    let c = a
+    let b[0] = 3
+    
+    for i = [a, b, c] do print i
+}
