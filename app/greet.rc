@@ -1,0 +1,6 @@
+use std
+
+fn main() {
+    let name = input() 
+    print "Hello, " + name + "!" 
+}
