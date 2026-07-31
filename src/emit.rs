@@ -28,6 +28,7 @@ impl Define {
         Ok(format!("section .data\n{data}{lib}{text}\n"))
     }
 }
+
 pub const ABI: [&str; 6] = ["rdi", "rsi", "rdx", "rcx", "r8", "r9"];
 
 impl Define {
@@ -304,12 +305,14 @@ impl Generic {
 macro_rules! new {
     ($layout: expr) => {{ Expr::Call(Box::new(var!("calloc")), vec![$layout, Expr::Integer(8)]) }};
 }
+
 #[macro_export]
 macro_rules! len {
     ($arr: expr) => {
         Box::new(Expr::Member($arr.clone(), Name::new("len")?))
     };
 }
+
 #[macro_export]
 macro_rules! array {
     ($arr: expr, $idx: expr) => {
@@ -329,11 +332,13 @@ macro_rules! hash {
         state.finish()
     }};
 }
+
 #[macro_export]
 macro_rules! map {
     ($arr: block, $lambda: expr) => {{ $arr.iter().map($lambda).collect::<Result<Vec<_>, String>>() }};
     ($arr: expr, $lambda: expr) => {{ $arr.iter().map($lambda).collect::<Vec<_>>() }};
 }
+
 #[macro_export]
 macro_rules! var {
     ($name: expr) => {{ Expr::Variable(Generic(Name::new(&$name)?, Vec::new())) }};
