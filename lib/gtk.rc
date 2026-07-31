@@ -14,7 +14,7 @@ extern fn g_signal_connect_object(this: App, event: Str, handle: ()(), object: (
 extern fn gtk_widget_show_all(window: App)
 
 extern fn gtk_message_dialog_new(widget: Int, modal: Int, type: Int, button: Int, content: Str): MsgBox 
-extern fn gtk_dialog_run(this: MsgBox): Bool
+extern fn gtk_dialog_run(this: MsgBox): Int
 extern fn gtk_widget_destroy(this: MsgBox)
 
 
@@ -50,5 +50,5 @@ fn msgbox(content: Str): Bool {
     let dialog = gtk_message_dialog_new(0, 4, 0, 5, content)
     let result = gtk_dialog_run(dialog)
     gtk_widget_destroy(dialog)
-    result
+    result == -8
 }
