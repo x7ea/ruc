@@ -1,7 +1,8 @@
 use std, gtk
 
 fn main() {
-    if msgbox("Are you an idiot?") {
+    let result = msgbox("Are you an idiot?")
+    if result then {
         while true do msgbox("You're an idiot!")
     }
 }
