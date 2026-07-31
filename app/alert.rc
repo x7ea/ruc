@@ -1,5 +1,5 @@
 use std, gtk
 
 fn main() {
-    msgbox("Hello")
+    msgbox("☺︎　You\'re an idiot! ha-ha-ha ☺︎")
 }
