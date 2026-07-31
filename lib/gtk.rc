@@ -49,7 +49,6 @@ fn msgbox(content: Str): Bool {
     gtk_init((), ())
     let dialog = gtk_message_dialog_new(0, 4, 0, 5, content)
     let result = gtk_dialog_run(dialog)
-    print result
     gtk_widget_destroy(dialog)
     result == 4294967291
 }
