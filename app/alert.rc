@@ -1,5 +1,5 @@
 use std, gtk
 
 fn main() {
-    while true do msgbox("☺︎　You're an idiot ☺︎")
+    msgbox("You're an idiot")
 }
