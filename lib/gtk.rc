@@ -50,5 +50,5 @@ fn msgbox(content: Str): Bool {
     let dialog = gtk_message_dialog_new(0, 4, 0, 5, content)
     let result = gtk_dialog_run(dialog)
     gtk_widget_destroy(dialog)
-    result == -8
+    result == -5
 }
