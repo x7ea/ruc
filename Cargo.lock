@@ -104,7 +104,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "ruca"
+name = "ruc"
 version = "0.1.0"
 dependencies = [
  "derive_more",
