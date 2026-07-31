@@ -47,7 +47,7 @@ fn App.run(this: App) {
 
 fn msgbox(content: Str) {
     gtk_init((), ())
-    let dialog = gtk_message_dialog_new(0, 0, 0, 0, content)
+    let dialog = gtk_message_dialog_new(0, 2, 0, 1, content)
     gtk_dialog_run(dialog)
     gtk_widget_destroy(dialog)
 }
