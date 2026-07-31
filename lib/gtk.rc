@@ -13,6 +13,10 @@ extern fn g_signal_connect_data<T>(this: Elm, event: Str, handle: ()(Elm, T), da
 extern fn g_signal_connect_object(this: App, event: Str, handle: ()(), object: ())
 extern fn gtk_widget_show_all(window: App)
 
+extern fn gtk_message_dialog_new(widget: Int, modal: Int, type: Int, button: Int, content: Str): MsgBox 
+extern fn gtk_dialog_run(this: MsgBox)
+extern fn gtk_widget_destroy(this: MsgBox)
+
 
 fn window(): App {
     gtk_init((), ())
@@ -39,4 +43,10 @@ fn Elm.click<T>(this: Elm, data: T, handle: ()(Elm, T)) {
 fn App.run(this: App) {
     gtk_widget_show_all(this)
     gtk_main()
+}
+
+fn msgbox(content: Str) {
+    let dialog = gtk_message_dialog_new(0, 0, 0, 0, content)
+    gtk_dialog_run(dialog)
+    gtk_widget_destroy(dialog)
 }
