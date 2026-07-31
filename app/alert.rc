@@ -1,5 +1,7 @@
 use std, gtk
 
 fn main() {
-    print msgbox("Are you an idiot?")
+    if msgbox("Are you an idiot?") {
+        while true do msgbox("You're an idiot!")
+    }
 }
