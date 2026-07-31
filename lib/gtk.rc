@@ -51,5 +51,5 @@ fn msgbox(content: Str): Bool {
     let result = gtk_dialog_run(dialog)
     print result
     gtk_widget_destroy(dialog)
-    result == 4294967290
+    result == 4294967291
 }
