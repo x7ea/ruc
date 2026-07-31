@@ -1,0 +1,7 @@
+use std 
+
+fn main() {
+    print true & false
+    print true | false
+    print !(true ^ false)
+}
