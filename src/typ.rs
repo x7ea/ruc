@@ -201,7 +201,7 @@ impl Expr {
             }
             Expr::Return(val) => match (val.infer(ctx)?, ctx.local.ret.solve(ctx)) {
                 (val, ret) if ret == val => typing!(Type::Void),
-                (ret, val) => Err(format!("return: {ret} != {val}")),
+                (val, ret) => Err(format!("return: {ret} != {val}")),
             },
             Expr::Call(callee, args) => {
                 if let Some(obj) = args.first() {
