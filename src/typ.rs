@@ -202,14 +202,10 @@ impl Expr {
                 ctx.local.scope = parent;
                 typing!(ret.clone())
             }
-            Expr::Return(val) => {
-                let val = val.infer(ctx)?;
-                let ret = ctx.local.ret.solve(ctx);
-                if ret != val {
-                    return Err(format!("return: {ret} != {val}"));
-                }
-                typing!(Type::Void)
-            }
+            Expr::Return(val) => match (val.infer(ctx)?, ctx.local.ret.solve(ctx)) {
+                (val, ret) if ret == val => typing!(Type::Void),
+                (ret, val) => Err(format!("return: {ret} != {val}")),
+            },
             Expr::Call(callee, args) => {
                 if let Some(obj) = args.first() {
                     ctx.local.class = Some(obj.infer(ctx)?);
