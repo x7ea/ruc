@@ -1,5 +1,7 @@
-use std
-
-fn main() {
-    print "Hello, world!"
+fn main(): Int {
+    let a = {
+        let b = 1
+        b + 1
+    }
+    b
 }
