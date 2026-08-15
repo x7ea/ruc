@@ -1,15 +1,16 @@
 use std
 
-fn main() {
-    let fz = "Fizz"
-    let bz = "Buzz"
+fn fizzbuzz(n: Int): Str {
+    if n % 15 == 0 then return "FizzBuzz"
+    if n % 3 == 0 then return "Fizz"
+    if n % 5 == 0 then return "Buzz"
+    format n
+}
 
+fn main() {
     let i = 1
     while i <= 100 do {
-        if i % 15 == 0 then print fz, bz '
-        else if i % 3 == 0 then print fz '
-        else if i % 5 == 0 then print bz '
-        else print i
+        print fizzbuzz(i)
         let i = i + 1
     }
 }
