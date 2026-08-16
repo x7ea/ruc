@@ -15,7 +15,7 @@ fn List<T>(value: T): List<T> {
 fn List.add<T>(a: List<T>, b: List<T>): List<T> {
     while let a = a.cdr.some do ()
     let a.cdr = Option<List<T>>::Some(b)
-    a
+    clone a
 }
 
 fn main() {
