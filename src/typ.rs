@@ -446,7 +446,7 @@ impl Expr {
                     Expr::Let(dest.clone(), Box::new(init)),
                     Expr::Call(
                         Box::new(var!("memcpy", { typ.clone() })),
-                        vec![*dest.clone(), *expr, size,]
+                        vec![*dest.clone(), *expr, size]
                     ),
                     *dest.clone()
                 ])))
