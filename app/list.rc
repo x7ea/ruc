@@ -1,0 +1,25 @@
+use std
+
+struct List<T> {
+    car: T,
+    cdr: Option<List<T>>
+}
+
+fn List<T>(value: T): List<T> {
+    let this = new List<T>
+    let this.car = value
+    let this.cdr = Option<List<T>>::None
+    this
+}
+
+fn List.add<T>(a: List<T>, b: List<T>): List<T> {
+    while let a = a.cdr.some do ()
+    let a.cdr = Option<List<T>>::Some(b)
+    a
+}
+
+fn main() {
+    let a = List<Int>(1)
+    let b = List<Int>(2)
+    print a + b
+}
