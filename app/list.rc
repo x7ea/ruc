@@ -1,0 +1,23 @@
+use std
+
+struct List<T> {
+    car: T,
+    cdr: List<T>
+}
+
+fn List<T>(value: T): List<T> {
+    let this = new List<T>
+    let this.car = value
+    this
+}
+
+fn push<T>(a: List<T>, b: List<T>) {
+    while a.cdr? do let a = a.cdr
+    let a.cdr = b
+}
+
+fn main() {
+    let a = List<Int>(1)
+    a.push<Int>(List<Int>(2))
+    print a.car
+}
