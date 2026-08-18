@@ -161,5 +161,5 @@ macro_rules! once {
         } else {
             Err(format!("expected: {}", $del))
         }
-
+    }
 }
