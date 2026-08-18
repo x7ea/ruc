@@ -236,16 +236,16 @@ impl Debug for Type {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let mangle = |x: &[Type]| map!(x, |x: &Type| format!("{x:?}")).concat();
         match self {
-            Type::Integer => write!(f, "I"),
-            Type::String => write!(f, "S"),
-            Type::Float => write!(f, "F"),
-            Type::Boolean => write!(f, "B"),
-            Type::Void => write!(f, "V"),
-            Type::Array(typ) => write!(f, "A{typ:?}"),
+            Type::Integer => write!(f, "Int"),
+            Type::String => write!(f, "Str"),
+            Type::Float => write!(f, "Float"),
+            Type::Boolean => write!(f, "Bool"),
+            Type::Void => write!(f, "Void"),
+            Type::Array(typ) => write!(f, "Array{typ:?}"),
             Type::Class(Generic(name, args)) if args.is_empty() => write!(f, "{name}"),
             Type::Class(Generic(name, args)) => write!(f, "{name}{}", mangle(args)),
-            Type::Function(Lambda((_, ret), Some(args))) => write!(f, "L{ret:?}{}", mangle(args)),
-            Type::Function(Lambda((_, ret), None)) => write!(f, "L{ret:?}"),
+            Type::Function(Lambda((_, r), Some(a))) => write!(f, "Lambda{r:?}{}", mangle(a)),
+            Type::Function(Lambda((_, r), None)) => write!(f, "Lambda{r:?}"),
         }
     }
 }
