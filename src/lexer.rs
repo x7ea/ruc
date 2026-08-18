@@ -79,6 +79,7 @@ pub mod name {
         "print", "format", "let", "new", "clone", "if", "then", "else", "for", "while", "do",
         "match",
     ];
+
     #[derive(Debug, Clone, Default, PartialEq, Eq, Hash)]
     pub struct Name(String);
 
@@ -102,6 +103,7 @@ pub mod name {
             }
             Ok(Name(name.to_owned()))
         }
+
         pub fn class(&self, typ: &Type) -> Name {
             Name(format!("{typ:?}@{self}"))
         }
