@@ -207,6 +207,7 @@ impl Expr {
                 if let Some(obj) = args.first() {
                     ctx.local.class = Some(obj.infer(ctx)?);
                 }
+                let args = map!({ args }, |x| x.infer(ctx))?;
                 match callee.infer(ctx)? {
                     Type::Function(Lambda((_, ret), Some(params))) => {
                         let (pl, al) = (params.len(), args.len());
@@ -214,17 +215,13 @@ impl Expr {
                             return Err(format!("arguments length: {pl} != {al}"));
                         }
                         for (param, arg) in params.iter().zip(args) {
-                            let arg = arg.infer(ctx)?.solve(ctx);
                             if param.solve(ctx) != arg {
                                 return Err(format!("argument types: {param} != {arg}"));
                             }
                         }
                         typing!(*ret)
                     }
-                    Type::Function(Lambda((_, ret), None)) => {
-                        map!({ args }, |x| x.infer(ctx))?;
-                        typing!(*ret)
-                    }
+                    Type::Function(Lambda((_, ret), None)) => typing!(*ret),
                     typ => Err(format!("callee: {typ}")),
                 }
             }
