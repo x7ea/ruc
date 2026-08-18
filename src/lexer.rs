@@ -154,26 +154,23 @@ macro_rules! serial {
 }
 
 #[macro_export]
-macro_rules! once {
-    ($v: expr, $del: expr) => {{
-        let v = lexer($v, $del)?;
-        if v.len() >= 2 {
-            Ok((v[0].clone(), v[1..].join($del)))
-        } else {
-            Err(format!("expected: {}", $del))
+macro_rules! split {
+    ($token: expr, $del: expr) => {{
+        let token = lexer($token, $del)?;
+        match token.len() {
+            len if len >= 2 => Ok((token[0].clone(), v[1..].join($del))),
+            _ => Err(format!("expected: {}", $del)),
         }
     }};
 }
 
 #[macro_export]
-macro_rules! ronce {
+macro_rules! rsplit {
     ($token: expr, $del: literal) => {{
         let token = lexer($token, $del)?;
-        let len = token.len();
-        if len >= 2 {
-            Ok((token[..len - 1].join($del), token[len - 1].clone()))
-        } else {
-            Err(format!("expected: {}", $del))
+        match token.len() {
+            len if len >= 2 => Ok((token[..len - 1].join($del), token[len - 1].clone())),
+            _ => Err(format!("expected: {}", $del)),
         }
     }};
 }
