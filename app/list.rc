@@ -18,6 +18,6 @@ fn List.link<T>(a: List<T>, b: List<T>) {
 
 fn main() {
     let a = List<Int>(1)
-    a.link(List<Int>(2))
+    a.link(a)
     print a.car
 }
