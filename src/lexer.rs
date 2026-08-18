@@ -161,5 +161,14 @@ macro_rules! once {
         } else {
             Err(format!("expected: {}", $del))
         }
-    }
+    }};
 }
+
+($v: expr, $del: literal, right) => {{
+    let v = lexer($v, $del)?;
+    if v.len() >= 2 {
+        Ok((v[..v.len() - 1].join($del), v[v.len() - 1].clone()))
+    } else {
+        Err(format!("expected: {}", $del))
+    }
+}};
