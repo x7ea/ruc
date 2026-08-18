@@ -210,13 +210,13 @@ impl Expr {
                 }
                 match callee.infer(ctx)? {
                     Type::Function(Lambda((_, ret), Some(params))) => {
-                        let (pl, al) = (params.len(), args.len());
-                        if pl != al {
-                            return Err(format!("arguments length: {pl} != {al}"));
+                        match (params.len(), args.len()) {
+                            (pl, al) if pl != al => return Err(format!("argument: {pl} != {al}")),
+                            _ => (),
                         }
                         for (param, arg) in params.iter().zip(args) {
                             if param.solve(ctx) != arg {
-                                return Err(format!("argument types: {param} != {arg}"));
+                                return Err(format!("argument: {param} != {arg}"));
                             }
                         }
                         typing!(*ret)
