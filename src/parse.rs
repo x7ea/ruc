@@ -11,7 +11,7 @@ impl Define {
                 ($args: expr) => {{
                     let mut map = IndexMap::new();
                     for arg in lexer($args, ",")? {
-                        let (name, typ) = once!(&arg, ":")?;
+                        let (name, typ) = split!(&arg, ":")?;
                         map.insert(Name::new(&name.to_lowercase())?, Type::parse(&typ)?);
                     }
                     map
@@ -43,7 +43,8 @@ impl Define {
                     result.append(&mut Define::parse(&file)?);
                 }
             } else if let Some(func) = line.strip_prefix("extern fn ") {
-                let (head, body) = once!(func, ":").unwrap_or((func.to_string(), "()".to_string()));
+                let (head, body) =
+                    split!(func, ":").unwrap_or((func.to_string(), "()".to_string()));
                 if let Ok((name, args)) = surround!(&head, "(", ")") {
                     let head = (Generic::parse(&name)?, args!(&args));
                     result.push(Define::Declare(head, Type::parse(&body)?));
@@ -51,12 +52,12 @@ impl Define {
                     result.push(Define::Symbol(Name::new(&head)?, Type::parse(&body)?));
                 }
             } else if let Some(func) = line.strip_prefix("fn ")
-                && let Ok((head, body)) = once!(func, ":")
+                && let Ok((head, body)) = split!(func, ":")
             {
-                let (typ, body) = once!(&body, SPACE)?;
+                let (typ, body) = split!(&body, SPACE)?;
                 result.push(Define::Function(head!(head), body!(body, typ)));
             } else if let Some(func) = line.strip_prefix("fn ") {
-                let (head, body) = once!(&func, SPACE)?;
+                let (head, body) = split!(&func, SPACE)?;
                 result.push(Define::Function(head!(head), body!(body, "()")));
             }
             object_declare!("struct ", Struct);
@@ -73,17 +74,17 @@ impl Expr {
         } else if let Some(src) = src.strip_prefix("format ") {
             Ok(Expr::Print(false, serial!(src, Expr::parse)))
         } else if let Some(src) = src.strip_prefix("let ") {
-            if let Ok((name, val)) = once!(src, "=") {
+            if let Ok((name, val)) = split!(src, "=") {
                 let (name, val) = (Box::new(Expr::parse(&name)?), Box::new(Expr::parse(&val)?));
                 return Ok(Expr::Let(name, val));
             }
-            let (name, typ) = once!(src, ":")?;
+            let (name, typ) = split!(src, ":")?;
             let typ = Box::new(Expr::Null(Type::parse(&typ)?));
             Ok(Expr::Let(Box::new(Expr::parse(&name)?), typ))
         } else if let Some(src) = src.strip_prefix("if ") {
-            let (cond, body) = once!(src, "then")?;
+            let (cond, body) = split!(src, "then")?;
             let cond = Box::new(Expr::parse(&cond)?);
-            if let Ok((then, els)) = once!(&body, "else") {
+            if let Ok((then, els)) = split!(&body, "else") {
                 let els = Some(Box::new(Expr::parse(&els)?));
                 Ok(Expr::If(cond, Box::new(Expr::parse(&then)?), els))
             } else {
@@ -92,9 +93,9 @@ impl Expr {
         } else if let Some(src) = src.strip_prefix("match ") {
             let (expr, pats) = surround!(src, "{", "}")?;
             let pats = serial!(&pats, |src| {
-                let (head, ret) = once!(src, "=")?;
+                let (head, ret) = split!(src, "=")?;
                 let ret = Expr::parse(&ret)?;
-                if let Ok((key, bind)) = once!(&head.trim(), SPACE) {
+                if let Ok((key, bind)) = split!(&head.trim(), SPACE) {
                     let name = Name::new(&key.to_lowercase())?;
                     return Ok((name, Some(Expr::parse(&bind)?), ret));
                 }
@@ -102,12 +103,12 @@ impl Expr {
             });
             Ok(Expr::Match(Box::new(Expr::parse(&expr)?), pats))
         } else if let Some(src) = src.strip_prefix("while ") {
-            let (cond, body) = once!(src, "do")?;
+            let (cond, body) = split!(src, "do")?;
             let (cond, body) = (Box::new(Expr::parse(&cond)?), Box::new(Expr::parse(&body)?));
             Ok(Expr::While(cond, body))
         } else if let Some(src) = src.strip_prefix("for ") {
-            let (head, body) = once!(src, "do")?;
-            let (cnt, arr) = once!(&head, "=")?;
+            let (head, body) = split!(src, "do")?;
+            let (cnt, arr) = split!(&head, "=")?;
             let (cnt, arr) = (Box::new(Expr::parse(&cnt)?), Box::new(Expr::parse(&arr)?));
             Ok(Expr::For(cnt, arr, Box::new(Expr::parse(&body)?)))
         } else if let Some(class) = src.strip_prefix("new ") {
@@ -121,7 +122,7 @@ impl Expr {
         } else if let Some(x) = surround!("{", src, "}") {
             let mut block = Vec::new();
             for line in lexer(x, "\n")? {
-                let (line, _) = once!(&line, ";").unwrap_or((line, String::new()));
+                let (line, _) = split!(&line, ";").unwrap_or((line, String::new()));
                 if !line.trim().is_empty() {
                     block.push(Expr::parse(&line)?);
                 }
@@ -147,7 +148,7 @@ impl Expr {
         } else if let Some(expr) = surround!("(", src, ")") {
             Expr::parse(expr)
         } else if let Some(arr) = surround!("[", src, "]") {
-            if let Ok((typ, len)) = once!(arr, ";") {
+            if let Ok((typ, len)) = split!(arr, ";") {
                 return Ok(Expr::Init(Type::parse(&typ)?, Box::new(Expr::parse(&len)?)));
             }
             let Ok(arr) = serial!(arr, Expr::parse).try_into() else {
@@ -165,13 +166,13 @@ impl Expr {
         } else if let Ok((arr, idx)) = surround!(src, "[", "]") {
             let (arr, idx) = (Box::new(Expr::parse(&arr)?), Box::new(Expr::parse(&idx)?));
             Ok(Expr::Index(arr, idx))
-        } else if let Ok((obj, key)) = once!(src, ".", right) {
+        } else if let Ok((obj, key)) = rsplit!(src, ".") {
             let obj = Expr::parse(&obj)?;
             if let Ok(Expr::Call(callee, arg)) = Expr::parse(&key) {
                 return Ok(Expr::Call(callee.clone(), [vec![obj], arg].concat()));
             }
             Ok(Expr::Member(Box::new(obj), Name::new(&key.to_lowercase())?))
-        } else if let Ok((typ, key)) = once!(src, "::") {
+        } else if let Ok((typ, key)) = split!(src, "::") {
             let typ = Type::parse(&typ)?;
             if let Ok((key, val)) = surround!(&key, "(", ")") {
                 let name = Name::new(&key.to_lowercase())?;
