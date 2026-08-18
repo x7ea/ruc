@@ -71,7 +71,7 @@ impl Expr {
             };
         }
         macro_rules! temp {
-            ($typ: expr) => {{ var!(&format!("temp{}", hash!(&self))) }};
+            () => {{ var!(&format!("temp{}", hash!(&self))) }};
         }
         macro_rules! op {
             ($typ: pat, $lhs: expr, $rhs: expr) => {{
@@ -168,11 +168,10 @@ impl Expr {
                 body.infer(ctx)
             }
             Expr::For(cnt, arr, body) => {
-                let typ = arr.infer(ctx)?;
+                let (typ, temp) = (arr.infer(ctx)?, Box::new(temp!()));
                 let Type::Array(_) = typ else {
                     return Err(format!("not iterable: {typ}"));
                 };
-                let temp = Box::new(temp!(Type::Integer));
                 let inc = Box::new(Expr::Add(temp.clone(), Box::new(Expr::Integer(1))));
                 let each = Box::new(Expr::Block(vec![
                     Expr::Let(cnt, Box::new(Expr::Index(arr.clone(), temp.clone()))),
@@ -294,8 +293,7 @@ impl Expr {
                 other => Err(format!("assign target: {}", other.infer(ctx)?)),
             },
             Expr::Sequence(array) => {
-                let typ = array[0].infer(ctx)?;
-                let temp = temp!(typ.clone());
+                let (typ, temp) = (array[0].infer(ctx)?, temp!());
                 let mut expr = vec![Expr::Let(
                     Box::new(temp.clone()),
                     Box::new(Expr::Init(typ, Box::new(Expr::Integer(array.len() as i64)))),
@@ -339,7 +337,7 @@ impl Expr {
                 typing!(typ.solve(ctx))
             }
             Expr::Enum(typ, key, val) => {
-                let temp = Box::new(temp!(typ.clone()));
+                let temp = Box::new(temp!());
                 typing!(expands!(Expr::Block(vec![
                     Expr::Let(temp.clone(), Box::new(Expr::New(typ.clone()))),
                     Expr::Let(
@@ -425,8 +423,7 @@ impl Expr {
                 typing!(val.infer(ctx)?)
             }
             Expr::Clone(expr) => {
-                let dest = Box::new(temp!(typ));
-                let typ = expr.infer(ctx)?;
+                let (dest, typ) = (Box::new(temp!()), expr.infer(ctx)?);
                 let (init, size) = match typ.clone() {
                     Type::Array(typ) => (
                         Expr::Init(*typ, len!(expr)),
@@ -435,9 +432,7 @@ impl Expr {
                             Box::new(Expr::Integer(8)),
                         ),
                     ),
-                    typ @ Type::Class(_) => {
-                        (Expr::New(typ.clone()), Expr::Integer(typ.size(ctx) as i64))
-                    }
+                    Type::Class(_) => (Expr::New(typ.clone()), Expr::Integer(typ.size(ctx) as i64)),
                     typ => return Err(format!("can't clone: {typ}")),
                 };
                 typing!(expands!(Expr::Block(vec![
