@@ -496,7 +496,7 @@ impl Expr {
             Type::String => Ok(String::from("%s")),
             Type::Float => Ok(String::from("%g")),
             Type::Array(typ) => custom!("Vec", { *typ }),
-            typ => custom!("display", typ),
+            typ => custom!("print", typ),
         }
     }
 }
