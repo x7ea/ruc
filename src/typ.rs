@@ -226,7 +226,6 @@ impl Expr {
                 }
             }
             Expr::Variable(Generic(name, mut args)) => {
-                dbg!(&ctx.local.class, &name);
                 if let Some(class) = &ctx.local.class {
                     let name = name.class(&class.remove_generic());
                     if ctx.global.lib.contains_key(&name) {
