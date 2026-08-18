@@ -345,7 +345,7 @@ macro_rules! var {
     ($name: expr, $arg: block) => {{ Expr::Variable(Generic(Name::new(&$name)?, vec![$arg])) }};
     ($name: expr, $typ: expr) => {{
         Expr::Variable(Generic(
-            Name::new($name)?.generic(&$typ.remove_generic()),
+            Name::new($name)?.class(&$typ.remove_generic()),
             $typ.generic_args(),
         ))
     }};
