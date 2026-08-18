@@ -75,9 +75,8 @@ pub fn lexer(src: &str, del: &str) -> Result<Vec<String>, String> {
 pub mod name {
     use crate::*;
 
-    const RESERVED: [&str; 12] = [
-        "print", "format", "let", "new", "clone", "if", "then", "else", "for", "while", "do",
-        "match",
+    const RESERVED: [&str; 10] = [
+        "let", "new", "clone", "if", "then", "else", "for", "while", "do", "match",
     ];
 
     #[derive(Debug, Clone, Default, PartialEq, Eq, Hash)]
