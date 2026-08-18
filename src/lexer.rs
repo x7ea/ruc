@@ -152,6 +152,7 @@ macro_rules! serial {
             .collect::<Result<Vec<_>, String>>()?
     };
 }
+
 #[macro_export]
 macro_rules! once {
     ($v: expr, $del: expr) => {{
@@ -164,11 +165,15 @@ macro_rules! once {
     }};
 }
 
-($v: expr, $del: literal, right) => {{
-    let v = lexer($v, $del)?;
-    if v.len() >= 2 {
-        Ok((v[..v.len() - 1].join($del), v[v.len() - 1].clone()))
-    } else {
-        Err(format!("expected: {}", $del))
-    }
-}};
+#[macro_export]
+macro_rules! ronce {
+    ($token: expr, $del: literal) => {{
+        let token = lexer($token, $del)?;
+        let len = token.len();
+        if len >= 2 {
+            Ok((token[..len - 1].join($del), token[len - 1].clone()))
+        } else {
+            Err(format!("expected: {}", $del))
+        }
+    }};
+}
