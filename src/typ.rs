@@ -204,10 +204,10 @@ impl Expr {
                 (val, ret) => Err(format!("return: {ret} != {val}")),
             },
             Expr::Call(callee, args) => {
-                if let Some(obj) = args.first() {
-                    ctx.local.class = Some(obj.infer(ctx)?);
-                }
                 let args = map!({ args }, |x| x.infer(ctx))?;
+                if let Some(obj) = args.first() {
+                    ctx.local.class = Some(obj.clone());
+                }
                 match callee.infer(ctx)? {
                     Type::Function(Lambda((_, ret), Some(params))) => {
                         let (pl, al) = (params.len(), args.len());
@@ -226,9 +226,9 @@ impl Expr {
                 }
             }
             Expr::Variable(Generic(name, mut args)) => {
+                dbg!(&ctx.local.class, &name);
                 if let Some(class) = &ctx.local.class {
                     let name = name.class(&class.remove_generic());
-                    dbg!(&ctx.global.lib, &name);
                     if ctx.global.lib.contains_key(&name) {
                         args.append(&mut class.generic_args());
                         return typing!(expands!(Expr::Variable(Generic(name, args))));
