@@ -80,7 +80,7 @@ impl Expr {
                     ($typ, ret @ $typ) => typing!(ret.clone()),
                     (lhs, rhs) if lhs != rhs => Err(format!("{op} term: {lhs} != {rhs}",)),
                     (typ, _) => typing!(expands!(Expr::Call(
-                        Box::new(var!(op, &typ)),
+                        Box::new(method!(&typ, op)),
                         vec![*$lhs, *$rhs],
                     ))),
                 }
@@ -485,9 +485,8 @@ impl Expr {
     fn fmtgen(&mut self, ctx: &mut Context) -> Result<String, String> {
         let typ = self.infer(ctx)?;
         macro_rules! custom {
-            ($fmt: literal, $typ: tt) => {{
-                let fmter = Box::new(var!($fmt, $typ));
-                *self = Expr::Call(fmter, vec![self.clone()]);
+            ($fmter: expr) => {{
+                *self = Expr::Call(Box::new($fmter), vec![self.clone()]);
                 self.fmtgen(ctx)
             }};
         }
@@ -495,8 +494,8 @@ impl Expr {
             Type::Integer => Ok(String::from("%ld")),
             Type::String => Ok(String::from("%s")),
             Type::Float => Ok(String::from("%g")),
-            Type::Array(typ) => custom!("Vec", { *typ }),
-            typ => custom!("print", typ),
+            Type::Array(typ) => custom!(var!("Vec", *typ)),
+            typ => custom!(method!(typ, "print")),
         }
     }
 }
