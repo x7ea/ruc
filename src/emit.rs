@@ -295,7 +295,7 @@ impl Generic {
     pub fn generic(&self) -> Name {
         let Generic(mut name, args) = self.clone();
         for typ in args {
-            name = name.class(&typ);
+            name = name.generic(&typ);
         }
         name
     }
@@ -345,7 +345,7 @@ macro_rules! var {
     ($name: expr, $arg: block) => {{ Expr::Variable(Generic(Name::new(&$name)?, vec![$arg])) }};
     ($name: expr, $typ: expr) => {{
         Expr::Variable(Generic(
-            Name::new($name)?.class(&$typ.remove_generic()),
+            Name::new($name)?.generic(&$typ.remove_generic()),
             $typ.generic_args(),
         ))
     }};
