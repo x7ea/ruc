@@ -11,13 +11,13 @@ fn List<T>(value: T): List<T> {
     this
 }
 
-fn link<T>(a: List<T>, b: List<T>) {
+fn List.link<T>(a: List<T>, b: List<T>) {
     while a.cdr? do let a = a.cdr
     let a.cdr = b
 }
 
 fn main() {
     let a = List<Int>(1)
-    a.link<Int>(List<Int>(2))
+    a.link(List<Int>(2))
     print a.car
 }
