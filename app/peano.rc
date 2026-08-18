@@ -11,8 +11,8 @@ match rhs {
     Succ n = Peano::Succ(lhs + n)
 }
 
-fn Peano.display(this: Peano): Int '
-    if let n = this.succ then n.display() + 1 else 0
+fn Peano.print(this: Peano): Int '
+    if let n = this.succ then n.print() + 1 else 0
 
 fn main() {
     let one = Peano::Succ(Peano::Zero)
