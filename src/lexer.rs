@@ -103,7 +103,7 @@ pub mod name {
             Ok(Name(name.to_owned()))
         }
         pub fn class(&self, typ: &Type) -> Name {
-            Name(format!("{self}.{typ:?}"))
+            Name(format!("{typ:?}@{self}"))
         }
         pub fn generic(&self, typ: &Type) -> Name {
             Name(format!("{self}.{typ:?}"))
