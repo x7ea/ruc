@@ -158,7 +158,7 @@ macro_rules! split {
     ($token: expr, $del: expr) => {{
         let token = lexer($token, $del)?;
         match token.len() {
-            len if len >= 2 => Ok((token[0].clone(), v[1..].join($del))),
+            len if len >= 2 => Ok((token[0].clone(), token[1..].join($del))),
             _ => Err(format!("expected: {}", $del)),
         }
     }};
