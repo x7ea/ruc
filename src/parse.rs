@@ -242,8 +242,8 @@ impl Debug for Type {
             Type::Boolean => write!(f, "B"),
             Type::Void => write!(f, "V"),
             Type::Array(typ) => write!(f, "A{typ:?}"),
-            Type::Class(Generic(name, args)) if args.is_empty() => write!(f, "C{name}"),
-            Type::Class(Generic(name, args)) => write!(f, "C{name}{}", mangle(args)),
+            Type::Class(Generic(name, args)) if args.is_empty() => write!(f, "{name}"),
+            Type::Class(Generic(name, args)) => write!(f, "{name}{}", mangle(args)),
             Type::Function(Lambda((_, ret), Some(args))) => write!(f, "L{ret:?}{}", mangle(args)),
             Type::Function(Lambda((_, ret), None)) => write!(f, "L{ret:?}"),
         }
