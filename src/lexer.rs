@@ -105,6 +105,9 @@ pub mod name {
         pub fn class(&self, typ: &Type) -> Name {
             Name(format!("{self}.{typ:?}"))
         }
+        pub fn is_class(&self) -> bool {
+            self.0.contains(".")
+        }
     }
 
     impl Display for Name {
