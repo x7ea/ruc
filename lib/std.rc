@@ -140,3 +140,8 @@ extern fn getpid(): Int
 extern fn srand(seed: Int)
 extern fn time(t: Int): Int
 extern fn rand(): Int
+
+fn random(min: Int, max: Int): Int {
+    srand(time(0) + getpid())
+    (rand() % max) + min
+}
