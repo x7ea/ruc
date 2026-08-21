@@ -135,3 +135,8 @@ fn write_file(path: Str, content: Str) {
         fclose(fp)
     }
 }
+
+extern fn getpid(): Int
+extern fn srand(seed: Int)
+extern fn time(t: Int): Int
+extern fn rand(): Int
