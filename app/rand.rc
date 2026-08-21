@@ -6,6 +6,6 @@ fn main() {
     if input().atoi() == secret then {
         print "Correct!"
     } else {
-        print "correct number is ", secret
+        print secret
     }
 }
