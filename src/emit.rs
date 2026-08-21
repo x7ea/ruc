@@ -170,7 +170,7 @@ impl Expr {
                     }
                 }
                 Ok(format!(
-                    "{push}{mov}{}\tmov r10, rax\n{}\tcall r10\n",
+                    "{push}{mov}{1}\tmov r10, rax\n{0}\tcall r10\n",
                     Expr::Integer(xmm).emit(ctx)?,
                     callee.emit(ctx)?
                 ))
