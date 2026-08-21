@@ -149,9 +149,9 @@ impl Expr {
                 let mut push = String::new();
                 for arg in args.iter().rev() {
                     push += &arg.emit(ctx)?;
-                    match typ!(arg) {
-                        Type::Float => push += "\tsub rsp, 8\n\tmovsd [rsp], xmm0\n",
-                        _ => push += "\tpush rax\n",
+                    push += match typ!(arg) {
+                        Type::Float => "\tsub rsp, 8\n\tmovsd [rsp], xmm0\n",
+                        _ => "\tpush rax\n",
                     };
                 }
                 let mut mov = String::new();
