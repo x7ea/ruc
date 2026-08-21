@@ -226,7 +226,7 @@ impl Expr {
                         typing!(*ret)
                     }
                     Type::Function(Lambda((_, ret), None)) => typing!(*ret),
-                    typ => Err(format!("callee: {typ}")),
+                    typ => Err(format!("not callable: {typ}")),
                 }
             }
             Expr::Variable(Generic(name, mut args)) => {
