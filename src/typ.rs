@@ -41,11 +41,8 @@ impl Define {
 
     fn signature(&self) -> Type {
         match self {
-            Define::Function((Generic(_, params), args), (_, ret)) => Type::Function(Lambda(
-                (params.clone(), Box::new(ret.clone())),
-                Some(args.values().cloned().collect()),
-            )),
-            Define::Declare((Generic(_, params), args), ret) => Type::Function(Lambda(
+            Define::Function((Generic(_, params), args), (_, ret))
+            | Define::Declare((Generic(_, params), args), ret) => Type::Function(Lambda(
                 (params.clone(), Box::new(ret.clone())),
                 Some(args.values().cloned().collect()),
             )),
