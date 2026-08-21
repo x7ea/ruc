@@ -2,14 +2,10 @@ use std
 
 fn main() {
     srand(time(0) + getpid())
-    let target = (rand() % 10) + 1
-    printf("number is: ")
-    let text = input()
-    let num = atoi(text)
-    if target == num then {
+    let secret = (rand() % 10) + 1
+    if input().atoi() == secret then {
         print "Correct!"
     } else {
-        print "Wrong!"
-        printf("correct number is %d\n", target)
+        print "correct number is ", secret
     }
 }
