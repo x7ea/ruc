@@ -24,7 +24,7 @@ impl Define {
             Define::Declare((Generic(name, params), args), ret) => {
                 ctx.global.extrn.insert(name.clone());
                 ctx.global.lib.insert(name.clone(), self.signature());
-                Ok(sself.signature()ig)
+                Ok(self.signature())
             }
             Define::Class(Generic(name, args), layout) => {
                 let obj = (args.clone(), layout.clone());
