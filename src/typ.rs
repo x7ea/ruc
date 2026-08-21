@@ -21,7 +21,7 @@ impl Define {
                 }
                 Ok(self.signature())
             }
-            Define::Declare((Generic(name, params), args), ret) => {
+            Define::Declare((Generic(name, _), _), _) => {
                 ctx.global.extrn.insert(name.clone());
                 ctx.global.lib.insert(name.clone(), self.signature());
                 Ok(self.signature())
@@ -31,7 +31,7 @@ impl Define {
                 ctx.global.table.insert(name.clone(), obj);
                 Ok(Type::Void)
             }
-            Define::Symbol(name, ret) => {
+            Define::Symbol(name, _) => {
                 ctx.global.lib.insert(name.clone(), self.signature());
                 ctx.global.extrn.insert(name.clone());
                 Ok(self.signature())
@@ -41,19 +41,15 @@ impl Define {
 
     fn signature(&self) -> Type {
         match self {
-            Define::Function((Generic(name, params), args), (_, ret)) => {
-                Type::Function(Lambda(
-                    (params.clone(), Box::new(ret.clone())),
-                    Some(args.values().cloned().collect()),
-                ));
-            }
-            Define::Declare((Generic(name, params), args), ret) => {
-                Type::Function(Lambda(
-                    (params.clone(), Box::new(ret.clone())),
-                    Some(args.values().cloned().collect()),
-                ));
-            }
-            Define::Symbol(name, ret) => {
+            Define::Function((Generic(_, params), args), (_, ret)) => Type::Function(Lambda(
+                (params.clone(), Box::new(ret.clone())),
+                Some(args.values().cloned().collect()),
+            )),
+            Define::Declare((Generic(_, params), args), ret) => Type::Function(Lambda(
+                (params.clone(), Box::new(ret.clone())),
+                Some(args.values().cloned().collect()),
+            )),
+            Define::Symbol(_, ret) => {
                 Type::Function(Lambda((Vec::new(), Box::new(ret.clone())), None))
             }
             _ => Type::Void,
