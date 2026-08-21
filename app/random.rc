@@ -1,0 +1,12 @@
+use std
+
+fn main() {
+    let secret = random()
+    let answer = input().atoi()
+    
+    if secret == answer then {
+        print "Correct!"
+    } else {
+        print secret
+    }
+}
