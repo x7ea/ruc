@@ -1,7 +1,7 @@
 use std
 
 fn main() {
-    let secret = random()
+    let secret = random(1, 10)
     let answer = input().atoi()
 
     if secret == answer then {
