@@ -4,11 +4,7 @@ impl Define {
     pub fn infer(&self, ctx: &mut Context) -> Result<Type, String> {
         match self {
             Define::Function((Generic(name, params), args), (body, ret)) => {
-                let sig = Type::Function(Lambda(
-                    (params.clone(), Box::new(ret.clone())),
-                    Some(args.values().cloned().collect()),
-                ));
-                ctx.global.lib.insert(name.clone(), sig.clone());
+                ctx.global.lib.insert(name.clone(), self.signature());
                 if params.is_empty() {
                     let parent = ctx.local.clone();
                     ctx.local = Function {
@@ -23,16 +19,12 @@ impl Define {
                     ctx.table.insert(name.clone(), ctx.local.clone());
                     ctx.local = parent;
                 }
-                Ok(sig)
+                Ok(self.signature())
             }
             Define::Declare((Generic(name, params), args), ret) => {
-                let sig = Type::Function(Lambda(
-                    (params.clone(), Box::new(ret.clone())),
-                    Some(args.values().cloned().collect()),
-                ));
                 ctx.global.extrn.insert(name.clone());
-                ctx.global.lib.insert(name.clone(), sig.clone());
-                Ok(sig)
+                ctx.global.lib.insert(name.clone(), self.signature());
+                Ok(sself.signature()ig)
             }
             Define::Class(Generic(name, args), layout) => {
                 let obj = (args.clone(), layout.clone());
@@ -40,11 +32,31 @@ impl Define {
                 Ok(Type::Void)
             }
             Define::Symbol(name, ret) => {
-                let sig = Type::Function(Lambda((Vec::new(), Box::new(ret.clone())), None));
-                ctx.global.lib.insert(name.clone(), sig.clone());
+                ctx.global.lib.insert(name.clone(), self.signature());
                 ctx.global.extrn.insert(name.clone());
-                Ok(sig)
+                Ok(self.signature())
             }
+        }
+    }
+
+    fn signature(&self) -> Type {
+        match self {
+            Define::Function((Generic(name, params), args), (_, ret)) => {
+                Type::Function(Lambda(
+                    (params.clone(), Box::new(ret.clone())),
+                    Some(args.values().cloned().collect()),
+                ));
+            }
+            Define::Declare((Generic(name, params), args), ret) => {
+                Type::Function(Lambda(
+                    (params.clone(), Box::new(ret.clone())),
+                    Some(args.values().cloned().collect()),
+                ));
+            }
+            Define::Symbol(name, ret) => {
+                Type::Function(Lambda((Vec::new(), Box::new(ret.clone())), None))
+            }
+            _ => Type::Void,
         }
     }
 }
