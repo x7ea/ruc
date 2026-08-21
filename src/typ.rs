@@ -90,10 +90,7 @@ impl Expr {
                     ))),
                 }
             }};
-            ($typ: pat, $lhs: expr, $rhs: expr, $ret: expr) => {{
-                op!($typ, $lhs, $rhs)?;
-                typing!($ret.clone())
-            }};
+            ($typ: pat, $lhs: expr, $rhs: expr, $ret: expr) => {{ op!($typ, $lhs, $rhs).and_then(|_| typing!($ret.clone())) }};
         }
 
         match self.clone() {
