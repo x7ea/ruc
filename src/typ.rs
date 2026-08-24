@@ -12,9 +12,10 @@ impl Define {
                         ..Function::default()
                     };
                     ctx.local.ret = ret.solve(ctx);
-                    let body = body.infer(ctx)?;
-                    if ctx.local.ret != body {
-                        return Err(format!("return: {ret} != {body}"));
+                    let bod = body.infer(ctx)?;
+                    if ctx.local.ret != bod {
+                        dbg!(body);
+                        return Err(format!("return: {ret} != {bod}"));
                     }
                     ctx.table.insert(name.clone(), ctx.local.clone());
                     ctx.local = parent;
@@ -109,14 +110,15 @@ impl Expr {
                         els,
                     )));
                 }
-                let cond = cond.infer(ctx)?;
-                if Type::Boolean != cond {
-                    return Err(format!("if-else test: Bool != {cond}"));
-                }
-                match (then.infer(ctx)?, els.and_then(|x| x.infer(ctx).ok())) {
-                    (lhs, Some(rhs)) if lhs == rhs => typing!(lhs),
-                    (lhs, Some(rhs)) => Err(format!("if-else term: {lhs} != {rhs}")),
-                    (_, None) => typing!(Type::Void),
+                match cond.infer(ctx)? {
+                    Type::Boolean => {
+                        match (then.infer(ctx)?, els.and_then(|x| x.infer(ctx).ok())) {
+                            (lhs, Some(rhs)) if lhs == rhs => typing!(lhs),
+                            (lhs, Some(rhs)) => Err(format!("if-else term: {lhs} != {rhs}")),
+                            (_, None) => typing!(Type::Void),
+                        }
+                    }
+                    typ => Err(format!("if-else test: Bool != {typ}")),
                 }
             }
             Expr::Match(val, pats) => {
