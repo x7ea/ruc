@@ -160,7 +160,7 @@ impl Expr {
                 }
                 match cond.infer(ctx)? {
                     Type::Boolean => typing!(body.infer(ctx)?),
-                    _ => Err(format!("while-do test: Bool != {cond}")),
+                    cond => Err(format!("while-do test: Bool != {cond}")),
                 }
             }
             Expr::For(cnt, arr, body) => {
@@ -394,7 +394,7 @@ impl Expr {
                 }
                 match expr.infer(ctx)? {
                     Type::Class(_) => typing!(Type::Boolean),
-                    _ => Err(format!("can't null-check: {typ}")),
+                    typ => Err(format!("can't null-check: {typ}")),
                 }
             }
             Expr::Init(typ, len) => {
