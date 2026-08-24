@@ -476,8 +476,7 @@ impl Expr {
                 op!(Type::Boolean, lhs, rhs)
             }
             Expr::Not(term) => {
-                let typ = Box::new(Expr::Null(Type::Boolean));
-                op!(Type::Boolean, typ, term)
+                op!(Type::Boolean, Box::new(Expr::Null(Type::Boolean)), term)
             }
         }
     }
