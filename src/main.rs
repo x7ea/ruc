@@ -23,7 +23,7 @@ fn main() {
     macro_rules! error {
         ($val: expr) => {
             match $val {
-                Ok(val) => val,
+                Ok(val) => val.clone(),
                 Err(err) => {
                     eprintln!("Error! {err}");
                     exit(1)
