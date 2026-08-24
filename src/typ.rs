@@ -114,13 +114,8 @@ impl Expr {
                     return Err(format!("if-else test: Bool != {cond}"));
                 }
                 match (then.infer(ctx)?, els.and_then(|x| x.infer(ctx).ok())) {
-                    (lhs, Some(rhs)) if lhs == rhs=>    typing!(lhs),
-                     {
-                        if rhs != Type::Void && lhs != rhs {
-                            return Err(format!("if-else term: {lhs} != {rhs}"));
-                        }
-                    
-                    }
+                    (lhs, Some(rhs)) if lhs == rhs => typing!(lhs),
+                    (lhs, Some(rhs)) => Err(format!("if-else term: {lhs} != {rhs}")),
                     (_, None) => typing!(Type::Void),
                 }
             }
