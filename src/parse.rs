@@ -236,7 +236,7 @@ impl Display for Type {
 }
 impl Debug for Type {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let mangle = |x: &[Type]| map!(x, |x: &Type| format!("{x:?}")).concat();
+        let mangle = |x: &[Type]| map!(x, |x: &Type| format!("{x:?}")).join("_");
         match self {
             Type::Integer => write!(f, "Int"),
             Type::String => write!(f, "Str"),
