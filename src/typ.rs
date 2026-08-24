@@ -473,7 +473,8 @@ impl Expr {
             | Expr::Ge(lhs, rhs)
             | Expr::Le(lhs, rhs) => op!(Type::Integer, lhs, rhs, Type::Boolean),
             Expr::Not(term) => {
-                op!(Type::Boolean, Box::new(Expr::Null(Type::Boolean)), term)
+                let typ = Box::new(Expr::Null(Type::Boolean));
+                op!(Type::Boolean, typ, term)
             }
             Expr::And(lhs, rhs) | Expr::Or(lhs, rhs) | Expr::Xor(lhs, rhs) => {
                 op!(Type::Boolean, lhs, rhs)
@@ -482,14 +483,13 @@ impl Expr {
     }
 
     fn fmtgen(&mut self, ctx: &mut Context) -> Result<String, String> {
-        let typ = self.infer(ctx)?;
         macro_rules! custom {
             ($fmter: expr) => {{
                 *self = Expr::Call(Box::new($fmter), vec![self.clone()]);
                 self.fmtgen(ctx)
             }};
         }
-        match typ {
+        match self.infer(ctx)? {
             Type::Integer => Ok(String::from("%ld")),
             Type::String => Ok(String::from("%s")),
             Type::Float => Ok(String::from("%g")),
