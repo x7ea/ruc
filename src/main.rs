@@ -12,9 +12,7 @@ use indexmap::{IndexMap, IndexSet};
 use ordered_float::OrderedFloat as Float;
 use std::{
     fmt::{self, Debug, Display},
-    hash::Hash,
     io::{Read, Write, stdin, stdout},
-    process::exit,
 };
 use strum::AsRefStr;
 use vec1::Vec1;
@@ -24,10 +22,7 @@ fn main() {
         ($val: expr) => {
             match $val {
                 Ok(val) => val.clone(),
-                Err(err) => {
-                    eprintln!("Error! {err}");
-                    exit(1)
-                }
+                Err(err) => panic!("Error! {err}"),
             }
         };
     }
