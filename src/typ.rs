@@ -392,11 +392,10 @@ impl Expr {
                     ));
                     return typing!(Type::Boolean);
                 }
-                let typ = expr.infer(ctx)?;
-                let Type::Class(_) = typ else {
-                    return Err(format!("can't null-check: {typ}"));
-                };
-                typing!(Type::Boolean)
+                match expr.infer(ctx)? {
+                    Type::Class(_) => typing!(Type::Boolean),
+                    _ => Err(format!("can't null-check: {typ}")),
+                }
             }
             Expr::Init(typ, len) => {
                 expand!(new!(Expr::Add(len, Box::new(Expr::Integer(1)))));
