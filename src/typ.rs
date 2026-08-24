@@ -110,8 +110,8 @@ impl Expr {
                         els,
                     )));
                 }
-                let cond = cond.infer(ctx)?;
-                if Type::Boolean != cond {
+                let typ = cond.infer(ctx)?;
+                if Type::Boolean != typ {
                     return Err(format!("if-else test: Bool != {typ}"));
                 }
                 let Some(els) = els else {
