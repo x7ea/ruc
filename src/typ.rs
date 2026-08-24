@@ -446,7 +446,6 @@ impl Expr {
                     Expr::Float(Float::from(0.0)),
                     Expr::Integer(0)
                 ]));
-                dbg!(&typ);
                 typing!(typ.solve(ctx))
             }
             Expr::Integer(_) => typing!(Type::Integer),
