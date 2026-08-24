@@ -122,7 +122,7 @@ impl Expr {
                             Err(format!("if-else term: {lhs} != {rshs}"))
                         }
                     },
-                    _ => typing!(Type::Void),
+                    (_, None) => typing!(Type::Void),
                 }
             }
             Expr::Match(val, pats) => {
