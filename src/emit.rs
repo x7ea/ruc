@@ -292,6 +292,23 @@ impl Expr {
     }
 }
 
+impl PartialEq for Type {
+    fn eq(&self, other: &Self) -> bool {
+        match (self, other) {
+            (Type::Any, _) | (_, Type::Any) => true,
+            (Type::Integer, Type::Integer)
+            | (Type::Float, Type::Float)
+            | (Type::String, Type::String)
+            | (Type::Boolean, Type::Boolean)
+            | (Type::Void, Type::Void) => true,
+            (Type::Array(lhs), Type::Array(rhs)) => lhs == rhs,
+            (Type::Class(lhs), Type::Class(rhs)) => lhs == rhs,
+            (Type::Function(lhs), Type::Function(rhs)) => lhs == rhs,
+            _ => false,
+        }
+    }
+}
+
 impl Generic {
     pub fn generic(&self) -> Name {
         let Generic(mut name, args) = self.clone();
