@@ -113,15 +113,14 @@ impl Expr {
                 if Type::Boolean != cond {
                     return Err(format!("if-else test: Bool != {cond}"));
                 }
-                match (then.infer(ctx)?, els.and_then(|x| x.infer(ctx))) {
-                    Some(els) => {
-                        let rhs = els.infer(ctx)?;
+                match (then.infer(ctx)?, els.map(|x| x.infer(ctx))) {
+                    (lhs, Some(rhs)) => {
                         if *els != Expr::Null(Type::Void) && lhs != rhs {
                             return Err(format!("if-else term: {lhs} != {rhs}"));
                         }
                         typing!(lhs)
                     }
-                    None => typing!(Type::Void),
+                    (_, None) => typing!(Type::Void),
                 }
             }
             Expr::Match(val, pats) => {
