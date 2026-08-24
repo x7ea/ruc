@@ -12,7 +12,7 @@ fn add<T>(a: T, b: T): T a + b
 
 fn main() {
     let x = [8, 5, 4, 6, 2]
-    print reduce<Int>(x, add<Int>)
+    print reduce<Int>(x, add<T>)
 
     let y = [1.2, 2.3, 4.0]
     print reduce<Float>(y, add<Float>)
