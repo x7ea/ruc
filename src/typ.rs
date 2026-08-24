@@ -102,22 +102,22 @@ impl Expr {
                     [vec![Expr::String(fmt)], vals.to_vec()].concat(),
                 )))
             }
-            Expr::If(cond, then, els) => {
+            Expr::If(cond, lhs, rhs) => {
                 if let Expr::Let(bind, check) = *cond {
                     return typing!(expands!(Expr::If(
                         Box::new(Expr::Check(check.clone())),
-                        Box::new(Expr::Block(vec![Expr::Let(bind, check), *then])),
-                        els,
+                        Box::new(Expr::Block(vec![Expr::Let(bind, check), *lhs])),
+                        rhs,
                     )));
                 }
                 let typ = cond.infer(ctx)?;
                 if Type::Boolean != typ {
                     return Err(format!("if-else test: Bool != {typ}"));
                 }
-                let Some(els) = els else {
+                let Some(rhs) = rhs else {
                     return typing!(Type::Void);
                 };
-                match (then.infer(ctx)?, els.infer(ctx)?) {
+                match (lhs.infer(ctx)?, rhs.infer(ctx)?) {
                     (lhs, rhs) if lhs == rhs => typing!(lhs),
                     (lhs, rhs) => Err(format!("if-else term: {lhs} != {rhs}")),
                 }
