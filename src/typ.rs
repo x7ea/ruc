@@ -14,7 +14,6 @@ impl Define {
                     ctx.local.ret = ret.solve(ctx);
                     let bod = body.infer(ctx)?;
                     if ctx.local.ret != bod {
-                        dbg!(body);
                         return Err(format!("return: {ret} != {bod}"));
                     }
                     ctx.table.insert(name.clone(), ctx.local.clone());
