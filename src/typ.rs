@@ -472,11 +472,11 @@ impl Expr {
             | Expr::Lt(lhs, rhs)
             | Expr::Ge(lhs, rhs)
             | Expr::Le(lhs, rhs) => op!(Type::Integer, lhs, rhs, Type::Boolean),
-            Expr::And(lhs, rhs) | Expr::Or(lhs, rhs) | Expr::Xor(lhs, rhs) => {
-                op!(Type::Boolean, lhs, rhs)
-            }
             Expr::Not(term) => {
                 op!(Type::Boolean, Box::new(Expr::Null(Type::Boolean)), term)
+            }
+            Expr::And(lhs, rhs) | Expr::Or(lhs, rhs) | Expr::Xor(lhs, rhs) => {
+                op!(Type::Boolean, lhs, rhs)
             }
         }
     }
