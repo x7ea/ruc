@@ -145,6 +145,7 @@ impl Expr {
                         Some(Box::new(expr)),
                     )
                 }
+                dbg!(expands!(expr));
                 typing!(expands!(expr))
             }
             Expr::While(cond, body) => {
