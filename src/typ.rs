@@ -46,9 +46,7 @@ impl Define {
                 (params.clone(), Box::new(ret.clone())),
                 Some(args.values().cloned().collect()),
             )),
-            Define::Symbol(_, ret) => {
-                Type::Function(Lambda((Vec::new(), Box::new(ret.clone())), None))
-            }
+            Define::Symbol(_, ret) => Type::Function(Lambda((vec![], Box::new(ret.clone())), None)),
             _ => Type::Void,
         }
     }
