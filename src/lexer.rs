@@ -104,10 +104,10 @@ pub mod name {
         }
 
         pub fn class(&self, typ: &Type) -> Name {
-            Name(format!("{typ:?}@{self}"))
+            Name(format!("{typ:?}.{self}"))
         }
         pub fn generic(&self, typ: &Type) -> Name {
-            Name(format!("{self}.{typ:?}"))
+            Name(format!("{self}@{typ:?}"))
         }
         pub fn is_generic(&self) -> bool {
             self.0.contains(".")
