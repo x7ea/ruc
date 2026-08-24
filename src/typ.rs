@@ -114,8 +114,8 @@ impl Expr {
                 if Type::Boolean != typ {
                     return Err(format!("if-else test: Bool != {typ}"));
                 }
-                match rhs {
-                    Some(rhs) => match (lhs.infer(ctx)?, rhs.infer(ctx)?) {
+                match (lhs.infer(ctx)?, rhs) {
+                    (lhs, Some(rhs)) => match (lhs, rhs.infer(ctx)?) {
                         (lhs, rhs) if lhs == rhs => typing!(lhs),
                         (lhs, rshs) => {
                             dbg!(&rhs);
