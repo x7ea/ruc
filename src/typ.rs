@@ -113,8 +113,7 @@ impl Expr {
                 if Type::Boolean != cond {
                     return Err(format!("if-else test: Bool != {cond}"));
                 }
-                let lhs = then.infer(ctx)?;
-                match els {
+                match (then.infer(ctx)?, els.and_then(|x| x.infer(ctx))) {
                     Some(els) => {
                         let rhs = els.infer(ctx)?;
                         if *els != Expr::Null(Type::Void) && lhs != rhs {
@@ -404,15 +403,15 @@ impl Expr {
             Expr::Read(addr, typ, offset) => {
                 addr.infer(ctx)?;
                 match offset.infer(ctx)? {
-                    Type::Integer => Err(format!("not address: {offset}")),
-                    typ => typing!(typ.clone()),
+                    Type::Integer => typing!(typ.clone()),
+                    typ => Err(format!("not address: {offset}")),
                 }
             }
             Expr::Write(addr, val, offset) => {
                 addr.infer(ctx)?;
                 match offset.infer(ctx)? {
-                    Type::Integer => Err(format!("not address: {offset}")),
-                    typ => typing!(val.infer(ctx)?),
+                    Type::Integer => typing!(val.infer(ctx)?),
+                    typ => Err(format!("not address: {typ}")),
                 }
             }
             Expr::Clone(expr) => {
