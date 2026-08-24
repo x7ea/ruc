@@ -111,14 +111,15 @@ impl Expr {
                     )));
                 }
                 match cond.infer(ctx)? {
-                    Type::Boolean => {
-                        match (then.infer(ctx)?, els.and_then(|x| x.infer(ctx).ok())) {
-                            (lhs, Some(rhs)) if lhs == rhs => typing!(lhs),
-                            (lhs, Some(rhs)) => Err(format!("if-else term: {lhs} != {rhs}")),
-                            (_, None) => typing!(Type::Void),
-                        }
-                    }
-                    typ => Err(format!("if-else test: Bool != {typ}")),
+                    Type::Boolean => (),
+                    typ => return Err(format!("if-else test: Bool != {typ}")),
+                }
+                let Some(els) = els else {
+                    return typing!(Type::Void);
+                };
+                match (then.infer(ctx)?, els.infer(ctx)?) {
+                    (lhs, rhs) if lhs == rhs => typing!(lhs),
+                    (lhs, rhs) => Err(format!("if-else term: {lhs} != {rhs}")),
                 }
             }
             Expr::Match(val, pats) => {
@@ -145,7 +146,6 @@ impl Expr {
                         Some(Box::new(expr)),
                     )
                 }
-                dbg!(expands!(expr));
                 typing!(expands!(expr))
             }
             Expr::While(cond, body) => {
