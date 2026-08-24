@@ -117,7 +117,10 @@ impl Expr {
                 match rhs {
                     Some(rhs) => match (lhs.infer(ctx)?, rhs.infer(ctx)?) {
                         (lhs, rhs) if lhs == rhs => typing!(lhs),
-                        (lhs, rhs) => Err(format!("if-else term: {lhs} != {rhs}")),
+                        (lhs, rshs) => {
+                            dbg!(&rhs);
+                            Err(format!("if-else term: {lhs} != {rshs}"))
+                        }
                     },
                     _ => typing!(Type::Void),
                 }
