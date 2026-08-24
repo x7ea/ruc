@@ -131,7 +131,7 @@ impl Expr {
                 } else {
                     return Err(format!("match: Enum != {typ}"));
                 };
-                let  (_,_,mut expr) = pats..ter().next().unwrap();
+                let  mut expr = pats[0].1.clone();
                 for (key, bind, ret) in pats {
                     let acc = Box::new(Expr::Member(val.clone(), key.clone()));
                     expr = Expr::If(
