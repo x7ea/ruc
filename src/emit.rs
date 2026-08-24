@@ -327,7 +327,7 @@ macro_rules! array {
 #[macro_export]
 macro_rules! hash {
     ($val: expr) => {{
-        use std::hash::{DefaultHasher, Hasher};
+        use std::hash::{DefaultHasher, Hash, Hasher};
         let mut state = DefaultHasher::new();
         $val.hash(&mut state);
         state.finish()
