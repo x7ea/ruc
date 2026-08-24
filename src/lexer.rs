@@ -110,7 +110,7 @@ pub mod name {
             Name(format!("{self}@{typ:?}"))
         }
         pub fn is_generic(&self) -> bool {
-            self.0.contains(".")
+            self.0.contains("@")
         }
     }
 
