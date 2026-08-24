@@ -295,7 +295,7 @@ impl Expr {
 impl PartialEq for Type {
     fn eq(&self, other: &Self) -> bool {
         match (self, other) {
-            (Type::Any, _) | (_, Type::Any) => true,
+            (_, Type::Any) => true,
             (Type::Integer, Type::Integer)
             | (Type::Float, Type::Float)
             | (Type::String, Type::String)
