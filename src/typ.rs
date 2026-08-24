@@ -404,7 +404,7 @@ impl Expr {
                 addr.infer(ctx)?;
                 match offset.infer(ctx)? {
                     Type::Integer => typing!(typ.clone()),
-                    typ => Err(format!("not address: {offset}")),
+                    typ => Err(format!("not address: {typ}")),
                 }
             }
             Expr::Write(addr, val, offset) => {
