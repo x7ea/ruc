@@ -395,14 +395,14 @@ impl Expr {
                 expand!(new!(Expr::Add(len, Box::new(Expr::Integer(1)))));
                 typing!(Type::Array(Box::new(typ.clone())))
             }
-            Expr::Read(addr, typ, offset) => {
+            Expr::Read(offset, typ, addr) => {
                 addr.infer(ctx)?;
                 match offset.infer(ctx)? {
                     Type::Integer => typing!(typ.clone()),
                     typ => Err(format!("not address: {typ}")),
                 }
             }
-            Expr::Write(addr, val, offset) => {
+            Expr::Write(offset, val, addr) => {
                 addr.infer(ctx)?;
                 match offset.infer(ctx)? {
                     Type::Integer => typing!(val.infer(ctx)?),
