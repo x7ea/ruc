@@ -109,6 +109,7 @@ pub enum Type {
     Function(Lambda),
     #[default]
     Void,
+    Any,
 }
 
 #[derive(Debug, Clone, Hash, PartialEq, Eq)]
