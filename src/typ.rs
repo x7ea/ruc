@@ -114,12 +114,12 @@ impl Expr {
                 if Type::Boolean != typ {
                     return Err(format!("if-else test: Bool != {typ}"));
                 }
-                let Some(rhs) = rhs else {
-                    return typing!(Type::Void);
-                };
-                match (lhs.infer(ctx)?, rhs.infer(ctx)?) {
-                    (lhs, rhs) if lhs == rhs => typing!(lhs),
-                    (lhs, rhs) => Err(format!("if-else term: {lhs} != {rhs}")),
+                match rhs {
+                    Some(rhs) => match (lhs.infer(ctx)?, rhs.infer(ctx)?) {
+                        (lhs, rhs) if lhs == rhs => typing!(lhs),
+                        (lhs, rhs) => Err(format!("if-else term: {lhs} != {rhs}")),
+                    },
+                    _ => typing!(Type::Void),
                 }
             }
             Expr::Match(val, pats) => {
