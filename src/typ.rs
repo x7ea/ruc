@@ -19,24 +19,21 @@ impl Define {
                     ctx.table.insert(name.clone(), ctx.local.clone());
                     ctx.local = parent;
                 }
-                Ok(self.signature())
             }
             Define::Declare((Generic(name, _), _), _) => {
                 ctx.global.extrn.insert(name.clone());
                 ctx.global.lib.insert(name.clone(), self.signature());
-                Ok(self.signature())
             }
             Define::Class(Generic(name, args), layout) => {
                 let obj = (args.clone(), layout.clone());
                 ctx.global.table.insert(name.clone(), obj);
-                Ok(Type::Void)
             }
             Define::Symbol(name, _) => {
                 ctx.global.lib.insert(name.clone(), self.signature());
                 ctx.global.extrn.insert(name.clone());
-                Ok(self.signature())
             }
         }
+        Ok(self.signature())
     }
 
     fn signature(&self) -> Type {
