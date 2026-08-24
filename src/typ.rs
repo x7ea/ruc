@@ -409,12 +409,11 @@ impl Expr {
                 }
             }
             Expr::Write(addr, val, offset) => {
-                let offset = offset.infer(ctx)?;
-                if let Type::Integer = offset {
-                    return Err(format!("not address: {offset}"));
-                }
                 addr.infer(ctx)?;
-                typing!(val.infer(ctx)?)
+                match offset.infer(ctx)? {
+                    Type::Integer => Err(format!("not address: {offset}")),
+                    typ => typing!(val.infer(ctx)?),
+                }
             }
             Expr::Clone(expr) => {
                 let (dest, typ) = (Box::new(temp!()), expr.infer(ctx)?);
