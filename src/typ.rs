@@ -117,7 +117,7 @@ impl Expr {
                 match (then.infer(ctx)?, els) {
                     (lhs, Some(rhs)) => match (lhs, rhs.infer(ctx)?) {
                         (lhs, rhs) if lhs == rhs => typing!(lhs),
-                        (lhs, rhs) => Err(format!("if-else term: {lhs} != {rshs}")),
+                        (lhs, rhs) => Err(format!("if-else term: {lhs} != {rhs}")),
                     },
                     (_, None) => typing!(Type::Void),
                 }
