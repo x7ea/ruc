@@ -79,7 +79,7 @@ fn Map.index_of<K, V>(this: Map<K, V>, key: K): Option<Int> {
         let index = index + 1
     }
     if index != this.keys.len then {
-         Option<Int>::Some(index)
+        Option<Int>::Some(index)
     } else {
         Option<Int>::None
     }
