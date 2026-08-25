@@ -205,7 +205,6 @@ impl Expr {
                         if pl != al {
                             return Err(format!("argument: {pl} != {al}"));
                         }
-
                         for (param, arg) in params.iter().zip(args) {
                             if param.solve(ctx) != arg {
                                 return Err(format!("argument: {param} != {arg}"));
