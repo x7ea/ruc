@@ -326,9 +326,7 @@ macro_rules! new {
 
 #[macro_export]
 macro_rules! len {
-    ($arr: expr) => {
-        Box::new(Expr::Member($arr.clone(), Name::new("len")?))
-    };
+    ($arr: expr) => {{ Box::new(Expr::Member($arr.clone(), Name::new("len")?)) }};
 }
 
 #[macro_export]
