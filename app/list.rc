@@ -19,7 +19,6 @@ fn List.link<T>(a: List<T>, b: List<T>) {
 fn main() {
     let a = List<Int>(100)
     let b = List<Int>(200)
-    let c = List<Int>(300)
     a.link(b)
 
     print a.cdr.car
