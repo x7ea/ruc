@@ -342,10 +342,9 @@ impl Expr {
             Expr::Member(obj, key) => {
                 let typ = obj.infer(ctx)?;
                 let Type::Class(name) = &typ else {
-                    return if "len" == key.to_string() {
-                        typing!(expands!(Expr::Len(obj)))
-                    } else {
-                        Err(format!("not class: {typ}"))
+                    return match key.to_string().as_str() {
+                        "len" => typing!(expands!(Expr::Len(obj))),
+                        _ => Err(format!("not class: {typ}")),
                     };
                 };
                 let unify = &name.generic();
