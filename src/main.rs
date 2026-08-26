@@ -46,6 +46,8 @@ pub enum Define {
 
 #[derive(Debug, Clone, Hash, PartialEq, Eq, AsRefStr)]
 pub enum Expr {
+    Print(bool, Vec<Expr>),
+    Block(Vec<Expr>),
     // Literal
     Integer(i64),
     Float(Float<f64>),
@@ -67,12 +69,10 @@ pub enum Expr {
     Member(Box<Expr>, Name),
     Check(Box<Expr>),
     // Control
-    Print(bool, Vec<Expr>),
     If(Box<Expr>, Box<Expr>, Option<Box<Expr>>),
     Match(Box<Expr>, Vec<(Name, Option<Expr>, Expr)>),
     For(Box<Expr>, Box<Expr>, Box<Expr>),
     While(Box<Expr>, Box<Expr>),
-    Block(Vec<Expr>),
     // Operator
     Add(Box<Expr>, Box<Expr>),
     Sub(Box<Expr>, Box<Expr>),
