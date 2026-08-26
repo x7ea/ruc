@@ -21,7 +21,6 @@ fn main() {
     let b = List<Int>(200)
     let c = List<Int>(300)
     a.link(b)
-    b.link(c)
 
     print a.cdr.car
 }
