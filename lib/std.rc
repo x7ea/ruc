@@ -143,5 +143,5 @@ extern fn rand(): Int
 
 fn random(min: Int, max: Int): Int {
     srand(time(0) + getpid())
-    (rand() % max) + min
+    rand() % max + min
 }
