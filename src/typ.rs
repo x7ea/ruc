@@ -344,7 +344,7 @@ impl Expr {
                 let Type::Class(name) = &typ else {
                     return match key.to_string().as_str() {
                         "len" => typing!(expands!(Expr::Len(obj))),
-                        _ => Err(format!("not class: {typ}")),
+                        key => Err(format!("not class: {typ}.{keys}")),
                     };
                 };
                 let unify = &name.generic();
