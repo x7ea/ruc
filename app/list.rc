@@ -13,7 +13,7 @@ fn List<T>(value: T): List<T> {
 
 fn List.link<T>(a: List<T>, b: List<T>) {
     while a.cdr? do let a = a.cdr
-    let a.cdr = b
+    let a.cdr = other
 }
 
 fn main() {
