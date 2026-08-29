@@ -19,7 +19,7 @@ fn List.link<T>(a: List<T>, b: List<T>) {
 fn main() {
     let a = List<Int>(100)
     let b = List<Int>(200)
-    a.link(b)
+    a.link(clone b)
 
     print a.cdr.car
 }
