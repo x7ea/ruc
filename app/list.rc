@@ -12,7 +12,7 @@ fn List<T>(value: T): List<T> {
 }
 
 fn List.link<T>(this: List<T>, other: List<T>) {
-    while this.cdr? do let a = a.cdr
+    while this.cdr? do let this = a.cdr
     let a.cdr = other
 }
 
