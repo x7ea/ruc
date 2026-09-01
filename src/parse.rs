@@ -168,8 +168,8 @@ impl Expr {
             Ok(Expr::Index(arr, idx))
         } else if let Ok((obj, key)) = rsplit!(src, ".") {
             let obj = Expr::parse(&obj)?;
-            if let Ok(Expr::Call(callee, arg)) = Expr::parse(&key) {
-                return Ok(Expr::Call(callee.clone(), [vec![obj], arg].concat()));
+            if let Ok(Expr::Call(func, arg)) = Expr::parse(&key) {
+                return Ok(Expr::Call(func.clone(), [vec![obj], arg].concat()));
             }
             Ok(Expr::Member(Box::new(obj), Name::new(&key.to_lowercase())?))
         } else if let Ok((typ, key)) = split!(src, "::") {
