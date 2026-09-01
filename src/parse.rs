@@ -268,7 +268,7 @@ impl Display for Generic {
         if args.is_empty() {
             return write!(f, "{name}");
         }
-        let args = map!(args, |x| x.to_string()).join(", ");
+        let args = map!(args, Type::to_string).join(", ");
         write!(f, "{name}<{args}>")
     }
 }
