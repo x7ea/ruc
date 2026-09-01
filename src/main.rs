@@ -131,7 +131,6 @@ pub struct Context {
     global: Global,
     local: Function,
     table: IndexMap<Name, Function>,
-    emit: IndexSet<Name>,
 }
 
 #[derive(Debug, Default)]
@@ -143,6 +142,7 @@ pub struct Global {
     table: IndexMap<Name, (Vec<Type>, Object)>,
     alias: IndexMap<Type, Type>,
     extrn: IndexSet<Name>,
+    used: IndexSet<Name>,
 }
 
 #[derive(Debug, Default, Clone)]
