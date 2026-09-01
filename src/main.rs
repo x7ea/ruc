@@ -131,6 +131,7 @@ pub struct Context {
     global: Global,
     local: Function,
     table: IndexMap<Name, Function>,
+    emit: IndexSet<Name>,
 }
 
 #[derive(Debug, Default)]
