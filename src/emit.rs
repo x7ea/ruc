@@ -13,11 +13,8 @@ impl Define {
             };
         }
         let ctx = &mut Context::default();
-        ctx.global = Global {
-            def: program.iter().map(|x| (name!(x), x.clone())).collect(),
-            used: IndexSet::from([Name::new("main")?]),
-            ..Default::default()
-        };
+        ctx.global.used.insert(Name::new("main")?);
+        ctx.global.def = program.iter().map(|x| (name!(x), x.clone())).collect();
         map!({ program }, |define| define.infer(ctx))?;
 
         let mut text = String::from("\n");
