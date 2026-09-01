@@ -36,7 +36,7 @@ impl Define {
         let Define::Function((Generic(name, params), args), (body, _)) = self else {
             return Ok(String::new());
         };
-        if !params.is_empty() {
+        if !params.is_empty() || !ctx.global.used.contains(name) {
             return Ok(String::new());
         }
         ctx.local = ctx.table[name].clone();
