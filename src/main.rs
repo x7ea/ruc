@@ -142,7 +142,7 @@ pub struct Global {
     table: IndexMap<Name, (Vec<Type>, Object)>,
     alias: IndexMap<Type, Type>,
     extrn: IndexSet<Name>,
-    used: IndexSet<Name>,
+    used: IndexMap<Name, usize>,
 }
 
 #[derive(Debug, Default, Clone)]
