@@ -290,17 +290,6 @@ impl Expr {
             _ => expr!(self).emit(ctx),
         }
     }
-
-    fn visit(&self, ctx: &mut Context) {
-        match self {
-            Expr::Variable(Generic(name, _)) => {
-                if let Some(Define::Function(_, (expr, _))) = ctx.global.def.get(name) {
-                    ctx.global.used.insert(name.clone());
-                    expr.visit(ctx);
-                }
-            }
-        }
-    }
 }
 
 impl PartialEq for Type {
