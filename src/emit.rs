@@ -293,7 +293,12 @@ impl Expr {
 
     fn visit(&self, ctx: &mut Context) {
         match self {
-            Expr::Variable(Generic(name)) => ctx.emit.insert(name),
+            Expr::Variable(Generic(name, _)) => {
+                if let Some(Define::Function(_, (expr, _))) = ctx.global.def.get(name) {
+                    ctx.global.used.insert(name.clone());
+                    expr.visit(ctx);
+                }
+            }
         }
     }
 }
