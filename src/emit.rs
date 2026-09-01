@@ -1,7 +1,7 @@
 use crate::*;
 
 impl Define {
-    pub fn compile(defines: &[Self]) -> Result<String, String> {
+    pub fn compile(program: &[Self]) -> Result<String, String> {
         macro_rules! name {
             ($define: expr) => {
                 match $define.clone() {
@@ -14,15 +14,15 @@ impl Define {
         }
         let ctx = &mut Context::default();
         ctx.global = Global {
-            def: defines.iter().map(|x| (name!(x), x.clone())).collect(),
+            def: program.iter().map(|x| (name!(x), x.clone())).collect(),
             used: IndexSet::from([Name::new("main")?]),
             ..Default::default()
         };
-        map!({ defines }, |define| define.infer(ctx))?;
+        map!({ program }, |define| define.infer(ctx))?;
 
         let mut text = String::from("\n");
-        for (_, define) in ctx.global.def.clone() {
-            text += &define.emit(ctx)?;
+        for (_, func) in ctx.global.def.clone() {
+            text += &func.emit(ctx)?;
         }
         let mut lib = String::from("\nsection .text\n\tglobal main\n");
         for symbol in ctx.global.extrn.clone() {
