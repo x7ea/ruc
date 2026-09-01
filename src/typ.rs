@@ -194,12 +194,12 @@ impl Expr {
                 (val, ret) if ret == val => typing!(Type::Void),
                 (val, ret) => Err(format!("return: {ret} != {val}")),
             },
-            Expr::Call(callee, args) => {
+            Expr::Call(func, args) => {
                 let args = map!({ args }, |x| x.infer(ctx))?;
                 if let Some(obj) = args.first() {
                     ctx.local.class = Some(obj.clone());
                 }
-                match callee.infer(ctx)? {
+                match func.infer(ctx)? {
                     Type::Function(Lambda((_, ret), Some(params))) => {
                         let (pl, al) = (params.len(), args.len());
                         for (param, arg) in params.iter().zip(args) {
