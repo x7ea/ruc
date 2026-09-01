@@ -291,7 +291,11 @@ impl Expr {
         }
     }
 
-    fn visit(&self, ctx: &mut Context) {}
+    fn visit(&self, ctx: &mut Context) {
+        match self {
+            Expr::Variable(Generic(name)) => ctx.emit.insert(name),
+        }
+    }
 }
 
 impl PartialEq for Type {
