@@ -146,7 +146,7 @@ impl Expr {
             }
             Expr::Block(block) => Ok(map!({ block }, |line| line.emit(ctx))?.concat()),
             Expr::Return(val) => Ok(format!("{}\tleave\n\tret\n", val.emit(ctx)?)),
-            Expr::Call(callee, args) => {
+            Expr::Call(func, args) => {
                 let mut push = String::new();
                 for arg in args.iter().rev() {
                     push += &arg.emit(ctx)?;
@@ -173,7 +173,7 @@ impl Expr {
                 Ok(format!(
                     "{push}{mov}{1}\tmov r10, rax\n{0}\tcall r10\n",
                     Expr::Integer(xmm).emit(ctx)?,
-                    callee.emit(ctx)?
+                    func.emit(ctx)?
                 ))
             }
             Expr::Variable(var @ Generic(name, _)) => {
