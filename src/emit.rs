@@ -23,7 +23,9 @@ impl Define {
         }
         let mut lib = String::from("\nsection .text\n\tglobal main\n");
         for symbol in ctx.global.extrn.clone() {
-            lib += &format!("\textern {symbol}\n");
+            if ctx.global.used.contains(&symbol) {
+                lib += &format!("\textern {symbol}\n");
+            }
         }
         let data = ctx.global.data.clone();
         Ok(format!("section .data\n{data}{lib}{text}\n"))
