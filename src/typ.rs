@@ -517,6 +517,7 @@ impl Type {
                 if let Define::Function(_, _) = unify {
                     typ = unify.infer(ctx)?;
                 }
+                ctx.global.used.insert(mangle.clone());
                 ctx.global.def.insert(mangle, unify.clone());
                 ctx.global.alias = parent;
             }
