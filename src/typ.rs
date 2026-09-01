@@ -231,6 +231,9 @@ impl Expr {
                     if self != &var {
                         ctx.local.expand.insert(self.clone(), var);
                     }
+                    if ctx.global.def.contains_key(&name) {
+                        ctx.global.used.insert(name.clone());
+                    }
                     typing!(typ.mono(ctx, Generic(name, args))?)
                 } else if let Some(typ) = ctx.local.scope.get(&name) {
                     typing!(typ.solve(ctx))
