@@ -290,6 +290,8 @@ impl Expr {
             _ => expr!(self).emit(ctx),
         }
     }
+
+    fn visit(&self, ctx: &mut Context) {}
 }
 
 impl PartialEq for Type {
