@@ -526,8 +526,7 @@ impl Type {
                     return Err(format!("undefined: {name}"));
                 };
                 let layout = {
-                    let (Object::Enum(layout) | Object::Struct(layout)) = &table;
-                    let mut layout = layout.clone();
+                    let (Object::Enum(mut layout) | Object::Struct(mut layout)) = table.clone();
                     for (_, field) in layout.iter_mut() {
                         for (arg, param) in args.iter().zip(params) {
                             *field = field.rewrite(param, arg);
