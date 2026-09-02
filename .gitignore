@@ -1,6 +1,6 @@
 /target
+/machine
 main.o
 main
 main.asm
 .DS_Store
-/machine
