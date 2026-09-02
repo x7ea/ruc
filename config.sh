@@ -1,8 +1,7 @@
-apt install git curl build-essential libgtk-3-0 libgtk-3-dev
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+mkdir machine
+cd machine
 
-git clone https://github.com/x7ea/ruc.git
-cd ./ruc
+vagrant init generic/ubuntu2204
+vagrant up
 
-cargo install --path .
-./ruc.sh ./app/hello.rc
+vagrant ssh < setup.sh
