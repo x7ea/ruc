@@ -21,7 +21,7 @@ fn Bool.print(this: Bool): Str if this then "true" else "false"
 extern fn scanf(fmt: Str, buf: Str)
 fn input(): Str {
     let buf = calloc<Str>(512, 1)
-    scanf("%s", buf)
+    scanf("%[^\n]", buf)
     buf
 }
 
