@@ -525,15 +525,12 @@ impl Type {
                 let Some((params, table)) = ctx.global.table.get(&name) else {
                     return Err(format!("undefined: {name}"));
                 };
-                let layout = {
-                    let (Object::Enum(mut layout) | Object::Struct(mut layout)) = table.clone();
-                    for (_, field) in layout.iter_mut() {
-                        for (arg, param) in args.iter().zip(params) {
-                            *field = field.rewrite(param, arg);
-                        }
+                let (Object::Enum(mut layout) | Object::Struct(mut layout)) = table.clone();
+                for (_, field) in layout.iter_mut() {
+                    for (arg, param) in args.iter().zip(params) {
+                        *field = field.rewrite(param, arg);
                     }
-                    layout
-                };
+                }
                 let unify = match table {
                     Object::Enum(_) => Object::Enum(layout).clone(),
                     Object::Struct(_) => Object::Struct(layout).clone(),
