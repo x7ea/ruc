@@ -21,5 +21,6 @@ fn main() {
     let sum.a = 1968
     let product.b = "Hello"
 
-    print sum, product
+    print sum
+    print product
 }
