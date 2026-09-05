@@ -12,5 +12,4 @@ fn main() {
     let product.b = sum.b
 
     print sum.a, product.a
-    print sum.b, product.b 
 }
