@@ -1,0 +1,8 @@
+use std, gtk
+
+fn main() {
+    if !msgbox("Are you an idiot?") then return
+    while true do {
+        let _ = msgbox("You're an idiot!")
+    }
+}
