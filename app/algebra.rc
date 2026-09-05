@@ -18,9 +18,13 @@ fn main() {
     let sum = new Sum<Int, Str>
     let product = new Product<Int, Str>
 
-    let sum.a = 1968
-    let product.b = "Hello"
-
+    let sum.a = 123
     print sum
+
+    let sum.b = "Hoge"
+    print sum
+
+    let product.a = 456
+    let product.b = "Fuga"
     print product
 }
