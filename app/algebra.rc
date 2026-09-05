@@ -12,7 +12,6 @@ match this {
 fn Product.print<A, B>(this: Product<A, B>): Str '
     format "Product { a: ", this.a, ", b: \"", this.b, "\" }"
 
-
 fn main() {
     let sum = new Sum<Int, Str>
     let product = new Product<Int, Str>
