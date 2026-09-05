@@ -3,6 +3,17 @@ use std
 enum Sum<A, B> { a: A, b: B }
 struct Product<A, B> { a: A, b: B }
 
+fn Sum.print<A, B>(this: Sum<A, B>): Str {
+    match this {
+        A n = (format "Sum::A(", n, ")"),
+        B s = (format "Sum::B(", s, ")")
+    }
+}
+
+fn Product.print<A, B>(this: Product<A, B>): Str {
+    format "Product { a: ", this.a, ", b: ", this.b, " }"
+}
+
 fn main() {
     let sum = new Sum<Int, Str>
     let product = new Product<Int, Str>
@@ -10,5 +21,5 @@ fn main() {
     let sum.a = 1968
     let product.b = "Hello"
 
-    print sum.b, product.a
+    print sum, product
 }
