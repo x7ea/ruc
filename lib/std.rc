@@ -145,3 +145,5 @@ fn random(min: Int, max: Int): Int {
     srand(time(0) + getpid())
     rand() % (max - min + 1) + min
 }
+
+extern fn pthread_create<T>()
