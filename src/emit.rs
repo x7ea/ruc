@@ -80,7 +80,7 @@ impl Expr {
             ($asm: literal, $lhs: expr, $rhs: expr) => {
                 match typ!(&**$rhs) {
                     Type::Integer | Type::Boolean => format!(
-                        "{}\tsub rsp, 8\n\tpush rax\n{}\tmov r10, rax\n\tpop rax\n\tadd rsp, 16\n\t{} rax, r10\n",
+                        "{}\tsub rsp, 8\n\tpush rax\n{}\tmov r10, rax\n\tpop rax\n\tadd rsp, 8\n\t{} rax, r10\n",
                         $lhs.emit(ctx)?,
                         $rhs.emit(ctx)?,
                         $asm.replace("mul", "imul"),
