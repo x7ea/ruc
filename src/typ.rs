@@ -2,7 +2,7 @@ use crate::*;
 
 impl Define {
     pub fn infer(&self, ctx: &mut Context) -> Result<Type, String> {
-        match self {
+        match self.clone() {
             Define::Function((Generic(name, params), args), (body, ret)) => {
                 ctx.global.lib.insert(name.clone(), self.signature());
                 if params.is_empty() {
@@ -22,15 +22,15 @@ impl Define {
             }
             Define::Declare((Generic(name, _), _), _) => {
                 ctx.global.extrn.insert(name.clone());
-                ctx.global.lib.insert(name.clone(), self.signature());
+                ctx.global.lib.insert(name, self.signature());
             }
             Define::Class(Generic(name, args), layout) => {
                 let obj = (args.clone(), layout.clone());
-                ctx.global.table.insert(name.clone(), obj);
+                ctx.global.table.insert(name, obj);
             }
             Define::Symbol(name, _) => {
                 ctx.global.lib.insert(name.clone(), self.signature());
-                ctx.global.extrn.insert(name.clone());
+                ctx.global.extrn.insert(name);
             }
         }
         Ok(self.signature())
