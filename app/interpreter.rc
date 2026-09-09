@@ -1,0 +1,26 @@
+use std
+
+fn expr(rule: Map<Str, Int(Int, Int)>): Int {
+    let token = input()
+    if let func = rule.get(token).some then {
+        let a = expr(rule)
+        let b = expr(rule)
+        func(a, b)
+    } else {
+        token.atoi()
+    }
+}
+
+fn add(a: Int, b: Int): Int a + b
+fn sub(a: Int, b: Int): Int a - b
+fn mul(a: Int, b: Int): Int a * b
+fn div(a: Int, b: Int): Int a / b
+
+fn main() {
+    let rule = Map<Str, Int(Int, Int)>(
+        ["+", "-", "*", "/"],
+        [add, sub, mul, div]
+    )
+    print "[Calc] Polish-notation"
+    print expr(rule)
+}
