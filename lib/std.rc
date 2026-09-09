@@ -147,7 +147,7 @@ fn random(min: Int, max: Int): Int {
 }
 
 struct Thread {
-    id: Int
+    posix: Int
 }
 
 extern fn pthread_create<T>(id: Thread, config: (), func: T, args: ())
@@ -160,4 +160,4 @@ fn Thread(func: ()()): Thread {
     id
 }
 
-fn Thread.join(id: Thread) pthread_join(id.id, ())
+fn Thread.join(id: Thread) pthread_join(id.posix, ())
