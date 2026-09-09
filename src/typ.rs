@@ -53,7 +53,7 @@ impl Expr {
     fn infer(&self, ctx: &mut Context) -> Result<Type, String> {
         macro_rules! typing {
             ($ret: expr) => {{
-                let typ = $ret.clone();
+                let typ = $ret.solve(ctx).clone();
                 ctx.local.typed.insert(self.clone(), typ.clone());
                 Ok::<Type, String>(typ)
             }};
