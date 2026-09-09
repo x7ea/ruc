@@ -17,7 +17,7 @@ fn main(argc: Int, argv: [Str]) {
         let content = ""
         let line = input()
         while line != "" do {
-            let content = content + line
+            let content = format content + line, "\n"
             let line = input()
         }
         write_file(src, content)
