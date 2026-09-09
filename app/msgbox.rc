@@ -1,6 +1,6 @@
 use std, gtk
 
 fn main() {
-    let response = msgbox("Hello, here is messagebox!")
+    let response = msgbox("Hello, here is message box!")
     print "You clicked ", if response then "OK" else "Cancel"
 }
