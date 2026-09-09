@@ -153,8 +153,10 @@ struct Thread {
 extern fn pthread_create<T>(id: Thread, config: (), func: T, args: ())
 extern fn pthread_join(id: Thread, config: ())
 
-fn Thread(func: ()()) {
+fn Thread(func: ()()): Thread {
     let id = new Thread
     pthread_create<()()>(id, (), func, ())
-    pthread_join(id, ())
+    id
 }
+
+fn Thread.join(id: Thread) pthread_join(id, ())
