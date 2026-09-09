@@ -8,10 +8,11 @@ fn sub() {
 }
 
 fn main() {
-
+    let id = Thread(sub)
 
     for number = [2, 2, 2] do {
         print "Main: ", number
         sleep(number)
     }
+    id.join()
 }
