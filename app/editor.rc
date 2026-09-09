@@ -14,8 +14,12 @@ fn main(argc: Int, argv: [Str]) {
             None = print "undefined: " + src
         }
     } else if cmd == "write" then {
-        if 
-        let content = input()
+        let content = ""
+        let line = input()
+        while line != "" {
+            let content = content + line
+            let line = input()
+        }
         write_file(src, content)
     } else {
         print "unknown: " + cmd
