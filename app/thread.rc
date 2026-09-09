@@ -1,18 +1,21 @@
 use std
 
 fn sub() {
-    for number = [1, 2, 3] do {
-        print "Sub: ", number
-        sleep(number)
-    }
+    sleep(1)
+    print "Sub 1"
+    sleep(1)
+    print "Sub 2"
 }
 
 fn main() {
     let id = Thread(sub)
 
-    for number = [2, 2, 2] do {
-        print "Main: ", number
-        sleep(number)
-    }
+    print "Main 1"
+    sleep(1)
+    print "Main 2"
+    sleep(1)
+
     id.join()
+
+    print "Main: finish"
 }
