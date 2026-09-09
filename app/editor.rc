@@ -14,6 +14,7 @@ fn main(argc: Int, argv: [Str]) {
             None = print "undefined: " + src
         }
     } else if cmd == "write" then {
+        if 
         let content = input()
         write_file(src, content)
     } else {
