@@ -1,0 +1,6 @@
+use std
+
+fn main() {
+    let x = input().atoi()
+    print x, " + 1 = ", x + 1
+}
