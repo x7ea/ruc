@@ -1,11 +1,12 @@
 use std
 
-fn sub() print "Sub"
+fn sub() {
+    sleep(1)
+    print "Sub"
+}
 
 fn main() {
     let id = Thread(sub)
-
-    sleep(1)
     print "Main"
 
     id.join()
