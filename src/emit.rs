@@ -69,7 +69,7 @@ impl Define {
         let frame = format!(
             "\tpush rbp\n\tmov rbp, rsp\n\tsub rsp, {}\n",
             if size.is_multiple_of(16) {
-                var
+                size
             } else {
                 var + 8
             }
