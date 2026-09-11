@@ -68,11 +68,7 @@ impl Define {
         let size = ctx.local.var.len() * 8;
         let frame = format!(
             "\tpush rbp\n\tmov rbp, rsp\n\tsub rsp, {}\n",
-            if size.is_multiple_of(16) {
-                size
-            } else {
-                size + 8
-            }
+            if size % 16 == 0 { size } else { size + 8 }
         );
         Ok(format!("{name}:\n{frame}{alloc}{body}\tleave\n\tret\n\n"))
     }
