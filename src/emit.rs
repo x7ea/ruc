@@ -71,7 +71,7 @@ impl Define {
             if size.is_multiple_of(16) {
                 size
             } else {
-                var + 8
+                size + 8
             }
         );
         Ok(format!("{name}:\n{frame}{alloc}{body}\tleave\n\tret\n\n"))
