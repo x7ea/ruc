@@ -70,7 +70,7 @@ impl Define {
             "\tpush rbp\n\tmov rbp, rsp\n\tsub rsp, {}\n",
             if var.is_multiple_of(16) { var } else { var + 8 }
         );
-        Ok(format!("{name}:\n{pro}{alloc}{body}\tleave\n\tret\n\n"))
+        Ok(format!("{name}:\n{frame}{alloc}{body}\tleave\n\tret\n\n"))
     }
 }
 
