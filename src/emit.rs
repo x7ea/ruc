@@ -66,7 +66,7 @@ impl Define {
         ctx.table.insert(name.clone(), ctx.local.clone());
 
         let var = ctx.local.var.len() * 8;
-        let pro = format!(
+        let frame = format!(
             "\tpush rbp\n\tmov rbp, rsp\n\tsub rsp, {}\n",
             if var.is_multiple_of(16) { var } else { var + 8 }
         );
