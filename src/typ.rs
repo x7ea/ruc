@@ -537,7 +537,7 @@ impl Type {
                 };
                 ctx.global.table.insert(mangle.clone(), (Vec::new(), unify));
             }
-            _ => {}
+            _ => ()
         }
         Ok(typ.solve(ctx))
     }
