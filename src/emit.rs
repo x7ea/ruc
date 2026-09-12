@@ -258,7 +258,7 @@ impl Expr {
                     .replace("\\r", "\", 13, \"")
                     .replace("\\\"", "\", 34, \"")
                     .replace("\"\", ", "");
-                let name = format!("str.{}", label!());
+                let name = format!("str{}", label!());
                 ctx.global.data += &format!("\t{name} db {val}\n");
                 Ok(format!("\tmov rax, {name}\n"))
             }
