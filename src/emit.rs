@@ -247,7 +247,7 @@ impl Expr {
             Expr::Integer(val) => Ok(format!("\tmov rax, {val}\n")),
             Expr::Float(Float(0.0)) => Ok(String::from("\tpxor xmm0, xmm0\n")),
             Expr::Float(val) => {
-                let name = format!("float.{}", label!());
+                let name = format!("float{}", label!());
                 ctx.global.data += &format!("\t{name} dq {val:?}\n");
                 Ok(format!("\tmovsd xmm0, [{name}]\n"))
             }
