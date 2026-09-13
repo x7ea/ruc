@@ -18,7 +18,7 @@ use strum::AsRefStr;
 use vec1::Vec1;
 
 fn main() {
-    macro_rules! error {
+    macro_rules! ok {
         ($val: expr) => {
             match $val {
                 Ok(val) => val.clone(),
@@ -28,11 +28,11 @@ fn main() {
     }
     let code = {
         let mut buffer = String::new();
-        error!(stdin().read_to_string(&mut buffer));
+        ok!(stdin().read_to_string(&mut buffer));
         buffer.trim().to_owned()
     };
-    let output = error!(Define::compile(&error!(Define::parse(&code))));
-    error!(stdout().write_all(output.as_bytes()));
+    let output = ok!(Define::compile(&ok!(Define::parse(&code))));
+    ok!(stdout().write_all(output.as_bytes()));
 }
 
 // Abstract Syntax Tree (AST)
