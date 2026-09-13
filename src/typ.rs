@@ -77,8 +77,8 @@ impl Expr {
             ($typ: pat, $lhs: expr, $rhs: expr) => {{
                 let op = &self.as_ref().to_lowercase();
                 match ($lhs.infer(ctx)?, $rhs.infer(ctx)?) {
-                    ($typ, ret @ $typ) => typing!(ret.clone()),
                     (lhs, rhs) if lhs != rhs => Err(format!("{op} term: {lhs} != {rhs}",)),
+                    ($typ, ret @ $typ) => typing!(ret.clone()),
                     (typ, _) => typing!(expands!(Expr::Call(
                         Box::new(method!(&typ, op)),
                         vec![*$lhs, *$rhs],
@@ -537,7 +537,7 @@ impl Type {
                 };
                 ctx.global.table.insert(mangle.clone(), (Vec::new(), unify));
             }
-            _ => ()
+            _ => (),
         }
         Ok(typ.solve(ctx))
     }
