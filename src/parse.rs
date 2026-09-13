@@ -35,6 +35,7 @@ impl Define {
             macro_rules! body {
                 ($body: expr, $typ: expr) => {{ (Expr::Block(vec![Expr::parse(&$body)?]), Type::parse(&$typ)?) }};
             }
+
             if let Some(file) = line.strip_prefix("use ") {
                 for file in serial!(file, |x: &str| Ok(x.trim().to_owned())) {
                     let Ok(file) = read_to_string(format!("./lib/{file}.rc")) else {
@@ -234,6 +235,7 @@ impl Display for Type {
         }
     }
 }
+
 impl Debug for Type {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let mangle = |x: &[Type]| map!(x, |x: &Type| format!("{x:?}")).join("_");
