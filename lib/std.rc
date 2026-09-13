@@ -8,6 +8,7 @@ extern fn strlen(this: Str): Int
 extern fn exit(status_code: Int)
 
 extern fn atoi(src: Str): Int
+extern fn atof(src: Str): Float
 extern fn g_strdup_printf: Str
 extern fn printf
 
