@@ -1,0 +1,32 @@
+use std
+
+fn interface<T>() {
+    let object = new T
+    object.update(input())
+}
+
+struct User {
+    name: Str,
+    id: Int
+}
+
+struct Anonymous {
+    ip_addr: Str
+}
+
+fn User.update(this: User, data: Str) {
+    let this.name = "@" + data
+    let this.id = data.len
+
+    print "User: ", this.id, this.name
+}
+
+fn Anonymous.update(this: Anonymous, data: Str) {
+    let this.ip_addr = atoi(data)
+    print "Anonymous: ", this.ip_addr
+}
+
+fn main() {
+    interface<User>()
+    interface<Anonymous>()
+}
