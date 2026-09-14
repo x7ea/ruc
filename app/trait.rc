@@ -15,9 +15,9 @@ struct Anonymous {
 }
 
 fn User.update(this: User, data: Str) {
-    let this.name = data
-    let this.id = time(0)
-    print this.id, this.name
+    let this.name = data.strtok(" ")
+    let this.id = time(0) % 100
+    print this.name, this.id
 }
 
 fn Anonymous.update(this: Anonymous, data: Str) {
