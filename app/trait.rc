@@ -16,14 +16,13 @@ struct Anonymous {
 
 fn User.update(this: User, data: Str) {
     let this.name = data
-    let this.id = data.len
-
-    print "User: ", this.id, this.name
+    let this.id = time(0)
+    print this.id, this.name
 }
 
 fn Anonymous.update(this: Anonymous, data: Str) {
     let this.ip_addr = 192.168 + atof(data)
-    print "Anonymous: ", this.ip_addr
+    print this.ip_addr
 }
 
 fn main() {
