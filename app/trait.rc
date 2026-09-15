@@ -15,7 +15,7 @@ struct Anonymous {
 }
 
 fn User.update(this: User, data: Str) {
-    let this.name = data.strtok(" ")
+    let this.name = data
     let this.id = time(0) % 100
     print this.name, this.id
 }
