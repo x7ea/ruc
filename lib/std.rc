@@ -4,7 +4,6 @@ extern fn free<T>(ptr: T)
 
 extern fn strcmp(a: Str, b: Str): Int
 extern fn strlen(this: Str): Int
-extern fn strtok(this: Str, del: Str): Str
 
 extern fn exit(status_code: Int)
 
