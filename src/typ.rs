@@ -532,8 +532,8 @@ impl Type {
                     }
                 }
                 let unify = match table {
-                    Object::Enum(_) => Object::Enum(layout).clone(),
-                    Object::Struct(_) => Object::Struct(layout).clone(),
+                    Object::Enum(_) => Object::Enum(layout),
+                    Object::Struct(_) => Object::Struct(layout),
                 };
                 ctx.global.table.insert(mangle.clone(), (Vec::new(), unify));
             }
