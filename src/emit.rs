@@ -341,16 +341,6 @@ macro_rules! array {
 }
 
 #[macro_export]
-macro_rules! hash {
-    ($val: expr) => {{
-        use std::hash::{DefaultHasher, Hash, Hasher};
-        let mut state = DefaultHasher::new();
-        $val.hash(&mut state);
-        state.finish()
-    }};
-}
-
-#[macro_export]
 macro_rules! map {
     ($arr: block, $lambda: expr) => {{ $arr.iter().map($lambda).collect::<Result<Vec<_>, String>>() }};
     ($arr: expr, $lambda: expr) => {{ $arr.iter().map($lambda).collect::<Vec<_>>() }};
