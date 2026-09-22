@@ -1,5 +1,4 @@
 use crate::*;
-use std::fs::read_to_string;
 
 pub const SPACE: &str = " ";
 
@@ -38,6 +37,7 @@ impl Define {
 
             if let Some(file) = line.strip_prefix("use ") {
                 for file in serial!(file, |x: &str| Ok(x.trim().to_owned())) {
+                    use std::fs::read_to_string;
                     let Ok(file) = read_to_string(format!("./lib/{file}.rc")) else {
                         return Err(format!("undefined library: {file}"));
                     };
