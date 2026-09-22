@@ -3,3 +3,4 @@
 
 - 対応機種 x86_64 GNU/Linux PC 専用
 - System V ABI 準拠による glibc 互換
+- 代数的データ型とジェネリクス単相化
