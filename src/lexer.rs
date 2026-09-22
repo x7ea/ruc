@@ -80,7 +80,7 @@ pub mod name {
     ];
 
     #[derive(Debug, Clone, Default, PartialEq, Eq, Hash)]
-    pub struct Name(String);
+    pub struct Name(pub String);
 
     impl Name {
         pub fn new(name: &str) -> Result<Name, String> {
@@ -106,9 +106,11 @@ pub mod name {
         pub fn class(&self, typ: &Type) -> Name {
             Name(format!("{typ:?}.{self}"))
         }
+
         pub fn generic(&self, typ: &Type) -> Name {
             Name(format!("{self}@{typ:?}"))
         }
+
         pub fn is_generic(&self) -> bool {
             self.0.contains("@")
         }
@@ -143,6 +145,7 @@ macro_rules! surround {
         })
     };
 }
+
 #[macro_export]
 macro_rules! serial {
     ($arr: expr, $lambda: expr) => {
