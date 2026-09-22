@@ -71,7 +71,7 @@ impl Expr {
             };
         }
         macro_rules! temp {
-            () => {{ var!(&format!("temp{}", hash!(&self))) }};
+            () => {{ var!(&format!("temp{self:?}")) }};
         }
         macro_rules! op {
             ($typ: pat, $lhs: expr, $rhs: expr) => {{
