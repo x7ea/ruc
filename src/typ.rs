@@ -306,14 +306,14 @@ impl Expr {
             Expr::Index(arr, idx) => {
                 let typ = arr.infer(ctx)?;
                 let Type::Array(typ) = typ else {
-                    return Err(format!("array: {typ}"));
+                    return Err(format!("not array: {typ}"));
                 };
                 match idx.infer(ctx)? {
                     Type::Integer => {
                         expand!(Expr::Read(array!(arr, idx), *typ.clone(), arr.clone()));
                         typing!(*typ.clone())
                     }
-                    typ => Err(format!("index: {typ}")),
+                    typ => Err(format!("not index: {typ}")),
                 }
             }
             Expr::Len(obj) => typing!(expands!(match obj.infer(ctx)? {
