@@ -1,5 +1,4 @@
 use crate::*;
-
 pub const SPACE: &str = " ";
 
 impl Define {
@@ -67,6 +66,7 @@ impl Define {
         Ok(result)
     }
 }
+
 impl Expr {
     fn parse(src: &str) -> Result<Expr, String> {
         let src = src.trim();
