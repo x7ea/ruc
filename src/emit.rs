@@ -1,7 +1,7 @@
 use crate::*;
 
 impl Define {
-    pub fn compile(program: &[Self]) -> Result<String, String> {
+    pub fn compile(program: &[Define]) -> Result<String, String> {
         macro_rules! name {
             ($define: expr) => {
                 match $define.clone() {
@@ -294,7 +294,7 @@ impl Expr {
 }
 
 impl PartialEq for Type {
-    fn eq(&self, other: &Self) -> bool {
+    fn eq(&self, other: &Type) -> bool {
         match (self, other) {
             (_, Type::Any) => true,
             (Type::Integer, Type::Integer)
