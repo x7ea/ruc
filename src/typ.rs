@@ -243,8 +243,7 @@ impl Expr {
                 Expr::Variable(Generic(name, _)) => {
                     let val = val.infer(ctx)?;
                     if let Some(typ) = ctx.local.scope.get(name) {
-                        let typ = typ.solve(ctx);
-                        if val != typ {
+                        if val != typ.solve(ctx) {
                             return Err(format!("{name}: {typ} != {val}"));
                         }
                     } else {
