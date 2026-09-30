@@ -1,4 +1,5 @@
 use crate::*;
+
 pub const SPACE: &str = " ";
 
 impl Define {
