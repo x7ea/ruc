@@ -6,6 +6,6 @@ fn main() {
     print b
 
     let x = (6.3 + 2.7) * 6.0
-    let y = 0.5 * (c + 1.2)
+    let y = 0.5 * (x + 1.2)
     print y
 }
