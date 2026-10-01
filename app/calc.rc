@@ -1,0 +1,11 @@
+use std
+
+fn main() {
+    let a = (1 + 2) * 3 - 4
+    let b = 10 / a + 6 % 5
+    print b
+
+    let x = (6.3 + 2.7) * 6.0
+    let y = 0.5 * (c + 1.2)
+    print y
+}
