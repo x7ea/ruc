@@ -1,9 +1,11 @@
+use std
+
 struct Profile {
     name: Str,
     age: Float
 }
 
-fn greet(this: Profile) {
+fn Profile.greet(this: Profile) {
     print this.name, " (", this.age, ")"
 }
 
@@ -11,5 +13,5 @@ fn main() {
     let she = new Profile
     let she.name = "Alice"
     let she.age = 13.2
-    greet(she)
+    she.greet()
 }
