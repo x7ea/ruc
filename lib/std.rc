@@ -12,6 +12,9 @@ extern fn atof(src: Str): Float
 extern fn g_strdup_printf: Str
 extern fn printf
 
+fn Int.toFloat(this: Int): Float atof(format this)
+fn Float.toInt(this: Int): Int atoi(format this)
+
 fn Str.add(a: Str, b: Str): Str format a, b
 
 fn Str.eq(a: Str, b: Str): Bool strcmp(a, b) == 0
