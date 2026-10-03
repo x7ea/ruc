@@ -9,5 +9,5 @@ fn main() {
     let id = Thread(sub)
     print "Main"
 
-    id.sd.join()
+    id.join()
 }
