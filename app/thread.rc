@@ -8,5 +8,4 @@ fn sub() {
 fn main() {
     let id = Thread(sub)
     print "Main"
-
 }
