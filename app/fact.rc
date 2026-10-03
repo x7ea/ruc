@@ -5,5 +5,5 @@ fn fact(n: Int): Int '
 
 fn main() {
     let x = input().atoi()
-    print x, "! = ", fact(3.3)
+    print x, "! = ", fact(x)
 }
