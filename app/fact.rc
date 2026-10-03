@@ -1,3 +1,8 @@
 use std
 
-fn fact(n: Int): Int if n > 1 then n * fact(n - 1) else 0
+fn fact(n: Int): Int '
+    if n > 1 then n * fact(n - 1) else 0
+
+fn main() {
+    print fact(5)
+}
