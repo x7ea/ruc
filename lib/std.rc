@@ -20,7 +20,8 @@ fn Str.add(a: Str, b: Str): Str format a, b
 fn Str.eq(a: Str, b: Str): Bool strcmp(a, b) == 0
 fn Str.ne(a: Str, b: Str): Bool strcmp(a, b) != 0
 
-fn Bool.print(this: Bool): Str if this then "true" else "false"
+fn Bool.print(this: Bool): Str '
+    if this then "true" else "false"
 
 extern fn scanf(fmt: Str, buf: Str)
 fn input(): Str {
@@ -164,4 +165,6 @@ fn Thread(func: ()()): Thread {
     id
 }
 
-fn Thread.join(id: Thread) pthread_join(id.posix, ())
+fn Thread.join(id: Thread) {
+    pthread_join(id.posix, ())
+}
