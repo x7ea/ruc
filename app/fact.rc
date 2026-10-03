@@ -4,5 +4,6 @@ fn Int.fact(n: Int): Int '
     if n > 0 then n * fact(n - 1) else 1
 
 fn main() {
-    print fact(5)
+    let x = input().atoi()
+    print x, "! = ", fact(x)
 }
