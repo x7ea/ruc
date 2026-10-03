@@ -1,6 +1,6 @@
 use std
 
-fn fact(n: Int): Int '
+fn Int.fact(n: Int): Int '
     if n > 0 then n * fact(n - 1) else 1
 
 fn main() {
