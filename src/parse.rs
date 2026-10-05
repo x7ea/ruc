@@ -70,26 +70,28 @@ impl Define {
 impl Expr {
     fn parse(src: &str) -> Result<Expr, String> {
         let src = src.trim();
+        macro_rules! parse {
+            ($src: expr) => {{ (Box::new(Expr::parse(&$src)?)) }};
+        }
         if let Some(src) = src.strip_prefix("print ") {
             Ok(Expr::Print(true, serial!(src, Expr::parse)))
         } else if let Some(src) = src.strip_prefix("format ") {
             Ok(Expr::Print(false, serial!(src, Expr::parse)))
         } else if let Some(src) = src.strip_prefix("let ") {
             if let Ok((name, val)) = split!(src, "=") {
-                let (name, val) = (Box::new(Expr::parse(&name)?), Box::new(Expr::parse(&val)?));
-                return Ok(Expr::Let(name, val));
+                return Ok(Expr::Let(parse!(&name), parse!(&val)));
             }
             let (name, typ) = split!(src, ":")?;
             let typ = Box::new(Expr::Null(Type::parse(&typ)?));
-            Ok(Expr::Let(Box::new(Expr::parse(&name)?), typ))
+            Ok(Expr::Let(parse!(&name), typ))
         } else if let Some(src) = src.strip_prefix("if ") {
             let (cond, body) = split!(src, "then")?;
-            let cond = Box::new(Expr::parse(&cond)?);
+            let cond = parse!(&cond);
             if let Ok((then, els)) = split!(&body, "else") {
-                let els = Some(Box::new(Expr::parse(&els)?));
-                Ok(Expr::If(cond, Box::new(Expr::parse(&then)?), els))
+                let els = Some(parse!(&els)?));
+                Ok(Expr::If(cond, parse!(&then)?), els))
             } else {
-                Ok(Expr::If(cond, Box::new(Expr::parse(&body)?), None))
+                Ok(Expr::If(cond, (parse!(&body)?), None))
             }
         } else if let Some(src) = src.strip_prefix("match ") {
             let (expr, pats) = surround!(src, "{", "}")?;
@@ -102,22 +104,22 @@ impl Expr {
                 }
                 Ok((Name::new(&head.to_lowercase())?, None, ret))
             });
-            Ok(Expr::Match(Box::new(Expr::parse(&expr)?), pats))
+            Ok(Expr::Match((parse!(&expr)?), pats))
         } else if let Some(src) = src.strip_prefix("while ") {
             let (cond, body) = split!(src, "do")?;
-            let (cond, body) = (Box::new(Expr::parse(&cond)?), Box::new(Expr::parse(&body)?));
+            let (cond, body) = ((parse!(&cond)?), (parse!(&body)?));
             Ok(Expr::While(cond, body))
         } else if let Some(src) = src.strip_prefix("for ") {
             let (head, body) = split!(src, "do")?;
             let (cnt, arr) = split!(&head, "=")?;
-            let (cnt, arr) = (Box::new(Expr::parse(&cnt)?), Box::new(Expr::parse(&arr)?));
-            Ok(Expr::For(cnt, arr, Box::new(Expr::parse(&body)?)))
+            let (cnt, arr) = ((parse!(&cnt)?), (parse!(&arr)?));
+            Ok(Expr::For(cnt, arr, (parse!(&body)?)))
         } else if let Some(class) = src.strip_prefix("new ") {
             Ok(Expr::New(Type::parse(class)?))
         } else if let Some(expr) = src.strip_prefix("clone ") {
-            Ok(Expr::Clone(Box::new(Expr::parse(expr)?)))
+            Ok(Expr::Clone((parse!(expr)?)))
         } else if let Some(expr) = src.strip_prefix("return ") {
-            Ok(Expr::Return(Box::new(Expr::parse(expr)?)))
+            Ok(Expr::Return((parse!(expr)?)))
         } else if src == "return" {
             Ok(Expr::Return(Box::new(Expr::Null(Type::Void))))
         } else if let Some(x) = surround!("{", src, "}") {
@@ -133,8 +135,8 @@ impl Expr {
             && tokens.len() >= 3
         {
             let pos: usize = tokens.len() - 2;
-            let lhs = Box::new(Expr::parse(&tokens[..pos].join(SPACE))?);
-            let rhs = Box::new(Expr::parse(&tokens[pos + 1])?);
+            let lhs = (parse!(&tokens[..pos].join(SPACE))?);
+            let rhs = (parse!(&tokens[pos + 1])?);
             macro_rules! op {
                 ($($op: pat => $expr: ident ,)*) => {
                     match tokens[pos].as_str() {
@@ -150,7 +152,7 @@ impl Expr {
             Expr::parse(expr)
         } else if let Some(arr) = surround!("[", src, "]") {
             if let Ok((typ, len)) = split!(arr, ";") {
-                return Ok(Expr::Init(Type::parse(&typ)?, Box::new(Expr::parse(&len)?)));
+                return Ok(Expr::Init(Type::parse(&typ)?, (parse!(&len)?)));
             }
             let Ok(arr) = serial!(arr, Expr::parse).try_into() else {
                 return Err(format!("empty array: {src}"));
@@ -161,11 +163,11 @@ impl Expr {
         } else if let Ok(f) = src.parse::<f64>() {
             Ok(Expr::Float(Float(f)))
         } else if let Some(bool) = src.strip_prefix("!") {
-            Ok(Expr::Not(Box::new(Expr::parse(bool)?)))
+            Ok(Expr::Not((parse!(bool)?)))
         } else if let Some(class) = src.strip_suffix("?") {
-            Ok(Expr::Check(Box::new(Expr::parse(class)?)))
+            Ok(Expr::Check((parse!(class)?)))
         } else if let Ok((arr, idx)) = surround!(src, "[", "]") {
-            let (arr, idx) = (Box::new(Expr::parse(&arr)?), Box::new(Expr::parse(&idx)?));
+            let (arr, idx) = ((parse!(&arr)?), (parse!(&idx)?));
             Ok(Expr::Index(arr, idx))
         } else if let Ok((obj, key)) = rsplit!(src, ".") {
             let obj = Expr::parse(&obj)?;
@@ -177,13 +179,13 @@ impl Expr {
             let typ = Type::parse(&typ)?;
             if let Ok((key, val)) = surround!(&key, "(", ")") {
                 let name = Name::new(&key.to_lowercase())?;
-                Ok(Expr::Enum(typ, name, Box::new(Expr::parse(&val)?)))
+                Ok(Expr::Enum(typ, name, (parse!(&val)?)))
             } else {
                 let name = Name::new(&key.to_lowercase())?;
                 Ok(Expr::Enum(typ, name, Box::new(Expr::Null(Type::Void))))
             }
         } else if let Ok((func, args)) = surround!(src, "(", ")") {
-            let func = Box::new(Expr::parse(&func)?);
+            let func = (parse!(&func)?);
             Ok(Expr::Call(func, serial!(&args, Expr::parse)))
         } else if let Some(text) = surround!("\"", src, "\"") {
             Ok(Expr::String(text.to_owned()))
