@@ -89,7 +89,7 @@ impl Expr {
             let cond = parse!(&cond);
             if let Ok((then, els)) = split!(&body, "else") {
                 let els = Some(parse!(&els));
-                Ok(Expr::If(cond, parse!(&then)?), els))
+                Ok(Expr::If(cond, parse!(&then), els))
             } else {
                 Ok(Expr::If(cond, (parse!(&body)?), None))
             }
