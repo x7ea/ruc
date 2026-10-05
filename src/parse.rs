@@ -174,14 +174,13 @@ impl Expr {
             let typ = Type::parse(&typ)?;
             if let Ok((key, val)) = surround!(&key, "(", ")") {
                 let name = Name::new(&key.to_lowercase())?;
-                Ok(Expr::Enum(typ, name, (parse!(&val)?)))
+                Ok(Expr::Enum(typ, name, parse!(&val)))
             } else {
                 let name = Name::new(&key.to_lowercase())?;
                 Ok(Expr::Enum(typ, name, Box::new(Expr::Null(Type::Void))))
             }
         } else if let Ok((func, args)) = surround!(src, "(", ")") {
-            let func = (parse!(&func)?);
-            Ok(Expr::Call(func, serial!(&args, Expr::parse)))
+            Ok(Expr::Call(parse!(&func), serial!(&args, Expr::parse)))
         } else if let Some(text) = surround!("\"", src, "\"") {
             Ok(Expr::String(text.to_owned()))
         } else if let Ok(b) = src.parse::<bool>() {
