@@ -86,12 +86,10 @@ impl Expr {
             Ok(Expr::Let(parse!(&name), typ))
         } else if let Some(src) = src.strip_prefix("if ") {
             let (cond, body) = split!(src, "then")?;
-            let cond = parse!(&cond);
             if let Ok((then, els)) = split!(&body, "else") {
-                let els = Some(parse!(&els));
-                Ok(Expr::If(cond, parse!(&then), els))
+                Ok(Expr::If(parse!(&cond), parse!(&then), Some(parse!(&els))))
             } else {
-                Ok(Expr::If(cond, parse!(&body), None))
+                Ok(Expr::If(parse!(&cond), parse!(&body), None))
             }
         } else if let Some(src) = src.strip_prefix("match ") {
             let (expr, pats) = surround!(src, "{", "}")?;
@@ -104,7 +102,7 @@ impl Expr {
                 }
                 Ok((Name::new(&head.to_lowercase())?, None, ret))
             });
-            Ok(Expr::Match((parse!(&expr)?), pats))
+            Ok(Expr::Match(parse!(&expr), pats))
         } else if let Some(src) = src.strip_prefix("while ") {
             let (cond, body) = split!(src, "do")?;
             let (cond, body) = ((parse!(&cond)?), (parse!(&body)?));
