@@ -159,12 +159,11 @@ impl Expr {
         } else if let Ok(f) = src.parse::<f64>() {
             Ok(Expr::Float(Float(f)))
         } else if let Some(bool) = src.strip_prefix("!") {
-            Ok(Expr::Not((parse!(bool)?)))
+            Ok(Expr::Not(parse!(bool)))
         } else if let Some(class) = src.strip_suffix("?") {
-            Ok(Expr::Check((parse!(class)?)))
-        } else if let Ok((arr, idx)) = surround!(src, "[", "]") {
-            let (arr, idx) = ((parse!(&arr)?), (parse!(&idx)?));
-            Ok(Expr::Index(arr, idx))
+            Ok(Expr::Check(parse!(class)))
+        } else if let Ok((array, idx)) = surround!(src, "[", "]") {
+            Ok(Expr::Index(parse!(&array), (parse!(&idx)?)))
         } else if let Ok((obj, key)) = rsplit!(src, ".") {
             let obj = Expr::parse(&obj)?;
             if let Ok(Expr::Call(func, arg)) = Expr::parse(&key) {
