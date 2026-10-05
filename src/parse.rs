@@ -148,7 +148,7 @@ impl Expr {
             Expr::parse(expr)
         } else if let Some(arr) = surround!("[", src, "]") {
             if let Ok((typ, len)) = split!(arr, ";") {
-                return Ok(Expr::Init(Type::parse(&typ)?, (parse!(&len)?)));
+                return Ok(Expr::Init(Type::parse(&typ)?, parse!(&len)));
             }
             let Ok(arr) = serial!(arr, Expr::parse).try_into() else {
                 return Err(format!("empty array: {src}"));
