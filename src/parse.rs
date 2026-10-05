@@ -91,7 +91,7 @@ impl Expr {
                 let els = Some(parse!(&els));
                 Ok(Expr::If(cond, parse!(&then), els))
             } else {
-                Ok(Expr::If(cond, (parse!(&body)?), None))
+                Ok(Expr::If(cond, parse!(&body), None))
             }
         } else if let Some(src) = src.strip_prefix("match ") {
             let (expr, pats) = surround!(src, "{", "}")?;
