@@ -43,9 +43,8 @@ impl Define {
                     };
                     result.append(&mut Define::parse(&file)?);
                 }
-            } else if let Some(func) = line.strip_prefix("extern fn ") {
-                let (head, body) =
-                    split!(func, ":").unwrap_or((func.to_string(), "()".to_string()));
+            } else if let Some(ext) = line.strip_prefix("extern fn ") {
+                let (head, body) = split!(ext, ":").unwrap_or((ext.to_string(), "()".to_string()));
                 if let Ok((name, args)) = surround!(&head, "(", ")") {
                     let head = (Generic::parse(&name)?, args!(&args));
                     result.push(Define::Declare(head, Type::parse(&body)?));
