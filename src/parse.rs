@@ -131,8 +131,8 @@ impl Expr {
             && tokens.len() >= 3
         {
             let pos: usize = tokens.len() - 2;
-            let lhs = (parse!(&tokens[..pos].join(SPACE))?);
-            let rhs = (parse!(&tokens[pos + 1])?);
+            let lhs = parse!(&tokens[..pos].join(SPACE));
+            let rhs = parse!(&tokens[pos + 1]);
             macro_rules! op {
                 ($($op: pat => $expr: ident ,)*) => {
                     match tokens[pos].as_str() {
