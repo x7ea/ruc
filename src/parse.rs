@@ -105,19 +105,17 @@ impl Expr {
             Ok(Expr::Match(parse!(&expr), pats))
         } else if let Some(src) = src.strip_prefix("while ") {
             let (cond, body) = split!(src, "do")?;
-            let (cond, body) = ((parse!(&cond)?), (parse!(&body)?));
-            Ok(Expr::While(cond, body))
+            Ok(Expr::While(parse!(&cond), parse!(&body)))
         } else if let Some(src) = src.strip_prefix("for ") {
             let (head, body) = split!(src, "do")?;
-            let (cnt, arr) = split!(&head, "=")?;
-            let (cnt, arr) = ((parse!(&cnt)?), (parse!(&arr)?));
-            Ok(Expr::For(cnt, arr, (parse!(&body)?)))
+            let (counter, array) = split!(&head, "=")?;
+            Ok(Expr::For(parse!(&counter), parse!(&array), parse!(&body)))
         } else if let Some(class) = src.strip_prefix("new ") {
             Ok(Expr::New(Type::parse(class)?))
         } else if let Some(expr) = src.strip_prefix("clone ") {
-            Ok(Expr::Clone((parse!(expr)?)))
+            Ok(Expr::Clone(parse!(expr)))
         } else if let Some(expr) = src.strip_prefix("return ") {
-            Ok(Expr::Return((parse!(expr)?)))
+            Ok(Expr::Return(parse!(expr)))
         } else if src == "return" {
             Ok(Expr::Return(Box::new(Expr::Null(Type::Void))))
         } else if let Some(x) = surround!("{", src, "}") {
