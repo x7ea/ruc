@@ -16,6 +16,8 @@ fn bubble_sort<T>(array: [T], cmp: Bool(T, T)) {
     }
 }
 
+fn ascending_order(a: Int, b: Int): Bool a < b
+
 fn main() {
     let x = [5, 3, 6, 8, 1]
     print "Before: ", x
