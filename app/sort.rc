@@ -1,6 +1,6 @@
 use std
 
-fn bubble_sort<T>(array: [T]) {
+fn bubble_sort<T>(array: [T], cmp: Bool(T, T)) {
     let i = 0
     while i < array.len do {
         let j = array.len - 1
