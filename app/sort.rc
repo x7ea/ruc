@@ -1,6 +1,6 @@
 use std
 
-fn bubble_sort<T>(array: [T], cmp: Bool(T, T)) {
+fn bubble_sort<T>(cmp: Bool(T, T), array: [T]) {
     let i = 0
     while i < array.len do {
         let j = array.len - 1
@@ -22,6 +22,6 @@ fn main() {
     let x = [5, 3, 6, 8, 1]
     print "Before: ", x
 
-    bubble_sort<Int>(x)
+    ascending_order.bubble_sort<Int>(x)
     print "After:  ", x
 }
