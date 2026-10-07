@@ -5,7 +5,7 @@ fn bubble_sort<T>(cmp: Bool(T, T), array: [T]) {
     while i < array.len do {
         let j = array.len - 1
         while j > i do {
-            if array[j].cmp(array[j - 1]) then {
+            if cmp(array[j], array[j - 1]) then {
                 let temp = array[j]
                 let array[j] = array[j - 1]
                 let array[j - 1] = temp
