@@ -1,0 +1,23 @@
+use std
+
+fn bubble_sort<T>(array: [T]) {
+    let i = 0
+    while i < array.len do {
+        let j = array.len - 1
+        while j > i do {
+            let temp = array[j]
+            let array[j] = array[j-1]
+            let array[j-1] = temp
+            let j = j - 1
+        }
+        let i = i + 1
+    }
+}
+
+fn main() {
+    let x = [5, 3, 6, 8, 1]
+    print x
+
+    bubble_sort<Int>(x)
+    print x
+}
