@@ -18,8 +18,8 @@ fn bubble_sort<T>(array: [T]) {
 
 fn main() {
     let x = [5, 3, 6, 8, 1]
-    print "Before; ", x
+    print "Before: ", x
 
     bubble_sort<Int>(x)
-    print "After; ", x
+    print "After:  ", x
 }
