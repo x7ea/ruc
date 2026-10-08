@@ -261,15 +261,8 @@ impl Expr {
                 Ok(format!("\tmovsd xmm0, [{name}]\n"))
             }
             Expr::String(val) => {
-                let val = format!("\"{val}\", 0")
-                    .replace("\\t", "\", 9, \"")
-                    .replace("\\n", "\", 10, \"")
-                    .replace("\\r", "\", 13, \"")
-                    .replace("\\\"", "\", 34, \"")
-                    .replace("\"\", ", "");
-                let name = format!("str{}", ctx.global.str.get_index_of(&val).unwrap());
-                ctx.global.data += &format!("\t{name} db {val}\n");
-                Ok(format!("\tmov rax, {name}\n"))
+                let id = format!("str{}", ctx.global.str.get_index_of(val).unwrap());
+                Ok(format!("\tmov rax, {id}\n"))
             }
             Expr::Div(lhs, rhs) if typ!(self) == Type::Float => Ok(op!("div", lhs, rhs)),
             Expr::Div(lhs, rhs) => Ok(format!(
