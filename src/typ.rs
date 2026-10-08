@@ -6,6 +6,7 @@ impl Define {
             Define::Function((Generic(name, params), args), (body, ret)) => {
                 ctx.global.lib.insert(name.clone(), self.signature());
                 if params.is_empty() {
+                    ctx.global.used.insert(name.clone());
                     let parent = ctx.local.clone();
                     ctx.local = Function {
                         scope: args.clone(),
@@ -228,7 +229,7 @@ impl Expr {
                 if let Some(typ) = ctx.global.lib.get(&name).cloned() {
                     let args = if name.is_generic() { vec![] } else { args };
                     let var = Expr::Variable(Generic(name.clone(), map!(args, |x| x.solve(ctx))));
-                    ctx.global.used.insert(name.clone());
+
                     if self != &var {
                         ctx.local.expand.insert(self.clone(), var);
                     }
