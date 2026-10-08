@@ -323,7 +323,12 @@ impl Generic {
 
 #[macro_export]
 macro_rules! new {
-    ($layout: expr) => {{ Expr::Call(Box::new(var!("calloc")), vec![$layout, Expr::Integer(8)]) }};
+    ($layout: expr, $typ: expr) => {{
+        Expr::Call(
+            Box::new(var!("calloc", $typ)),
+            vec![$layout, Expr::Integer(8)],
+        )
+    }};
 }
 
 #[macro_export]
