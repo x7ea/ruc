@@ -15,7 +15,7 @@ impl Define {
         let ctx = &mut Context::default();
         ctx.global.used.insert(Name::new("main")?);
         ctx.global.def = program.iter().map(|x| (name!(x), x.clone())).collect();
-        map!({ program }, |define| define.infer(ctx))?;
+        ctx.global.def["main"].infer(ctx)?;
 
         let mut text = String::from("\n");
         for (_, func) in ctx.global.def.clone() {
