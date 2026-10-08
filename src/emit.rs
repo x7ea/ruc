@@ -18,7 +18,6 @@ impl Define {
         main.infer(ctx)?;
 
         let mut text = String::from("\n");
-        ctx.global.used.insert(Name::new("main")?);
         for (_, func) in ctx.global.def.clone() {
             text += &func.emit(ctx)?;
         }
