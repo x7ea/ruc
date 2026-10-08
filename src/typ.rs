@@ -218,11 +218,19 @@ impl Expr {
                 }
             }
             Expr::Variable(Generic(name, mut args)) => {
+                macro_rules! retry {
+                    ($lib: expr) => {{
+                        $lib.clone().infer(ctx)?;
+                        self.infer(ctx)
+                    }};
+                }
                 if let Some(class) = &ctx.local.class {
                     let name = name.class(&class.remove_generic());
-                    if ctx.global.def.contains_key(&name) {
+                    if ctx.global.lib.contains_key(&name) {
                         args.append(&mut class.generic_args());
                         return typing!(expands!(Expr::Variable(Generic(name, args))));
+                    } else if let Some(lib) = ctx.global.def.get(&name) {
+                        return retry!(lib);
                     }
                     ctx.local.class = None;
                 }
@@ -235,7 +243,7 @@ impl Expr {
                     typing!(typ.mono(ctx, Generic(name, args))?)
                 } else if let Some(lib) = ctx.global.def.get(&name) {
                     ctx.global.used.insert(name.clone());
-                    typing!(lib.clone().infer(ctx)?)
+                    retry!(lib)
                 } else if let Some(typ) = ctx.local.scope.get(&name) {
                     typing!(typ.solve(ctx))
                 } else {
