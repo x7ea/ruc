@@ -226,6 +226,7 @@ impl Expr {
                     }
                     ctx.local.class = None;
                 }
+
                 if let Some(typ) = ctx.global.lib.get(&name).cloned() {
                     let args = if name.is_generic() { vec![] } else { args };
                     let var = Expr::Variable(Generic(name.clone(), map!(args, |x| x.solve(ctx))));
@@ -233,6 +234,9 @@ impl Expr {
                         ctx.local.expand.insert(self.clone(), var);
                     }
                     typing!(typ.mono(ctx, Generic(name, args))?)
+                } else if let Some(lib) = ctx.global.def.get(&name) {
+                    ctx.global.used.insert(name.clone());
+                    typing!(lib.clone().infer(ctx)?)
                 } else if let Some(typ) = ctx.local.scope.get(&name) {
                     typing!(typ.solve(ctx))
                 } else {
