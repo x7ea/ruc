@@ -13,8 +13,9 @@ impl Define {
             };
         }
         let ctx = &mut Context::default();
+        ctx.global.used.insert(Name::new("main")?);
         ctx.global.def = program.iter().map(|x| (name!(x), x.clone())).collect();
-        ctx.global.def[&Name::new("main")?].clone().infer(ctx)?;
+        map!({ program }, |define| define.infer(ctx))?;
 
         let mut text = String::from("\n");
         for (_, func) in ctx.global.def.clone() {
@@ -23,15 +24,6 @@ impl Define {
         let mut lib = String::from("\nsection .text\n\tglobal main\n");
         for symbol in ctx.global.extrn.clone() {
             lib += &format!("\textern {symbol}\n");
-        }
-        for (id, val) in ctx.global.str.iter().enumerate() {
-            let val = format!("\"{val}\", 0")
-                .replace("\\t", "\", 9, \"")
-                .replace("\\n", "\", 10, \"")
-                .replace("\\r", "\", 13, \"")
-                .replace("\\\"", "\", 34, \"")
-                .replace("\"\", ", "");
-            ctx.global.data += &format!("\tstr{id} db {val}\n");
         }
         let data = ctx.global.data.clone();
         Ok(format!("section .data\n{data}{lib}{text}\n"))
@@ -260,8 +252,15 @@ impl Expr {
                 Ok(format!("\tmovsd xmm0, [{name}]\n"))
             }
             Expr::String(val) => {
-                let id = format!("str{}", ctx.global.str.get_index_of(val).unwrap());
-                Ok(format!("\tmov rax, {id}\n"))
+                let val = format!("\"{val}\", 0")
+                    .replace("\\t", "\", 9, \"")
+                    .replace("\\n", "\", 10, \"")
+                    .replace("\\r", "\", 13, \"")
+                    .replace("\\\"", "\", 34, \"")
+                    .replace("\"\", ", "");
+                let name = format!("str{}", label!());
+                ctx.global.data += &format!("\t{name} db {val}\n");
+                Ok(format!("\tmov rax, {name}\n"))
             }
             Expr::Div(lhs, rhs) if typ!(self) == Type::Float => Ok(op!("div", lhs, rhs)),
             Expr::Div(lhs, rhs) => Ok(format!(
@@ -323,12 +322,7 @@ impl Generic {
 
 #[macro_export]
 macro_rules! new {
-    ($layout: expr, $typ: expr) => {{
-        Expr::Call(
-            Box::new(var!("calloc", $typ)),
-            vec![$layout, Expr::Integer(8)],
-        )
-    }};
+    ($layout: expr) => {{ Expr::Call(Box::new(var!("calloc")), vec![$layout, Expr::Integer(8)]) }};
 }
 
 #[macro_export]
