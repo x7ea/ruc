@@ -337,7 +337,7 @@ impl Expr {
                     return Err(format!("no constructor: {typ}"));
                 };
                 let typ = typ.mono(ctx, generic)?;
-                expand!(new!(Expr::Integer(typ.size(ctx) as i64 / 8)));
+                expand!(new!(Expr::Integer(typ.size(ctx) as i64 / 8), typ));
                 typing!(typ.solve(ctx))
             }
             Expr::Enum(typ, key, val) => {
@@ -405,7 +405,10 @@ impl Expr {
                 }
             }
             Expr::Init(typ, len) => {
-                expand!(new!(Expr::Add(len, Box::new(Expr::Integer(1)))));
+                expand!(new!(
+                    Expr::Add(len, Box::new(Expr::Integer(1))),
+                    typ.clone()
+                ));
                 typing!(Type::Array(Box::new(typ.clone())))
             }
             Expr::Read(offset, typ, addr) => {
