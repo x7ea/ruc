@@ -25,6 +25,14 @@ impl Define {
         for symbol in ctx.global.extrn.clone() {
             lib += &format!("\textern {symbol}\n");
         }
+        for val in ctx.global.str.clone( {
+            let val = format!("\"{val}\", 0")
+                .replace("\\t", "\", 9, \"")
+                .replace("\\n", "\", 10, \"")
+                .replace("\\r", "\", 13, \"")
+                .replace("\\\"", "\", 34, \"")
+                .replace("\"\", ", "");
+        }
         let data = ctx.global.data.clone();
         Ok(format!("section .data\n{data}{lib}{text}\n"))
     }
@@ -258,7 +266,7 @@ impl Expr {
                     .replace("\\r", "\", 13, \"")
                     .replace("\\\"", "\", 34, \"")
                     .replace("\"\", ", "");
-                let name = format!("str{}", label!());
+                let name = format!("str{}", ctx.global.str.get_index_of(&val).unwrap());
                 ctx.global.data += &format!("\t{name} db {val}\n");
                 Ok(format!("\tmov rax, {name}\n"))
             }
