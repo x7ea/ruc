@@ -6,8 +6,7 @@ impl Define {
             Define::Function((Generic(name, params), args), (body, ret)) => {
                 ctx.global.lib.insert(name.clone(), self.signature());
                 if params.is_empty() {
-                    ctx.global.used.insert(name.clone());
-                    let parent = (ctx.local.clone(), ctx.global.alias.clone());
+                    let parent = ctx.local.clone();
                     ctx.local = Function {
                         scope: args.clone(),
                         ..Function::default()
@@ -18,7 +17,7 @@ impl Define {
                         return Err(format!("return: {ret} != {body}"));
                     }
                     ctx.table.insert(name.clone(), ctx.local.clone());
-                    (ctx.local, ctx.global.alias) = parent;
+                    ctx.local = parent;
                 }
             }
             Define::Declare((Generic(name, _), _), _) => {
@@ -205,7 +204,6 @@ impl Expr {
                         let (pl, al) = (params.len(), args.len());
                         for (param, arg) in params.iter().zip(args) {
                             if param.solve(ctx) != arg {
-                                dbg!(ctx.global.alias.clone());
                                 return Err(format!("argument: {param} != {arg}"));
                             }
                         }
@@ -218,33 +216,23 @@ impl Expr {
                     typ => Err(format!("not callable: {typ}")),
                 }
             }
-            Expr::Variable(Generic(name, args)) => {
-                macro_rules! retry {
-                    ($lib: expr) => {{
-                        $lib.clone().infer(ctx)?;
-                        self.infer(ctx)
-                    }};
-                }
+            Expr::Variable(Generic(name, mut args)) => {
                 if let Some(class) = &ctx.local.class {
                     let name = name.class(&class.remove_generic());
                     if ctx.global.lib.contains_key(&name) {
-                        let args = [args, class.generic_args()].concat();
+                        args.append(&mut class.generic_args());
                         return typing!(expands!(Expr::Variable(Generic(name, args))));
-                    } else if let Some(lib) = ctx.global.def.get(&name) {
-                        return retry!(lib);
                     }
                     ctx.local.class = None;
                 }
                 if let Some(typ) = ctx.global.lib.get(&name).cloned() {
                     let args = if name.is_generic() { vec![] } else { args };
                     let var = Expr::Variable(Generic(name.clone(), map!(args, |x| x.solve(ctx))));
+                    ctx.global.used.insert(name.clone());
                     if self != &var {
                         ctx.local.expand.insert(self.clone(), var);
                     }
                     typing!(typ.mono(ctx, Generic(name, args))?)
-                } else if let Some(lib) = ctx.global.def.get(&name) {
-                    ctx.global.used.insert(name.clone());
-                    retry!(lib)
                 } else if let Some(typ) = ctx.local.scope.get(&name) {
                     typing!(typ.solve(ctx))
                 } else {
@@ -337,7 +325,7 @@ impl Expr {
                     return Err(format!("no constructor: {typ}"));
                 };
                 let typ = typ.mono(ctx, generic)?;
-                expand!(new!(Expr::Integer(typ.size(ctx) as i64 / 8), typ));
+                expand!(new!(Expr::Integer(typ.size(ctx) as i64 / 8)));
                 typing!(typ.solve(ctx))
             }
             Expr::Enum(typ, key, val) => {
@@ -405,10 +393,7 @@ impl Expr {
                 }
             }
             Expr::Init(typ, len) => {
-                expand!(new!(
-                    Expr::Add(len, Box::new(Expr::Integer(1))),
-                    typ.clone()
-                ));
+                expand!(new!(Expr::Add(len, Box::new(Expr::Integer(1)))));
                 typing!(Type::Array(Box::new(typ.clone())))
             }
             Expr::Read(offset, typ, addr) => {
@@ -460,10 +445,7 @@ impl Expr {
             }
             Expr::Integer(_) => typing!(Type::Integer),
             Expr::Float(_) => typing!(Type::Float),
-            Expr::String(text) => {
-                ctx.global.str.insert(text);
-                typing!(Type::String)
-            }
+            Expr::String(_) => typing!(Type::String),
             Expr::Boolean(val) => {
                 expand!(Expr::Integer(if val { 1 } else { 0 }));
                 typing!(Type::Boolean)
@@ -510,11 +492,7 @@ impl Type {
         let (mut typ, args) = (self.solve(ctx), map!(args, |x| x.solve(ctx)));
         let mangle = Generic(name.clone(), args.clone()).generic();
         match typ.clone() {
-            Type::Function(Lambda((params, _), _)) => {
-                if params.is_empty() {
-                    ctx.global.def[&name].clone().infer(ctx)?;
-                    return Ok(typ.solve(ctx));
-                }
+            Type::Function(Lambda((params, _), _)) if !params.is_empty() => {
                 let mut alias = IndexMap::new();
                 for (param, arg) in params.iter().zip(&args) {
                     alias.insert(param.clone(), arg.clone());
@@ -543,10 +521,9 @@ impl Type {
                 ctx.global.alias = parent;
             }
             Type::Class(Generic(name, args)) => {
-                if !ctx.global.table.contains_key(&name) {
-                    ctx.global.def[&name].clone().infer(ctx)?;
-                }
-                let (params, table) = &ctx.global.table[&name];
+                let Some((params, table)) = ctx.global.table.get(&name) else {
+                    return Err(format!("undefined: {name}"));
+                };
                 let (Object::Enum(mut layout) | Object::Struct(mut layout)) = table.clone();
                 for (_, field) in layout.iter_mut() {
                     for (arg, param) in args.iter().zip(params) {
