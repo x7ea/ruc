@@ -22,6 +22,7 @@ impl Define {
                 }
             }
             Define::Declare((Generic(name, _), _), _) => {
+                ctx.global.used.insert(name.clone());
                 ctx.global.extrn.insert(name.clone());
                 ctx.global.lib.insert(name, self.signature());
             }
@@ -30,6 +31,7 @@ impl Define {
                 ctx.global.table.insert(name, obj);
             }
             Define::Symbol(name, _) => {
+                ctx.global.used.insert(name.clone());
                 ctx.global.lib.insert(name.clone(), self.signature());
                 ctx.global.extrn.insert(name);
             }
