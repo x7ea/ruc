@@ -498,6 +498,7 @@ impl Type {
             Type::Function(Lambda((params, _), _)) => {
                 if !params.is_empty() {
                     ctx.global.def[&name].clone().infer(ctx)?;
+                    return Ok(typ.solve(ctx));
                 }
                 let mut alias = IndexMap::new();
                 for (param, arg) in params.iter().zip(&args) {
