@@ -532,9 +532,10 @@ impl Type {
                 ctx.global.alias = parent;
             }
             Type::Class(Generic(name, args)) => {
-                let Some((params, table)) = ctx.global.table.get(&name) else {
-                    return Err(format!("undefined: {name}"));
-                };
+                if !ctx.global.table.contains_key(&name) {
+                    ctx.global.def[&name].clone().infer(ctx)?;
+                }
+                let (params, table) = &ctx.global.table[&name];
                 let (Object::Enum(mut layout) | Object::Struct(mut layout)) = table.clone();
                 for (_, field) in layout.iter_mut() {
                     for (arg, param) in args.iter().zip(params) {
