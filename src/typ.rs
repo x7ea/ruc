@@ -496,8 +496,11 @@ impl Type {
         let (mut typ, args) = (self.solve(ctx), map!(args, |x| x.solve(ctx)));
         let mangle = Generic(name.clone(), args.clone()).generic();
         match typ.clone() {
-            Type::Function(Lambda((params, _), _))=> if !params.is_empty()  {          ctx.global.def[&name].clone().infer(ctx)?;
-}
+            Type::Function(Lambda((params, _), _)) => {
+                if params.is_empty() {
+                    ctx.global.def[&name].clone().infer(ctx)?;
+                    return Ok(typ.solve(ctx));
+                }
                 let mut alias = IndexMap::new();
                 for (param, arg) in params.iter().zip(&args) {
                     alias.insert(param.clone(), arg.clone());
