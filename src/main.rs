@@ -143,6 +143,7 @@ pub struct Global {
     alias: IndexMap<Type, Type>,
     extrn: IndexSet<Name>,
     used: IndexSet<Name>,
+    str: IndexSet<String>,
 }
 
 #[derive(Debug, Default, Clone)]
