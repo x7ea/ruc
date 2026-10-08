@@ -217,7 +217,7 @@ impl Expr {
                     typ => Err(format!("not callable: {typ}")),
                 }
             }
-            Expr::Variable(Generic(name, mut args)) => {
+            Expr::Variable(Generic(name, args)) => {
                 macro_rules! retry {
                     ($lib: expr) => {{
                         $lib.clone().infer(ctx)?;
@@ -227,7 +227,7 @@ impl Expr {
                 if let Some(class) = &ctx.local.class {
                     let name = name.class(&class.remove_generic());
                     if ctx.global.lib.contains_key(&name) {
-                        args.append(&mut class.generic_args());
+                        let args = [args, class.generic_args()].concat();
                         return typing!(expands!(Expr::Variable(Generic(name, args))));
                     } else if let Some(lib) = ctx.global.def.get(&name) {
                         return retry!(lib);
