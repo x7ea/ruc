@@ -32,7 +32,7 @@ impl Define {
                 .replace("\\r", "\", 13, \"")
                 .replace("\\\"", "\", 34, \"")
                 .replace("\"\", ", "");
-            ctx.global.data += &format!("\tStr{id} db {val}\n");
+            ctx.global.data += &format!("\tstr{id} db {val}\n");
         }
         let data = ctx.global.data.clone();
         Ok(format!("section .data\n{data}{lib}{text}\n"))
