@@ -229,7 +229,6 @@ impl Expr {
                 if let Some(typ) = ctx.global.lib.get(&name).cloned() {
                     let args = if name.is_generic() { vec![] } else { args };
                     let var = Expr::Variable(Generic(name.clone(), map!(args, |x| x.solve(ctx))));
-
                     if self != &var {
                         ctx.local.expand.insert(self.clone(), var);
                     }
@@ -496,7 +495,10 @@ impl Type {
         let (mut typ, args) = (self.solve(ctx), map!(args, |x| x.solve(ctx)));
         let mangle = Generic(name.clone(), args.clone()).generic();
         match typ.clone() {
-            Type::Function(Lambda((params, _), _)) if !params.is_empty() => {
+            Type::Function(Lambda((params, _), _)) => {
+                if !params.is_empty() {
+                    ctx.global.def[&name].clone().infer(ctx)?;
+                }
                 let mut alias = IndexMap::new();
                 for (param, arg) in params.iter().zip(&args) {
                     alias.insert(param.clone(), arg.clone());
