@@ -25,13 +25,14 @@ impl Define {
         for symbol in ctx.global.extrn.clone() {
             lib += &format!("\textern {symbol}\n");
         }
-        for val in ctx.global.str.clone( {
+        for (id, val) in ctx.global.str.iter().enumerate() {
             let val = format!("\"{val}\", 0")
                 .replace("\\t", "\", 9, \"")
                 .replace("\\n", "\", 10, \"")
                 .replace("\\r", "\", 13, \"")
                 .replace("\\\"", "\", 34, \"")
                 .replace("\"\", ", "");
+            ctx.global.data += &format!("\tStr{id} db {val}\n");
         }
         let data = ctx.global.data.clone();
         Ok(format!("section .data\n{data}{lib}{text}\n"))
