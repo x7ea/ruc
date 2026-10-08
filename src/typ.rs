@@ -7,7 +7,7 @@ impl Define {
                 ctx.global.lib.insert(name.clone(), self.signature());
                 if params.is_empty() {
                     ctx.global.used.insert(name.clone());
-                    let parent = ctx.local.clone();
+                    let parent = (ctx.local.clone(), ctx.global.alias.clone());
                     ctx.local = Function {
                         scope: args.clone(),
                         ..Function::default()
@@ -18,7 +18,7 @@ impl Define {
                         return Err(format!("return: {ret} != {body}"));
                     }
                     ctx.table.insert(name.clone(), ctx.local.clone());
-                    ctx.local = parent;
+                    (ctx.local, ctx.global.alias) = parent;
                 }
             }
             Define::Declare((Generic(name, _), _), _) => {
@@ -205,6 +205,7 @@ impl Expr {
                         let (pl, al) = (params.len(), args.len());
                         for (param, arg) in params.iter().zip(args) {
                             if param.solve(ctx) != arg {
+                                dbg!(ctx.global.alias.clone());
                                 return Err(format!("argument: {param} != {arg}"));
                             }
                         }
