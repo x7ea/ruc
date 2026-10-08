@@ -226,7 +226,6 @@ impl Expr {
                     }
                     ctx.local.class = None;
                 }
-
                 if let Some(typ) = ctx.global.lib.get(&name).cloned() {
                     let args = if name.is_generic() { vec![] } else { args };
                     let var = Expr::Variable(Generic(name.clone(), map!(args, |x| x.solve(ctx))));
