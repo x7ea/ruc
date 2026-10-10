@@ -4,8 +4,10 @@ fn main() {
     let secret = random(1, 100)
     let answer: Int
 
-    while secret != answer do {
+    while {
         let answer = input().atoi()
+        answer
+    } != secret do {
         if secret < answer then print "too big"
         if secret > answer then print "too small"
     }
