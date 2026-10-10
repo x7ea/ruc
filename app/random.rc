@@ -16,5 +16,5 @@ fn main() {
         if secret > answer then print "too small"
         let count = count + 1
     }
-    if count == limit then print secret
+    if count == limit then print "Game over", secret
 }
