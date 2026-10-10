@@ -2,20 +2,11 @@ use std
 
 fn main() {
     let secret = random(1, 100)
+    let answer = input().atoi()
 
-    let count = 0
-    let limit = 10
-    while count < limit do {
-        let answer = input().atoi()
-        if secret == answer then {
-            let count = limit
-            print "Correct!"
-        }
-        if secret < answer then print "too big"
-        if secret > answer then print "too small"
-        let count = count + 1
-    }
-    if count == limit then {
-        print "Game over: ", secret
+    if secret == answer then {
+        print "Correct!"
+    } else {
+        print secret
     }
 }
