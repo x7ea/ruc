@@ -2,7 +2,6 @@ use std
 
 fn main() {
     let secret = random(1, 100)
-    let answer: Int
 
     let count = 0
     let limit = 10
@@ -16,5 +15,7 @@ fn main() {
         if secret > answer then print "too small"
         let count = count + 1
     }
-    if count == limit then print "Game over: ", secret
+    if count == limit then {
+        print "Game over: ", secret
+    }
 }
