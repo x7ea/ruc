@@ -6,8 +6,8 @@ fn main() {
 
     while secret != answer do {
         let answer = input().atoi()
-        if secret < answer then print "Too big"
-        if secret > answer then print "Too small"
+        if secret < answer then print "too big"
+        if secret > answer then print "too small"
     }
     print "Correct!"
 }
