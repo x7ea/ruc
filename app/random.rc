@@ -2,11 +2,12 @@ use std
 
 fn main() {
     let secret = random(1, 10)
-    let answer = input().atoi()
+    let answer: Int
 
-    if secret == answer then {
-        print "Correct!"
-    } else {
-        print secret
+    while secret != answer do {
+        let answer = input().atoi()
+        if secret < answer then "Too big"
+        if secret > answer then "Too small"
     }
+    print "Correct!"
 }
