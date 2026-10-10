@@ -1,7 +1,7 @@
 use std
 
 fn main() {
-    let secret = random(1, 10)
+    let secret = random(1, 100)
     let answer: Int
 
     while secret != answer do {
