@@ -148,12 +148,7 @@ macro_rules! surround {
 
 #[macro_export]
 macro_rules! serial {
-    ($arr: expr, $lambda: expr) => {
-        lexer($arr, ",")?
-            .iter()
-            .map(|x| $lambda(&x))
-            .collect::<Result<Vec<_>, String>>()?
-    };
+    ($arr: expr, $lambda: expr) => {{ map!({ lexer($arr, ",")? }, |x| $lambda(&x))? }};
 }
 
 #[macro_export]
