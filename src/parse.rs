@@ -198,7 +198,7 @@ impl Type {
             "Str" => Ok(Type::String),
             "Bool" => Ok(Type::Boolean),
             "Float" => Ok(Type::Float),
-            "Void" => Ok(Type::Void),
+            "Void" | "()" => Ok(Type::Void),
             x => {
                 if let Ok((ret, args)) = surround!(x, "(", ")") {
                     let (ret, args) = (Box::new(Type::parse(&ret)?), serial!(&args, Type::parse));
