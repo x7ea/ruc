@@ -137,9 +137,7 @@ macro_rules! surround {
                 return Err(String::new());
             }
             let func = src[..src.len() - 1].concat();
-            let args = src[src.len() - 1].to_string();
-            let args = args[1..args.len() - 1].to_string();
-            Ok((func, args))
+            Ok((func, src[src.len() - 1].to_string()))
         })
     };
 }
