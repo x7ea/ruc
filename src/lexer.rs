@@ -150,6 +150,7 @@ pub fn left(tok: &Vec<String>, del: String) -> (String, String) {
 pub fn right(tok: &Vec<String>, del: String) -> (String, String) {
     (tok[..tok.len() - 1].join(&del), tok[tok.len() - 1].clone())
 }
+
 #[macro_export]
 macro_rules! split {
     ($token: expr, $del: expr) => {{ __split_internal!($token, $del, crate::lexer::left) }};
