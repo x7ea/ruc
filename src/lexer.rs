@@ -133,6 +133,9 @@ macro_rules! surround {
     };
     ($src: expr, $ls: literal, $rs: literal) => {
         lexer($src.trim(), &$ls).and_then(|src| {
+            if src.len() < 2 {
+                return Err(String::new());
+            }
             let func = src[..src.len() - 1].concat();
             let args = src[src.len() - 1].to_string();
             Ok((func, args[1..args.len() - 1].to_string()))
