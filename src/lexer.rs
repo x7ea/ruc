@@ -131,10 +131,7 @@ macro_rules! surround {
     ($ls: literal, $rs: literal, $x: expr) => {
         $x.trim().strip_suffix($rs).and_then(|x| x.split_once($ls))
     };
-    ($src: expr, $ls: literal, $rs: literal) => {{
-        let (func, args) = rsplit!($src.trim(), $ls)?;
-        Ok::<(String, String), String>((func, args[1..args.len() - 1].to_string()))
-    }};
+    ($src: expr, $ls: literal, $rs: literal) => {{ rsplit!($src.trim(), $ls).and_then(|(f, args)| Ok((f, args[1..args.len() - 1].to_string()))) }};
 }
 
 #[macro_export]
@@ -146,6 +143,7 @@ macro_rules! serial {
 macro_rules! __split_internal {
     ($token: expr, $del: expr, $f: expr) => {{
         let token = lexer($token, $del)?;
+        dbg!(&token);
         match token.len() {
             len if len >= 2 => Ok($f(&token, $del.to_string())),
             _ => Err(format!("expected: {}", $del)),
