@@ -133,7 +133,7 @@ macro_rules! surround {
     };
     ($src: expr, $ls: literal, $rs: literal) => {{
         let (func, args) = rsplit!($src.trim(), $ls)?;
-        Ok((func, args[1..args.len() - 1].to_string()))
+        Ok::<(String, String), String>((func, args[1..args.len() - 1].to_string()))
     }};
 }
 
