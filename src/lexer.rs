@@ -151,24 +151,30 @@ macro_rules! serial {
     ($arr: expr, $lambda: expr) => {{ map!({ lexer($arr, ",")? }, |x| $lambda(&x))? }};
 }
 
+#[doc(hidden)]
 #[macro_export]
-macro_rules! split {
-    ($token: expr, $del: expr) => {{
+macro_rules! __split_internal {
+    ($token: expr, $del: expr, $f: expr) => {{
         let token = lexer($token, $del)?;
         match token.len() {
-            len if len >= 2 => Ok((token[0].clone(), token[1..].join($del))),
+            len if len >= 2 => Ok($f(&token)),
             _ => Err(format!("expected: {}", $del)),
         }
     }};
 }
 
 #[macro_export]
+macro_rules! split {
+    ($token: expr, $del: expr) => {{
+        let f = |t: &Vec<String>| (t[0].clone(), t[1..].join($del));
+        $crate::__split_internal!($token, $del, f)
+    }};
+}
+
+#[macro_export]
 macro_rules! rsplit {
     ($token: expr, $del: literal) => {{
-        let token = lexer($token, $del)?;
-        match token.len() {
-            len if len >= 2 => Ok((token[..len - 1].join($del), token[len - 1].clone())),
-            _ => Err(format!("expected: {}", $del)),
-        }
+        let f = |t: &Vec<String>| (t[..t.len() - 1].join($del), t[t.len() - 1].clone());
+        $crate::__split_internal!($token, $del, f)
     }};
 }
