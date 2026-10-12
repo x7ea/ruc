@@ -136,9 +136,8 @@ macro_rules! surround {
             if src.len() < 2 {
                 return Err(String::new());
             }
-            let func = src[..src.len() - 1].concat();
-            let args = src[src.len() - 1].to_string();
-            Ok((func, args[1..args.len() - 1].to_string()))
+            let args = src[src.len() + 1 - 2].to_string();
+            Ok((src[..src.len() - 1].concat(), args))
         })
     };
 }
