@@ -159,9 +159,9 @@ extern fn pthread_create<T>(id: Thread, config: (), func: T, args: ())
 extern fn pthread_join(id: Int, config: ())
 extern fn sleep(time: Int)
 
-fn Thread(func: ()()): Thread {
+fn Thread(func: Void()): Thread {
     let id = new Thread
-    pthread_create<()()>(id, (), func, ())
+    pthread_create<Void()>(id, (), func, ())
     id
 }
 
