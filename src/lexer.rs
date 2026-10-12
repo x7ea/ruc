@@ -128,7 +128,7 @@ macro_rules! surround {
             .strip_prefix($ls)
             .and_then(|x| x.strip_suffix($rs))
     };
-    ($ls: literal, $rs: literal,$x: expr) => {
+    ($ls: literal, $rs: literal, $x: expr) => {
         $x.trim().strip_suffix($rs).and_then(|x| x.split_once($ls))
     };
     ($src: expr, $ls: literal, $rs: literal) => {
@@ -138,7 +138,7 @@ macro_rules! surround {
             }
             let func = src[..src.len() - 1].concat();
             let args = src[src.len() - 1].to_string();
-            Ok((func, args[1..args.len() - 1].to_string()))
+            Ok((func, args))
         })
     };
 }
