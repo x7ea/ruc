@@ -131,15 +131,10 @@ macro_rules! surround {
     ($ls: literal, $rs: literal, $x: expr) => {
         $x.trim().strip_suffix($rs).and_then(|x| x.split_once($ls))
     };
-    ($src: expr, $ls: literal, $rs: literal) => {
-        lexer($src.trim(), &$ls).and_then(|src| {
-            if src.len() < 2 {
-                return Err(String::new());
-            }
-            let args = src[src.len() + 1 - 2].to_string();
-            Ok((src[..src.len() - 1].concat(), args))
-        })
-    };
+    ($src: expr, $ls: literal, $rs: literal) => {{
+        let (func, args) = rsplit!($src.trim(), $ls)?;
+        Ok((func, args[1..args.len() - 1].to_string()))
+    }};
 }
 
 #[macro_export]
