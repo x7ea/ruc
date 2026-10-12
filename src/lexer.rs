@@ -123,13 +123,9 @@ pub mod name {
 
 #[macro_export]
 macro_rules! surround {
-    ($ls: literal, $x: expr, $rs: literal) => {
-        $x.trim()
-            .strip_prefix($ls)
-            .and_then(|x| x.strip_suffix($rs))
-    };
+    ($ls: literal, $x: expr, $rs: literal) => {{ $x.strip_prefix($ls).and_then(|x| x.strip_suffix($rs)) }};
     ($ls: literal, $rs: literal, $x: expr) => {{ $x.trim().strip_suffix($rs).and_then(|x| x.split_once($ls)) }};
-    ($src: expr, $ls: literal, $rs: literal) => {{ rsplit!($src.trim(), $ls).and_then(|(f, args)| Ok((f, args[1..args.len() - 1].to_string()))) }};
+    ($src: expr, $ls: literal, $rs: literal) => {{ split!($src, &$ls).and_then(|(f, args)| Ok((f, args[1..args.len() - 1].to_string()))) }};
 }
 
 #[macro_export]
@@ -140,7 +136,6 @@ macro_rules! serial {
 #[macro_export]
 macro_rules! __split_internal {
     ($token: expr, $del: expr, $f: expr) => {{
-        dbg!(&$token);
         let token = lexer($token, $del)?;
         match token.len() {
             len if len >= 2 => Ok($f(&token, $del.to_string())),
