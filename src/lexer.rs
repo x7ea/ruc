@@ -140,8 +140,8 @@ macro_rules! serial {
 #[macro_export]
 macro_rules! __split_internal {
     ($token: expr, $del: expr, $f: expr) => {{
+        dbg!(&$token);
         let token = lexer($token, $del)?;
-        dbg!(&token);
         match token.len() {
             len if len >= 2 => Ok($f(&token, $del.to_string())),
             _ => Err(format!("expected: {}", $del)),
