@@ -138,7 +138,7 @@ macro_rules! surround {
             }
             let func = src[..src.len() - 1].concat();
             let args = src[src.len() - 1].to_string();
-            Ok((func, args))
+            Ok((func, args[1..args.len() - 1].to_string()))
         })
     };
 }
@@ -163,7 +163,7 @@ pub fn left(tok: &Vec<String>, del: String) -> (String, String) {
     (tok[0].clone(), tok[1..].join(&del))
 }
 pub fn right(tok: &Vec<String>, del: String) -> (String, String) {
-    (tok[tok.len()..1].join(&del), tok[tok.len() - 1].clone())
+    (tok[..tok.len() - 1].join(&del), tok[tok.len() - 1].clone())
 }
 #[macro_export]
 macro_rules! split {
