@@ -128,9 +128,7 @@ macro_rules! surround {
             .strip_prefix($ls)
             .and_then(|x| x.strip_suffix($rs))
     };
-    ($ls: literal, $rs: literal, $x: expr) => {
-        $x.trim().strip_suffix($rs).and_then(|x| x.split_once($ls))
-    };
+    ($ls: literal, $rs: literal, $x: expr) => {{ $x.trim().strip_suffix($rs).and_then(|x| x.split_once($ls)) }};
     ($src: expr, $ls: literal, $rs: literal) => {{ rsplit!($src.trim(), $ls).and_then(|(f, args)| Ok((f, args[1..args.len() - 1].to_string()))) }};
 }
 
