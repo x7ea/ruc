@@ -198,7 +198,7 @@ impl Type {
             "Str" => Ok(Type::String),
             "Bool" => Ok(Type::Boolean),
             "Float" => Ok(Type::Float),
-            "()" => Ok(Type::Void),
+            "Void" => Ok(Type::Void),
             x => {
                 if let Ok((ret, args)) = surround!(x, "(", ")") {
                     let (ret, args) = (Box::new(Type::parse(&ret)?), serial!(&args, Type::parse));
@@ -219,15 +219,13 @@ impl Display for Type {
         match self {
             Type::Integer => write!(f, "Int"),
             Type::String => write!(f, "Str"),
-            Type::Float => write!(f, "Float"),
             Type::Boolean => write!(f, "Bool"),
-            Type::Void => write!(f, "()"),
-            Type::Any => write!(f, "?"),
             Type::Array(typ) => write!(f, "[{typ}]"),
             Type::Class(Generic(name, args)) if args.is_empty() => write!(f, "{name}"),
             Type::Class(Generic(name, args)) => write!(f, "{name}<{}>", comma(args)),
             Type::Function(Lambda((_, ret), Some(args))) => write!(f, "{ret}({})", comma(args)),
             Type::Function(Lambda((_, ret), None)) => write!(f, "{ret}()"),
+            typ => write!(f, "{}", typ.as_ref()),
         }
     }
 }
@@ -236,17 +234,12 @@ impl Debug for Type {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let mangle = |x: &[Type]| map!(x, |x: &Type| format!("{x:?}")).join("_");
         match self {
-            Type::Integer => write!(f, "Int"),
-            Type::String => write!(f, "Str"),
-            Type::Float => write!(f, "Float"),
-            Type::Boolean => write!(f, "Bool"),
-            Type::Void => write!(f, "Void"),
-            Type::Any => write!(f, "Any"),
             Type::Array(typ) => write!(f, "Array_{typ:?}"),
             Type::Class(Generic(name, args)) if args.is_empty() => write!(f, "{name}"),
             Type::Class(Generic(name, args)) => write!(f, "{name}_{}", mangle(args)),
             Type::Function(Lambda((_, r), Some(a))) => write!(f, "Lambda_{r:?}_{}", mangle(a)),
             Type::Function(Lambda((_, r), None)) => write!(f, "Lambda_{r:?}"),
+            typ => write!(f, "{typ}"),
         }
     }
 }
