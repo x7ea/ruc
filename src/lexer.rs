@@ -106,11 +106,9 @@ pub mod name {
         pub fn class(&self, typ: &Type) -> Name {
             Name(format!("{typ:?}.{self}"))
         }
-
         pub fn generic(&self, typ: &Type) -> Name {
             Name(format!("{self}@{typ:?}"))
         }
-
         pub fn is_generic(&self) -> bool {
             self.0.contains("@")
         }
@@ -151,30 +149,28 @@ macro_rules! serial {
     ($arr: expr, $lambda: expr) => {{ map!({ lexer($arr, ",")? }, |x| $lambda(&x))? }};
 }
 
-#[doc(hidden)]
 #[macro_export]
 macro_rules! __split_internal {
     ($token: expr, $del: expr, $f: expr) => {{
         let token = lexer($token, $del)?;
         match token.len() {
-            len if len >= 2 => Ok($f(&token)),
+            len if len >= 2 => Ok($f(&token, $del.to_string())),
             _ => Err(format!("expected: {}", $del)),
         }
     }};
 }
 
+pub fn left(tok: &Vec<String>, del: String) -> (String, String) {
+    (tok[0].clone(), tok[1..].join(&del))
+}
+pub fn right(tok: &Vec<String>, del: String) -> (String, String) {
+    (tok[tok.len()..1].join(&del), tok[tok.len() - 1].clone())
+}
 #[macro_export]
 macro_rules! split {
-    ($token: expr, $del: expr) => {{
-        let f = |t: &Vec<String>| (t[0].clone(), t[1..].join($del));
-        $crate::__split_internal!($token, $del, f)
-    }};
+    ($token: expr, $del: expr) => {{ __split_internal!($token, $del, crate::lexer::left) }};
 }
-
 #[macro_export]
 macro_rules! rsplit {
-    ($token: expr, $del: literal) => {{
-        let f = |t: &Vec<String>| (t[..t.len() - 1].join($del), t[t.len() - 1].clone());
-        $crate::__split_internal!($token, $del, f)
-    }};
+    ($token: expr, $del: expr) => {{ __split_internal!($token, $del, crate::lexer::right) }};
 }
