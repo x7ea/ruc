@@ -9,11 +9,11 @@ extern fn gtk_button_new_with_label(content: Str): Elm
 extern fn gtk_button_set_label(this: Elm, content: Str)
 extern fn gtk_container_add(this: App, widget: Elm)
 
-extern fn g_signal_connect_data<T>(this: Elm, event: Str, handle: ()(Elm, T), data: T)
-extern fn g_signal_connect_object(this: App, event: Str, handle: ()(), object: ())
+extern fn g_signal_connect_data<T>(this: Elm, event: Str, handle: Void(Elm, T), data: T)
+extern fn g_signal_connect_object(this: App, event: Str, handle: Void(), object: ())
 extern fn gtk_widget_show_all(window: App)
 
-extern fn gtk_message_dialog_new(widget: Int, modal: Int, type: Int, button: Int, content: Str): MsgBox 
+extern fn gtk_message_dialog_new(widget: Int, modal: Int, type: Int, button: Int, content: Str): MsgBox
 extern fn gtk_dialog_run(this: MsgBox): Int
 extern fn gtk_widget_destroy(this: MsgBox)
 
