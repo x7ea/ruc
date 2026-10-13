@@ -108,6 +108,10 @@ fn Map.insert<K, V>(this: Map<K, V>, key: K, value: V) {
     }
 }
 
+fn Map.print<K, V>(this: Map<K, V>): Str {
+
+}
+
 extern fn mkdir(path: Str)
 extern fn rmdir(path: Str)
 extern fn rename(src: Str, dst: Str)
