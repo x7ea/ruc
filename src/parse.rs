@@ -232,7 +232,7 @@ impl Debug for Type {
         let mangle = |x: &[Type]| map!(x, |x: &Type| format!("{x:?}")).concat();
         match self {
             Type::Array(typ) => write!(f, "A{typ:?}"),
-            Type::Class(Generic(n, args)) if !args.is_empty() => write!(f, "{n}{}", mangle(args)),
+            Type::Class(Generic(n, args)) => write!(f, "{n}{}", mangle(args)),
             Type::Function(Lambda((_, r), Some(args))) => write!(f, "L{r:?}{}", mangle(args)),
             Type::Function(Lambda((_, r), None)) => write!(f, "L{r:?}"),
             typ => write!(f, "{}", typ.to_string().chars().next().unwrap()),
