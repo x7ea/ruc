@@ -4,6 +4,7 @@ fn main() {
     let dict = Map<Str, Int>(["a", "b"], [1, 2])
     print dict
 
+    dict.insert("b", 4)
     dict.insert("c", 3)
     print dict
 }
