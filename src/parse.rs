@@ -232,11 +232,10 @@ impl Display for Type {
 
 impl Debug for Type {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let mangle = |x: &[Type]| map!(x, |x: &Type| format!("{x:?}")).join("_");
+        let mangle = |x: &[Type]| map!(x, |x: &Type| format!("{x:?}")).concat();
         match self {
             Type::Array(typ) => write!(f, "Array_{typ:?}"),
-            Type::Class(Generic(name, args)) if args.is_empty() => write!(f, "{name}"),
-            Type::Class(Generic(name, args)) => write!(f, "{name}_{}", mangle(args)),
+            Type::Class(Generic(n, args)) if !args.is_empty() => write!(f, "{n}_{}", mangle(args)),
             Type::Function(Lambda((_, r), Some(a))) => write!(f, "Lambda_{r:?}_{}", mangle(a)),
             Type::Function(Lambda((_, r), None)) => write!(f, "Lambda_{r:?}"),
             typ => write!(f, "{typ}"),
