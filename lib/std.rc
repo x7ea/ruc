@@ -109,7 +109,13 @@ fn Map.insert<K, V>(this: Map<K, V>, key: K, value: V) {
 }
 
 fn Map.print<K, V>(this: Map<K, V>): Str {
-
+    let index = 0
+    let display = ""
+    while (index < this.keys.raw.len) do {
+        let fmt = format this.keys.raw[index], ": ", this.values.raw[index], ", "
+        let index = index + 1
+    }
+    format "{ ", display, " }"
 }
 
 extern fn mkdir(path: Str)
