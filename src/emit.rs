@@ -355,9 +355,7 @@ macro_rules! var {
 #[macro_export]
 macro_rules! method {
     ($typ: expr, $name: expr) => {{
-        Expr::Variable(Generic(
-            Name::new($name)?.class(&$typ.remove_generic()),
-            $typ.generic_args(),
-        ))
+        let name = Name::new($name)?.class(&$typ.remove_generic());
+        Expr::Variable(Generic(name, $typ.generic_args()))
     }};
 }
