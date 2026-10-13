@@ -332,12 +332,10 @@ macro_rules! len {
 
 #[macro_export]
 macro_rules! array {
-    ($arr: expr, $idx: expr) => {
-        Box::new(Expr::Add(
-            Box::new(Expr::Mod($idx.clone(), len!($arr))),
-            Box::new(Expr::Integer(1)),
-        ))
-    };
+    ($arr: expr, $idx: expr) => {{
+        let idx = Box::new(Expr::Mod($idx.clone(), len!($arr)));
+        Box::new(Expr::Add(idx, Box::new(Expr::Integer(1))))
+    }};
 }
 
 #[macro_export]
