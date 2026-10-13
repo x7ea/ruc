@@ -217,9 +217,6 @@ impl Display for Type {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let comma = |x: &[Type]| map!(x, |x: &Type| x.to_string()).join(", ");
         match self {
-            Type::Integer => write!(f, "Int"),
-            Type::String => write!(f, "Str"),
-            Type::Boolean => write!(f, "Bool"),
             Type::Array(typ) => write!(f, "[{typ}]"),
             Type::Class(Generic(name, args)) if args.is_empty() => write!(f, "{name}"),
             Type::Class(Generic(name, args)) => write!(f, "{name}<{}>", comma(args)),
