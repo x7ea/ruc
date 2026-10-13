@@ -66,8 +66,8 @@ fn Vec.print<T>(this: Vec<T>): Str {
 }
 
 struct Map<K, V> {
-    keys: [K],
-    values: [V]
+    keys: Vec<K>,
+    values: Vec<V>
 }
 
 fn Map<K, V>(keys: [K], values: [V]): Map<K, V> {
@@ -85,7 +85,7 @@ fn Map.index_of<K, V>(this: Map<K, V>, key: K): Option<Int> {
         & (this.keys.raw[index] != key) do {
         let index = index + 1
     }
-    if index != this.keys.len then {
+    if index != this.keys.raw.len then {
         Option<Int>::Some(index)
     } else {
         Option<Int>::None
