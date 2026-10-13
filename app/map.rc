@@ -1,7 +1,7 @@
 use std
 
 fn main() {
-    let dict = Map<Str, Int>(["a", "b"], [1])
+    let dict = Map<Str, Int>(["a", "b"], [1, 2])
     print dict
 
     dict.insert("b", 4)
