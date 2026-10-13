@@ -1,0 +1,9 @@
+use std
+
+fn main() {
+    let dict = Map<Str, Int>(["a", "b"], [1, 2])
+    print dict.get("a")
+
+    dict.insert("c", 3)
+    print dict.get("c")
+}
