@@ -115,7 +115,7 @@ fn Map.print<K, V>(this: Map<K, V>): Str {
         let display = format display, this.keys.raw[index], ": ", this.values.raw[index], ", "
         let index = index + 1
     }
-    format "{ ", display, " }"
+    format "{ ", display, "}"
 }
 
 extern fn mkdir(path: Str)
