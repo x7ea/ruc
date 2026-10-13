@@ -217,6 +217,9 @@ impl Display for Type {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let comma = |x: &[Type]| map!(x, |x: &Type| x.to_string()).join(", ");
         match self {
+            Type::Integer => write!(f, "Int"),
+            Type::String => write!(f, "Str"),
+            Type::Boolean => write!(f, "Bool"),
             Type::Array(typ) => write!(f, "[{typ}]"),
             Type::Class(Generic(name, args)) if args.is_empty() => write!(f, "{name}"),
             Type::Class(Generic(name, args)) => write!(f, "{name}<{}>", comma(args)),
@@ -229,13 +232,14 @@ impl Display for Type {
 
 impl Debug for Type {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let mangle = |x: &[Type]| map!(x, |x: &Type| format!("{x:?}")).concat();
+        let mangle = |x: &[Type]| map!(x, |x: &Type| format!("{x:?}")).join("_");
         match self {
-            Type::Array(typ) => write!(f, "A{typ:?}"),
-            Type::Class(Generic(n, args)) => write!(f, "{n}{}", mangle(args)),
-            Type::Function(Lambda((_, r), Some(args))) => write!(f, "L{r:?}{}", mangle(args)),
-            Type::Function(Lambda((_, r), None)) => write!(f, "L{r:?}"),
-            typ => write!(f, "{}", typ.to_string().chars().next().unwrap()),
+            Type::Array(typ) => write!(f, "Array_{typ:?}"),
+            Type::Class(Generic(name, args)) if args.is_empty() => write!(f, "{name}"),
+            Type::Class(Generic(name, args)) => write!(f, "{name}_{}", mangle(args)),
+            Type::Function(Lambda((_, r), Some(a))) => write!(f, "Lambda_{r:?}_{}", mangle(a)),
+            Type::Function(Lambda((_, r), None)) => write!(f, "Lambda_{r:?}"),
+            typ => write!(f, "{typ}"),
         }
     }
 }
