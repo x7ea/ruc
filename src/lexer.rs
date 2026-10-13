@@ -78,7 +78,6 @@ pub mod name {
     const RESERVED: [&str; 10] = [
         "let", "new", "clone", "if", "then", "else", "for", "while", "do", "match",
     ];
-
     #[derive(Debug, Clone, Default, PartialEq, Eq, Hash)]
     pub struct Name(pub String);
 
