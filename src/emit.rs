@@ -26,7 +26,7 @@ impl Define {
             lib += &format!("\textern {symbol}\n");
         }
         let data = ctx.global.data.clone();
-        Ok(format!("section .data\n{data}{lib}{text}\n"))
+        Ok(format!("section .data\n{data}{lib}{text}"))
     }
 }
 
