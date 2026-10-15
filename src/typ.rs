@@ -90,7 +90,7 @@ impl Expr {
 
         match self.clone() {
             Expr::Print(is_output, mut vals) => {
-                let fmt = map!({ &vals }, |x| x.fmtgen(ctx))?.concat();
+                let fmt = map!({ &mut vals }, |x| x.fmtgen(ctx))?.concat();
                 let fmt = Expr::String(if is_output { fmt + "\\n" } else { fmt });
                 typing!(expands!(Expr::Call(
                     Box::new(var!(["g_strdup_printf", "printf"][is_output as usize])),
