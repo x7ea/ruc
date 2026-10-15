@@ -90,11 +90,12 @@ impl Expr {
 
         match self.clone() {
             Expr::Print(is_output, mut vals) => {
-                let mut fmt = String::new();
-                for val in vals.iter_mut() {
-                    fmt += &val.fmtgen(ctx)?
-                }
-                is_output.then(|| fmt += "\\n");
+                let fmt = map!({ vals }, |x| x.fmtgen(ctx));
+                if is_output {
+                    fmt + "\\n"
+                } else {
+                    fmt
+                };
                 let handler = ["g_strdup_printf", "printf"];
                 typing!(expands!(Expr::Call(
                     Box::new(var!(handler[is_output as usize])),
