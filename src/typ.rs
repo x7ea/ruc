@@ -90,15 +90,12 @@ impl Expr {
 
         match self.clone() {
             Expr::Print(is_output, mut vals) => {
-                let fmt = map!({ vals }, |x| x.fmtgen(ctx));
+                let fmt = map!({ vals }, |x| x.fmtgen(ctx))?;
                 let handler = ["g_strdup_printf", "printf"];
+                let fmt = Expr::String(if is_output { fmt + "\\n" } else { fmt });
                 typing!(expands!(Expr::Call(
                     Box::new(var!(handler[is_output as usize])),
-                    [vec![Expr::String( if is_output {
-                        fmt + "\\n"
-                    } else {
-                        fmt
-                    })], vals.to_vec()].concat(),
+                    [vec![fmt], vals.to_vec()].concat(),
                 )))
             }
             Expr::If(cond, then, els) => {
