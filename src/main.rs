@@ -31,7 +31,7 @@ fn main() {
         ok!(stdin().read_to_string(&mut buffer));
         buffer.trim().to_owned()
     };
-    let output = ok!(Define::compile(&ok!(Define::parse(&code))));
+    let output = ok!(Define::compile(&mut ok!(Define::parse(&code))));
     ok!(stdout().write_all(output.as_bytes()));
 }
 
