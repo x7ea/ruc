@@ -15,7 +15,7 @@ impl Define {
         let ctx = &mut Context::default();
         ctx.global.used.insert(Name::new("main")?);
         ctx.global.def = program.iter().map(|x| (name!(x), x.clone())).collect();
-        map!({ program }, |define| define.infer(ctx))?;
+        map!({ &mut program.clone() }, |define| define.infer(ctx))?;
 
         let mut text = String::from("\n");
         for (_, func) in ctx.global.def.clone() {
@@ -62,7 +62,7 @@ impl Define {
             }
             ptr += 8;
         }
-        let body = body.emit(ctx)?;
+        let body = body.emit(ctx);
         ctx.table.insert(name.clone(), ctx.local.clone());
 
         let size = ctx.local.var.len() * 8;
@@ -81,17 +81,17 @@ impl Expr {
                 match typ!(&**$rhs) {
                     Type::Integer | Type::Boolean => format!(
                         "{}\tpush rax\n{}\tmov r10, rax\n\tpop rax\n\t{} rax, r10\n",
-                        $lhs.emit(ctx)?,
-                        $rhs.emit(ctx)?,
+                        $lhs.emit(ctx),
+                        $rhs.emit(ctx),
                         $asm.replace("mul", "imul"),
                     ),
                     Type::Float => format!(
                         "{}\tsub rsp, 8\n\tmovsd [rsp], xmm0\n{}\tmovsd xmm1, xmm0\n\tmovsd xmm0, [rsp]\n\tadd rsp, 8\n\t{}sd xmm0, xmm1\n",
-                         $lhs.emit(ctx)?,
-                         $rhs.emit(ctx)?,
+                         $lhs.emit(ctx),
+                         $rhs.emit(ctx),
                          $asm
                     ),
-                    _ => expr!(self).emit(ctx)?,
+                    _ => expr!(self).emit(ctx),
                 }
             };
         }
@@ -123,12 +123,12 @@ impl Expr {
                 if let Some(expr) = ctx.local.expand.get(self) {
                     return expr.clone().emit(ctx);
                 };
-                let [id, then] = [label!(), then.emit(ctx)?];
-                let cond = format!("{}\tcmp rax, 0\n", cond.emit(ctx)?);
+                let [id, then] = [label!(), then.emit(ctx)];
+                let cond = format!("{}\tcmp rax, 0\n", cond.emit(ctx));
                 if let Some(els) = els {
                     return format!(
                         "{cond}\tje .Lelse{id}\n{then}\tjmp .Lif{id}\n.Lelse{id}:\n{}.Lif{id}:\n",
-                        els.emit(ctx)?,
+                        els.emit(ctx),
                     );
                 }
                 format!("{cond}\tje .Lif{id}\n{then}.Lif{id}:\n")
@@ -140,8 +140,8 @@ impl Expr {
                 let id = label!();
                 format!(
                     ".Lwhile{id}:\n{}\tcmp rax, 0\n\tje .Ldo{id}\n{}\tjmp .Lwhile{id}\n.Ldo{id}:\n",
-                    cond.emit(ctx)?,
-                    body.emit(ctx)?,
+                    cond.emit(ctx),
+                    body.emit(ctx),
                 )
             }
             Expr::Block(lines) => map!(&lines, |code| code.emit(ctx)).concat(),
@@ -149,7 +149,7 @@ impl Expr {
             Expr::Call(func, args) => {
                 let mut push = String::new();
                 for arg in args.iter().rev() {
-                    push += &arg.emit(ctx)?;
+                    push += &arg.emit(ctx);
                     push += match typ!(arg) {
                         Type::Float => "\tsub rsp, 8\n\tmovsd [rsp], xmm0\n",
                         _ => "\tpush rax\n",
@@ -199,7 +199,7 @@ impl Expr {
                 Expr::Variable(Generic(name, _)) => {
                     let env = &ctx.local.var;
                     let (typ, idx) = (env[name].clone(), env.get_index_of(name).unwrap());
-                    let (val, addr) = (val.emit(ctx)?, (idx + 1) * 8);
+                    let (val, addr) = (val.emit(ctx), (idx + 1) * 8);
                     match typ {
                         Type::Float => format!("{val}\tmovsd [rbp-{addr}], xmm0\n"),
                         _ => format!("{val}\tmov [rbp-{addr}], rax\n"),
@@ -276,18 +276,18 @@ impl Expr {
                 "{}\tcmp rax, 0\n\tsete al\n\tmovzx rax, al\n",
                 term.emit(ctx)
             ),
-            Expr::Add(lhs, rhs) => Ok(op!("add", lhs, rhs)),
-            Expr::Sub(lhs, rhs) => Ok(op!("sub", lhs, rhs)),
-            Expr::Mul(lhs, rhs) => Ok(op!("mul", lhs, rhs)),
-            Expr::Eq(lhs, rhs) => Ok(cmp!("e", lhs, rhs)),
-            Expr::Ne(lhs, rhs) => Ok(cmp!("ne", lhs, rhs)),
-            Expr::Gt(lhs, rhs) => Ok(cmp!("g", lhs, rhs)),
-            Expr::Lt(lhs, rhs) => Ok(cmp!("l", lhs, rhs)),
-            Expr::Ge(lhs, rhs) => Ok(cmp!("ge", lhs, rhs)),
-            Expr::Le(lhs, rhs) => Ok(cmp!("le", lhs, rhs)),
-            Expr::And(lhs, rhs) => Ok(op!("and", lhs, rhs)),
-            Expr::Or(lhs, rhs) => Ok(op!("or", lhs, rhs)),
-            Expr::Xor(lhs, rhs) => Ok(op!("xor", lhs, rhs)),
+            Expr::Add(lhs, rhs) => op!("add", lhs, rhs),
+            Expr::Sub(lhs, rhs) => op!("sub", lhs, rhs),
+            Expr::Mul(lhs, rhs) => op!("mul", lhs, rhs),
+            Expr::Eq(lhs, rhs) => cmp!("e", lhs, rhs),
+            Expr::Ne(lhs, rhs) => cmp!("ne", lhs, rhs),
+            Expr::Gt(lhs, rhs) => cmp!("g", lhs, rhs),
+            Expr::Lt(lhs, rhs) => cmp!("l", lhs, rhs),
+            Expr::Ge(lhs, rhs) => cmp!("ge", lhs, rhs),
+            Expr::Le(lhs, rhs) => cmp!("le", lhs, rhs),
+            Expr::And(lhs, rhs) => op!("and", lhs, rhs),
+            Expr::Or(lhs, rhs) => op!("or", lhs, rhs),
+            Expr::Xor(lhs, rhs) => op!("xor", lhs, rhs),
             _ => expr!(self).emit(ctx),
         }
     }
@@ -340,8 +340,11 @@ macro_rules! array {
 
 #[macro_export]
 macro_rules! map {
-    ($a: block, $f: expr) => {{ $a.iter_mut().map($f).collect::<Result<Vec<_>, String>>() }};
-    ($a: expr, $f: expr) => {{ $a.iter().map($f).collect::<Vec<_>>() }};
+    ($arr: block, $f: expr) => {{
+        let mut bind = $array.clone();
+        bind.iter_mut().map($f).collect::<Result<Vec<_>, String>>()
+    }};
+    ($arr: expr, $f: expr) => {{ $array.iter().map($f).collect::<Vec<_>>() }};
 }
 
 #[macro_export]
