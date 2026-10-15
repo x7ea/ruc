@@ -144,7 +144,7 @@ impl Expr {
                     body.emit(ctx)?,
                 ))
             }
-            Expr::Block(lines) => Ok(map!({ lines }, |code| code.emit(ctx))?.concat()),
+            Expr::Block(lines) => Ok(map!({ &mut lines.clone() }, |code| code.emit(ctx))?.concat()),
             Expr::Return(val) => Ok(format!("{}\tleave\n\tret\n", val.emit(ctx)?)),
             Expr::Call(func, args) => {
                 let mut push = String::new();
@@ -340,8 +340,8 @@ macro_rules! array {
 
 #[macro_export]
 macro_rules! map {
-    ($arr: block, $lambda: expr) => {{ $arr.iter().map($lambda).collect::<Result<Vec<_>, String>>() }};
-    ($arr: expr, $lambda: expr) => {{ $arr.iter().map($lambda).collect::<Vec<_>>() }};
+    ($a: block, $f: expr) => {{ $a.iter_mut().map($f).collect::<Result<Vec<_>, String>>() }};
+    ($a: expr, $f: expr) => {{ $a.iter().map($f).collect::<Vec<_>>() }};
 }
 
 #[macro_export]
