@@ -144,7 +144,7 @@ impl Expr {
                     body.emit(ctx)?,
                 )
             }
-            Expr::Block(lines) => map!(&lines, | code | code.emit(ctx)).concat(),
+            Expr::Block(lines) => map!(&lines, |code| code.emit(ctx)).concat(),
             Expr::Return(val) => format!("{}\tleave\n\tret\n", val.emit(ctx)),
             Expr::Call(func, args) => {
                 let mut push = String::new();
@@ -262,7 +262,7 @@ impl Expr {
                 ctx.global.data += &format!("\t{name} db {val}\n");
                 format!("\tmov rax, {name}\n")
             }
-            Expr::Div(lhs, rhs) if typ!(self) == Type::Float =>op!("div", lhs, rhs),
+            Expr::Div(lhs, rhs) if typ!(self) == Type::Float => op!("div", lhs, rhs),
             Expr::Div(lhs, rhs) => format!(
                 "{}\tpush rax\n{}\tmov rsi, rax\n\tpop rax\n\tcqo\n\tidiv rsi\n",
                 lhs.emit(ctx),
@@ -270,7 +270,7 @@ impl Expr {
             ),
             Expr::Mod(_, _) => format!(
                 "{}\tadd rdx, rsi\n\tmov rax, rdx\n\tcqo\n\tidiv rsi\n\tmov rax, rdx\n",
-                expr!(self).emit(ctx?
+                expr!(self).emit(ctx)
             ),
             Expr::Not(term) => format!(
                 "{}\tcmp rax, 0\n\tsete al\n\tmovzx rax, al\n",
