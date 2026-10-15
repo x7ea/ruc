@@ -96,13 +96,10 @@ impl Expr {
             };
         }
         macro_rules! cmp {
-            ($op: literal, $lhs: expr , $rhs: expr) => {
-                format!(
-                    "{}\tset{} al\n\tmovzx rax, al\n",
-                    op!("cmp", $lhs, $rhs),
-                    $op
-                )
-            };
+            ($op: literal, $lhs: expr , $rhs: expr) => {{
+                let [test, op] = [op!("cmp", $lhs, $rhs), $op];
+                format!("{test}\tset{op} al\n\tmovzx rax, al\n",)
+            }};
         }
         macro_rules! label {
             () => {{
