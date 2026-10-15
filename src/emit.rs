@@ -1,7 +1,7 @@
 use crate::*;
 
 impl Define {
-    pub fn compile(program: &[Define]) -> Result<String, String> {
+    pub fn compile(mut program: &mut [Define]) -> Result<String, String> {
         macro_rules! name {
             ($define: expr) => {
                 match $define.clone() {
@@ -15,7 +15,7 @@ impl Define {
         let ctx = &mut Context::default();
         ctx.global.used.insert(Name::new("main")?);
         ctx.global.def = program.iter().map(|x| (name!(x), x.clone())).collect();
-        map!({ &mut program.clone() }, |define| define.infer(ctx))?;
+        map!({ &mut program }, |define| define.infer(ctx))?;
 
         let mut text = String::from("\n");
         for (_, func) in ctx.global.def.clone() {
@@ -340,11 +340,8 @@ macro_rules! array {
 
 #[macro_export]
 macro_rules! map {
-    ($arr: block, $f: expr) => {{
-        let mut bind = $array.clone();
-        bind.iter_mut().map($f).collect::<Result<Vec<_>, String>>()
-    }};
-    ($arr: expr, $f: expr) => {{ $array.iter().map($f).collect::<Vec<_>>() }};
+    ($a: block, $f: expr) => {{ $a.iter_mut().map($f).collect::<Result<Vec<_>, String>>() }};
+    ($a: expr, $f: expr) => {{ $a.iter().map($f).collect::<Vec<_>>() }};
 }
 
 #[macro_export]
