@@ -144,7 +144,7 @@ impl Expr {
                     body.emit(ctx)?,
                 )
             }
-            Expr::Block(lines) => map!(&lines, | code | code.emit(ctx)).concat()),
+            Expr::Block(lines) => map!(&lines, | code | code.emit(ctx)).concat(),
             Expr::Return(val) => format!("{}\tleave\n\tret\n", val.emit(ctx)),
             Expr::Call(func, args) => {
                 let mut push = String::new();
