@@ -90,7 +90,7 @@ impl Expr {
 
         match self.clone() {
             Expr::Print(is_output, mut vals) => {
-                let fmt = map!({ vals}, |x| x.fmtgen(ctx))?.concat();
+                let fmt = map!({ &vals }, |x| x.fmtgen(ctx))?.concat();
                 let fmt = Expr::String(if is_output { fmt + "\\n" } else { fmt });
                 typing!(expands!(Expr::Call(
                     Box::new(var!(["g_strdup_printf", "printf"][is_output as usize])),
@@ -171,9 +171,9 @@ impl Expr {
                     Expr::While(Box::new(Expr::Lt(temp.clone(), len!(arr))), each)
                 ])))
             }
-            Expr::Block(lines) => {
+            Expr::Block(mut lines) => {
                 let parent = ctx.local.scope.clone();
-                let lines = map!({ &lines }, |x| x.infer(ctx))?;
+                let lines = map!({ lines }, |x| x.infer(ctx))?;
                 let ret = lines.last().unwrap_or(&Type::Void);
                 for (name, val) in &ctx.local.scope {
                     if let Some(typ) = ctx.local.var.get(name)
