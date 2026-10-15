@@ -125,10 +125,10 @@ impl Expr {
                 };
                 let [id, then] = [label!(), then.emit(ctx)];
                 let cond = format!("{}\tcmp rax, 0\n", cond.emit(ctx));
-                if let Some(els) = els {
+                if let Some(case) = els {
                     return format!(
                         "{cond}\tje .Lelse{id}\n{then}\tjmp .Lif{id}\n.Lelse{id}:\n{}.Lif{id}:\n",
-                        els.emit(ctx),
+                        case.emit(ctx),
                     );
                 }
                 format!("{cond}\tje .Lif{id}\n{then}.Lif{id}:\n")
