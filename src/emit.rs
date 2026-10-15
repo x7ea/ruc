@@ -75,7 +75,7 @@ impl Define {
 }
 
 impl Expr {
-    fn emit(&self, ctx: &mut Context) -> Result<String, String> {
+    fn emit(&self, ctx: &mut Context) -> String {
         macro_rules! op {
             ($asm: literal, $lhs: expr, $rhs: expr) => {
                 match typ!(&**$rhs) {
@@ -126,26 +126,26 @@ impl Expr {
                 let [id, then] = [label!(), then.emit(ctx)?];
                 let cond = format!("{}\tcmp rax, 0\n", cond.emit(ctx)?);
                 if let Some(els) = els {
-                    return Ok(format!(
+                    return format!(
                         "{cond}\tje .Lelse{id}\n{then}\tjmp .Lif{id}\n.Lelse{id}:\n{}.Lif{id}:\n",
                         els.emit(ctx)?,
-                    ));
+                    );
                 }
-                Ok(format!("{cond}\tje .Lif{id}\n{then}.Lif{id}:\n"))
+                format!("{cond}\tje .Lif{id}\n{then}.Lif{id}:\n")
             }
             Expr::While(cond, body) => {
                 if let Some(expr) = ctx.local.expand.get(self) {
                     return expr.clone().emit(ctx);
                 };
                 let id = label!();
-                Ok(format!(
+                format!(
                     ".Lwhile{id}:\n{}\tcmp rax, 0\n\tje .Ldo{id}\n{}\tjmp .Lwhile{id}\n.Ldo{id}:\n",
                     cond.emit(ctx)?,
                     body.emit(ctx)?,
-                ))
+                )
             }
-            Expr::Block(lines) => Ok(map!(&lines | code | code.emit(ctx).unwrap()).concat()),
-            Expr::Return(val) => Ok(format!("{}\tleave\n\tret\n", val.emit(ctx)?)),
+            Expr::Block(lines) => map!(&lines, | code | code.emit(ctx)).concat()),
+            Expr::Return(val) => format!("{}\tleave\n\tret\n", val.emit(ctx)),
             Expr::Call(func, args) => {
                 let mut push = String::new();
                 for arg in args.iter().rev() {
@@ -170,11 +170,11 @@ impl Expr {
                         idx += 1;
                     }
                 }
-                Ok(format!(
+                format!(
                     "{push}{mov}{1}\tmov r10, rax\n{0}\tcall r10\n",
-                    Expr::Integer(xmm).emit(ctx)?,
-                    func.emit(ctx)?
-                ))
+                    Expr::Integer(xmm).emit(ctx),
+                    func.emit(ctx)
+                )
             }
             Expr::Variable(var @ Generic(name, _)) => {
                 if let Some(expr) = ctx.local.expand.get(self) {
@@ -185,14 +185,14 @@ impl Expr {
                 if let Some(addr) = env.get_index_of(&name) {
                     let (typ, addr) = (env[&name].clone(), (addr + 1) * 8);
                     match typ {
-                        Type::Float => Ok(format!("\tmovsd xmm0, [rbp-{addr}]\n")),
-                        _ => Ok(format!("\tmov rax, [rbp-{addr}]\n")),
+                        Type::Float => format!("\tmovsd xmm0, [rbp-{addr}]\n"),
+                        _ => format!("\tmov rax, [rbp-{addr}]\n"),
                     }
                 } else {
                     if !ctx.global.extrn.contains(&name) {
                         name = var.generic();
                     }
-                    Ok(format!("\tlea rax, [{name}]\n"))
+                    format!("\tlea rax, [{name}]\n")
                 }
             }
             Expr::Let(name, val) => match &**name {
@@ -201,55 +201,55 @@ impl Expr {
                     let (typ, idx) = (env[name].clone(), env.get_index_of(name).unwrap());
                     let (val, addr) = (val.emit(ctx)?, (idx + 1) * 8);
                     match typ {
-                        Type::Float => Ok(format!("{val}\tmovsd [rbp-{addr}], xmm0\n")),
-                        _ => Ok(format!("{val}\tmov [rbp-{addr}], rax\n")),
+                        Type::Float => format!("{val}\tmovsd [rbp-{addr}], xmm0\n"),
+                        _ => format!("{val}\tmov [rbp-{addr}], rax\n"),
                     }
                 }
                 _ => expr!(self).emit(ctx),
             },
-            Expr::Init(_, len) => Ok(format!(
+            Expr::Init(_, len) => format!(
                 "{}\tpush rax\n{}\tmov r10, rax\n\tpop rax\n\tmov qword [rax], r10\n",
-                expr!(self).emit(ctx)?,
-                len.emit(ctx)?
-            )),
+                expr!(self).emit(ctx),
+                len.emit(ctx)
+            ),
             Expr::Check(obj) => {
                 if let Some(expr) = ctx.local.expand.get(self) {
                     return expr.clone().emit(ctx);
                 };
-                Ok(format!(
+                format!(
                     "{}\tcmp rax, 0\n\tsetne al\n\tmovzx rax, al\n",
-                    obj.emit(ctx)?
-                ))
+                    obj.emit(ctx)
+                )
             }
             Expr::Read(offset, typ, addr) => {
                 let id = label!();
-                let [addr, offset] = [addr.emit(ctx)?, offset.emit(ctx)?];
-                Ok(format!(
+                let [addr, offset] = [addr.emit(ctx), offset.emit(ctx)];
+                format!(
                     "{addr}\tpxor xmm0, xmm0\n\tcmp rax, 0\n\tje .Lnull{id}\n\tpush rax\n{offset}\tpop r10\n\tlea rax, [r10+rax*8]\n{}.Lnull{id}:\n",
                     match typ {
                         Type::Float => "\tmovsd xmm0, [rax]\n",
                         _ => "\tmov rax, [rax]\n",
                     }
-                ))
+                )
             }
             Expr::Write(offset, val, addr) => {
                 let id = label!();
-                let [addr, offset, val] = [addr.emit(ctx)?, offset.emit(ctx)?, val.emit(ctx)?];
-                Ok(format!(
+                let [addr, offset, val] = [addr.emit(ctx), offset.emit(ctx), val.emit(ctx)];
+                format!(
                     "{addr}\tpxor xmm0, xmm0\n\tcmp rax, 0\n\tje .Lnull{id}\n\tpush rax\n{offset}\tpop r10\n\tlea r10, [r10+rax*8]\n\tpush r10\n{val}\tpop r10\n{}.Lnull{id}:\n",
                     match typ!(self) {
                         Type::Float => "\tmovsd [r10], xmm0\n",
                         _ => "\tmov [r10], rax\n",
                     }
-                ))
+                )
             }
-            Expr::Integer(0) => Ok(String::from("\txor rax, rax\n")),
-            Expr::Integer(val) => Ok(format!("\tmov rax, {val}\n")),
-            Expr::Float(Float(0.0)) => Ok(String::from("\tpxor xmm0, xmm0\n")),
+            Expr::Integer(0) => String::from("\txor rax, rax\n"),
+            Expr::Integer(val) => format!("\tmov rax, {val}\n"),
+            Expr::Float(Float(0.0)) => String::from("\tpxor xmm0, xmm0\n"),
             Expr::Float(val) => {
                 let name = format!("float{}", label!());
                 ctx.global.data += &format!("\t{name} dq {val:?}\n");
-                Ok(format!("\tmovsd xmm0, [{name}]\n"))
+                format!("\tmovsd xmm0, [{name}]\n")
             }
             Expr::String(val) => {
                 let val = format!("\"{val}\", 0")
@@ -260,22 +260,22 @@ impl Expr {
                     .replace("\"\", ", "");
                 let name = format!("str{}", label!());
                 ctx.global.data += &format!("\t{name} db {val}\n");
-                Ok(format!("\tmov rax, {name}\n"))
+                format!("\tmov rax, {name}\n")
             }
-            Expr::Div(lhs, rhs) if typ!(self) == Type::Float => Ok(op!("div", lhs, rhs)),
-            Expr::Div(lhs, rhs) => Ok(format!(
+            Expr::Div(lhs, rhs) if typ!(self) == Type::Float =>op!("div", lhs, rhs),
+            Expr::Div(lhs, rhs) => format!(
                 "{}\tpush rax\n{}\tmov rsi, rax\n\tpop rax\n\tcqo\n\tidiv rsi\n",
-                lhs.emit(ctx)?,
-                rhs.emit(ctx)?,
-            )),
-            Expr::Mod(_, _) => Ok(format!(
+                lhs.emit(ctx),
+                rhs.emit(ctx),
+            ),
+            Expr::Mod(_, _) => format!(
                 "{}\tadd rdx, rsi\n\tmov rax, rdx\n\tcqo\n\tidiv rsi\n\tmov rax, rdx\n",
-                expr!(self).emit(ctx)?
-            )),
-            Expr::Not(term) => Ok(format!(
+                expr!(self).emit(ctx?
+            ),
+            Expr::Not(term) => format!(
                 "{}\tcmp rax, 0\n\tsete al\n\tmovzx rax, al\n",
-                term.emit(ctx)?
-            )),
+                term.emit(ctx)
+            ),
             Expr::Add(lhs, rhs) => Ok(op!("add", lhs, rhs)),
             Expr::Sub(lhs, rhs) => Ok(op!("sub", lhs, rhs)),
             Expr::Mul(lhs, rhs) => Ok(op!("mul", lhs, rhs)),
