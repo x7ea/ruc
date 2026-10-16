@@ -16,7 +16,7 @@ impl Define {
         ctx.global.used.insert(Name::new("main")?);
         ctx.global.def = program.iter().map(|x| (name!(x), x.clone())).collect();
 
-        map!({ &mut program }, |define| define.infer(ctx))?;
+        let _typ = map!({ &mut program }, |define| define.infer(ctx))?;
         let text = map!(ctx.global.def.clone(), |(_, func)| func.emit(ctx)).concat();
         let lib = map!(ctx.global.extrn.clone(), |lib| format!("\textern {lib}\n")).concat();
 
