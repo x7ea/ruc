@@ -33,7 +33,7 @@ impl Define {
 pub const ABI: [&str; 6] = ["rdi", "rsi", "rdx", "rcx", "r8", "r9"];
 
 impl Define {
-    fn emit(&self, ctx: &mut Context) -> Result<String, String> {
+    fn emit(&self, ctx: &mut Context) -> String {
         let Define::Function((Generic(name, params), args), (body, _)) = self else {
             return Ok(String::new());
         };
