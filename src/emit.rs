@@ -70,7 +70,7 @@ impl Define {
             "\tpush rbp\n\tmov rbp, rsp\n\tsub rsp, {}\n",
             if size % 16 == 0 { size } else { size + 8 }
         );
-        format!("{name}:\n{frame}{alloc}{body}\tleave\n\tret\n\n"))
+        format!("{name}:\n{frame}{alloc}{body}\tleave\n\tret\n\n")
     }
 }
 
