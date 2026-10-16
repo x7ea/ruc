@@ -15,13 +15,14 @@ impl Define {
         let ctx = &mut Context::default();
         ctx.global.used.insert(Name::new("main")?);
         ctx.global.def = program.iter().map(|x| (name!(x), x.clone())).collect();
-        map!({ &mut program }, |define| define.infer(ctx))?;
 
+        map!({ &mut program }, |define| define.infer(ctx))?;
         let text = map!(ctx.global.def.clone(), |(_, func)| func.emit(ctx)).concat();
         let lib = map!(ctx.global.extrn.clone(), |lib| format!("\textern {lib}\n")).concat();
 
         let data = ctx.global.data.clone();
         let asm = format!("section .data\n{data}\nsection .text\n\tglobal main\n{lib}{text}");
+
         Ok(asm)
     }
 }
