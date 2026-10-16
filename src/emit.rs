@@ -17,16 +17,12 @@ impl Define {
         ctx.global.def = program.iter().map(|x| (name!(x), x.clone())).collect();
         map!({ &mut program }, |define| define.infer(ctx))?;
 
-        let mut text = String::from("\n");
-        for (_, func) in ctx.global.def.clone() {
-            text += &func.emit(ctx);
-        }
-        let mut lib = String::from("\nsection .text\n\tglobal main\n");
-        for symbol in ctx.global.extrn.clone() {
-            lib += &format!("\textern {symbol}\n");
-        }
+        let text = map!(ctx.global.def.clone(), |(_, func)| func.emit(ctx)).concat();
+        let lib = map!(ctx.global.extrn.clone(), |lib| format!("\textern {lib}\n")).concat();
+
         let data = ctx.global.data.clone();
-        Ok(format!("section .data\n{data}{lib}{text}"))
+        let asm = format!("section .data\n{data}\nsection .text\n\tglobal main\n{lib}{text}");
+        Ok(asm)
     }
 }
 
