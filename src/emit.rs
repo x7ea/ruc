@@ -19,7 +19,7 @@ impl Define {
 
         let mut text = String::from("\n");
         for (_, func) in ctx.global.def.clone() {
-            text += &func.emit(ctx)?;
+            text += &func.emit(ctx);
         }
         let mut lib = String::from("\nsection .text\n\tglobal main\n");
         for symbol in ctx.global.extrn.clone() {
