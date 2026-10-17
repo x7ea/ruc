@@ -21,7 +21,7 @@ impl Define {
         let lib = map!(ctx.global.extrn.clone(), |lib| format!("\textern {lib}\n")).concat();
 
         let data = ctx.global.data.clone();
-        let asm = format!("section .data\n{data}\nsection .text\n\tglobal main\n{lib}{text}");
+        let asm = format!("section .data\n{data}\nsection .text\n\tglobal main\n{lib}\n{text}");
 
         Ok(asm.trim().to_string())
     }
