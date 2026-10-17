@@ -12,9 +12,9 @@ impl Define {
                         ..Function::default()
                     };
                     ctx.local.ret = ret.solve(ctx);
-                    let body = body.infer(ctx)?;
-                    if ctx.local.ret != body {
-                        return Err(format!("return: {ret} != {body}"));
+                    let value = body.infer(ctx)?;
+                    if ctx.local.ret != value {
+                        return Err(format!("return: {ret} != {value}"));
                     }
                     ctx.table.insert(name.clone(), ctx.local.clone());
                     ctx.local = parent;
