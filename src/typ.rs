@@ -9,9 +9,9 @@ impl Define {
                     let parent = ctx.local.clone();
                     ctx.local = Function {
                         scope: args.clone(),
+                        ret: ret.solve(ctx),
                         ..Function::default()
                     };
-                    ctx.local.ret = ret.solve(ctx);
                     let value = body.infer(ctx)?;
                     if ctx.local.ret != value {
                         return Err(format!("return: {ret} != {value}"));
