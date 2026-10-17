@@ -23,7 +23,7 @@ impl Define {
         let data = ctx.global.data.clone();
         let asm = format!("section .data\n{data}\nsection .text\n\tglobal main\n{lib}\n{text}");
 
-        Ok(asm.trim().to_string())
+        Ok(asm)
     }
 }
 
