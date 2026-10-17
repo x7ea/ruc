@@ -246,10 +246,10 @@ impl Debug for Type {
 
 impl Generic {
     fn parse(src: &str) -> Result<Generic, String> {
-        if let Some((var, args)) = surround!("<", ">", src.trim()) {
-            return Ok(Generic(Name::new(var)?, serial!(args, Type::parse)));
+        match surround!("<", ">", src.trim()) {
+            Some((var, args)) => Ok(Generic(Name::new(var)?, serial!(args, Type::parse))),
+            None => Ok(Generic(Name::new(src.trim())?, Vec::new())),
         }
-        Ok(Generic(Name::new(src.trim())?, Vec::new()))
     }
 }
 
