@@ -17,11 +17,11 @@ impl Define {
         ctx.global.def = program.iter().map(|x| (name!(x), x.clone())).collect();
 
         let _typ = map!({ &mut program }, |define| define.infer(ctx))?;
-        let text = map!(ctx.global.def.clone(), |(_, func)| func.emit(ctx)).concat();
+        let asm = map!(ctx.global.def.clone(), |(_, func)| func.emit(ctx)).concat();
         let lib = map!(&ctx.global.extrn, |lib| format!("\textern {lib}\n")).concat();
 
         Ok(format!(
-            "section .data\n{}\nsection .text\n\tglobal main\n{lib}\n{text}",
+            "section .data\n{}\nsection .text\n\tglobal main\n{lib}\n{asm}",
             ctx.global.data.clone()
         ))
     }
