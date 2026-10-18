@@ -18,7 +18,7 @@ impl Define {
 
         let _typ = map!({ &mut program }, |define| define.infer(ctx))?;
         let text = map!(ctx.global.def.clone(), |(_, func)| func.emit(ctx)).concat();
-        let lib = map!(ctx.global.extrn.clone(), |lib| format!("\textern {lib}\n")).concat();
+        let lib = map!(&ctx.global.extrn, |lib| format!("\textern {lib}\n")).concat();
 
         Ok(format!(
             "section .data\n{}\nsection .text\n\tglobal main\n{lib}\n{text}",
