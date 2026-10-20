@@ -76,6 +76,13 @@ impl Expr {
         macro_rules! emit {
             ($ast: expr) => {{ $ast.clone().emit(ctx) }};
         }
+        macro_rules! expanding_optimized_code {
+            () => {
+                if let Some(expr) = ctx.local.expand.get(self) {
+                    return emit!(expr);
+                };
+            };
+        }
         macro_rules! op {
             ($asm: literal, $lhs: expr, $rhs: expr) => {
                 match typ!(&**$rhs) {
@@ -117,9 +124,7 @@ impl Expr {
 
         match self {
             Expr::If(cond, then, els) => {
-                if let Some(expr) = ctx.local.expand.get(self) {
-                    return emit!(expr);
-                };
+                expanding_optimized_code!();
                 let [id, then] = [label!(), emit!(then)];
                 let cond = format!("{}\tcmp rax, 0\n", emit!(cond));
                 match els {
@@ -131,9 +136,7 @@ impl Expr {
                 }
             }
             Expr::While(cond, body) => {
-                if let Some(expr) = ctx.local.expand.get(self) {
-                    return emit!(expr);
-                };
+                expanding_optimized_code!();
                 let [id, end, cond, body] = [label!(), label!(), emit!(cond), emit!(body)];
                 format!(".L{id}:\n{cond}\tcmp rax, 0\n\tje .L{end}\n{body}\tjmp .L{id}\n.L{end}:\n",)
             }
@@ -170,9 +173,7 @@ impl Expr {
                 )
             }
             Expr::Variable(var @ Generic(name, _)) => {
-                if let Some(expr) = ctx.local.expand.get(self) {
-                    return emit!(expr);
-                };
+                expanding_optimized_code!();
                 let env = &ctx.local.var;
                 let mut name = name.clone();
                 if let Some(addr) = env.get_index_of(&name) {
@@ -206,9 +207,7 @@ impl Expr {
                 emit!(len)
             ),
             Expr::Check(obj) => {
-                if let Some(expr) = ctx.local.expand.get(self) {
-                    return emit!(expr);
-                };
+                expanding_optimized_code!();
                 format!("{}\tcmp rax, 0\n\tsetne al\n\tmovzx rax, al\n", emit!(obj))
             }
             Expr::Read(offset, typ, addr) => {
