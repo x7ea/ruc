@@ -292,8 +292,7 @@ impl PartialEq for Type {
 impl Generic {
     pub fn generic(&self) -> Name {
         let Generic(name, args) = self.clone();
-        args.iter()
-            .fold(name.clone(), |name, typ| name.generic(&typ))
+        args.iter().fold(name, |name, typ| name.generic(&typ))
     }
 }
 
