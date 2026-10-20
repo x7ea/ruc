@@ -26,13 +26,13 @@ fn main() {
             }
         };
     }
-    let code = {
+    let src = {
         let mut buffer = String::new();
         ok!(stdin().read_to_string(&mut buffer));
         buffer.trim().to_owned()
     };
-    let output = ok!(Define::compile(&mut ok!(Define::parse(&code))));
-    ok!(stdout().write_all(output.as_bytes()));
+    let asm = ok!(Define::compile(&mut ok!(Define::parse(&src))));
+    ok!(stdout().write_all(asm.as_bytes()));
 }
 
 // Abstract Syntax Tree (AST)
