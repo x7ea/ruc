@@ -134,12 +134,8 @@ impl Expr {
                 if let Some(expr) = ctx.local.expand.get(self) {
                     return emit!(expr);
                 };
-                let id = label!();
-                format!(
-                    ".Lwhile{id}:\n{}\tcmp rax, 0\n\tje .Ldo{id}\n{}\tjmp .Lwhile{id}\n.Ldo{id}:\n",
-                    cond.emit(ctx),
-                    body.emit(ctx),
-                )
+                let [id, cond, body] = [label!(), emit!(cond), emit!(body)];
+                format!(".L{id}:\n{}\tcmp rax, 0\n\tje .Ldo{id}\n{}\tjmp .Lwhile{id}\n.Ldo{id}:\n",)
             }
             Expr::Block(lines) => map!(&lines, |code| code.emit(ctx)).concat(),
             Expr::Return(val) => format!("{}\tleave\n\tret\n", val.emit(ctx)),
