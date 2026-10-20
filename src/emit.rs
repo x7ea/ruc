@@ -140,8 +140,8 @@ impl Expr {
                 let [top, lp, test, body] = [label!(), label!(), emit!(test), emit!(body)];
                 format!(".L{top}:\n{test}\tcmp rax, 0\n\tje .L{lp}\n{body}\tjmp .L{top}\n.L{lp}:\n",)
             }
-            Expr::Block(lines) => map!(&lines, |code| code.emit(ctx)).concat(),
-            Expr::Return(val) => format!("{}\tleave\n\tret\n", val.emit(ctx)),
+            Expr::Block(lines) => map!(&lines, |code| emit!(code)).concat(),
+            Expr::Return(val) => format!("{}\tleave\n\tret\n", emit!(val)),
             Expr::Call(func, args) => {
                 let mut push = String::new();
                 for arg in args.iter().rev() {
