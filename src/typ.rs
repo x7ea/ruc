@@ -108,9 +108,8 @@ impl Expr {
                         els,
                     )));
                 }
-                let typ = infer!(cond);
-                if Type::Boolean != typ {
-                    return Err(format!("if-else test: Bool != {typ}"));
+                if Type::Boolean != infer!(cond) {
+                    return Err(format!("if-else test: Bool != {}", infer!(cond)));
                 }
                 match (infer!(then), els) {
                     (lhs, Some(rhs)) => match (lhs, infer!(rhs)) {
@@ -252,11 +251,10 @@ impl Expr {
                 }
                 acc @ Expr::Index(arr, idx) => {
                     expand!(Expr::Write(array!(arr, idx), val.clone(), arr.clone()));
-                    let [val, typ] = [infer!(val), infer!(acc)];
-                    if typ.clone() != val {
-                        return Err(format!("array: {typ} != {val}"));
+                    match (infer!(val), infer!(acc)) {
+                        (val, typ) if val == typ => typing!(Type::Void),
+                        (val, typ) => Err(format!("array: {typ} != {val}")),
                     }
-                    typing!(Type::Void)
                 }
                 acc @ Expr::Member(obj, key) => {
                     let [typ, rhs] = [infer!(acc), infer!(val)];
