@@ -129,16 +129,16 @@ impl Expr {
                 let cond = format!("{}\tcmp rax, 0\n", emit!(cond));
                 match els {
                     Some(els) => format!(
-                        "{cond}\tje .Lelse{id}\n{then}\tjmp .Lif{id}\n.Lelse{id}:\n{}.Lif{id}:\n",
+                        "{cond}\tje .L{id}\n{then}\tjmp .Lif{id}\n.Lelse{id}:\n{}.Lif{id}:\n",
                         emit!(els)
                     ),
-                    None => format!("{cond}\tje .Lif{id}\n{then}.Lif{id}:\n"),
+                    None => format!("{cond}\tje .L{id}\n{then}.L{id}:\n"),
                 }
             }
-            Expr::While(cond, body) => {
+            Expr::While(test, body) => {
                 expanding_optimized_code!();
-                let [id, end, cond, body] = [label!(), label!(), emit!(cond), emit!(body)];
-                format!(".L{id}:\n{cond}\tcmp rax, 0\n\tje .L{end}\n{body}\tjmp .L{id}\n.L{end}:\n",)
+                let [top, lp, test, body] = [label!(), label!(), emit!(test), emit!(body)];
+                format!(".L{top}:\n{test}\tcmp rax, 0\n\tje .L{lp}\n{body}\tjmp .L{top}\n.L{lp}:\n",)
             }
             Expr::Block(lines) => map!(&lines, |code| code.emit(ctx)).concat(),
             Expr::Return(val) => format!("{}\tleave\n\tret\n", val.emit(ctx)),
