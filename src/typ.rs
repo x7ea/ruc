@@ -51,6 +51,9 @@ impl Define {
 
 impl Expr {
     fn infer(&self, ctx: &mut Context) -> Result<Type, String> {
+        macro_rules! infer {
+            ($ast: expr) => {{ $ast.clone().infer(ctx)? }};
+        }
         macro_rules! typing {
             ($ret: expr) => {{
                 let typ = $ret.solve(ctx).clone();
@@ -62,7 +65,7 @@ impl Expr {
             ($value: expr) => {{
                 let expr = $value.clone();
                 ctx.local.expand.insert(self.clone(), expr.clone());
-                expr.infer(ctx)?
+                infer!(expr)
             }};
         }
         macro_rules! expand {
