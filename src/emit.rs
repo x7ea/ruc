@@ -155,8 +155,9 @@ impl Expr {
                 let (mut idx, mut xmm) = (0, 0);
                 for arg in args.iter() {
                     if typ!(arg) == Type::Float {
-                        (xmm < 8)
-                            .then(|| mov += &format!("\tmovsd xmm{xmm}, [rsp]\n\tadd rsp, 8\n"));
+                        if xmm < 8 {
+                            mov += &format!("\tmovsd xmm{xmm}, [rsp]\n\tadd rsp, 8\n")
+                        }
                         xmm += 1;
                     } else {
                         if let Some(reg) = ABI.get(idx) {
