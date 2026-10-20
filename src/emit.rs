@@ -131,7 +131,7 @@ impl Expr {
                     None => format!("{cond}\tje .L{l1}\n{then}.L{l1}:\n"),
                     Some(case) => {
                         let (l2, case) = (label!(), emit!(case));
-                        format!("{cond}\tje .L{l2}\n{then}\tjmp .L{l1}\n.L{l2}:\n{els}.L{l1}:\n")
+                        format!("{cond}\tje .L{l2}\n{then}\tjmp .L{l1}\n.L{l2}:\n{case}.L{l1}:\n")
                     }
                 }
             }
@@ -155,9 +155,8 @@ impl Expr {
                 let (mut idx, mut xmm) = (0, 0);
                 for arg in args.iter() {
                     if typ!(arg) == Type::Float {
-                        if xmm < 8 {
-                            mov += &format!("\tmovsd xmm{xmm}, [rsp]\n\tadd rsp, 8\n");
-                        }
+                        (xmm < 8)
+                            .then(|| mov += &format!("\tmovsd xmm{xmm}, [rsp]\n\tadd rsp, 8\n"));
                         xmm += 1;
                     } else {
                         if let Some(reg) = ABI.get(idx) {
