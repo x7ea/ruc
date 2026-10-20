@@ -189,16 +189,16 @@ impl Expr {
                 ctx.local.scope = parent;
                 typing!(ret.clone())
             }
-            Expr::Return(val) => match (val.infer(ctx)?, ctx.local.ret.solve(ctx)) {
+            Expr::Return(val) => match (infer!(val), ctx.local.ret.solve(ctx)) {
                 (val, ret) if ret == val => typing!(Type::Void),
                 (val, ret) => Err(format!("return: {ret} != {val}")),
             },
             Expr::Call(func, args) => {
-                let args = map!({ args }, |x| x.infer(ctx))?;
+                let args = map!({ args }, |x| Ok(infer!(x)))?;
                 if let Some(obj) = args.first() {
                     ctx.local.class = Some(obj.clone());
                 }
-                match func.infer(ctx)? {
+                match infer!(func) {
                     Type::Function(Lambda((_, ret), Some(params))) => {
                         let (pl, al) = (params.len(), args.len());
                         for (param, arg) in params.iter().zip(args) {
