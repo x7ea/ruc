@@ -316,11 +316,11 @@ impl Expr {
                 Type::Array(_) => Expr::Read(Box::new(Expr::Integer(0)), Type::Integer, obj),
                 typ => return Err(format!("no length: {typ}")),
             })),
-            Expr::New(typ) => {
-                let Type::Class(generic) = typ.clone() else {
-                    return Err(format!("no constructor: {typ}"));
+            Expr::New(class) => {
+                let Type::Class(generic) = class.clone() else {
+                    return Err(format!("no constructor: {class}"));
                 };
-                let typ = typ.mono(ctx, generic)?;
+                let typ = class.mono(ctx, generic)?;
                 expand!(new!(Expr::Integer(typ.size(ctx) as i64 / 8)));
                 typing!(typ.solve(ctx))
             }
