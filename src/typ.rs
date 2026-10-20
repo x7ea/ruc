@@ -300,9 +300,8 @@ impl Expr {
                 typing!(expands!(Expr::Block(expr)))
             }
             Expr::Index(arr, idx) => {
-                let typ = infer!(arr);
-                let Type::Array(typ) = typ else {
-                    return Err(format!("not array: {typ}"));
+                let Type::Array(typ) = infer!(arr) else {
+                    return Err(format!("not array: {}", infer!(arr)));
                 };
                 match infer!(idx) {
                     Type::Integer => {
