@@ -240,7 +240,7 @@ impl Expr {
             }
             Expr::Let(name, val) => match &*name {
                 Expr::Variable(Generic(name, _)) => {
-                    let val = val.infer(ctx)?;
+                    let val = infer!(val);
                     if let Some(typ) = ctx.local.scope.get(name) {
                         if val != typ.solve(ctx) {
                             return Err(format!("{name}: {typ} != {val}"));
@@ -259,8 +259,8 @@ impl Expr {
                     typing!(Type::Void)
                 }
                 acc @ Expr::Member(obj, key) => {
-                    let [typ, rhs] = [acc.infer(ctx)?, val.infer(ctx)?];
-                    let Generic(name, _) = &obj.infer(ctx)?.unwrap_class();
+                    let [typ, rhs] = [infer!(acc), infer!(val)];
+                    let Generic(name, _) = &infer!(obj).unwrap_class();
                     if typ != rhs {
                         return Err(format!("{name}.{key}: {typ} != {rhs}"));
                     }
@@ -281,10 +281,10 @@ impl Expr {
                     }
                     typing!(Type::Void)
                 }
-                other => Err(format!("assign target: {}", other.infer(ctx)?)),
+                other => Err(format!("assign target: {}", infer!(other))),
             },
             Expr::Sequence(array) => {
-                let (typ, temp) = (array[0].infer(ctx)?, temp!());
+                let (typ, temp) = (infer!(array[0]), temp!());
                 let mut expr = vec![Expr::Let(
                     Box::new(temp.clone()),
                     Box::new(Expr::Init(typ, Box::new(Expr::Integer(array.len() as i64)))),
