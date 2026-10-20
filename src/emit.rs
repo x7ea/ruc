@@ -246,11 +246,10 @@ impl Expr {
                 format!("\tmov rax, {name}\n")
             }
             Expr::Div(lhs, rhs) if typ!(self) == Type::Float => op!("div", lhs, rhs),
-            Expr::Div(lhs, rhs) => format!(
-                "{}\tpush rax\n{}\tmov rsi, rax\n\tpop rax\n\tcqo\n\tidiv rsi\n",
-                lhs.emit(ctx),
-                rhs.emit(ctx),
-            ),
+            Expr::Div(lhs, rhs) => {
+                let (lhs, rhs) = (emit!(lhs), emit!(rhs));
+                format!("{lhs}\tpush rax\n{rhs}\tmov rsi, rax\n\tpop rax\n\tcqo\n\tidiv rsi\n")
+            }
             Expr::Mod(_, _) => {
                 let div = emit!(expr!(self));
                 format!("{div}\tadd rdx, rsi\n\tmov rax, rdx\n\tcqo\n\tidiv rsi\n\tmov rax, rdx\n")
