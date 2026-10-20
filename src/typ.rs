@@ -176,7 +176,7 @@ impl Expr {
             }
             Expr::Block(mut lines) => {
                 let parent = ctx.local.scope.clone();
-                let lines = map!({ lines }, |x| x.infer(ctx))?;
+                let lines = map!({ lines }, |x| Ok(infer!(x)))?;
                 let ret = lines.last().unwrap_or(&Type::Void);
                 for (name, val) in &ctx.local.scope {
                     if let Some(typ) = ctx.local.var.get(name)
@@ -386,7 +386,7 @@ impl Expr {
                     ));
                     return typing!(Type::Boolean);
                 }
-                match expr.infer(ctx)? {
+                match infer!(expr) {
                     Type::Class(_) => typing!(Type::Boolean),
                     typ => Err(format!("can't null-check: {typ}")),
                 }
@@ -410,7 +410,7 @@ impl Expr {
                 }
             }
             Expr::Clone(expr) => {
-                let (dest, typ) = (Box::new(temp!()), expr.infer(ctx)?);
+                let (dest, typ) = (Box::new(temp!()), infer!(expr));
                 let (init, size) = match typ.clone() {
                     Type::Array(typ) => (
                         Expr::Init(*typ, len!(expr)),
