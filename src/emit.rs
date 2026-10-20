@@ -73,19 +73,22 @@ impl Define {
 
 impl Expr {
     fn emit(&self, ctx: &mut Context) -> String {
+        macro_rules! emit {
+            ($ast: expr) => {{ $ast.emit(ctx) }};
+        }
         macro_rules! op {
             ($asm: literal, $lhs: expr, $rhs: expr) => {
                 match typ!(&**$rhs) {
                     Type::Integer | Type::Boolean => format!(
                         "{}\tpush rax\n{}\tmov r10, rax\n\tpop rax\n\t{} rax, r10\n",
-                        $lhs.emit(ctx),
-                        $rhs.emit(ctx),
+                        emit!($lhs),
+                        emit!($rhs),
                         $asm.replace("mul", "imul"),
                     ),
                     Type::Float => format!(
                         "{}\tsub rsp, 8\n\tmovsd [rsp], xmm0\n{}\tmovsd xmm1, xmm0\n\tmovsd xmm0, [rsp]\n\tadd rsp, 8\n\t{}sd xmm0, xmm1\n",
-                         $lhs.emit(ctx),
-                         $rhs.emit(ctx),
+                         emit!($lhs),
+                         emit!($rhs),
                          $asm
                     ),
                     _ => expr!(self).emit(ctx),
@@ -216,8 +219,7 @@ impl Expr {
                 )
             }
             Expr::Read(offset, typ, addr) => {
-                let id = label!();
-                let [addr, offset] = [addr.emit(ctx), offset.emit(ctx)];
+                let [id, addr, offset] = [label!(), addr.emit(ctx), offset.emit(ctx)];
                 format!(
                     "{addr}\tpxor xmm0, xmm0\n\tcmp rax, 0\n\tje .Lnull{id}\n\tpush rax\n{offset}\tpop r10\n\tlea rax, [r10+rax*8]\n{}.Lnull{id}:\n",
                     match typ {
@@ -227,8 +229,8 @@ impl Expr {
                 )
             }
             Expr::Write(offset, val, addr) => {
-                let id = label!();
-                let [addr, offset, val] = [addr.emit(ctx), offset.emit(ctx), val.emit(ctx)];
+                let [id, addr, offset, val] =
+                    [label!(), addr.emit(ctx), offset.emit(ctx), val.emit(ctx)];
                 format!(
                     "{addr}\tpxor xmm0, xmm0\n\tcmp rax, 0\n\tje .Lnull{id}\n\tpush rax\n{offset}\tpop r10\n\tlea r10, [r10+rax*8]\n\tpush r10\n{val}\tpop r10\n{}.Lnull{id}:\n",
                     match typ!(self) {
