@@ -145,7 +145,7 @@ impl Expr {
             Expr::Call(func, args) => {
                 let mut push = String::new();
                 for arg in args.iter().rev() {
-                    push += &arg.emit(ctx);
+                    push += &emit!(arg);
                     push += match typ!(arg) {
                         Type::Float => "\tsub rsp, 8\n\tmovsd [rsp], xmm0\n",
                         _ => "\tpush rax\n",
