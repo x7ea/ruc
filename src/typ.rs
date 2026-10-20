@@ -159,7 +159,7 @@ impl Expr {
                 }
             }
             Expr::For(cnt, arr, body) => {
-                let (typ, temp) = (arr.infer(ctx)?, Box::new(temp!()));
+                let (typ, temp) = (infer!(arr), Box::new(temp!()));
                 let Type::Array(_) = typ else {
                     return Err(format!("not iterable: {typ}"));
                 };
@@ -252,7 +252,7 @@ impl Expr {
                 }
                 acc @ Expr::Index(arr, idx) => {
                     expand!(Expr::Write(array!(arr, idx), val.clone(), arr.clone()));
-                    let [val, typ] = [val.infer(ctx)?, acc.infer(ctx)?];
+                    let [val, typ] = [infer!(val), infer!(acc)];
                     if typ.clone() != val {
                         return Err(format!("array: {typ} != {val}"));
                     }
