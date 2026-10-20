@@ -314,7 +314,7 @@ impl Expr {
                     typ => Err(format!("not index: {typ}")),
                 }
             }
-            Expr::Len(obj) => typing!(expands!(match obj.infer(ctx)? {
+            Expr::Len(obj) => typing!(expands!(match infer!(obj) {
                 Type::String => Expr::Call(Box::new(var!("strlen")), vec![*obj.clone()]),
                 Type::Array(_) => Expr::Read(Box::new(Expr::Integer(0)), Type::Integer, obj),
                 typ => return Err(format!("no length: {typ}")),
@@ -339,7 +339,7 @@ impl Expr {
                 ])))
             }
             Expr::Member(obj, key) => {
-                let typ = obj.infer(ctx)?;
+                let typ = infer!(obj);
                 let Type::Class(name) = &typ else {
                     return match key.to_string().as_str() {
                         "len" => typing!(expands!(Expr::Len(obj))),
@@ -348,7 +348,7 @@ impl Expr {
                 };
                 let unify = &name.generic();
                 if !ctx.global.table.contains_key(unify) {
-                    Expr::New(typ.clone()).infer(ctx)?;
+                    infer!(Expr::New(typ.clone()));
                 }
                 let (_, class) = ctx.global.table[unify].clone();
                 let (Object::Struct(layout) | Object::Enum(layout)) = &class;
@@ -373,7 +373,7 @@ impl Expr {
             }
             Expr::Check(expr) => {
                 if let Expr::Member(obj, key) = &*expr
-                    && let Type::Class(Generic(name, _)) = &obj.infer(ctx)?
+                    && let Type::Class(Generic(name, _)) = &infer!(obj)
                     && let Some((_, Object::Enum(layout))) = ctx.global.table.get(name)
                 {
                     let Some(tag) = layout.get_index_of(key) else {
