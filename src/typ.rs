@@ -574,11 +574,8 @@ impl Type {
     }
 
     fn solve(&self, ctx: &Context) -> Type {
-        let mut typ = self.clone();
-        for (old, new) in &ctx.global.alias {
-            typ = typ.rewrite(old, new);
-        }
-        typ
+        let alias = ctx.global.alias.iter();
+        alias.fold(self.clone(), |typ, (old, new)| typ.rewrite(old, new))
     }
 
     fn size(&self, ctx: &Context) -> usize {
