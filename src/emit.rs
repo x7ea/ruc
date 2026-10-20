@@ -120,12 +120,12 @@ impl Expr {
                 if let Some(expr) = ctx.local.expand.get(self) {
                     return expr.clone().emit(ctx);
                 };
-                let [id, then] = [label!(), then.emit(ctx)];
+                let [id, then] = [label!(), emit!(then)];
                 let cond = format!("{}\tcmp rax, 0\n", cond.emit(ctx));
                 if let Some(case) = els {
                     return format!(
                         "{cond}\tje .Lelse{id}\n{then}\tjmp .Lif{id}\n.Lelse{id}:\n{}.Lif{id}:\n",
-                        case.emit(ctx),
+                        emit!(case),
                     );
                 }
                 format!("{cond}\tje .Lif{id}\n{then}.Lif{id}:\n")
@@ -213,13 +213,10 @@ impl Expr {
                 if let Some(expr) = ctx.local.expand.get(self) {
                     return expr.clone().emit(ctx);
                 };
-                format!(
-                    "{}\tcmp rax, 0\n\tsetne al\n\tmovzx rax, al\n",
-                    obj.emit(ctx)
-                )
+                format!("{}\tcmp rax, 0\n\tsetne al\n\tmovzx rax, al\n", emit!(obj))
             }
             Expr::Read(offset, typ, addr) => {
-                let [id, addr, offset] = [label!(), addr.emit(ctx), offset.emit(ctx)];
+                let [id, addr, offset] = [label!(), emit!(addr), emit!(offset)];
                 format!(
                     "{addr}\tpxor xmm0, xmm0\n\tcmp rax, 0\n\tje .Lnull{id}\n\tpush rax\n{offset}\tpop r10\n\tlea rax, [r10+rax*8]\n{}.Lnull{id}:\n",
                     match typ {
@@ -229,8 +226,7 @@ impl Expr {
                 )
             }
             Expr::Write(offset, val, addr) => {
-                let [id, addr, offset, val] =
-                    [label!(), addr.emit(ctx), offset.emit(ctx), val.emit(ctx)];
+                let [id, addr, offset, val] = [label!(), emit!(addr), emit!(offset), emit!(val)];
                 format!(
                     "{addr}\tpxor xmm0, xmm0\n\tcmp rax, 0\n\tje .Lnull{id}\n\tpush rax\n{offset}\tpop r10\n\tlea r10, [r10+rax*8]\n\tpush r10\n{val}\tpop r10\n{}.Lnull{id}:\n",
                     match typ!(self) {
