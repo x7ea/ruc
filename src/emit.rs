@@ -188,9 +188,9 @@ impl Expr {
             }
             Expr::Let(name, val) => match &**name {
                 Expr::Variable(Generic(name, _)) => {
-                    let env = &ctx.local.var;
-                    let (typ, idx) = (env[name].clone(), env.get_index_of(name).unwrap());
-                    let (val, addr) = (val.emit(ctx), (idx + 1) * 8);
+                    let env = ctx.local.var.clone();
+                    let (typ, idx) = (&env[name], env.get_index_of(name).unwrap());
+                    let (val, addr) = (emit!(val), (idx + 1) * 8);
                     match typ {
                         Type::Float => format!("{val}\tmovsd [rbp-{addr}], xmm0\n"),
                         _ => format!("{val}\tmov [rbp-{addr}], rax\n"),
@@ -207,9 +207,9 @@ impl Expr {
                 format!("{}\tcmp rax, 0\n\tsetne al\n\tmovzx rax, al\n", emit!(obj))
             }
             Expr::Read(offset, typ, addr) => {
-                let [id, addr, offset] = [label!(), emit!(addr), emit!(offset)];
+                let [l1, addr, offset] = [label!(), emit!(addr), emit!(offset)];
                 format!(
-                    "{addr}\tpxor xmm0, xmm0\n\tcmp rax, 0\n\tje .Lnull{id}\n\tpush rax\n{offset}\tpop r10\n\tlea rax, [r10+rax*8]\n{}.Lnull{id}:\n",
+                    "{addr}\tpxor xmm0, xmm0\n\tcmp rax, 0\n\tje .L{l1}\n\tpush rax\n{offset}\tpop r10\n\tlea rax, [r10+rax*8]\n{}.L{l1}:\n",
                     match typ {
                         Type::Float => "\tmovsd xmm0, [rax]\n",
                         _ => "\tmov rax, [rax]\n",
@@ -219,7 +219,7 @@ impl Expr {
             Expr::Write(offset, val, addr) => {
                 let [id, addr, offset, val] = [label!(), emit!(addr), emit!(offset), emit!(val)];
                 format!(
-                    "{addr}\tpxor xmm0, xmm0\n\tcmp rax, 0\n\tje .Lnull{id}\n\tpush rax\n{offset}\tpop r10\n\tlea r10, [r10+rax*8]\n\tpush r10\n{val}\tpop r10\n{}.Lnull{id}:\n",
+                    "{addr}\tpxor xmm0, xmm0\n\tcmp rax, 0\n\tje .L{id}\n\tpush rax\n{offset}\tpop r10\n\tlea r10, [r10+rax*8]\n\tpush r10\n{val}\tpop r10\n{}.L{id}:\n",
                     match typ!(self) {
                         Type::Float => "\tmovsd [r10], xmm0\n",
                         _ => "\tmov [r10], rax\n",
