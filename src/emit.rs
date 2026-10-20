@@ -98,7 +98,7 @@ impl Expr {
                          emit!($rhs),
                          $asm
                     ),
-                    _ => expr!(self).emit(ctx),
+                    _ => emit!(expr!(self)),
                 }
             };
         }
