@@ -196,7 +196,7 @@ impl Expr {
                         _ => format!("{val}\tmov [rbp-{addr}], rax\n"),
                     }
                 }
-                _ => expr!(self).emit(ctx),
+                _ => emit!(expr!(self)),
             },
             Expr::Init(_, len) => {
                 let (len, new) = (emit!(len), emit!(expr!(self)));
