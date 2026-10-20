@@ -153,8 +153,8 @@ impl Expr {
                         Box::new(Expr::Block(vec![Expr::Let(bind, check), *body])),
                     )));
                 }
-                match cond.infer(ctx)? {
-                    Type::Boolean => typing!(body.infer(ctx)?),
+                match infer!(cond) {
+                    Type::Boolean => typing!(infer!(body)),
                     cond => Err(format!("while-do test: Bool != {cond}")),
                 }
             }
