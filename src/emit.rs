@@ -125,14 +125,14 @@ impl Expr {
         match self {
             Expr::If(cond, then, els) => {
                 expanding_optimized_code!();
-                let [id, then] = [label!(), emit!(then)];
+                let [l1, then] = [label!(), emit!(then)];
                 let cond = format!("{}\tcmp rax, 0\n", emit!(cond));
                 match els {
-                    Some(els) => format!(
-                        "{cond}\tje .L{id}\n{then}\tjmp .Lif{id}\n.Lelse{id}:\n{}.Lif{id}:\n",
-                        emit!(els)
-                    ),
-                    None => format!("{cond}\tje .L{id}\n{then}.L{id}:\n"),
+                    None => format!("{cond}\tje .L{l1}\n{then}.L{l1}:\n"),
+                    Some(case) => {
+                        let (l2, case) = (label!(), emit!(case));
+                        format!("{cond}\tje .L{l2}\n{then}\tjmp .L{l1}\n.L{l2}:\n{els}.L{l1}:\n")
+                    }
                 }
             }
             Expr::While(test, body) => {
