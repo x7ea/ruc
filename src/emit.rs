@@ -121,14 +121,14 @@ impl Expr {
                     return emit!(expr);
                 };
                 let [id, then] = [label!(), emit!(then)];
-                let cond = format!("{}\tcmp rax, 0\n", cond.emit(ctx));
-                if let Some(case) = els {
-                    return format!(
+                let cond = format!("{}\tcmp rax, 0\n", emit!(cond));
+                match els {
+                    Some(els) => format!(
                         "{cond}\tje .Lelse{id}\n{then}\tjmp .Lif{id}\n.Lelse{id}:\n{}.Lif{id}:\n",
-                        emit!(case),
-                    );
+                        emit!(els)
+                    ),
+                    None => format!("{cond}\tje .Lif{id}\n{then}.Lif{id}:\n"),
                 }
-                format!("{cond}\tje .Lif{id}\n{then}.Lif{id}:\n")
             }
             Expr::While(cond, body) => {
                 if let Some(expr) = ctx.local.expand.get(self) {
