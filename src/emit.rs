@@ -230,7 +230,7 @@ impl Expr {
             Expr::Integer(val) => format!("\tmov rax, {val}\n"),
             Expr::Float(Float(0.0)) => String::from("\tpxor xmm0, xmm0\n"),
             Expr::Float(val) => {
-                let name = format!("f{}", label!());
+                let name = format!("F{}", label!());
                 ctx.global.data += &format!("\t{name} dq {val:?}\n");
                 format!("\tmovsd xmm0, [{name}]\n")
             }
@@ -241,7 +241,7 @@ impl Expr {
                     .replace("\\r", "\", 13, \"")
                     .replace("\\\"", "\", 34, \"")
                     .replace("\"\", ", "");
-                let name = format!("s{}", label!());
+                let name = format!("S{}", label!());
                 ctx.global.data += &format!("\t{name} db {val}\n");
                 format!("\tmov rax, {name}\n")
             }
