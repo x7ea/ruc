@@ -253,12 +253,9 @@ impl Expr {
             ),
             Expr::Mod(_, _) => format!(
                 "{}\tadd rdx, rsi\n\tmov rax, rdx\n\tcqo\n\tidiv rsi\n\tmov rax, rdx\n",
-                expr!(self).emit(ctx)
+                emit!(expr!(self))
             ),
-            Expr::Not(term) => format!(
-                "{}\tcmp rax, 0\n\tsete al\n\tmovzx rax, al\n",
-                term.emit(ctx)
-            ),
+            Expr::Not(term) => format!("{}\tcmp rax, 0\n\tsete al\n\tmovzx rax, al\n", emit!(term)),
             Expr::Add(lhs, rhs) => op!("add", lhs, rhs),
             Expr::Sub(lhs, rhs) => op!("sub", lhs, rhs),
             Expr::Mul(lhs, rhs) => op!("mul", lhs, rhs),
