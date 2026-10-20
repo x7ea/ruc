@@ -108,12 +108,12 @@ impl Expr {
                         els,
                     )));
                 }
-                let typ = cond.infer(ctx)?;
+                let typ = infer!(cond);
                 if Type::Boolean != typ {
                     return Err(format!("if-else test: Bool != {typ}"));
                 }
-                match (then.infer(ctx)?, els) {
-                    (lhs, Some(rhs)) => match (lhs, rhs.infer(ctx)?) {
+                match (infer!(then), els) {
+                    (lhs, Some(rhs)) => match (lhs, infer!(rhs)) {
                         (lhs, rhs) if lhs == rhs => typing!(lhs),
                         (lhs, rhs) => Err(format!("if-else term: {lhs} != {rhs}")),
                     },
@@ -121,7 +121,7 @@ impl Expr {
                 }
             }
             Expr::Match(val, pats) => {
-                let typ = val.infer(ctx)?.solve(ctx);
+                let typ = infer!(val).solve(ctx);
                 if let Type::Class(Generic(name, _)) = &typ
                     && let (_, Object::Enum(mut layout)) = ctx.global.table[name].clone()
                 {
