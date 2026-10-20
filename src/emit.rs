@@ -167,7 +167,7 @@ impl Expr {
                     }
                 }
                 let (func, len) = (emit!(func), emit!(Expr::Integer(xmm)));
-                format!("{push}{mov}{len}\tmov r10, rax\n{func}\tcall r10\n")
+                format!("{push}{mov}{func}\tmov r10, rax\n{len}\tcall r10\n")
             }
             Expr::Variable(var @ Generic(name, _)) => {
                 expanding_optimized_code!();
