@@ -251,10 +251,10 @@ impl Expr {
                 lhs.emit(ctx),
                 rhs.emit(ctx),
             ),
-            Expr::Mod(_, _) => format!(
-                "{}\tadd rdx, rsi\n\tmov rax, rdx\n\tcqo\n\tidiv rsi\n\tmov rax, rdx\n",
-                emit!(expr!(self))
-            ),
+            Expr::Mod(_, _) => {
+                let div = emit!(expr!(self));
+                format!("{div}\tadd rdx, rsi\n\tmov rax, rdx\n\tcqo\n\tidiv rsi\n\tmov rax, rdx\n")
+            }
             Expr::Not(term) => format!("{}\tcmp rax, 0\n\tsete al\n\tmovzx rax, al\n", emit!(term)),
             Expr::Add(lhs, rhs) => op!("add", lhs, rhs),
             Expr::Sub(lhs, rhs) => op!("sub", lhs, rhs),
