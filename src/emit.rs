@@ -198,11 +198,10 @@ impl Expr {
                 }
                 _ => expr!(self).emit(ctx),
             },
-            Expr::Init(_, len) => format!(
-                "{}\tpush rax\n{}\tmov r10, rax\n\tpop rax\n\tmov qword [rax], r10\n",
-                emit!(expr!(self)),
-                emit!(len)
-            ),
+            Expr::Init(_, len) => {
+                let (len, new) = (emit!(len), emit!(expr!(self)));
+                format!("{new}\tpush rax\n{len}\tmov r10, rax\n\tpop rax\n\tmov qword [rax], r10\n")
+            }
             Expr::Check(obj) => {
                 expanding_optimized_code!();
                 format!("{}\tcmp rax, 0\n\tsetne al\n\tmovzx rax, al\n", emit!(obj))
