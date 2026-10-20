@@ -302,11 +302,11 @@ impl Expr {
                 typing!(expands!(Expr::Block(expr)))
             }
             Expr::Index(arr, idx) => {
-                let typ = arr.infer(ctx)?;
+                let typ = infer!(arr);
                 let Type::Array(typ) = typ else {
                     return Err(format!("not array: {typ}"));
                 };
-                match idx.infer(ctx)? {
+                match infer!(idx) {
                     Type::Integer => {
                         expand!(Expr::Read(array!(arr, idx), *typ.clone(), arr.clone()));
                         typing!(*typ.clone())
