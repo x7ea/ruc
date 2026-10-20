@@ -74,7 +74,7 @@ impl Define {
 impl Expr {
     fn emit(&self, ctx: &mut Context) -> String {
         macro_rules! emit {
-            ($ast: expr) => {{ $ast.emit(ctx) }};
+            ($ast: expr) => {{ $ast.clone().emit(ctx) }};
         }
         macro_rules! op {
             ($asm: literal, $lhs: expr, $rhs: expr) => {
@@ -118,7 +118,7 @@ impl Expr {
         match self {
             Expr::If(cond, then, els) => {
                 if let Some(expr) = ctx.local.expand.get(self) {
-                    return expr.clone().emit(ctx);
+                    return emit!(expr);
                 };
                 let [id, then] = [label!(), emit!(then)];
                 let cond = format!("{}\tcmp rax, 0\n", cond.emit(ctx));
@@ -132,7 +132,7 @@ impl Expr {
             }
             Expr::While(cond, body) => {
                 if let Some(expr) = ctx.local.expand.get(self) {
-                    return expr.clone().emit(ctx);
+                    return emit!(expr);
                 };
                 let id = label!();
                 format!(
@@ -175,7 +175,7 @@ impl Expr {
             }
             Expr::Variable(var @ Generic(name, _)) => {
                 if let Some(expr) = ctx.local.expand.get(self) {
-                    return expr.clone().emit(ctx);
+                    return emit!(expr);
                 };
                 let env = &ctx.local.var;
                 let mut name = name.clone();
@@ -206,12 +206,12 @@ impl Expr {
             },
             Expr::Init(_, len) => format!(
                 "{}\tpush rax\n{}\tmov r10, rax\n\tpop rax\n\tmov qword [rax], r10\n",
-                expr!(self).emit(ctx),
-                len.emit(ctx)
+                emit!(expr!(self)),
+                emit!(len)
             ),
             Expr::Check(obj) => {
                 if let Some(expr) = ctx.local.expand.get(self) {
-                    return expr.clone().emit(ctx);
+                    return emit!(expr);
                 };
                 format!("{}\tcmp rax, 0\n\tsetne al\n\tmovzx rax, al\n", emit!(obj))
             }
