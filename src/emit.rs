@@ -267,7 +267,7 @@ impl Expr {
             Expr::And(lhs, rhs) => op!("and", lhs, rhs),
             Expr::Or(lhs, rhs) => op!("or", lhs, rhs),
             Expr::Xor(lhs, rhs) => op!("xor", lhs, rhs),
-            _ => expr!(self).emit(ctx),
+            _ => emit!(expr!(self)),
         }
     }
 }
