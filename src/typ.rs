@@ -541,7 +541,7 @@ impl Type {
         if self == old {
             return new.clone();
         }
-        match self {
+        match self.clone() {
             Type::Function(Lambda((typ, ret), args)) => Type::Function(Lambda(
                 (typ.clone(), Box::new(ret.rewrite(old, new))),
                 args.and_then(|args| Some(map!(args, |x| x.rewrite(old, new)))),
