@@ -419,12 +419,10 @@ impl Expr {
                     Type::Class(_) => (Expr::New(typ.clone()), Expr::Integer(typ.size(ctx) as i64)),
                     typ => return Err(format!("can't clone: {typ}")),
                 };
+                let arg = vec![*dest.clone(), *expr, size];
                 typing!(expands!(Expr::Block(vec![
                     Expr::Let(dest.clone(), Box::new(init)),
-                    Expr::Call(
-                        Box::new(var!("memcpy", typ.clone())),
-                        vec![*dest.clone(), *expr, size]
-                    ),
+                    Expr::Call(Box::new(var!("memcpy", typ.clone())), arg),
                     *dest.clone()
                 ])))
             }
