@@ -456,9 +456,9 @@ impl Expr {
             | Expr::Lt(lhs, rhs)
             | Expr::Ge(lhs, rhs)
             | Expr::Le(lhs, rhs) => op!(Type::Integer, lhs, rhs, Type::Boolean),
-            Expr::Not(term) => {
-                let typ = Box::new(Expr::Null(Type::Boolean));
-                op!(Type::Boolean, typ, term)
+            Expr::Not(rhs) => {
+                let lhs = Box::new(Expr::Null(Type::Boolean));
+                op!(Type::Boolean, lhs, rhs)
             }
             Expr::And(lhs, rhs) | Expr::Or(lhs, rhs) | Expr::Xor(lhs, rhs) => {
                 op!(Type::Boolean, lhs, rhs)
