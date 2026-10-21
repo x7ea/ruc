@@ -245,6 +245,9 @@ impl Expr {
                 ctx.global.data += &format!("\t{name} db {val}\n");
                 format!("\tmov rax, {name}\n")
             }
+            Expr::Add(lhs, rhs) => op!("add", lhs, rhs),
+            Expr::Sub(lhs, rhs) => op!("sub", lhs, rhs),
+            Expr::Mul(lhs, rhs) => op!("mul", lhs, rhs),
             Expr::Div(lhs, rhs) if typ!(self) == Type::Float => op!("div", lhs, rhs),
             Expr::Div(lhs, rhs) => {
                 let (lhs, rhs) = (emit!(lhs), emit!(rhs));
@@ -254,10 +257,6 @@ impl Expr {
                 let div = emit!(expr!(self));
                 format!("{div}\tadd rdx, rsi\n\tmov rax, rdx\n\tcqo\n\tidiv rsi\n\tmov rax, rdx\n")
             }
-            Expr::Not(term) => format!("{}\tcmp rax, 0\n\tsete al\n\tmovzx rax, al\n", emit!(term)),
-            Expr::Add(lhs, rhs) => op!("add", lhs, rhs),
-            Expr::Sub(lhs, rhs) => op!("sub", lhs, rhs),
-            Expr::Mul(lhs, rhs) => op!("mul", lhs, rhs),
             Expr::Eq(lhs, rhs) => cmp!("e", lhs, rhs),
             Expr::Ne(lhs, rhs) => cmp!("ne", lhs, rhs),
             Expr::Gt(lhs, rhs) => cmp!("g", lhs, rhs),
@@ -267,6 +266,7 @@ impl Expr {
             Expr::And(lhs, rhs) => op!("and", lhs, rhs),
             Expr::Or(lhs, rhs) => op!("or", lhs, rhs),
             Expr::Xor(lhs, rhs) => op!("xor", lhs, rhs),
+            Expr::Not(term) => format!("{}\tcmp rax, 0\n\tsete al\n\tmovzx rax, al\n", emit!(term)),
             _ => emit!(expr!(self)),
         }
     }
