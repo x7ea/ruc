@@ -40,10 +40,11 @@ impl Define {
         match self {
             Define::Function((Generic(_, params), args), (_, ret))
             | Define::Declare((Generic(_, params), args), ret) => Type::Function(Lambda(
-                (params.clone(), Box::new(ret.clone())),
+                params.clone(),
+                Box::new(ret.clone()),
                 Some(args.values().cloned().collect()),
             )),
-            Define::Symbol(_, ret) => Type::Function(Lambda((vec![], Box::new(ret.clone())), None)),
+            Define::Symbol(_, ret) => Type::Function(Lambda(vec![], Box::new(ret.clone()), None)),
             _ => Type::Void,
         }
     }
@@ -198,7 +199,7 @@ impl Expr {
                     ctx.local.class = Some(obj.clone());
                 }
                 match infer!(func) {
-                    Type::Function(Lambda((_, ret), Some(params))) => {
+                    Type::Function(Lambda(_, ret, Some(params))) => {
                         let (pl, al) = (params.len(), args.len());
                         for (param, arg) in params.iter().zip(args) {
                             if param.solve(ctx) != arg {
@@ -210,7 +211,7 @@ impl Expr {
                         }
                         typing!(*ret)
                     }
-                    Type::Function(Lambda((_, ret), None)) => typing!(*ret),
+                    Type::Function(Lambda(_, ret, None)) => typing!(*ret),
                     typ => Err(format!("not callable: {typ}")),
                 }
             }
