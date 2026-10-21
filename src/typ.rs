@@ -496,7 +496,7 @@ impl Type {
                 }
                 let mut unify = ctx.global.def[&name].clone();
                 if let Define::Function((_, params), _) | Define::Declare((_, params), _) = &unify
-                    && let Type::Function(Lambda((_, ret), Some(args))) = typ.clone()
+                    && let Type::Function(Lambda(_, ret, Some(args))) = typ.clone()
                 {
                     let head = (
                         Generic(mangle.clone(), Vec::new()),
