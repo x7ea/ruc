@@ -543,11 +543,11 @@ impl Type {
         }
         match self.clone() {
             Type::Function(Lambda((typ, ret), args)) => Type::Function(Lambda(
-                (typ.clone(), Box::new(ret.rewrite(old, new))),
+                (typ, Box::new(ret.rewrite(old, new))),
                 args.and_then(|args| Some(map!(args, |x| x.rewrite(old, new)))),
             )),
             Type::Class(Generic(name, args)) => {
-                Type::Class(Generic(name.clone(), map!(args, |x| x.rewrite(old, new))))
+                Type::Class(Generic(name, map!(args, |x| x.rewrite(old, new))))
             }
             Type::Array(typ) => Type::Array(Box::new(typ.rewrite(old, new))),
             _ => self.clone(),
