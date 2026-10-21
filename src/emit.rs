@@ -253,10 +253,10 @@ impl Expr {
                 let (lhs, rhs) = (emit!(lhs), emit!(rhs));
                 format!("{lhs}\tpush rax\n{rhs}\tmov rsi, rax\n\tpop rax\n\tcqo\n\tidiv rsi\n")
             }
-            Expr::Mod(_, _) => {
-                let div = emit!(expr!(self));
-                format!("{div}\tadd rdx, rsi\n\tmov rax, rdx\n\tcqo\n\tidiv rsi\n\tmov rax, rdx\n")
-            }
+            Expr::Mod(_, _) => format!(
+                "{}\tadd rdx, rsi\n\tmov rax, rdx\n\tcqo\n\tidiv rsi\n\tmov rax, rdx\n",
+                emit!(expr!(self))
+            ),
             Expr::Eq(lhs, rhs) => cmp!("e", lhs, rhs),
             Expr::Ne(lhs, rhs) => cmp!("ne", lhs, rhs),
             Expr::Gt(lhs, rhs) => cmp!("g", lhs, rhs),
