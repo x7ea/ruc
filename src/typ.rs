@@ -428,10 +428,6 @@ impl Expr {
                     *dest.clone()
                 ])))
             }
-            Expr::Mod(lhs, rhs) => {
-                expand!(Expr::Div(lhs.clone(), rhs.clone()));
-                op!(Type::Integer, lhs, rhs)
-            }
             Expr::Null(typ) => {
                 expand!(Expr::Block(vec![
                     Expr::Float(Float::from(0.0)),
@@ -450,17 +446,21 @@ impl Expr {
             | Expr::Sub(lhs, rhs)
             | Expr::Mul(lhs, rhs)
             | Expr::Div(lhs, rhs) => op!(Type::Integer | Type::Float, lhs, rhs),
+            Expr::Mod(lhs, rhs) => {
+                expand!(Expr::Div(lhs.clone(), rhs.clone()));
+                op!(Type::Integer, lhs, rhs)
+            }
             Expr::Eq(lhs, rhs)
             | Expr::Ne(lhs, rhs)
             | Expr::Gt(lhs, rhs)
             | Expr::Lt(lhs, rhs)
             | Expr::Ge(lhs, rhs)
             | Expr::Le(lhs, rhs) => op!(Type::Integer, lhs, rhs, Type::Boolean),
-            Expr::Not(rhs) => {
-                let lhs = Box::new(Expr::Null(Type::Boolean));
+            Expr::And(lhs, rhs) | Expr::Or(lhs, rhs) | Expr::Xor(lhs, rhs) => {
                 op!(Type::Boolean, lhs, rhs)
             }
-            Expr::And(lhs, rhs) | Expr::Or(lhs, rhs) | Expr::Xor(lhs, rhs) => {
+            Expr::Not(rhs) => {
+                let lhs = Box::new(Expr::Null(Type::Boolean));
                 op!(Type::Boolean, lhs, rhs)
             }
         }
