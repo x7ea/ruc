@@ -238,7 +238,7 @@ impl Debug for Type {
             Type::Class(Generic(name, args)) if args.is_empty() => write!(f, "{name}"),
             Type::Class(Generic(name, args)) => write!(f, "{name}{}", mangle(args)),
             Type::Function(Lambda((_, ret), Some(args))) => write!(f, "Fn_{ret:?}{}", mangle(args)),
-            Type::Function(Lambda((_, r), None)) => write!(f, "Fn_{r:?}"),
+            Type::Function(Lambda((_, ret), None)) => write!(f, "Fn_{ret:?}"),
             typ => write!(f, "{typ}"),
         }
     }
