@@ -232,7 +232,7 @@ impl Display for Type {
 
 impl Debug for Type {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let mangle = |x: &[Type]| map!(x, |x: &Type| format!("{x:?}")).join("_");
+        let mangle = |x: &[Type]| map!(x, |x: &Type| format!("_{x:?}")).concat();
         match self {
             Type::Array(typ) => write!(f, "Array_{typ:?}"),
             Type::Class(Generic(name, args)) if args.is_empty() => write!(f, "{name}"),
