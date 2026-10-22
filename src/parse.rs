@@ -199,14 +199,14 @@ impl Type {
             "Bool" => Ok(Type::Boolean),
             "Float" => Ok(Type::Float),
             "Void" | "()" => Ok(Type::Void),
-            x => {
-                if let Ok((ret, args)) = surround!(x, "(", ")") {
+            src => {
+                if let Ok((ret, args)) = surround!(src, "(", ")") {
                     let (ret, args) = (Box::new(Type::parse(&ret)?), serial!(&args, Type::parse));
                     Ok(Type::Function(Lambda((Vec::new(), ret), Some(args))))
-                } else if let Some(typ) = surround!("[", x, "]") {
+                } else if let Some(typ) = surround!("[", src, "]") {
                     Ok(Type::Array(Box::new(Type::parse(typ)?)))
                 } else {
-                    Ok(Type::Class(Generic::parse(x)?))
+                    Ok(Type::Class(Generic::parse(src)?))
                 }
             }
         }
