@@ -236,9 +236,9 @@ impl Debug for Type {
         match self {
             Type::Array(typ) => write!(f, "Array_{typ:?}"),
             Type::Class(Generic(name, args)) if args.is_empty() => write!(f, "{name}"),
-            Type::Class(Generic(name, args)) => write!(f, "{name}_{}", mangle(args)),
-            Type::Function(Lambda((_, r), Some(a))) => write!(f, "Lambda_{r:?}_{}", mangle(a)),
-            Type::Function(Lambda((_, r), None)) => write!(f, "Lambda_{r:?}"),
+            Type::Class(Generic(name, args)) => write!(f, "{name}{}", mangle(args)),
+            Type::Function(Lambda((_, ret), Some(args))) => write!(f, "Fn_{ret:?}{}", mangle(args)),
+            Type::Function(Lambda((_, r), None)) => write!(f, "Fn_{r:?}"),
             typ => write!(f, "{typ}"),
         }
     }
