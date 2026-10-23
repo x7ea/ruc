@@ -322,7 +322,7 @@ macro_rules! map {
 
 #[macro_export]
 macro_rules! var {
-    ($name: expr) => {{ Expr::Variable(Generic(Name($name.to_string()), Vec::new())) }};
+    ($name: expr) => {{ Expr::Variable(Generic(Name($name.to_string()), vec![])) }};
     ($name: expr, $arg: expr) => {{ Expr::Variable(Generic(Name($name.to_string()), vec![$arg])) }};
 }
 
