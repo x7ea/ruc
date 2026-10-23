@@ -4,7 +4,7 @@ pub const SPACE: &str = " ";
 
 impl Define {
     pub fn parse(src: &str) -> Result<Vec<Define>, String> {
-        let (src, mut result) = (src.trim().replace("'\n", SPACE), Vec::new());
+        let (src, mut result) = (src.trim().replace("'\n", SPACE), vec![]);
         for line in lexer(&src, "\n")? {
             macro_rules! args {
                 ($args: expr) => {{
@@ -119,7 +119,7 @@ impl Expr {
         } else if src == "return" {
             Ok(Expr::Return(Box::new(Expr::Null(Type::Void))))
         } else if let Some(x) = surround!("{", src, "}") {
-            let mut block = Vec::new();
+            let mut block = vec![];
             for line in lexer(x, "\n")? {
                 let (line, _) = split!(&line, ";").unwrap_or((line, String::new()));
                 if !line.trim().is_empty() {
@@ -202,7 +202,7 @@ impl Type {
             src => {
                 if let Ok((ret, args)) = surround!(src, "(", ")") {
                     let (ret, args) = (Box::new(Type::parse(&ret)?), serial!(&args, Type::parse));
-                    Ok(Type::Function(Lambda((Vec::new(), ret), Some(args))))
+                    Ok(Type::Function(Lambda((vec![], ret), Some(args))))
                 } else if let Some(typ) = surround!("[", src, "]") {
                     Ok(Type::Array(Box::new(Type::parse(typ)?)))
                 } else {
@@ -248,7 +248,7 @@ impl Generic {
     fn parse(src: &str) -> Result<Generic, String> {
         match surround!("<", ">", src.trim()) {
             Some((var, args)) => Ok(Generic(Name::new(var)?, serial!(args, Type::parse))),
-            None => Ok(Generic(Name::new(src.trim())?, Vec::new())),
+            None => Ok(Generic(Name::new(src.trim())?, vec![])),
         }
     }
 }
