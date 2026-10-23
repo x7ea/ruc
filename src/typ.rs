@@ -199,16 +199,15 @@ impl Expr {
                 }
                 match infer!(func) {
                     Type::Function(Lambda((_, ret), Some(params))) => {
-                        let (pl, al) = (params.len(), args.len());
-                        for (param, arg) in params.iter().zip(args) {
-                            if param.solve(ctx) != arg {
+                        for (param, arg) in params.iter().zip(&args) {
+                            if param.solve(ctx) != *arg {
                                 return Err(format!("argument: {param} != {arg}"));
                             }
                         }
-                        if pl != al {
-                            return Err(format!("argument: {pl} != {al}"));
+                        match (params.len(), args.len()) {
+                            (pl, al) if pl == al => typing!(*ret),
+                            (pl, al) => Err(format!("argument: {pl} != {al}")),
                         }
-                        typing!(*ret)
                     }
                     Type::Function(Lambda((_, ret), None)) => typing!(*ret),
                     typ => Err(format!("not callable: {typ}")),
