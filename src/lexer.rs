@@ -3,7 +3,7 @@ use crate::*;
 pub fn lexer(src: &str, del: &str) -> Result<Vec<String>, String> {
     let chars = src.chars().collect::<Vec<char>>();
     let (mut level, mut idx, mut quote, mut esc) = (0, 0, false, false);
-    let (mut tokens, mut current) = (Vec::new(), String::new());
+    let (mut tokens, mut current) = (vec![], String::new());
     while idx < chars.len() {
         let c = chars[idx];
         if esc {
