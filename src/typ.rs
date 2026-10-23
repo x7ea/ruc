@@ -494,7 +494,7 @@ impl Type {
                     && let Type::Function(Lambda((_, ret), Some(args))) = typ.clone()
                 {
                     let head = (
-                        Generic(mangle.clone(), Vec::new()),
+                        Generic(mangle.clone(), vec![]),
                         params.keys().cloned().zip(args).collect(),
                     );
                     unify = match unify.clone() {
@@ -525,7 +525,7 @@ impl Type {
                     Object::Enum(_) => Object::Enum(layout),
                     Object::Struct(_) => Object::Struct(layout),
                 };
-                ctx.global.table.insert(mangle.clone(), (Vec::new(), unify));
+                ctx.global.table.insert(mangle.clone(), (vec![], unify));
             }
             _ => (),
         }
@@ -551,7 +551,7 @@ impl Type {
 
     fn remove_generic(&self) -> Type {
         match self {
-            Type::Class(Generic(name, _removed)) => Type::Class(Generic(name.clone(), Vec::new())),
+            Type::Class(Generic(name, _removed)) => Type::Class(Generic(name.clone(), vec![])),
             Type::Array(typ) => Type::Array(Box::new(typ.remove_generic())),
             _ => self.clone(),
         }
@@ -560,7 +560,7 @@ impl Type {
     fn generic_args(&self) -> Vec<Type> {
         match self {
             Type::Class(Generic(_, generic)) => generic.clone(),
-            _ => Vec::new(),
+            _ => vec![],
         }
     }
 
