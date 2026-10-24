@@ -1,0 +1,17 @@
+use std
+
+struct Profile {
+    name: Str,
+    age: Float
+}
+
+fn Profile.greet(this: Profile) {
+    print this.name, " (", this.age, ")"
+}
+
+fn main() {
+    let she = new Profile
+    let she.name = "x7ea"
+    let she.age = 17.2
+    she.greet()
+}
