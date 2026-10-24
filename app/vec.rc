@@ -1,9 +1,0 @@
-use std
-
-fn main() {
-    let vec = Vec<Int>([1, 2])
-    print vec
-
-    for i = [3, 4, 5] do vec.push(i)
-    print vec
-}
