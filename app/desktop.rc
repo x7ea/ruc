@@ -16,12 +16,12 @@ fn model(this: Elm, data: State) {
 
 fn control(this: App) {
     let data = new State
-    let button = app.button("Counter")
-    button.click<State>(data, model)
+    let ui = this.button("Counter")
+    ui.click<State>(data, model)
 }
 
 fn main() {
     let app = window()
-    app.controller()
+    app.control()
     app.run()
 }
