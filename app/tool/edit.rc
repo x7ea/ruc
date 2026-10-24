@@ -1,0 +1,27 @@
+use std
+
+fn main(argc: Int, argv: [Str]) {
+    if argc < 3 then {
+        print "Ruc Editor"
+        return
+    }
+    let cmd = argv[0]
+    let src = argv[1]
+
+    if cmd == "read" then {
+        match read_file(src) {
+            Some buf = print buf,
+            None = print "undefined: " + src
+        }
+    } else if cmd == "write" then {
+        let content = ""
+        let line = input()
+        while line != "" do {
+            let content = format content, line, "\n"
+            let line = input()
+        }
+        write_file(src, content)
+    } else {
+        print "unknown: " + cmd
+    }
+}
