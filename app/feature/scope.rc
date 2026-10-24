@@ -1,0 +1,12 @@
+use std
+
+fn main() {
+    let a = {
+        let b = {
+            let c = 1
+            c + 1
+        }
+        b + 1
+    }
+    print a + 1
+}
