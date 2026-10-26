@@ -6,7 +6,7 @@ struct Product<A, B> { a: A, b: B }
 fn Sum.print<A, B>(this: Sum<A, B>): Str '
 match this {
     A n = (format "Sum::A(", n, ")"),
-    B s = (format "Sum::B(\"", s, "\")")
+    B m = (format "Sum::B(\"", m, "\")")
 }
 
 fn Product.print<A, B>(this: Product<A, B>): Str '
