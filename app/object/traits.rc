@@ -1,11 +1,11 @@
 use std
 
 struct Amd64 {
-    rax: Int,
+    rax: Int
 }
 
 struct RiscV {
-    a0: Int,
+    a0: Int
 }
 
 fn Amd64.add(this: Amd64, imm: Int) {
@@ -29,6 +29,6 @@ fn asm<T>() {
 }
 
 fn main() {
-    asm<Arm64>()
+    asm<Amd64>()
     asm<RiscV>()
 }
