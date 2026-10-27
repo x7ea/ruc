@@ -1,20 +1,26 @@
 use std
 
+struct User {
+    name: Str,
+    age: Float
+}
+
 fn User(name: Str) {
     let this = new Profile
     let this.name = name
-    let this.age = 0.0
     this
 }
 
-fn User.set_age(this: )
+fn User.set_age(this: User, age: Float) {
+    let this.age = age
+}
 
-fn User.print(this: Profile): Str {
+fn User.print(this: User): Str {
     format this.name, " (", this.age, ")"
 }
 
 fn main() {
     let me = User("x7ea")
-    let
+    me.set_age(17.4)
     print me
 }
