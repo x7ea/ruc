@@ -5,8 +5,8 @@ struct User {
     age: Float
 }
 
-fn User(name: Str) {
-    let this = new Profile
+fn User(name: Str): User {
+    let this = new User
     let this.name = name
     this
 }
