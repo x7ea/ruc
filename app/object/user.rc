@@ -1,0 +1,20 @@
+use std
+
+fn User(name: Str) {
+    let this = new Profile
+    let this.name = name
+    let this.age = 0.0
+    this
+}
+
+fn User.set_age(this: )
+
+fn User.print(this: Profile): Str {
+    format this.name, " (", this.age, ")"
+}
+
+fn main() {
+    let me = User("x7ea")
+    let
+    print me
+}
