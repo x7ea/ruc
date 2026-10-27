@@ -21,7 +21,7 @@ fn RiscV.add(this: RiscV, imm: Int) {
 fn Amd64.ret(this: Amd64): Int this.rax
 fn RiscV.ret(this: RiscV): Int this.a0
 
-fn asm<T>() {
+fn assembly<T>() {
     let chip = new T
     chip.add(3)
     chip.add(5)
@@ -30,6 +30,6 @@ fn asm<T>() {
 
 fn main() {
     print "Virtual CPU"
-    asm<Amd64>()
-    asm<RiscV>()
+    assembly<Amd64>()
+    assembly<RiscV>()
 }
