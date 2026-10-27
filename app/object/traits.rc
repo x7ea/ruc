@@ -1,0 +1,34 @@
+use std
+
+struct Amd64 {
+    rax: Int,
+}
+
+struct RiscV {
+    a0: Int,
+}
+
+fn Amd64.add(this: Amd64, imm: Int) {
+    let this.rax = this.rax + imm
+    print "add rax, ", imm
+}
+
+fn RiscV.add(this: RiscV, imm: Int) {
+    let this.a0 = this.a0 + imm
+    print "addi a0, a0, ", imm
+}
+
+fn Amd64.ret(this: Amd64): Int this.rax
+fn RiscV.ret(this: RiscV): Int this.a0
+
+fn asm<T>() {
+    let chip = new T
+    chip.add(3)
+    chip.add(5)
+    print chip.ret()
+}
+
+fn main() {
+    asm<Arm64>()
+    asm<RiscV>()
+}
