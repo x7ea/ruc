@@ -1,31 +1,34 @@
 use std
 
-fn interface<T>() {
-    let object = new T
-    object.update(input())
+struct Amd64 {
+    rax: Int
 }
 
-struct User {
-    name: Str,
-    id: Int
+struct RiscV {
+    a0: Int
 }
 
-struct Anonymous {
-    ip_addr: Float
+fn Amd64.add(this: Amd64, imm: Int) {
+    let this.rax = this.rax + imm
+    print "add rax, ", imm
 }
 
-fn User.update(this: User, data: Str) {
-    let this.name = data
-    let this.id = time(0) % 100
-    print "@", this.name, this.id
+fn RiscV.add(this: RiscV, imm: Int) {
+    let this.a0 = this.a0 + imm
+    print "addi a0, a0, ", imm
 }
 
-fn Anonymous.update(this: Anonymous, data: Str) {
-    let this.ip_addr = atof(data)
-    print "192.168.", this.ip_addr
+fn Amd64.ret(this: Amd64): Int this.rax
+fn RiscV.ret(this: RiscV): Int this.a0
+
+fn asm<T>() {
+    let chip = new T
+    chip.add(3)
+    chip.add(5)
+    print chip.ret()
 }
 
 fn main() {
-    interface<User>()
-    interface<Anonymous>()
+    asm<Amd64>()
+    asm<RiscV>()
 }
