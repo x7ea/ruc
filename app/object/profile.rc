@@ -1,8 +1,14 @@
 use std
 
-struct Profile {
-    name: Str,
-    age: Float
+struct Chip {
+    rax: Int,
+}
+
+fn Profile(name: Str) {
+    let this = new Profile
+    let this.name = name
+    let this.age = 0.0
+    this
 }
 
 fn Profile.greet(this: Profile) {
@@ -10,7 +16,7 @@ fn Profile.greet(this: Profile) {
 }
 
 fn main() {
-    let she = new Profile
+    let me = Profile("x7ea")
     let she.name = "x7ea"
     let she.age = 17.2
     she.greet()
