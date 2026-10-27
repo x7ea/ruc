@@ -29,6 +29,7 @@ fn asm<T>() {
 }
 
 fn main() {
+    print "Virtual CPU"
     asm<Amd64>()
     asm<RiscV>()
 }
