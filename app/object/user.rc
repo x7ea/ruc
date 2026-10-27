@@ -11,13 +11,11 @@ fn User(name: Str): User {
     this
 }
 
-fn User.set_age(this: User, age: Float) {
+fn User.set_age(this: User, age: Float) '
     let this.age = age
-}
 
-fn User.print(this: User): Str {
+fn User.print(this: User): Str '
     format this.name, " (", this.age, ")"
-}
 
 fn main() {
     let me = User("x7ea")
