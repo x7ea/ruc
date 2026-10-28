@@ -325,12 +325,10 @@ impl Expr {
             }
             Expr::Enum(typ, key, val) => {
                 let temp = Box::new(temp!());
+                let acc = Box::new(Expr::Member(temp.clone(), key.clone()));
                 typing!(expands!(Expr::Block(vec![
                     Expr::Let(temp.clone(), Box::new(Expr::New(typ.clone()))),
-                    Expr::Let(
-                        Box::new(Expr::Member(temp.clone(), key.clone())),
-                        val.clone(),
-                    ),
+                    Expr::Let(acc, val.clone()),
                     *temp
                 ])))
             }
