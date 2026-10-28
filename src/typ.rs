@@ -90,6 +90,7 @@ impl Expr {
             }};
             ($typ: pat, $lhs: expr, $rhs: expr, $ret: expr) => {{ op!($typ, $lhs, $rhs).and_then(|_| typing!($ret.clone())) }};
         }
+        let offset = |n| Box::new(Expr::Integer(n));
 
         match self.clone() {
             Expr::Print(is_output, mut vals) => {
@@ -269,7 +270,6 @@ impl Expr {
                         }
                         (_, Object::Enum(layout)) => {
                             let tag = layout.get_index_of(key).unwrap();
-                            let offset = |x| Box::new(Expr::Integer(x));
                             expand!(Expr::Block(vec![
                                 Expr::Write(offset(0), offset(tag as i64), obj.clone()),
                                 Expr::Write(offset(8), val.clone(), obj.clone()),
@@ -281,7 +281,6 @@ impl Expr {
                 other => Err(format!("assign target: {}", infer!(other))),
             },
             Expr::Sequence(array) => {
-                let offset = |n| Box::new(Expr::Integer(n));
                 let (typ, temp) = (infer!(array[0]), temp!());
                 let mut expr = vec![Expr::Let(
                     Box::new(temp.clone()),
@@ -352,14 +351,11 @@ impl Expr {
                         let offset = Expr::Integer(layout.get_index_of(&key).unwrap() as i64);
                         expand!(Expr::Read(Box::new(offset), typ.clone(), obj.clone()));
                     }
-                    Object::Enum(_) => {
-                        let offset = Box::new(Expr::Integer(8));
-                        expand!(Expr::If(
-                            Box::new(Expr::Check(Box::new(self.clone()))),
-                            Box::new(Expr::Read(offset, typ.clone(), obj.clone())),
-                            Some(Box::new(Expr::Null(typ.clone())))
-                        ));
-                    }
+                    Object::Enum(_) => expand!(Expr::If(
+                        Box::new(Expr::Check(Box::new(self.clone()))),
+                        Box::new(Expr::Read(offset(8), typ.clone(), obj.clone())),
+                        Some(Box::new(Expr::Null(typ.clone())))
+                    )),
                 }
                 typing!(typ.solve(ctx))
             }
