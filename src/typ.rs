@@ -157,7 +157,7 @@ impl Expr {
                 }
             }
             Expr::For(cnt, arr, body) => {
-                let (typ, temp) = (infer!(arr), Box::new(temp!()));
+                let (typ, temp) = (infer!(arr), Box::new(temp()));
                 let Type::Array(_) = typ else {
                     return Err(format!("not iterable: {typ}"));
                 };
@@ -279,7 +279,7 @@ impl Expr {
                 other => Err(format!("assign target: {}", infer!(other))),
             },
             Expr::Sequence(array) => {
-                let (typ, temp) = (infer!(array[0]), temp!());
+                let (typ, temp) = (infer!(array[0]), temp());
                 let mut expr = vec![Expr::Let(
                     Box::new(temp.clone()),
                     Box::new(Expr::Init(typ, offset(array.len() as i64))),
@@ -319,7 +319,7 @@ impl Expr {
                 typing!(typ.solve(ctx))
             }
             Expr::Enum(typ, key, val) => {
-                let temp = Box::new(temp!());
+                let temp = Box::new(temp());
                 let acc = Box::new(Expr::Member(temp.clone(), key.clone()));
                 typing!(expands!(Expr::Block(vec![
                     Expr::Let(temp.clone(), Box::new(Expr::New(typ.clone()))),
@@ -397,7 +397,7 @@ impl Expr {
             }
             Expr::Clone(expr) => {
                 let offset = |n| Box::new(Expr::Integer(n));
-                let (dest, typ) = (Box::new(temp!()), infer!(expr));
+                let (dest, typ) = (Box::new(temp()), infer!(expr));
                 let bound = Box::new(Expr::Add(len!(expr), offset(1)));
                 let (init, size) = match typ.clone() {
                     Type::Array(typ) => (Expr::Init(*typ, len!(expr)), Expr::Mul(bound, offset(8))),
