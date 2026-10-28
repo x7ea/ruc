@@ -69,9 +69,9 @@ impl Expr {
             }};
         }
         macro_rules! expand {
-            ($expr: expr) => {
+            ($expr: expr) => {{
                 let _ = expands!($expr);
-            };
+            }};
         }
         macro_rules! temp {
             () => {{ var!(&format!("temp{self:?}")) }};
