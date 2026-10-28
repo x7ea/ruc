@@ -73,9 +73,6 @@ impl Expr {
                 let _ = expands!($expr);
             }};
         }
-        macro_rules! temp {
-            () => {{ var!(&format!("temp{self:?}")) }};
-        }
         macro_rules! op {
             ($typ: pat, $lhs: expr, $rhs: expr) => {{
                 let op = &self.as_ref().to_lowercase();
@@ -90,6 +87,7 @@ impl Expr {
             }};
             ($typ: pat, $lhs: expr, $rhs: expr, $ret: expr) => {{ op!($typ, $lhs, $rhs).and_then(|_| typing!($ret.clone())) }};
         }
+        let temp = || var!(&format!("temp{self:?}"));
         let offset = |n| Box::new(Expr::Integer(n));
 
         match self.clone() {
