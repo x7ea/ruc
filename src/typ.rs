@@ -281,17 +281,15 @@ impl Expr {
                 other => Err(format!("assign target: {}", infer!(other))),
             },
             Expr::Sequence(array) => {
+                let offset = |n| Box::new(Expr::Integer(n));
                 let (typ, temp) = (infer!(array[0]), temp!());
                 let mut expr = vec![Expr::Let(
                     Box::new(temp.clone()),
-                    Box::new(Expr::Init(typ, Box::new(Expr::Integer(array.len() as i64)))),
+                    Box::new(Expr::Init(typ, offset(array.len() as i64))),
                 )];
                 for (idx, val) in array.iter().enumerate() {
                     expr.push(Expr::Let(
-                        Box::new(Expr::Index(
-                            Box::new(temp.clone()),
-                            Box::new(Expr::Integer(idx as i64)),
-                        )),
+                        Box::new(Expr::Index(Box::new(temp.clone()), offset(idx as i64))),
                         Box::new(val.clone()),
                     ));
                 }
