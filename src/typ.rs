@@ -404,13 +404,11 @@ impl Expr {
                 }
             }
             Expr::Clone(expr) => {
+                let offset = |n| Box::new(Expr::Integer(n));
                 let (dest, typ) = (Box::new(temp!()), infer!(expr));
-                let bound = Box::new(Expr::Add(len!(expr), Box::new(Expr::Integer(1))));
+                let bound = Box::new(Expr::Add(len!(expr), offset(1)));
                 let (init, size) = match typ.clone() {
-                    Type::Array(typ) => (
-                        Expr::Init(*typ, len!(expr)),
-                        Expr::Mul(bound, Box::new(Expr::Integer(8))),
-                    ),
+                    Type::Array(typ) => (Expr::Init(*typ, len!(expr)), Expr::Mul(bound, offset(8))),
                     Type::Class(_) => (Expr::New(typ.clone()), Expr::Integer(typ.size(ctx) as i64)),
                     typ => return Err(format!("can't clone: {typ}")),
                 };
