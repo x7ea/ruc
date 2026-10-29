@@ -21,7 +21,7 @@ fn server(handle: Str(Request)) {
 
     print getaddrinfo("0.0.0.0", "http", (), Box<Addr>(server_addr))
     print bind(server_fd, server_addr, 48)
-    print listen(server_fd, 3)
+    print listen(server_fd, 128)
 
     while true do {
         let client_addr = calloc<Addr>(48, 1)
