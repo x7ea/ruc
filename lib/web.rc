@@ -42,5 +42,6 @@ fn server(handle: Str(Request)) {
             write(client_fd, body, body.len)
             close(client_fd)
         }
+        free<Addr>(client_addr)
     }
 }
