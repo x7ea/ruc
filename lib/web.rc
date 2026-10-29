@@ -3,6 +3,7 @@ extern fn freeaddrinfo(this: Addr)
 
 extern fn socket(af: Int, typ: Int, proto: Int): Int
 extern fn bind(fd: Int, addr: Addr, len: Int)
+extern fn listen(fd; Int, n: Int)
 
 48
 
