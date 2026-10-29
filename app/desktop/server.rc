@@ -2,7 +2,7 @@ use std, web
 
 fn index(method: Str, url: Str): Str {
     print method, url
-    format "Hello, world!"
+    format "Hello, world from", url, "!!!"
 }
 
 fn main() {
