@@ -2,8 +2,8 @@ extern fn getaddrinfo(addr: Str, port: Str, hint: (), this: Addr)
 extern fn freeaddrinfo(this: Addr)
 
 extern fn socket(af: Int, typ: Int, proto: Int): Int
-extern fn bind(fd: Int, addr: Addr, len: Int)
-extern fn listen(fd: Int, n: Int)
+extern fn bind(fd: Int, addr: Addr, len: Int): Int
+extern fn listen(fd: Int, n: Int): Int
 extern fn accept(fd: Int, addr: Addr, n: Box<Int>): Int
 
 extern fn read(fd: Int, buf: Str, count: Int)
@@ -20,15 +20,10 @@ fn server(handle: Str(Request)) {
 
     getaddrinfo("127.0.0.1", "8080", (), addr)
 
-    if bind(server_fd, addr, 48) < 0　then {
-        print "Failed to bind"
-        return
-    }
-
-    if listen(server_fd, 3) < 0　then {
-        print "Failed to listen"
-        return
-    }
+    let status = bind(server_fd, addr, 48)
+    print status
+    let status = listen(server_fd, 3)
+    print status
 
     while true do {
         let client_fd = accept(server_fd, addr, Box<Int>(48))
