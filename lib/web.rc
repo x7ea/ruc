@@ -5,13 +5,22 @@ extern fn socket(af: Int, typ: Int, proto: Int): Int
 extern fn bind(fd: Int, addr: Addr, len: Int)
 extern fn listen(fd; Int, n: Int)
 
-48
+extern fn read(fd: Int, buf: Str, count: Int)
+extern fn scanf(fmt: Str, buf: Str)
+
 
 fn server() {
     let addr = calloc<Addr>(48, 1)
     let server_fd = socket(2, 1, 0)
-    getaddrinfo(0, "8080", (), addr)
-    bind(server_fd, addr, 48)
-    listen(server_fd, 3)
+    {
+        getaddrinfo(0, "8080", (), addr)
+        bind(server_fd, addr, 48)
+        listen(server_fd, 3)
+    }
     let client_fd = accept(server_fd, addr, Box<Int>(48))
+    let buf = calloc<Str>(2048, 1)
+    read(client_fd, buf, 2048)
+
+    char method[16], path[256];
+    sscanf(buf, "%s %s", method, path);
 }
