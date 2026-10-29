@@ -8,9 +8,9 @@ extern fn MHD_start_daemon: Daemon
 extern fn MHD_stop_daemon(this: Daemon)
 extern fn MHD_run_from_select(this: Daemon, time: Int)
 
-fn __req(http_request_handler: Str(Str, Str), fd: Network, url: Str,
-    method: Str, ver: Str, upload: Str, size: Int, con_cls: ()): Response
-{
+fn __req(http_request_handler: Str(Str, Str), fd: Network,
+    url: Str, method: Str, ver: Str, upload: Str, size: Int, con_cls: Void
+): Response {
     let page = http_request_handler(method, url)
     let reply = MHD_create_response_from_buffer(page.len, page, 2)
     MHD_add_response_header(reply, "Content-Type", "text/html")
