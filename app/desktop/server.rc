@@ -1,8 +1,8 @@
 use std, web
 
 fn index(method: Str, url: Str): Str {
-    method
-    format "Hello, world!"
+    print url, method
+    "Hello, world!"
 }
 
 fn main() {
