@@ -1,7 +1,7 @@
 extern fn MHD_create_response_from_buffer(size: Int, buf: Str, n: Int): Content
 extern fn MHD_destroy_response(this: Content)
 extern fn MHD_stop_daemon(this: Daemon)
-extern fn MHD_queue_response(fd: Network, code: Int, Content): Response
+extern fn MHD_queue_response(fd: Network, code: Int, value: Content): Response
 extern fn MHD_start_daemon: Daemon
 
 fn __req(cls: Str(Str, Str), fd: Network, url: Str, method: Str, ver: Str, upload: Str, size: Int, con_cls: ()): Response {
