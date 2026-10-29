@@ -1,48 +1,31 @@
-extern fn getaddrinfo(addr: Str, port: Str, hint: (), this: Box<Addr>): Int
-extern fn freeaddrinfo(this: Addr)
+extern fn MHD_create_response_from_buffer(size: Int, buf: Str)
+extern fn MHD_queue_response: Res
+extern fn MHD_destroy_response(this: Res)
+extern fn MHD_start_daemon()
 
-extern fn socket(af: Int, typ: Int, proto: Int): Int
-extern fn setsockopt(fd: Int, sol: Int, reuse: Int, opt: Box<Int>, count: Int)
-extern fn bind(fd: Int, addr: Addr, len: Int): Int
-extern fn listen(fd: Int, n: Int): Int
-extern fn accept(fd: Int, addr: Addr, n: Box<Int>): Int
-extern fn close(fd: Int)
-
-extern fn read(fd: Int, buf: Str, count: Int)
-extern fn write(fd: Int, buf: Str, count: Int)
-extern fn sscanf(buf: Str, fmt: Str, a: Str, b: Str)
-
-enum Request {
-    get: Str
+fn server(cls: Str(Str, Str), fd: Network, url: Str, method: Str, ver: Str, upload: Str, size: Int, con_cls: ()): Res {
+    let page = cls(method, url)
+    let response = MHD_create_response_from_buffer(page.len, page, 0)
+    let ret = MHD_queue_response(fd, MHD_HTTP_OK, response)
+    MHD_destroy_response(response)
+    ret
 }
 
-fn server(handle: Str(Request)) {
-    let server_fd = socket(2, 1, 0)
-    setsockopt(server_fd, 1, 2, Box<Int>(1), 8)
+int main() {
 
-    let addr = calloc<Addr>(48, 1)
-    getaddrinfo("127.0.0.1", "8000", (), Box<Addr>(addr))
+    let Box(server)
+    daemon = MHD_start_daemon(8, 8000, 8, 0, 0, 0);
 
-    bind(server_fd, addr, 48)
-    listen(server_fd, 128)
-
-    while true do {
-        let client_fd = accept(server_fd, addr, Box<Int>(48))
-        let buf = calloc<Str>(2048, 1)
-        read(client_fd, buf, 2048)
-
-        let method = calloc<Str>(16, 1)
-        let path = calloc<Str>(256, 1)
-        sscanf(buf, "%s %s", method, path)
-
-        if method == "GET" then {
-            let req = Request::Get(path)
-            let body = handle(req)
-
-            let header = format "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: ", body.len, "\r\n\r\n"
-            write(client_fd, header, header.len)
-            write(client_fd, body, body.len)
-            close(client_fd)
-        }
+    if (NULL == daemon) {
+        fprintf(stderr, "MHD デーモンの起動に失敗しました。\n");
+        return 1;
     }
+
+    server
+    input(); // 入力待ちでサーバーを維持
+
+    // デーモンの停止
+    MHD_stop_daemon(daemon);
+
+    return 0;
 }
