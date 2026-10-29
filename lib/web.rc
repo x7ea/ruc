@@ -19,7 +19,7 @@ fn server(handle: Str(Request)) {
     let server_fd = socket(2, 1, 0)
 
     print getaddrinfo("127.0.0.1", "http", (), Box<Addr>(server_addr))
-    print bind(server_fd, addr, 48)
+    print bind(server_fd, server_addr, 48)
     print listen(server_fd, 3)
 
     while true do {
