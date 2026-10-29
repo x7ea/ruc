@@ -5,6 +5,7 @@ extern fn socket(af: Int, typ: Int, proto: Int): Int
 extern fn bind(fd: Int, addr: Addr, len: Int): Int
 extern fn listen(fd: Int, n: Int): Int
 extern fn accept(fd: Int, addr: Addr, n: Box<Int>): Int
+extern fn close(fd: Int)
 
 extern fn read(fd: Int, buf: Str, count: Int)
 extern fn write(fd: Int, buf: Str, count: Int)
@@ -39,6 +40,7 @@ fn server(handle: Str(Request)) {
             let header = format "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: ", body.len, "\r\n\r\n"
             write(client_fd, header, header.len)
             write(client_fd, body, body.len)
+            close(client_fd)
         }
     }
 }
