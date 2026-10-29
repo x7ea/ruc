@@ -1,31 +1,23 @@
-extern fn MHD_create_response_from_buffer(size: Int, buf: Str)
-extern fn MHD_queue_response: Res
-extern fn MHD_destroy_response(this: Res)
-extern fn MHD_start_daemon()
+use std
 
-fn server(cls: Str(Str, Str), fd: Network, url: Str, method: Str, ver: Str, upload: Str, size: Int, con_cls: ()): Res {
+extern fn MHD_create_response_from_buffer(size: Int, buf: Str, n: Int): Content
+extern fn MHD_destroy_response(this: Content)
+extern fn MHD_stop_daemon(this: Daemon)
+extern fn MHD_queue_response: Response
+extern fn MHD_start_daemon: Daemon
+
+fn req(cls: Str(Str, Str), fd: Network, url: Str, method: Str, ver: Str, upload: Str, size: Int, con_cls: ()): Response {
     let page = cls(method, url)
-    let response = MHD_create_response_from_buffer(page.len, page, 0)
-    let ret = MHD_queue_response(fd, MHD_HTTP_OK, response)
-    MHD_destroy_response(response)
-    ret
+    let reply = MHD_create_response_from_buffer(page.len, page, 2)
+    let status = MHD_queue_response(fd, 200, reply)
+    MHD_destroy_response(reply)
+    status
 }
 
-int main() {
+fn server(lambda: Str(Str, Str)) {
+    let handle = Box<Response(Str(Str, Str), Network, Str, Str, Str, Str, Int, Void)>(req)
+    let daemon = MHD_start_daemon(8, 8000, 0, 0, handle, Box<Str(Str, Str)>(lambda))
 
-    let Box(server)
-    daemon = MHD_start_daemon(8, 8000, 8, 0, 0, 0);
-
-    if (NULL == daemon) {
-        fprintf(stderr, "MHD デーモンの起動に失敗しました。\n");
-        return 1;
-    }
-
-    server
-    input(); // 入力待ちでサーバーを維持
-
-    // デーモンの停止
-    MHD_stop_daemon(daemon);
-
-    return 0;
+    input()
+    MHD_stop_daemon(daemon)
 }
