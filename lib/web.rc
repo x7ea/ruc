@@ -15,7 +15,7 @@ enum Request {
     get: Str
 }
 
-fn log(status: Int) print if status == 0 then print "OK"
+fn log(status: Int) if status == 0 then print "OK"
 
 fn server(handle: Str(Request)) {
     let server_addr = calloc<Addr>(48, 1)
