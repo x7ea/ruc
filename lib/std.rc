@@ -166,6 +166,16 @@ fn random(min: Int, max: Int): Int {
     rand() % (max - min + 1) + min
 }
 
+struct Box<T> {
+    value: T
+}
+
+fn Box<T>(value: T): Box<T> {
+    let this = new Box<T>
+    let this.value = value
+    this
+}
+
 struct Thread {
     posix: Int
 }
