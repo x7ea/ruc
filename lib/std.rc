@@ -186,6 +186,6 @@ fn Thread(func: Void()): Box<Int> {
     id
 }
 
-fn Thread.join(id: Box<Int>) {
+fn Box.join(id: Box<Int>) {
     pthread_join(id.value, ())
 }
