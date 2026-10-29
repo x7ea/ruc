@@ -19,11 +19,8 @@ fn server(handle: Str(Request)) {
     let server_fd = socket(2, 1, 0)
 
     getaddrinfo("127.0.0.1", "8080", (), addr)
-
-    let status = bind(server_fd, addr, 48)
-    print status
-    let status = listen(server_fd, 3)
-    print status
+    bind(server_fd, addr, 48)
+    listen(server_fd, 3)
 
     while true do {
         let client_fd = accept(server_fd, addr, Box<Int>(48))
