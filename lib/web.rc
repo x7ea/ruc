@@ -6,8 +6,9 @@ extern fn bind(fd: Int, addr: Addr, len: Int)
 extern fn listen(fd; Int, n: Int)
 
 extern fn read(fd: Int, buf: Str, count: Int)
-extern fn scanf(fmt: Str, buf: Str)
+extern fn sscanf(buf: Str, fmt: Str, a: Str, b: Str)
 
+Request
 
 fn server() {
     let addr = calloc<Addr>(48, 1)
@@ -21,6 +22,9 @@ fn server() {
     let buf = calloc<Str>(2048, 1)
     read(client_fd, buf, 2048)
 
-    char method[16], path[256];
+    let method = calloc<Str>(16, 1)
+    let path = calloc<Str>(256, 1);
     sscanf(buf, "%s %s", method, path);
+
+
 }
