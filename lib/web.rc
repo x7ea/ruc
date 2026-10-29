@@ -21,10 +21,10 @@ fn server(handle: Str(Request)) {
     setsockopt(server_fd, 1, 2, Box<Int>(1), 8)
 
     let addr = calloc<Addr>(48, 1)
-    getaddrinfo("127.0.0.1", "8000", (), Box<Addr>(addr))
+    print getaddrinfo("127.0.0.1", "8000", (), Box<Addr>(addr))
 
-    bind(server_fd, addr, 48)
-    listen(server_fd, 128)
+    print bind(server_fd, addr, 48)
+    print listen(server_fd, 128)
 
     while true do {
         let client_fd = accept(server_fd, addr, Box<Int>(48))
