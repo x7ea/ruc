@@ -1,0 +1,2 @@
+extern fn getaddrinfo(addr: Str, port: Str, this: Addr)
+extern fn freeaddrinfo(this: Addr)
