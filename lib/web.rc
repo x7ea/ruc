@@ -14,7 +14,7 @@ fn __req(cls: Str(Str, Str), fd: Network, url: Str, method: Str, ver: Str, uploa
 }
 
 fn server(lambda: Str(Str, Str)) {
-    let daemon = MHD_start_daemon(1, 8000, 0, 0, __req, lambda, 0)
+    let daemon = MHD_start_daemon(9, 8000, 0, 0, __req, lambda, 0)
 
     if daemon? then  input()
     MHD_stop_daemon(daemon)
