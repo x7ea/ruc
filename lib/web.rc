@@ -31,8 +31,6 @@ fn server(handle: Str(Request)) {
         let path = calloc<Str>(256, 1)
         sscanf(buf, "%s %s", method, path)
 
-        print buf
-
         if method == "GET" then {
             let req = Request::Get(path)
             let body = handle(req)
