@@ -15,18 +15,20 @@ enum Request {
 }
 
 fn server(handle: Str(Request)) {
-    print 1
-
     let addr = calloc<Addr>(48, 1)
     let server_fd = socket(2, 1, 0)
 
-    print 2
-
     getaddrinfo("127.0.0.1", "8080", (), addr)
-    bind(server_fd, addr, 48)
-    listen(server_fd, 3)
 
-    print server_fd
+    if bind(server_fd, addr, 48) < 0　then {
+        print "Failed to bind"
+        return
+    }
+
+    if listen(server_fd, 3) < 0　then {
+        print "Failed to listen"
+        return
+    }
 
     while true do {
         print 4
