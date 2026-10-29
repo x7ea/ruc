@@ -26,7 +26,7 @@ fn server(handle: Str(Request)) {
     bind(server_fd, addr, 48)
     listen(server_fd, 3)
 
-    print 3
+    print server_fd
 
     while true do {
         print 4
