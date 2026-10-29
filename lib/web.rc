@@ -13,4 +13,5 @@ fn server() {
     getaddrinfo(0, "8080", (), addr)
     bind(server_fd, addr, 48)
     listen(server_fd, 3)
+    let client_fd = accept(server_fd, addr, Box<Int>(48))
 }
