@@ -1,21 +1,22 @@
-extern fn MHD_create_response_from_buffer(size: Int, buf: Str, n: Int): Content
+extern fn MHD_create_response_from_buffer_static(size: Int, buf: Str): Content
 extern fn MHD_queue_response(fd: Network, code: Int, value: Content): Response
 extern fn MHD_destroy_response(this: Content)
 
 extern fn MHD_start_daemon: Daemon
 extern fn MHD_stop_daemon(this: Daemon)
+extern fn MHD_run_from_select
 
 fn __req(cls: Str(Str, Str), fd: Network, url: Str, method: Str, ver: Str, upload: Str, size: Int, con_cls: ()): Response {
     let page = cls(method, url)
-    let reply = MHD_create_response_from_buffer(page.len, page, 2)
+    let reply = MHD_create_response_from_buffer_static(page.len, page)
     let status = MHD_queue_response(fd, 200, reply)
     MHD_destroy_response(reply)
     status
 }
 
 fn server(lambda: Str(Str, Str)) {
-    let daemon = MHD_start_daemon(9, 8080, 0, 0, __req, lambda, 0)
-
-    if daemon? then input()
+    let daemon = MHD_start_daemon(1, 8080, 0, 0, __req, lambda, 0)
+    while true do MHD_run_from_select(daemon, 100 * 100)
     MHD_stop_daemon(daemon)
+
 }
