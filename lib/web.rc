@@ -8,7 +8,9 @@ extern fn MHD_start_daemon: Daemon
 extern fn MHD_stop_daemon(this: Daemon)
 extern fn MHD_run_from_select
 
-fn __req(cls: Str(Str, Str), fd: Network, url: Str, method: Str, ver: Str, upload: Str, size: Int, con_cls: ()): Response {
+fn __req(cls: Str(Str, Str), fd: Network, url: Str,
+    method: Str, ver: Str, upload: Str, size: Int, con_cls: ()): Response
+{
     let page = cls(method, url)
     let reply = MHD_create_response_from_buffer_static(page.len, page)
     MHD_add_response_header(reply, "Content-Type", "text/html")
