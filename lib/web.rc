@@ -15,13 +15,15 @@ enum Request {
     get: Str
 }
 
+fn log(status: Int) print if status == 0 then print "OK"
+
 fn server(handle: Str(Request)) {
     let server_addr = calloc<Addr>(48, 1)
     let server_fd = socket(2, 1, 0)
 
-    getaddrinfo("0.0.0.0", "http", (), Box<Addr>(server_addr))
-    print bind(server_fd, server_addr, 48)
-    print listen(server_fd, 128)
+    getaddrinfo("0.0.0.0", "http", (), Box<Addr>(server_addr)).log()
+    bind(server_fd, server_addr, 48).log()
+    listen(server_fd, 128).log()
 
     while true do {
         let client_addr = calloc<Addr>(48, 1)
