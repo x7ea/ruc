@@ -17,25 +17,27 @@ enum Request {
 fn server(handle: Str(Request)) {
     let addr = calloc<Addr>(48, 1)
     let server_fd = socket(2, 1, 0)
-    {
-        getaddrinfo(0, "8080", (), addr)
-        bind(server_fd, addr, 48)
-        listen(server_fd, 3)
-    }
-    let client_fd = accept(server_fd, addr, Box<Int>(48))
-    let buf = calloc<Str>(2048, 1)
-    read(client_fd, buf, 2048)
 
-    let method = calloc<Str>(16, 1)
-    let path = calloc<Str>(256, 1)
-    sscanf(buf, "%s %s", method, path)
+    getaddrinfo(0, "8080", (), addr)
+    bind(server_fd, addr, 48)
+    listen(server_fd, 3)
 
-    if method == "GET" then {
-        let req = Request::Get(path)
-        let body = handle(req)
+    while true do {
+        let client_fd = accept(server_fd, addr, Box<Int>(48))
+        let buf = calloc<Str>(2048, 1)
+        read(client_fd, buf, 2048)
 
-        let header = format "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: ", body.len, "\r\n\r\n"
-        write(client_fd, header, header.len)
-        write(client_fd, body, body.len)
+        let method = calloc<Str>(16, 1)
+        let path = calloc<Str>(256, 1)
+        sscanf(buf, "%s %s", method, path)
+
+        if method == "GET" then {
+            let req = Request::Get(path)
+            let body = handle(req)
+
+            let header = format "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: ", body.len, "\r\n\r\n"
+            write(client_fd, header, header.len)
+            write(client_fd, body, body.len)
+        }
     }
 }
