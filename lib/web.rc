@@ -3,11 +3,12 @@ extern fn freeaddrinfo(this: Addr)
 
 extern fn socket(af: Int, typ: Int, proto: Int): Int
 extern fn bind(fd: Int, addr: Addr, len: Int)
-extern fn listen(fd; Int, n: Int)
+extern fn listen(fd: Int, n: Int)
+extern fn accept(fd: Int, addr: Addr, n: Box<Int>): Int
 
 extern fn read(fd: Int, buf: Str, count: Int)
+extern fn write(fd: Int, buf: Str, count: Int)
 extern fn sscanf(buf: Str, fmt: Str, a: Str, b: Str)
-extern fn snprintf
 
 enum Request {
     get: Str
