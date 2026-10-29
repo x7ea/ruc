@@ -1,4 +1,4 @@
-extern fn MHD_create_response_from_buffer_static(size: Int, buf: Str): Content
+extern fn MHD_create_response_from_buffer(size: Int, buf: Str, mode: Int): Content
 extern fn MHD_queue_response(fd: Network, code: Int, value: Content): Response
 extern fn MHD_add_response_header(this: Content, key: Str, value: Str)
 extern fn MHD_destroy_response(this: Content)
@@ -9,7 +9,7 @@ extern fn MHD_run_from_select
 
 fn __req(cls: Str(Str, Str), fd: Network, url: Str, method: Str, ver: Str, upload: Str, size: Int, con_cls: ()): Response {
     let page = cls(method, url)
-    let reply = MHD_create_response_from_buffer_static(page.len, page)
+    let reply = MHD_create_response_from_buffer(page.len, page, 2)
     MHD_add_response_header(reply, "Content-Type", "text/html")
     MHD_add_response_header(reply, "Connection", "close")
     let status = MHD_queue_response(fd, 200, reply)
