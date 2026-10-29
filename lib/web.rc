@@ -24,6 +24,8 @@ fn server(handle: Str(Request)) {
 
     while true do {
         let client_fd = accept(server_fd, addr, Box<Int>(48))
+        print client_fd
+
         let buf = calloc<Str>(2048, 1)
         read(client_fd, buf, 2048)
 
