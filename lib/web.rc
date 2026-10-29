@@ -16,6 +16,10 @@ fn server(lambda: Str(Str, Str)) {
     let handle = Box<Response(Str(Str, Str), Network, Str, Str, Str, Str, Int, Void)>(__req)
     let daemon = MHD_start_daemon(8, 8000, 0, 0, handle, Box<Str(Str, Str)>(lambda))
 
-    input()
-    MHD_stop_daemon(daemon)
+    if daemon? then {
+        input()
+        MHD_stop_daemon(daemon)
+    } else {
+        print "Error"
+    }
 }
