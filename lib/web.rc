@@ -6,7 +6,7 @@ extern fn MHD_destroy_response(this: Content)
 
 extern fn MHD_start_daemon: Daemon
 extern fn MHD_stop_daemon(this: Daemon)
-extern fn MHD_run_from_select
+extern fn MHD_run_from_select(this: Daemon, time: Int)
 
 fn __req(http_request_handler: Str(Str, Str), fd: Network, url: Str,
     method: Str, ver: Str, upload: Str, size: Int, con_cls: ()): Response
