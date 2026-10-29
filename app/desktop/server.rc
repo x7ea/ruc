@@ -1,9 +1,8 @@
 use std, web
 
-fn index(req: Request): Int {
+fn index(req: Request): Str {
     print req.get
     "Hello, world!"
-    2
 }
 
 fn main() {
