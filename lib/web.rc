@@ -14,13 +14,12 @@ fn __req(cls: Str(Str, Str), fd: Network, url: Str, method: Str, ver: Str, uploa
 }
 
 fn server(lambda: Str(Str, Str)) {
-    let handle = Box<Response(Str(Str, Str), Network, Str, Str, Str, Str, Int, Void)>(__req)
-    let daemon = MHD_start_daemon(8, 8000, 0, 0, handle, Box<Str(Str, Str)>(lambda))
+    let daemon = MHD_start_daemon(65536, 8000, 0, 0, __req, lambda, 0)
 
-    if daemon? then {
+    if daemon != 0 then {
         input()
         MHD_stop_daemon(daemon)
     } else {
-        print "Error"
+        print daemon
     }
 }
