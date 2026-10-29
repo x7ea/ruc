@@ -31,13 +31,9 @@ fn server(handle: Str(Request)) {
     }
 
     while true do {
-        print 4
-
         let client_fd = accept(server_fd, addr, Box<Int>(48))
         let buf = calloc<Str>(2048, 1)
         read(client_fd, buf, 2048)
-
-        print 5
 
         let method = calloc<Str>(16, 1)
         let path = calloc<Str>(256, 1)
