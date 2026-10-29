@@ -15,15 +15,16 @@ enum Request {
 }
 
 fn server(handle: Str(Request)) {
-    let addr = calloc<Addr>(48, 1)
+    let server_addr = calloc<Addr>(48, 1)
     let server_fd = socket(2, 1, 0)
 
-    print getaddrinfo("127.0.0.1", "http", (), Box<Addr>(addr))
+    print getaddrinfo("127.0.0.1", "http", (), Box<Addr>(server_addr))
     print bind(server_fd, addr, 48)
     print listen(server_fd, 3)
 
     while true do {
-        let client_fd = accept(server_fd, addr, Box<Int>(48))
+        let client_addr = calloc<Addr>(48, 1)
+        let client_fd = accept(server_fd, client_addr, Box<Int>(48))
         let buf = calloc<Str>(2048, 1)
         read(client_fd, buf, 2048)
 
