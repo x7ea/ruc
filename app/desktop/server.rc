@@ -3,6 +3,7 @@ use std, web
 fn index(req: Request): Int {
     print req.get
     "Hello, world!"
+    2
 }
 
 fn main() {
