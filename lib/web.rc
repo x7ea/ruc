@@ -1,12 +1,15 @@
-extern fn getaddrinfo(addr: Int, port: Str, this: Addr)
+extern fn getaddrinfo(addr: Int, port: Str, hint: (), this: Addr)
 extern fn freeaddrinfo(this: Addr)
 
 extern fn socket(af: Int, typ: Int, proto: Int): Int
+extern fn bind(fd: Int, addr: Addr, len: Int)
 
 48
 
-fn main() {
-    let addr = calloc()
+fn server() {
+    let addr = calloc<Addr>(48, 1)
     let server_fd = socket(2, 1, 0)
-    getaddrinfo(0,
+    getaddrinfo(0, "8080", (), addr)
+    bind(server_fd, addr, 48)
+    listen(server_fd, 3)
 }
