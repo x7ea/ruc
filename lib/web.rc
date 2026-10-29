@@ -9,7 +9,7 @@ extern fn MHD_run_from_select
 
 fn __req(cls: Str(Str, Str), fd: Network, url: Str, method: Str, ver: Str, upload: Str, size: Int, con_cls: ()): Response {
     let page = cls(method, url)
-    let reply = MHD_create_response_from_buffer(page.len, page, 1)
+    let reply = MHD_create_response_from_buffer(page.len, page, 2)
     MHD_add_response_header(reply, "Content-Type", "text/html")
     MHD_add_response_header(reply, "Connection", "close")
     let status = MHD_queue_response(fd, 200, reply)
