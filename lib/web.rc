@@ -15,17 +15,27 @@ enum Request {
 }
 
 fn server(handle: Str(Request)) {
+    print 1
+
     let addr = calloc<Addr>(48, 1)
     let server_fd = socket(2, 1, 0)
+
+    print 2
 
     getaddrinfo("127.0.0.1", "8080", (), addr)
     bind(server_fd, addr, 48)
     listen(server_fd, 3)
 
+    print 3
+
     while true do {
+        print 4
+
         let client_fd = accept(server_fd, addr, Box<Int>(48))
         let buf = calloc<Str>(2048, 1)
         read(client_fd, buf, 2048)
+
+        print 5
 
         let method = calloc<Str>(16, 1)
         let path = calloc<Str>(256, 1)
