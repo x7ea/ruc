@@ -1,0 +1,11 @@
+use std, web
+
+fn index(req: Request): Str {
+    print req.get
+    "Hello, world!"
+}
+
+fn main() {
+    print "Ruc Web"
+    server(index)
+}
