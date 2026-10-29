@@ -17,11 +17,12 @@ enum Request {
 }
 
 fn server(handle: Str(Request)) {
-    let addr = calloc<Addr>(48, 1)
     let server_fd = socket(2, 1, 0)
-
     setsockopt(server_fd, 1, 2, Box<Int>(1), 8)
+
+    let addr = calloc<Addr>(48, 1)
     getaddrinfo("127.0.0.1", "8000", (), Box<Addr>(addr))
+
     bind(server_fd, addr, 48)
     listen(server_fd, 128)
 
