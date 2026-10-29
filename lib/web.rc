@@ -16,16 +16,15 @@ enum Request {
 }
 
 fn server(handle: Str(Request)) {
-    let server_addr = calloc<Addr>(48, 1)
+    let addr = calloc<Addr>(48, 1)
     let server_fd = socket(2, 1, 0)
 
-    getaddrinfo("0.0.0.0", "http", (), Box<Addr>(server_addr))
-    bind(server_fd, server_addr, 48)
+    getaddrinfo("0.0.0.0", "http", (), Box<Addr>(addr))
+    bind(server_fd, addr, 48)
     listen(server_fd, 128)
 
     while true do {
-        let client_addr = calloc<Addr>(48, 1)
-        let client_fd = accept(server_fd, client_addr, Box<Int>(48))
+        let client_fd = accept(server_fd, addr, Box<Int>(48))
         let buf = calloc<Str>(2048, 1)
         read(client_fd, buf, 2048)
 
@@ -42,6 +41,6 @@ fn server(handle: Str(Request)) {
             write(client_fd, body, body.len)
             close(client_fd)
         }
-        free<Addr>(client_addr)
+        free<Addr>(addr)
     }
 }
