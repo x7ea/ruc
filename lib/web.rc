@@ -2,11 +2,11 @@ extern fn getaddrinfo(addr: Str, port: Str, hint: (), this: Box<Addr>): Int
 extern fn freeaddrinfo(this: Addr)
 
 extern fn socket(af: Int, typ: Int, proto: Int): Int
+extern fn setsockopt(fd: Int, sol: Int, reuse: Int, opt: Box<Int>, count: Int)
 extern fn bind(fd: Int, addr: Addr, len: Int): Int
 extern fn listen(fd: Int, n: Int): Int
 extern fn accept(fd: Int, addr: Addr, n: Box<Int>): Int
 extern fn close(fd: Int)
-extern fn setsockopt
 
 extern fn read(fd: Int, buf: Str, count: Int)
 extern fn write(fd: Int, buf: Str, count: Int)
