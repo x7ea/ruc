@@ -217,9 +217,9 @@ impl Expr {
                 )
             }
             Expr::Write(offset, val, addr) => {
-                let [id, addr, offset, val] = [label!(), emit!(addr), emit!(offset), emit!(val)];
+                let [l1, addr, offset, val] = [label!(), emit!(addr), emit!(offset), emit!(val)];
                 format!(
-                    "{addr}\tpxor xmm0, xmm0\n\tcmp rax, 0\n\tje {id}\n\tpush rax\n{offset}\tpop r10\n\tlea r10, [r10+rax*8]\n\tpush r10\n{val}\tpop r10\n{}{id}:\n",
+                    "{addr}\tpxor xmm0, xmm0\n\tcmp rax, 0\n\tje {l1}\n\tpush rax\n{offset}\tpop r10\n\tlea r10, [r10+rax*8]\n\tpush r10\n{val}\tpop r10\n{}{l1}:\n",
                     match typ!(self) {
                         Type::Float => "\tmovsd [r10], xmm0\n",
                         _ => "\tmov [r10], rax\n",
