@@ -110,9 +110,9 @@ impl Expr {
         }
         macro_rules! label {
             () => {{
-                let id = ctx.global.idx;
+                let unique = ctx.global.idx;
                 ctx.global.idx += 1;
-                format!(".L{id}")
+                format!(".L{unique}")
             }};
         }
         macro_rules! typ {
