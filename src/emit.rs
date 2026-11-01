@@ -112,7 +112,7 @@ impl Expr {
             () => {{
                 let id = ctx.global.idx;
                 ctx.global.idx += 1;
-                id.to_string()
+                format!("{id}")
             }};
         }
         macro_rules! typ {
@@ -128,17 +128,17 @@ impl Expr {
                 let [l1, then] = [label!(), emit!(then)];
                 let cond = format!("{}\tcmp rax, 0\n", emit!(cond));
                 match els {
-                    None => format!("{cond}\tje .L{l1}\n{then}.L{l1}:\n"),
+                    None => format!("{cond}\tje {l1}\n{then}{l1}:\n"),
                     Some(case) => {
                         let (l2, case) = (label!(), emit!(case));
-                        format!("{cond}\tje .L{l2}\n{then}\tjmp .L{l1}\n.L{l2}:\n{case}.L{l1}:\n")
+                        format!("{cond}\tje {l2}\n{then}\tjmp {l1}\n{l2}:\n{case}{l1}:\n")
                     }
                 }
             }
             Expr::While(test, body) => {
                 expanding_optimized_code!();
                 let [top, lp, test, body] = [label!(), label!(), emit!(test), emit!(body)];
-                format!(".L{top}:\n{test}\tcmp rax, 0\n\tje .L{lp}\n{body}\tjmp .L{top}\n.L{lp}:\n",)
+                format!("{top}:\n{test}\tcmp rax, 0\n\tje {lp}\n{body}\tjmp {top}\n{lp}:\n",)
             }
             Expr::Block(lines) => map!(&lines, |code| emit!(code)).concat(),
             Expr::Return(val) => format!("{}\tleave\n\tret\n", emit!(val)),
@@ -209,7 +209,7 @@ impl Expr {
             Expr::Read(offset, typ, addr) => {
                 let [l1, addr, offset] = [label!(), emit!(addr), emit!(offset)];
                 format!(
-                    "{addr}\tpxor xmm0, xmm0\n\tcmp rax, 0\n\tje .L{l1}\n\tpush rax\n{offset}\tpop r10\n\tlea rax, [r10+rax*8]\n{}.L{l1}:\n",
+                    "{addr}\tpxor xmm0, xmm0\n\tcmp rax, 0\n\tje {l1}\n\tpush rax\n{offset}\tpop r10\n\tlea rax, [r10+rax*8]\n{}{l1}:\n",
                     match typ {
                         Type::Float => "\tmovsd xmm0, [rax]\n",
                         _ => "\tmov rax, [rax]\n",
@@ -219,7 +219,7 @@ impl Expr {
             Expr::Write(offset, val, addr) => {
                 let [id, addr, offset, val] = [label!(), emit!(addr), emit!(offset), emit!(val)];
                 format!(
-                    "{addr}\tpxor xmm0, xmm0\n\tcmp rax, 0\n\tje .L{id}\n\tpush rax\n{offset}\tpop r10\n\tlea r10, [r10+rax*8]\n\tpush r10\n{val}\tpop r10\n{}.L{id}:\n",
+                    "{addr}\tpxor xmm0, xmm0\n\tcmp rax, 0\n\tje {id}\n\tpush rax\n{offset}\tpop r10\n\tlea r10, [r10+rax*8]\n\tpush r10\n{val}\tpop r10\n{}{id}:\n",
                     match typ!(self) {
                         Type::Float => "\tmovsd [r10], xmm0\n",
                         _ => "\tmov [r10], rax\n",
