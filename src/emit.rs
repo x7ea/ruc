@@ -137,8 +137,8 @@ impl Expr {
             }
             Expr::While(test, body) => {
                 expanding_optimized_code!();
-                let [top, lp, test, body] = [label!(), label!(), emit!(test), emit!(body)];
-                format!("{top}:\n{test}\tcmp rax, 0\n\tje {lp}\n{body}\tjmp {top}\n{lp}:\n",)
+                let [top, end, test, body] = [label!(), label!(), emit!(test), emit!(body)];
+                format!("{top}:\n{test}\tcmp rax, 0\n\tje {end}\n{body}\tjmp {top}\n{end}:\n")
             }
             Expr::Block(lines) => map!(&lines, |code| emit!(code)).concat(),
             Expr::Return(val) => format!("{}\tleave\n\tret\n", emit!(val)),
