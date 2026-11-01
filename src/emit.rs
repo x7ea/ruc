@@ -112,7 +112,7 @@ impl Expr {
             () => {{
                 let id = ctx.global.idx;
                 ctx.global.idx += 1;
-                format!("{id}")
+                format!(".L{id}")
             }};
         }
         macro_rules! typ {
