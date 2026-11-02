@@ -402,7 +402,7 @@ impl Expr {
                 let (init, size) = match typ.clone() {
                     Type::Array(typ) => (Expr::Init(*typ, len!(expr)), Expr::Mul(bound, offset(8))),
                     Type::Class(_) => (Expr::New(typ.clone()), Expr::Integer(typ.size(ctx) as i64)),
-                    typ => return Err(format!("can't clone: {typ}")),
+                    typ => return Err(format!("not clonable: {typ}")),
                 };
                 let arg = vec![*dest.clone(), *expr, size];
                 typing!(expands!(Expr::Block(vec![
