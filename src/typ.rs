@@ -374,7 +374,7 @@ impl Expr {
                 }
                 match infer!(expr) {
                     Type::Class(_) => typing!(Type::Boolean),
-                    typ => Err(format!("can't null-check: {typ}")),
+                    typ => Err(format!("not null-checkable: {typ}")),
                 }
             }
             Expr::Init(typ, len) => {
