@@ -2,4 +2,5 @@ use std
 
 fn main() {
     print "Hello, world!"
+    print range(1, 10)
 }
