@@ -39,7 +39,7 @@ fn range(min: Int, max: Int): [Int] {
     let this = [Int; max - min]
     let index = 0
     while index < this.len do {
-        let this [index] = min +index
+        let this [index] = min + index
         let index = index + 1
     }
     this
