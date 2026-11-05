@@ -38,12 +38,12 @@ enum Option<T> {
 }
 
 fn range(min: Int, max: Int): [Int] {
-    let is_rev = max - min < 0
-    let size = if is_rev then min - max else max - min
-    let this = [Int; size]
+    let is_rev = max < min
+    let this = [Int; abs(max - min)]
     let index = 0
     while index < this.len do {
-        let this[index] = min + index
+        let value = if is_rev then 0 - index else index
+        let this[index] = min + value
         let index = index + 1
     }
     this
