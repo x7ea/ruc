@@ -5,10 +5,10 @@ enum Peano {
     succ: Peano
 }
 
-fn Peano.add(lhs: Peano, rhs: Peano): Peano '
-match rhs {
-    Zero = clone lhs,
-    Succ n = Peano::Succ(lhs + n)
+fn Peano.add(n: Peano, m: Peano): Peano '
+match m {
+    Zero = clone n,
+    Succ m = Peano::Succ(n + m)
 }
 
 fn Peano.print(this: Peano): Int '
