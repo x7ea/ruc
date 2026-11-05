@@ -8,9 +8,7 @@ fn fizzbuzz(n: Int): Str {
 }
 
 fn main() {
-    let i = 1
-    while i <= 100 do {
-        print fizzbuzz(i)
-        let i = i + 1
+    for i = range(1, 100 + 1) do {
+         print fizzbuzz(i)
     }
 }
