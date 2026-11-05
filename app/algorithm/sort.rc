@@ -1,18 +1,14 @@
 use std
 
 fn bubble_sort<T>(cmp: Bool(T, T), array: [T]) {
-    let i = 0
-    while i < array.len do {
-        let j = array.len - 1
-        while j > i do {
+    for i = range(0, array.len) do {
+        for j = range(array.len - 1, i) do {
             if cmp(array[j], array[j - 1]) then {
                 let temp = array[j]
                 let array[j] = array[j - 1]
                 let array[j - 1] = temp
             }
-            let j = j - 1
         }
-        let i = i + 1
     }
 }
 
