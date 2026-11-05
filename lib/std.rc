@@ -23,6 +23,8 @@ fn Str.ne(a: Str, b: Str): Bool strcmp(a, b) != 0
 fn Bool.print(this: Bool): Str '
     if this then "true" else "false"
 
+fn Int.abs(this: Int): Int if this < 0 then 0 - this else this
+
 extern fn scanf(fmt: Str, buf: Str)
 fn input(): Str {
     let buf = calloc<Str>(512, 1)
@@ -36,10 +38,12 @@ enum Option<T> {
 }
 
 fn range(min: Int, max: Int): [Int] {
-    let this = [Int; if max - min < 0 then 0 else max - min]
+    let is_rev = max - min < 0
+    let size = if is_rev then min - max else max - min
+    let this = [Int; size]
     let index = 0
     while index < this.len do {
-        let this [index] = min + index
+        let this[index] = min + index
         let index = index + 1
     }
     this
