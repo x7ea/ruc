@@ -2,7 +2,7 @@ use std
 
 fn bubble_sort<T>(cmp: Bool(T, T), array: [T]) {
     for i = range(0, array.len) do {
-        for j = range(i, array.len - 1) do {
+        for j = range(array.len - 1, i) do {
             if cmp(array[j], array[j - 1]) then {
                 let temp = array[j]
                 let array[j] = array[j - 1]
