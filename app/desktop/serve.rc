@@ -1,8 +1,11 @@
 use std, web
 
 fn index(method: Str, url: Str): Str {
-    print url, method
-    "Hello, world!"
+    if (url == "/") & (method == "GET") then {
+        "Hello, world!"
+    } else {
+        "404 Not Found"
+    }
 }
 
 fn main() {
