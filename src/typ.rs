@@ -444,18 +444,14 @@ impl Expr {
         }
     }
 
-    fn fmtgen(&self, ctx: &mut Context) -> Result<String, String> {
+    fn fmtgen(&self, ctx: &mut Context) -> Result<(String, Expr), String> {
         macro_rules! custom {
-            ($fmter: expr) => {{
-                let obj = Expr::Call(Box::new($fmter), vec![self.clone()]);
-                ctx.local.expand.insert(self.clone(), obj.clone());
-                obj.fmtgen(ctx)
-            }};
+            ($fmter: expr) => {{ Expr::Call(Box::new($fmter), vec![self.clone()]).fmtgen(ctx) }};
         }
         match self.infer(ctx)? {
-            Type::Integer => Ok(String::from("%ld")),
-            Type::String => Ok(String::from("%s")),
-            Type::Float => Ok(String::from("%g")),
+            Type::Integer => Ok((String::from("%ld"), self.clone())),
+            Type::String => Ok((String::from("%s"), self.clone())),
+            Type::Float => Ok((String::from("%g"), self.clone())),
             Type::Array(typ) => custom!(var!("Vec", *typ)),
             typ => custom!(method!(typ, "print")),
         }
