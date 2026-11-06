@@ -1,0 +1,17 @@
+use std
+
+fn hanoi(n: Int, from: Str, to: Str, aux: Str) {
+    if n == 1 then {
+        print n, ": ", from, " -> ", to
+    } else {
+        hanoi(n - 1, from, aux, to)
+        print n, ": ", from, " -> ", to
+        hanoi(n - 1, aux, to, from)
+    }
+}
+
+fn main() {
+    print "Hanoi tower"
+    let n = input().atoi()
+    hanoi(n, "A", "B", "C")
+}
