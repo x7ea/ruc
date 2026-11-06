@@ -9,6 +9,6 @@ fn fizzbuzz(n: Int): Str {
 
 fn main() {
     for i = range(1, 100 + 1) do {
-         print fizzbuzz(i)
+        print fizzbuzz(i)
     }
 }
