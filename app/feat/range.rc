@@ -1,6 +1,0 @@
-use std
-
-fn main() {
-    print range(1, 10)
-    print range(5, -3)
-}
