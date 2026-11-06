@@ -1,0 +1,11 @@
+use std, web
+
+fn index(method: Str, url: Str): Str {
+    print url, method
+    "Hello, world!"
+}
+
+fn main() {
+    print "Ruc Web"
+    server(index)
+}
