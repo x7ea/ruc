@@ -17,12 +17,12 @@ fn main() {
     let product = new Product<Int, Str>
 
     let sum.a = 123
-    print sum
+    print "1: ", sum
 
     let sum.b = "Hoge"
-    print sum
+    print "2: ", sum
 
     let product.a = 456
     let product.b = "Fuga"
-    print product
+    print "3: ", product
 }
