@@ -172,7 +172,7 @@ impl Expr {
                     Expr::While(Box::new(Expr::Lt(temp.clone(), len!(arr))), each)
                 ])))
             }
-            Expr::Block(mut lines) => {
+            Expr::Block(lines) => {
                 let parent = ctx.local.scope.clone();
                 let lines = map!({ lines }, |x| Ok(infer!(x)))?;
                 let ret = lines.last().unwrap_or(&Type::Void);
