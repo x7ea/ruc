@@ -316,7 +316,7 @@ macro_rules! array {
 
 #[macro_export]
 macro_rules! map {
-    ($a: block, $f: expr) => {{ $a.iter_mut().map($f).collect::<Result<Vec<_>, String>>() }};
+    ($a: block, $f: expr) => {{ $a.iter().map($f).collect::<Result<Vec<_>, String>>() }};
     ($a: expr, $f: expr) => {{ $a.iter().map($f).collect::<Vec<_>>() }};
 }
 
