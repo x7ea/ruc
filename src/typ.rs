@@ -261,14 +261,13 @@ impl Expr {
                     }
                     match &ctx.global.table[name] {
                         (_, Object::Struct(layout)) => {
-                            let offset = layout.get_index_of(key).unwrap();
-                            let offset = Box::new(Expr::Integer(offset as i64));
-                            expand!(Expr::Write(offset, val.clone(), obj.clone()));
+                            let base = layout.get_index_of(key).unwrap();
+                            expand!(Expr::Write(offset(base), val.clone(), obj.clone()));
                         }
                         (_, Object::Enum(layout)) => {
                             let tag = layout.get_index_of(key).unwrap();
                             expand!(Expr::Block(vec![
-                                Expr::Write(offset(0), offset(tag as i64), obj.clone()),
+                                Expr::Write(offset(0), offset(tag), obj.clone()),
                                 Expr::Write(offset(8), val.clone(), obj.clone()),
                             ]));
                         }
