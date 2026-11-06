@@ -443,13 +443,15 @@ impl Expr {
         }
     }
 
-    fn fmtgen(&mut self, ctx: &mut Context) -> Result<String, String> {
+    fn fmtgen(&self, ctx: &mut Context) -> Result<String, String> {
         macro_rules! custom {
             ($fmter: expr) => {{
-                *self = Expr::Call(Box::new($fmter), vec![self.clone()]);
-                self.fmtgen(ctx)
+                let fmt = Expr::Call(Box::new($fmter), vec![self.clone()]);
+                ctx.local.expand.insert(self.clone(), fmt.clone());
+                fmt.fmtgen(ctx)
             }};
         }
+
         match self.infer(ctx)? {
             Type::Integer => Ok(String::from("%ld")),
             Type::String => Ok(String::from("%s")),
