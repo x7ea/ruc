@@ -446,9 +446,9 @@ impl Expr {
     fn fmtgen(&self, ctx: &mut Context) -> Result<String, String> {
         macro_rules! custom {
             ($fmter: expr) => {{
-                let fmt = Expr::Call(Box::new($fmter), vec![self.clone()]);
-                ctx.local.expand.insert(self.clone(), fmt.clone());
-                fmt.fmtgen(ctx)
+                let obj = Expr::Call(Box::new($fmter), vec![self.clone()]);
+                ctx.local.expand.insert(self.clone(), obj.clone());
+                obj.fmtgen(ctx)
             }};
         }
 
