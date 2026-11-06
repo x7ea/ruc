@@ -279,10 +279,8 @@ impl Expr {
             },
             Expr::Sequence(array) => {
                 let typ = infer!(array[0]);
-                let mut expr = vec![Expr::Let(
-                    temp.clone(),
-                    Box::new(Expr::Init(typ, offset(array.len()))),
-                )];
+                let init = Box::new(Expr::Init(typ, offset(array.len())));
+                let mut expr = vec![Expr::Let(temp.clone(), init)];
                 for (idx, val) in array.iter().enumerate() {
                     expr.push(Expr::Let(
                         Box::new(Expr::Index(temp.clone(), offset(idx))),
