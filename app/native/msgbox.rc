@@ -1,7 +1,5 @@
 use std, gtk
 
 fn main() {
-    if msgbox("Hello, here is message box!") '
-        then print "OK" '
-        else print "Cancel"
+    print msgbox("Hello, world!")
 }
