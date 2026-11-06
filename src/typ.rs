@@ -394,19 +394,18 @@ impl Expr {
                 }
             }
             Expr::Clone(expr) => {
-                let offset = |n| Box::new(Expr::Integer(n));
-                let (dest, typ) = (Box::new(temp), infer!(expr));
+                let typ = infer!(expr);
                 let bound = Box::new(Expr::Add(len!(expr), offset(1)));
                 let (init, size) = match typ.clone() {
                     Type::Array(typ) => (Expr::Init(*typ, len!(expr)), Expr::Mul(bound, offset(8))),
                     Type::Class(_) => (Expr::New(typ.clone()), Expr::Integer(typ.size(ctx) as i64)),
                     typ => return Err(format!("not clonable: {typ}")),
                 };
-                let arg = vec![*dest.clone(), *expr, size];
+                let arg = vec![*temp.clone(), *expr, size];
                 typing!(expands!(Expr::Block(vec![
-                    Expr::Let(dest.clone(), Box::new(init)),
+                    Expr::Let(temp.clone(), Box::new(init)),
                     Expr::Call(Box::new(var!("memcpy", typ.clone())), arg),
-                    *dest.clone()
+                    *temp.clone()
                 ])))
             }
             Expr::Null(typ) => {
