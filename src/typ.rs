@@ -87,7 +87,7 @@ impl Expr {
             }};
             ($typ: pat, $lhs: expr, $rhs: expr, $ret: expr) => {{ op!($typ, $lhs, $rhs).and_then(|_| typing!($ret.clone())) }};
         }
-        let temp = || var!(&format!("temp{self:?}"));
+        let temp = Box::new(var!(&format!("temp{self:?}")));
         let offset = |n| Box::new(Expr::Integer(n));
 
         match self.clone() {
@@ -319,12 +319,11 @@ impl Expr {
                 typing!(typ.solve(ctx))
             }
             Expr::Enum(typ, key, val) => {
-                let temp = Box::new(temp());
-                let acc = Box::new(Expr::Member(temp.clone(), key.clone()));
+                let acc = Box::new(Expr::Member(Box::new(temp).clone(), key.clone()));
                 typing!(expands!(Expr::Block(vec![
-                    Expr::Let(temp.clone(), Box::new(Expr::New(typ.clone()))),
+                    Expr::Let(Box::new(temp).clone(), Box::new(Expr::New(typ.clone()))),
                     Expr::Let(acc, val.clone()),
-                    *temp
+                    *Box::new(temp)
                 ])))
             }
             Expr::Member(obj, key) => {
@@ -397,7 +396,7 @@ impl Expr {
             }
             Expr::Clone(expr) => {
                 let offset = |n| Box::new(Expr::Integer(n));
-                let (dest, typ) = (Box::new(temp()), infer!(expr));
+                let (dest, typ) = (Box::new(temp), infer!(expr));
                 let bound = Box::new(Expr::Add(len!(expr), offset(1)));
                 let (init, size) = match typ.clone() {
                     Type::Array(typ) => (Expr::Init(*typ, len!(expr)), Expr::Mul(bound, offset(8))),
