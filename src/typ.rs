@@ -92,9 +92,8 @@ impl Expr {
 
         match self.clone() {
             Expr::Print(is_output, vals) => {
-                let fmt = map!({ vals.clone() }, |x| x.fmtgen(ctx))?.concat();
+                let (fmt, vals) = map!({ vals }, |x| x.fmtgen(ctx))?.into_iter().unzip();
                 let fmt = Expr::String(if is_output { fmt + "\\n" } else { fmt });
-                let vals = map!(vals, |x| ctx.local.expand.get(x).unwrap_or(x).clone());
                 typing!(expands!(Expr::Call(
                     Box::new(var!(["g_strdup_printf", "printf"][is_output as usize])),
                     [vec![fmt], vals].concat(),
