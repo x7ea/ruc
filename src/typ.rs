@@ -318,11 +318,11 @@ impl Expr {
                 typing!(typ.solve(ctx))
             }
             Expr::Enum(typ, key, val) => {
-                let acc = Box::new(Expr::Member(Box::new(temp).clone(), key.clone()));
+                let acc = Box::new(Expr::Member(temp.clone(), key.clone()));
                 typing!(expands!(Expr::Block(vec![
-                    Expr::Let(Box::new(temp).clone(), Box::new(Expr::New(typ.clone()))),
+                    Expr::Let(temp.clone(), Box::new(Expr::New(typ.clone()))),
                     Expr::Let(acc, val.clone()),
-                    *Box::new(temp)
+                    *temp
                 ])))
             }
             Expr::Member(obj, key) => {
