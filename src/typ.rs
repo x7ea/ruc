@@ -285,11 +285,11 @@ impl Expr {
                 )];
                 for (idx, val) in array.iter().enumerate() {
                     expr.push(Expr::Let(
-                        Box::new(Expr::Index(Box::new(temp.clone()), offset(idx as i64))),
+                        Box::new(Expr::Index(temp.clone(), offset(idx))),
                         Box::new(val.clone()),
                     ));
                 }
-                expr.push(temp);
+                expr.push(*temp);
                 typing!(expands!(Expr::Block(expr)))
             }
             Expr::Index(arr, idx) => {
