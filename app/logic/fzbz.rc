@@ -1,0 +1,14 @@
+use std
+
+fn fizzbuzz(n: Int): Str {
+    if n % 15 == 0 then return "FizzBuzz"
+    if n % 3 == 0 then return "Fizz"
+    if n % 5 == 0 then return "Buzz"
+    format n
+}
+
+fn main() {
+    for i = range(1, 100 + 1) do {
+        print fizzbuzz(i)
+    }
+}
