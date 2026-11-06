@@ -1,5 +1,6 @@
 use std, gtk
 
 fn main() {
-    print msgbox("Hello, here is message box!")
+    let click = msgbox("Hello, here is message box!")
+    print if click then "OK" else "Cancel"
 }
