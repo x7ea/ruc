@@ -88,7 +88,7 @@ impl Expr {
             ($typ: pat, $lhs: expr, $rhs: expr, $ret: expr) => {{ op!($typ, $lhs, $rhs).and_then(|_| typing!($ret.clone())) }};
         }
         let temp = Box::new(var!(&format!("temp{self:?}")));
-        let offset = |n| Box::new(Expr::Integer(n));
+        let offset = |n| Box::new(Expr::Integer(n as i64));
 
         match self.clone() {
             Expr::Print(is_output, mut vals) => {
@@ -279,10 +279,10 @@ impl Expr {
                 other => Err(format!("assign target: {}", infer!(other))),
             },
             Expr::Sequence(array) => {
-                let (typ, temp) = (infer!(array[0]), temp());
+                let typ = infer!(array[0]);
                 let mut expr = vec![Expr::Let(
-                    Box::new(temp.clone()),
-                    Box::new(Expr::Init(typ, offset(array.len() as i64))),
+                    temp.clone(),
+                    Box::new(Expr::Init(typ, offset(array.len()))),
                 )];
                 for (idx, val) in array.iter().enumerate() {
                     expr.push(Expr::Let(
