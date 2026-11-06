@@ -88,7 +88,7 @@ impl Expr {
             ($typ: pat, $lhs: expr, $rhs: expr, $ret: expr) => {{ op!($typ, $lhs, $rhs).and_then(|_| typing!($ret.clone())) }};
         }
         let temp = Box::new(var!(&format!("temp{self:?}")));
-        let offset = |n| Box::new(Expr::Integer(n as i64));
+        let offset = |n: usize| Box::new(Expr::Integer(n as i64));
 
         match self.clone() {
             Expr::Print(is_output, mut vals) => {
@@ -157,9 +157,8 @@ impl Expr {
                 }
             }
             Expr::For(cnt, arr, body) => {
-                let (typ, temp) = (infer!(arr), Box::new(temp()));
-                let Type::Array(_) = typ else {
-                    return Err(format!("not iterable: {typ}"));
+                let Type::Array(_) = infer!(arr) else {
+                    return Err(format!("not iterable: {}", infer!(arr)));
                 };
                 let inc = Box::new(Expr::Add(temp.clone(), Box::new(Expr::Integer(1))));
                 let each = Box::new(Expr::Block(vec![
