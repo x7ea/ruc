@@ -91,12 +91,12 @@ impl Expr {
         let offset = |n| Box::new(Expr::Integer(n as i64));
 
         match self.clone() {
-            Expr::Print(is_output, vals) => {
-                let (fmt, vals) = map!({ vals }, |x| x.fmtgen(ctx))?.into_iter().unzip();
+            Expr::Print(is_output, args) => {
+                let (fmt, args) = map!({ args }, |x| x.fmtgen(ctx))?.into_iter().unzip();
                 let fmt = Expr::String(if is_output { fmt + "\\n" } else { fmt });
                 typing!(expands!(Expr::Call(
                     Box::new(var!(["g_strdup_printf", "printf"][is_output as usize])),
-                    [vec![fmt], vals].concat(),
+                    [vec![fmt], args].concat(),
                 )))
             }
             Expr::If(cond, then, els) => {
