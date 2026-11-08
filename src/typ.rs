@@ -322,7 +322,7 @@ impl Expr {
                     *temp
                 ])))
             }
-            Expr::Member(obj, key) => {
+            Expr::Member(obj, ref key) => {
                 let typ = infer!(obj);
                 let Type::Class(name) = &typ else {
                     return match key.to_string().as_str() {
@@ -336,12 +336,12 @@ impl Expr {
                 }
                 let (_, class) = ctx.global.table[unify].clone();
                 let (Object::Struct(layout) | Object::Enum(layout)) = &class;
-                let Some(typ) = layout.get(&key).cloned() else {
+                let Some(typ) = layout.get(key).cloned() else {
                     return Err(format!("undefined: {name}.{key}"));
                 };
                 match class {
                     Object::Struct(layout) => {
-                        let base = offset(layout.get_index_of(&key).unwrap());
+                        let base = offset(layout.get_index_of(key).unwrap());
                         expand!(Expr::Read(base, typ.clone(), obj.clone()));
                     }
                     Object::Enum(_) => expand!(Expr::If(
