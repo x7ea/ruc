@@ -341,8 +341,11 @@ impl Expr {
                 };
                 match class {
                     Object::Struct(layout) => {
-                        let offset = Expr::Integer(layout.get_index_of(&key).unwrap() as i64);
-                        expand!(Expr::Read(Box::new(offset), typ.clone(), obj.clone()));
+                        expand!(Expr::Read(
+                            offset(layout.get_index_of(&key).unwrap()),
+                            typ.clone(),
+                            obj.clone()
+                        ));
                     }
                     Object::Enum(_) => expand!(Expr::If(
                         Box::new(Expr::Check(Box::new(self.clone()))),
@@ -360,9 +363,8 @@ impl Expr {
                     let Some(tag) = layout.get_index_of(key) else {
                         return Err(format!("undefined: {name}.{key}"));
                     };
-                    let offset = Box::new(Expr::Integer(0));
                     expand!(Expr::Eq(
-                        Box::new(Expr::Read(offset, Type::Integer, obj.clone())),
+                        Box::new(Expr::Read(offset(0), Type::Integer, obj.clone())),
                         Box::new(Expr::Integer(tag as i64)),
                     ));
                     return typing!(Type::Boolean);
