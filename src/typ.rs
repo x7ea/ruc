@@ -370,7 +370,7 @@ impl Expr {
                 }
             }
             Expr::Init(typ, len) => {
-                expand!(new!(Expr::Add(len, Box::new(Expr::Integer(1)))));
+                expand!(new!(Expr::Add(len, offset(1))));
                 typing!(Type::Array(Box::new(typ.clone())))
             }
             Expr::Read(offset, typ, addr) => {
