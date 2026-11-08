@@ -22,8 +22,8 @@ fn Amd64.ret(this: Amd64): Int this.rax
 fn RiscV.ret(this: RiscV): Int this.a0
 
 fn assembly<T>(cpu: T) {
-    cpu.add(3)
-    cpu.add(5)
+    let _ = cpu.add(3)
+    let _ = cpu.add(5)
     print cpu.ret()
 }
 
