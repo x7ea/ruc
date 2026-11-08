@@ -392,7 +392,7 @@ impl Expr {
                 let bound = Box::new(Expr::Add(len!(expr), offset(1)));
                 let (init, size) = match typ.clone() {
                     Type::Array(typ) => (Expr::Init(*typ, len!(expr)), Expr::Mul(bound, offset(8))),
-                    Type::Class(_) => (Expr::New(typ.clone()), Expr::Integer(typ.size(ctx) as i64)),
+                    Type::Class(_) => (Expr::New(typ.clone()), *offset(typ.size(ctx))),
                     typ => return Err(format!("not clonable: {typ}")),
                 };
                 let arg = vec![*temp.clone(), *expr, size];
@@ -403,10 +403,7 @@ impl Expr {
                 ])))
             }
             Expr::Null(typ) => {
-                expand!(Expr::Block(vec![
-                    Expr::Float(Float::from(0.0)),
-                    Expr::Integer(0)
-                ]));
+                expand!(Expr::Block(vec![Expr::Float(Float::from(0.0)), *offset(0)]));
                 typing!(typ.solve(ctx))
             }
             Expr::Integer(_) => typing!(Type::Integer),
