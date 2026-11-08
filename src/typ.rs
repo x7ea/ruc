@@ -261,8 +261,8 @@ impl Expr {
                     }
                     match &ctx.global.table[name] {
                         (_, Object::Struct(layout)) => {
-                            let base = layout.get_index_of(key).unwrap();
-                            expand!(Expr::Write(offset(base), val.clone(), obj.clone()));
+                            let base = offset(layout.get_index_of(key).unwrap());
+                            expand!(Expr::Write(base, val.clone(), obj.clone()));
                         }
                         (_, Object::Enum(layout)) => {
                             let tag = layout.get_index_of(key).unwrap();
