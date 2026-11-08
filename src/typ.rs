@@ -311,7 +311,7 @@ impl Expr {
                     return Err(format!("no constructor: {class}"));
                 };
                 let typ = class.mono(ctx, generic)?;
-                expand!(new!(Expr::Integer(typ.size(ctx) as i64 / 8)));
+                expand!(new!(*offset(typ.size(ctx) / 8)));
                 typing!(typ.solve(ctx))
             }
             Expr::Enum(typ, key, val) => {
