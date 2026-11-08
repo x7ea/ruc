@@ -1,9 +1,0 @@
-use std
-
-fn fact(n: Int): Int '
-    if n > 0 then n * fact(n - 1) else 1
-
-fn main() {
-    let x = input().atoi()
-    print x, "! = ", fact(x)
-}
