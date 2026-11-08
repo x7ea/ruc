@@ -1,0 +1,14 @@
+use std, web
+
+fn index(method: Str, url: Str): Str {
+    if (url == "/") & (method == "GET") then {
+        "Hello, world!"
+    } else {
+        "404 Not Found"
+    }
+}
+
+fn main() {
+    print "Ruc Web"
+    server(index)
+}
