@@ -1,0 +1,5 @@
+use std, gtk
+
+fn main() {
+    print msgbox("Hello, world!")
+}
