@@ -341,11 +341,8 @@ impl Expr {
                 };
                 match class {
                     Object::Struct(layout) => {
-                        expand!(Expr::Read(
-                            offset(layout.get_index_of(&key).unwrap()),
-                            typ.clone(),
-                            obj.clone()
-                        ));
+                        let base = offset(layout.get_index_of(&key).unwrap());
+                        expand!(Expr::Read(base, typ.clone(), obj.clone()));
                     }
                     Object::Enum(_) => expand!(Expr::If(
                         Box::new(Expr::Check(Box::new(self.clone()))),
