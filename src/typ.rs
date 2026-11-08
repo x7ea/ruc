@@ -167,7 +167,7 @@ impl Expr {
                     *body,
                 ]));
                 typing!(expands!(Expr::Block(vec![
-                    Expr::Let(temp.clone(), Box::new(Expr::Integer(0))),
+                    Expr::Let(temp.clone(), offset(0)),
                     Expr::While(Box::new(Expr::Lt(temp.clone(), len!(arr))), each)
                 ])))
             }
