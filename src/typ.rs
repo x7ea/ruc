@@ -303,7 +303,7 @@ impl Expr {
             }
             Expr::Len(obj) => typing!(expands!(match infer!(obj) {
                 Type::String => Expr::Call(Box::new(var!("strlen")), vec![*obj.clone()]),
-                Type::Array(_) => Expr::Read(Box::new(Expr::Integer(0)), Type::Integer, obj),
+                Type::Array(_) => Expr::Read(offset(0), Type::Integer, obj),
                 typ => return Err(format!("no length: {typ}")),
             })),
             Expr::New(class) => {
