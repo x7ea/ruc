@@ -360,10 +360,8 @@ impl Expr {
                     let Some(tag) = layout.get_index_of(key) else {
                         return Err(format!("undefined: {name}.{key}"));
                     };
-                    expand!(Expr::Eq(
-                        Box::new(Expr::Read(offset(0), Type::Integer, obj.clone())),
-                        Box::new(Expr::Integer(tag as i64)),
-                    ));
+                    let reading = Box::new(Expr::Read(offset(0), Type::Integer, obj.clone()));
+                    expand!(Expr::Eq(offset(tag), reading));
                     return typing!(Type::Boolean);
                 }
                 match infer!(expr) {
