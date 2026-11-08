@@ -160,7 +160,7 @@ impl Expr {
                 let Type::Array(_) = infer!(arr) else {
                     return Err(format!("not iterable: {}", infer!(arr)));
                 };
-                let inc = Box::new(Expr::Add(temp.clone(), Box::new(Expr::Integer(1))));
+                let inc = Box::new(Expr::Add(temp.clone(), offset(1)));
                 let each = Box::new(Expr::Block(vec![
                     Expr::Let(cnt, Box::new(Expr::Index(arr.clone(), temp.clone()))),
                     Expr::Let(temp.clone(), inc),
