@@ -14,7 +14,7 @@ impl Define {
                     };
                     let val = body.infer(ctx)?;
                     if ctx.local.ret != val {
-                        return Err(format!("return: {ret} != {value}"));
+                        return Err(format!("return: {ret} != {val}"));
                     }
                     ctx.table.insert(name.clone(), ctx.local.clone());
                     ctx.local = parent;
