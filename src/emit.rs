@@ -91,7 +91,7 @@ impl Expr {
                     Type::Float => format!("{n}\tsub rsp, 8\n\tmovsd [rsp], xmm0\n{m}\tmovsd xmm1, xmm0\n\tmovsd xmm0, [rsp]\n\tadd rsp, 8\n\t{asm}sd xmm0, xmm1\n"),
                     _ => emit!(expr!(self)),
                 }
-         }   };
+            }};
         }
         macro_rules! cmp {
             ($op: literal, $lhs: expr , $rhs: expr) => {{
