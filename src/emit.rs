@@ -84,23 +84,14 @@ impl Expr {
             };
         }
         macro_rules! op {
-            ($asm: literal, $lhs: expr, $rhs: expr) => {
+            ($asm: literal, $lhs: expr, $rhs: expr) => {{
+                let [n, m, asm]= [emit!($lhs), emit!($rhs), $asm.to_string()];
                 match typ!(&**$rhs) {
-                    Type::Integer | Type::Boolean => format!(
-                        "{}\tpush rax\n{}\tmov r10, rax\n\tpop rax\n\t{} rax, r10\n",
-                        emit!($lhs),
-                        emit!($rhs),
-                        $asm.replace("mul", "imul"),
-                    ),
-                    Type::Float => format!(
-                        "{}\tsub rsp, 8\n\tmovsd [rsp], xmm0\n{}\tmovsd xmm1, xmm0\n\tmovsd xmm0, [rsp]\n\tadd rsp, 8\n\t{}sd xmm0, xmm1\n",
-                         emit!($lhs),
-                         emit!($rhs),
-                         $asm
-                    ),
+                    Type::Integer | Type::Boolean => format!("{n}\tpush rax\n{m}\tmov r10, rax\n\tpop rax\n\t{} rax, r10\n", asm.replace("mul", "imul")),
+                    Type::Float => format!("{n}\tsub rsp, 8\n\tmovsd [rsp], xmm0\n{m}\tmovsd xmm1, xmm0\n\tmovsd xmm0, [rsp]\n\tadd rsp, 8\n\t{asm}sd xmm0, xmm1\n"),
                     _ => emit!(expr!(self)),
                 }
-            };
+         }   };
         }
         macro_rules! cmp {
             ($op: literal, $lhs: expr , $rhs: expr) => {{
