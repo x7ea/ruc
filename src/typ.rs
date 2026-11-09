@@ -12,8 +12,8 @@ impl Define {
                         ret: ret.solve(ctx),
                         ..Function::default()
                     };
-                    let value = body.infer(ctx)?;
-                    if ctx.local.ret != value {
+                    let val = body.infer(ctx)?;
+                    if ctx.local.ret != val {
                         return Err(format!("return: {ret} != {value}"));
                     }
                     ctx.table.insert(name.clone(), ctx.local.clone());
