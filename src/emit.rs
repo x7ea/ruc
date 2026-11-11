@@ -5,10 +5,10 @@ impl Define {
         macro_rules! name {
             ($define: expr) => {
                 match $define.clone() {
-                    Define::Function((Generic(func, _), _), _) => func,
-                    Define::Declare((Generic(lib, _), _), _) => lib,
-                    Define::Class(Generic(class, _), _) => class,
-                    Define::Symbol(sym, _) => sym,
+                    Define::Function((Generic(name, _), _), _) => func,
+                    Define::Declare((Generic(name, _), _), _) => lib,
+                    Define::Class(Generic(name, _), _) => class,
+                    Define::Symbol(name, _) => sym,
                 }
             };
         }
