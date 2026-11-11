@@ -50,30 +50,30 @@ fn range(min: Int, max: Int): [Int] {
 }
 
 struct Vec<T> {
-    raw: [T]
+    iter: [T]
 }
 
 fn Vec<T>(value: [T]): Vec<T> {
     let this = new Vec<T>
-    let this.raw = value
+    let this.iter = value
     this
 }
 
 fn Vec.push<T>(this: Vec<T>, value: T) {
-    let buf = [T; this.raw.len + 1]
+    let buf = [T; this.iter.len + 1]
 
     let index = 0
-    for data = this.raw do {
+    for data = this.iter do {
         let buf[index] = data
         let index = index + 1
     }
     let buf[index] = value
-    let this.raw = buf
+    let this.iter = buf
 }
 
 fn Vec.print<T>(this: Vec<T>): Str {
     let fmt = "[ "
-    for data = this.raw do {
+    for data = this.iter do {
         let fmt = format fmt, data, ", "
     }
     fmt + "]"
@@ -95,11 +95,11 @@ fn Map<K, V>(keys: [K], values: [V]): Map<K, V> {
 
 fn Map.index_of<K, V>(this: Map<K, V>, key: K): Option<Int> {
     let index = 0
-    while (index < this.keys.raw.len) '
-        & (this.keys.raw[index] != key) do {
+    while (index < this.keys.iter.len) '
+        & (this.keys.iter[index] != key) do {
         let index = index + 1
     }
-    if index != this.keys.raw.len then {
+    if index != this.keys.iter.len then {
         Option<Int>::Some(index)
     } else {
         Option<Int>::None
@@ -108,14 +108,14 @@ fn Map.index_of<K, V>(this: Map<K, V>, key: K): Option<Int> {
 
 fn Map.get<K, V>(this: Map<K, V>, key: K): Option<V> {
     match this.index_of(key) {
-        Some index = Option<V>::Some(this.values.raw[index]),
+        Some index = Option<V>::Some(this.values.iter[index]),
         None = Option<V>::None
     }
 }
 
 fn Map.insert<K, V>(this: Map<K, V>, key: K, value: V) {
     if let index = this.index_of(key).some then {
-        let this.values.raw[index] = value
+        let this.values.iter[index] = value
     } else {
         this.keys.push(key)
         this.values.push(value)
@@ -125,8 +125,8 @@ fn Map.insert<K, V>(this: Map<K, V>, key: K, value: V) {
 fn Map.print<K, V>(this: Map<K, V>): Str {
     let index = 0
     let display = "{ "
-    while (index < this.keys.raw.len) do {
-        let display = format display, this.keys.raw[index], ": ", this.values.raw[index], ", "
+    while (index < this.keys.iter.len) do {
+        let display = format display, this.keys.iter[index], ": ", this.values.iter[index], ", "
         let index = index + 1
     }
     format display, "}"
