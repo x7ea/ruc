@@ -96,7 +96,7 @@ impl Expr {
         macro_rules! cmp {
             ($op: literal, $lhs: expr , $rhs: expr) => {{
                 let [test, op] = [op!("cmp", $lhs, $rhs), $op.to_string()];
-                format!("{test}\tset{op} al\n\tmovzx rax, al\n",)
+                format!("{test}\tset{op} al\n\tmovzx rax, al\n")
             }};
         }
         macro_rules! label {

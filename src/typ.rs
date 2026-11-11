@@ -77,7 +77,7 @@ impl Expr {
             ($typ: pat, $lhs: expr, $rhs: expr) => {{
                 let op = &self.as_ref().to_lowercase();
                 match (infer!($lhs), infer!($rhs)) {
-                    (lhs, rhs) if lhs != rhs => Err(format!("{op} term: {lhs} != {rhs}",)),
+                    (lhs, rhs) if lhs != rhs => Err(format!("{op} term: {lhs} != {rhs}")),
                     ($typ, ret @ $typ) => typing!(ret.clone()),
                     (typ, _) => typing!(expands!(Expr::Call(
                         Box::new(method!(&typ, op)),
