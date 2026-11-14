@@ -543,8 +543,8 @@ impl Type {
     }
 
     fn size(&self, ctx: &Context) -> usize {
-        let Generic(name, _) = self.clone().unwrap_class();
-        match &ctx.global.table[&name] {
+        let Generic(ref name, _) = self.clone().unwrap_class();
+        match &ctx.global.table[name] {
             (_, Object::Struct(layout)) => layout.len() * 8,
             (_, Object::Enum(_)) => 16,
         }
