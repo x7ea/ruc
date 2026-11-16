@@ -160,19 +160,18 @@ impl Expr {
                 let (func, len) = (emit!(func), emit!(Expr::Integer(xmm)));
                 format!("{push}{mov}{func}\tmov r10, rax\n{len}\tcall r10\n")
             }
-            Expr::Variable(var @ Generic(name, _)) => {
+            Expr::Variable(var @ Generic(ref mut name, _)) => {
                 expanding_optimized_code!();
                 let env = &ctx.local.var;
-                let mut name = name.clone();
-                if let Some(addr) = env.get_index_of(&name) {
-                    let (typ, addr) = (env[&name].clone(), (addr + 1) * 8);
+                if let Some(addr) = env.get_index_of(name) {
+                    let (typ, addr) = (env.get(name), (addr + 1) * 8);
                     match typ {
-                        Type::Float => format!("\tmovsd xmm0, [rbp-{addr}]\n"),
+                        Some(Type::Float) => format!("\tmovsd xmm0, [rbp-{addr}]\n"),
                         _ => format!("\tmov rax, [rbp-{addr}]\n"),
                     }
                 } else {
-                    if !ctx.global.extrn.contains(&name) {
-                        name = var.generic();
+                    if !ctx.global.extrn.contains(name) {
+                        *name = var.generic();
                     }
                     format!("\tlea rax, [{name}]\n")
                 }
