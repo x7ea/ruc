@@ -19,7 +19,7 @@ impl Define {
                         return Err(format!("return: {ret} != {val}"));
                     }
                     ctx.table.insert(name.clone(), ctx.local.clone());
-                });
+                })
             }
             Define::Declare((Generic(name, _), _), _) => {
                 ctx.global.extrn.insert(name.clone());
