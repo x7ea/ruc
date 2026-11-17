@@ -286,6 +286,15 @@ impl Generic {
 }
 
 #[macro_export]
+macro_rules! transaction {
+    ($ctx: expr, $inner_process: block) => {{
+        let temp = $ctx.clone();
+        $inner_process;
+        $ctx = temp;
+    }};
+}
+
+#[macro_export]
 macro_rules! new {
     ($layout: expr) => {{ Expr::Call(Box::new(var!("calloc")), vec![$layout, Expr::Integer(8)]) }};
 }
