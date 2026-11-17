@@ -475,14 +475,14 @@ impl Type {
                         _ => Define::Declare(head, *ret),
                     };
                 };
-                let parent = ctx.global.alias.clone();
-                ctx.global.alias = alias.clone();
-                if let Define::Function(_, _) = unify {
-                    typ = unify.infer(ctx)?;
-                }
-                ctx.global.used.insert(mangle.clone());
-                ctx.global.def.insert(mangle, unify.clone());
-                ctx.global.alias = parent;
+                transaction!(ctx.global.alias, {
+                    ctx.global.alias = alias.clone();
+                    if let Define::Function(_, _) = unify {
+                        typ = unify.infer(ctx)?;
+                    }
+                    ctx.global.used.insert(mangle.clone());
+                    ctx.global.def.insert(mangle, unify.clone());
+                });
             }
             Type::Class(Generic(name, args)) => {
                 let Some((params, table)) = ctx.global.table.get(&name) else {
