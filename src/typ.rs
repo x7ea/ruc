@@ -171,8 +171,7 @@ impl Expr {
                     Expr::While(Box::new(Expr::Lt(temp.clone(), len!(arr))), each)
                 ])))
             }
-            Expr::Block(lines) => {
-                let parent = ctx.local.scope.clone();
+            Expr::Block(lines) => transaction!(ctx.local.scope, {
                 let lines = map!({ lines }, |x| Ok(infer!(x)))?;
                 let ret = lines.last().unwrap_or(&Type::Void);
                 for (name, val) in &ctx.local.scope {
@@ -183,9 +182,8 @@ impl Expr {
                     }
                     ctx.local.var.insert(name.clone(), val.clone());
                 }
-                ctx.local.scope = parent;
                 typing!(ret.clone())
-            }
+            }),
             Expr::Return(val) => match (infer!(val), ctx.local.ret.solve(ctx)) {
                 (val, ret) if ret == val => typing!(Type::Void),
                 (val, ret) => Err(format!("return: {ret} != {val}")),
