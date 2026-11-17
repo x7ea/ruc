@@ -6,18 +6,18 @@ impl Define {
             Define::Function((Generic(name, params), args), (body, ret)) => {
                 ctx.global.lib.insert(name.clone(), self.signature());
                 if params.is_empty() {
-                    let parent = ctx.local.clone();
-                    ctx.local = Function {
-                        scope: args.clone(),
-                        ret: ret.solve(ctx),
-                        ..Function::default()
-                    };
-                    let val = body.infer(ctx)?;
-                    if ctx.local.ret != val {
-                        return Err(format!("return: {ret} != {val}"));
-                    }
-                    ctx.table.insert(name.clone(), ctx.local.clone());
-                    ctx.local = parent;
+                    transaction!(ctx.local, {
+                        ctx.local = Function {
+                            scope: args.clone(),
+                            ret: ret.solve(ctx),
+                            ..Function::default()
+                        };
+                        let val = body.infer(ctx)?;
+                        if ctx.local.ret != val {
+                            return Err(format!("return: {ret} != {val}"));
+                        }
+                        ctx.table.insert(name.clone(), ctx.local.clone());
+                    });
                 }
             }
             Define::Declare((Generic(name, _), _), _) => {
