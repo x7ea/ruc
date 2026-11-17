@@ -289,8 +289,9 @@ impl Generic {
 macro_rules! transaction {
     ($ctx: expr, $inner_process: block) => {{
         let temp = $ctx.clone();
-        $inner_process;
+        let ret = $inner_process;
         $ctx = temp;
+        ret
     }};
 }
 
