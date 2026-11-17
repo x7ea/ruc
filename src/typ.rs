@@ -5,20 +5,21 @@ impl Define {
         match self.clone() {
             Define::Function((Generic(name, params), args), (body, ret)) => {
                 ctx.global.lib.insert(name.clone(), self.signature());
-                if params.is_empty() {
-                    transaction!(ctx.local, {
-                        ctx.local = Function {
-                            scope: args.clone(),
-                            ret: ret.solve(ctx),
-                            ..Function::default()
-                        };
-                        let val = body.infer(ctx)?;
-                        if ctx.local.ret != val {
-                            return Err(format!("return: {ret} != {val}"));
-                        }
-                        ctx.table.insert(name.clone(), ctx.local.clone());
-                    });
+                if !params.is_empty() {
+                    return Ok(self.signature());
                 }
+                transaction!(ctx.local, {
+                    ctx.local = Function {
+                        scope: args.clone(),
+                        ret: ret.solve(ctx),
+                        ..Function::default()
+                    };
+                    let val = body.infer(ctx)?;
+                    if ctx.local.ret != val {
+                        return Err(format!("return: {ret} != {val}"));
+                    }
+                    ctx.table.insert(name.clone(), ctx.local.clone());
+                });
             }
             Define::Declare((Generic(name, _), _), _) => {
                 ctx.global.extrn.insert(name.clone());
