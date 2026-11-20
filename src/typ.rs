@@ -481,7 +481,7 @@ impl Type {
                     }
                     ctx.global.used.insert(mangle.clone());
                     ctx.global.def.insert(mangle, unify.clone());
-                })?;
+                })?
             }
             Type::Class(Generic(name, args)) => {
                 let Some((params, table)) = ctx.global.table.get(&name) else {
