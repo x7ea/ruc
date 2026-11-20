@@ -19,7 +19,7 @@ impl Define {
                         return Err(format!("return: {ret} != {val}"));
                     }
                     ctx.table.insert(name.clone(), ctx.local.clone());
-                })
+                })?
             }
             Define::Declare((Generic(name, _), _), _) => {
                 ctx.global.extrn.insert(name.clone());
@@ -184,7 +184,7 @@ impl Expr {
                     ctx.local.var.insert(name.clone(), val.clone());
                 }
                 typing!(ret.clone())
-            }),
+            })?,
             Expr::Return(val) => match (infer!(val), ctx.local.ret.solve(ctx)) {
                 (val, ret) if ret == val => typing!(Type::Void),
                 (val, ret) => Err(format!("return: {ret} != {val}")),
@@ -481,7 +481,7 @@ impl Type {
                     }
                     ctx.global.used.insert(mangle.clone());
                     ctx.global.def.insert(mangle, unify.clone());
-                });
+                })?;
             }
             Type::Class(Generic(name, args)) => {
                 let Some((params, table)) = ctx.global.table.get(&name) else {
