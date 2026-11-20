@@ -289,7 +289,7 @@ impl Generic {
 macro_rules! transaction {
     ($ctx: expr, $inner_process: block) => {{
         let temp = $ctx.clone();
-        let ret = $inner_process;
+        let ret = (|| Ok::<_, String>($inner_process))();
         $ctx = temp;
         ret
     }};
