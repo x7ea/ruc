@@ -10,5 +10,5 @@ fn index(method: Str, url: Str): Str {
 
 fn main() {
     print "Ruc Web"
-    server(index)
+    index.server(8000)
 }
