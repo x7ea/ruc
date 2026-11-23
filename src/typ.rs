@@ -359,8 +359,8 @@ impl Expr {
                     let Some(tag) = layout.get_index_of(key) else {
                         return Err(format!("undefined: {name}.{key}"));
                     };
-                    let reading = Box::new(Expr::Read(offset(0), Type::Integer, obj.clone()));
-                    expand!(Expr::Eq(offset(tag), reading));
+                    let reading = Expr::Read(offset(0), Type::Integer, obj.clone());
+                    expand!(Expr::Eq(offset(tag), Box::new(reading)));
                     return typing!(Type::Boolean);
                 }
                 match infer!(expr) {
