@@ -1,0 +1,12 @@
+use std
+
+fn main() {
+    let secret = range(1, 10).Vec<Int>().random()
+    let answer = input().atoi()
+
+    if secret == answer then {
+        print "Correct!"
+    } else {
+        print secret
+    }
+}
