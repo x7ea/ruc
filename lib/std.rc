@@ -175,9 +175,9 @@ extern fn srand(seed: Int)
 extern fn time(t: Int): Int
 extern fn rand(): Int
 
-fn random(min: Int, max: Int): Int {
+fn Vec.random<T>(this: Vec<T>): T {
     srand(time(0) + getpid())
-    rand() % (max - min + 1) + min
+    this.iter[rand()]
 }
 
 struct Box<T> {
