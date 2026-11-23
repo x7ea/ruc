@@ -3,20 +3,16 @@ use std
 enum Sum<A, B> { a: A, b: B }
 struct Product<A, B> { a: A, b: B }
 
-fn Algebra_print<T>(this: T) {
-    print "a: ", this.a
-    print "b: ", this.b
-}
-
 fn main() {
     let x = new Sum<Str, Int>
     let y = new Product<Float, Str>
 
     let x.a = "Hoge"
     let x.b = 123
-    Algebra_print<Sum<Str, Int>>(x)
 
     let y.a = 456.7
     let y.b = "Fuga"
-    Algebra_print<Product<Float, Str>>(y)
+
+    print x.a, x.b
+    print y.a, y.b
 }
