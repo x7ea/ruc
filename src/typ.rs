@@ -372,17 +372,15 @@ impl Expr {
                 expand!(new!(Expr::Add(len, offset(1))));
                 typing!(Type::Array(Box::new(typ.clone())))
             }
-            Expr::Read(offset, typ, addr) => {
+            Expr::Read(offset, _, addr) | Expr::Write(offset, _, addr) => {
                 infer!(addr);
+                let typ = match self {
+                    Expr::Read(_, typ, _) => typ.clone(),
+                    Expr::Write(_, val, _) => infer!(val),
+                    _ => unreachable!(),
+                };
                 match infer!(offset) {
-                    Type::Integer => typing!(typ.clone()),
-                    typ => Err(format!("not address: {typ}")),
-                }
-            }
-            Expr::Write(offset, val, addr) => {
-                infer!(addr);
-                match infer!(offset) {
-                    Type::Integer => typing!(infer!(val)),
+                    Type::Integer => typing!(typ),
                     typ => Err(format!("not address: {typ}")),
                 }
             }
