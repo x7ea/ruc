@@ -284,18 +284,13 @@ impl Expr {
                 expr.push(*temp);
                 typing!(expand!(Expr::Block(expr)))
             }
-            Expr::Index(arr, idx) => {
-                let Type::Array(typ) = infer!(arr) else {
-                    return Err(format!("not array: {}", infer!(arr)));
-                };
-                match infer!(idx) {
-                    Type::Integer => {
-                        expand!(Expr::Read(array!(arr, idx), *typ.clone(), arr.clone()));
-                        typing!(*typ.clone())
-                    }
-                    typ => Err(format!("not index: {typ}")),
+            Expr::Index(arr, idx) => match (infer!(arr), infer!(idx)) {
+                (Type::Array(typ), Type::Integer) => {
+                    expand!(Expr::Read(array!(arr, idx), *typ.clone(), arr.clone()));
+                    typing!(*typ.clone())
                 }
-            }
+                (typ, idx) => Err(format!("no array: {typ}[{idx}]")),
+            },
             Expr::Len(obj) => typing!(expand!(match infer!(obj) {
                 Type::String => Expr::Call(Box::new(var!("strlen")), vec![*obj.clone()]),
                 Type::Array(_) => Expr::Read(offset(0), Type::Integer, obj),
