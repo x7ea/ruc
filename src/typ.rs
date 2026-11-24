@@ -62,17 +62,11 @@ impl Expr {
                 Ok::<Type, String>(typ)
             }};
         }
-        macro_rules! expands {
-            ($value: expr) => {{
-                let expr = $value.clone();
-                ctx.local.expand.insert(self.clone(), expr.clone());
-                infer!(expr)
-            }};
-        }
         macro_rules! expand {
-            ($expr: expr) => {{
-                let _ = expands!($expr);
-            }};
+            ($value: expr) => {{ ctx.local.expand.insert(self.clone(), $value.clone()) }};
+        }
+        macro_rules! expands {
+            ($value: expr) => {{ infer!(expand!($value.clone())) }};
         }
         macro_rules! op {
             ($typ: pat, $lhs: expr, $rhs: expr) => {{
@@ -346,14 +340,14 @@ impl Expr {
                 match class {
                     Object::Struct(layout) => {
                         let base = offset(layout.get_index_of(key).unwrap());
-                        expand!(Expr::Read(base, typ.clone(), obj.clone()));
+                        expand!(Expr::Read(base, typ.clone(), obj.clone()))
                     }
                     Object::Enum(_) => expand!(Expr::If(
                         Box::new(Expr::Check(Box::new(self.clone()))),
                         Box::new(Expr::Read(offset(8), typ.clone(), obj.clone())),
                         Some(Box::new(Expr::Null(typ.clone())))
                     )),
-                }
+                };
                 typing!(typ.solve(ctx))
             }
             Expr::Check(expr) => {
