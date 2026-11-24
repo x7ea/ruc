@@ -74,13 +74,6 @@ impl Expr {
                 let _ = expands!($expr);
             }};
         }
-        macro_rules! check {
-            ($expr: expr, $typ: expr, $msg: literal) => {{
-                if $typ != infer!($expr) {
-                    return Err(format!("{}: {} != {}", $msg, $typ, infer!($expr)));
-                }
-            }};
-        }
         macro_rules! op {
             ($typ: pat, $lhs: expr, $rhs: expr) => {{
                 let op = &self.as_ref().to_lowercase();
