@@ -74,6 +74,13 @@ impl Expr {
                 let _ = expands!($expr);
             }};
         }
+        macro_rules! check {
+            ($expr: expr, $typ: expr, $m: literal) => {{
+                if $typ != infer!($expr) {
+                    return Err(format!("{}: {} != {}", $m, $typ, infer!($expr)));
+                }
+            }};
+        }
         macro_rules! op {
             ($typ: pat, $lhs: expr, $rhs: expr) => {{
                 let op = &self.as_ref().to_lowercase();
@@ -152,10 +159,8 @@ impl Expr {
                         Box::new(Expr::Block(vec![Expr::Let(bind, check), *body])),
                     )));
                 }
-                match infer!(cond) {
-                    Type::Boolean => typing!(infer!(body)),
-                    cond => Err(format!("while-do test: Bool != {cond}")),
-                }
+                check!(cond, Type::Boolean, "while-do test");
+                typing!(infer!(body))
             }
             Expr::For(cnt, arr, body) => {
                 let Type::Array(_) = infer!(arr) else {
