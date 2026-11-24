@@ -103,8 +103,9 @@ impl Expr {
                         els,
                     )));
                 }
-                if Type::Boolean != infer!(cond) {
-                    return Err(format!("if-else test: Bool != {}", infer!(cond)));
+                let typ = infer!(cond);
+                if Type::Boolean != typ {
+                    return Err(format!("if-else test: Bool != {typ}"));
                 }
                 match (infer!(then), els) {
                     (lhs, Some(rhs)) => match (lhs, infer!(rhs)) {
