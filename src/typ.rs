@@ -53,7 +53,7 @@ impl Define {
 impl Expr {
     fn infer(&self, ctx: &mut Context) -> Result<Type, String> {
         macro_rules! infer {
-            ($value: expr) => {{ $value.clone().infer(ctx)? }};
+            ($val: expr) => {{ $val.clone().infer(ctx)? }};
         }
         macro_rules! typing {
             ($ret: expr) => {{
@@ -63,12 +63,12 @@ impl Expr {
             }};
         }
         macro_rules! expand {
-            ($value: expr) => {{ ctx.local.expand.insert(self.clone(), $value.clone()) }};
+            ($val: expr) => {{ ctx.local.expand.insert(self.clone(), $val.clone()) }};
         }
         macro_rules! expands {
             ($value: expr) => {{
                 let val = $value.clone();
-                [expand!(val.clone()), infer!(val.clone())][1]
+                (expand!(val.clone()), infer!(val)).1
             }};
         }
         macro_rules! op {
