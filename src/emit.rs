@@ -21,7 +21,7 @@ impl Define {
         let lib = map!(&ctx.global.extrn, |lib| format!("\textern {lib}\n")).concat();
 
         let data = format!("section .data\n{}\n", ctx.global.data);
-        Ok(format!("{data}section .text\n\tglobal main\n{lib}\n{asm}",))
+        Ok(format!("{data}section .text\n\tglobal main\n{lib}\n{asm}"))
     }
 }
 
