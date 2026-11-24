@@ -91,6 +91,11 @@ impl Expr {
         let temp = Box::new(var!(&format!("temp_{self:?}")));
         let offset = |n| Box::new(Expr::Integer(n as i64));
 
+        if let Some(typ) = ctx.local.typed.get(self)
+            && !matches!(self, Expr::Variable(_))
+        {
+            return Ok(typ.clone());
+        }
         match self.clone() {
             Expr::Print(is_output, args) => {
                 let (fmt, args) = map!({ args }, |x| x.fmtgen(ctx))?.into_iter().unzip();
