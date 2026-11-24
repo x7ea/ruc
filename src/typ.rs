@@ -66,9 +66,9 @@ impl Expr {
             ($val: expr) => {{ ctx.local.expand.insert(self.clone(), $val.clone()) }};
         }
         macro_rules! expands {
-            ($value: expr) => {{
-                let val = $value.clone();
-                (expand!(val.clone()), infer!(val)).1
+            ($val: expr) => {{
+                let bind = $val.clone();
+                (expand!(bind), infer!(bind)).1
             }};
         }
         macro_rules! op {
