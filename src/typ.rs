@@ -66,7 +66,10 @@ impl Expr {
             ($value: expr) => {{ ctx.local.expand.insert(self.clone(), $value.clone()) }};
         }
         macro_rules! expands {
-            ($value: expr) => {{ infer!(expand!($value.clone()).unwrap_or($value.clone())) }};
+            ($value: expr) => {{
+                let val = $value.clone();
+                [expand!(val.clone()), infer!(val.clone())][1]
+            }};
         }
         macro_rules! op {
             ($typ: pat, $lhs: expr, $rhs: expr) => {{
