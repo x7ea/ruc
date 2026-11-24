@@ -75,9 +75,9 @@ impl Expr {
             }};
         }
         macro_rules! check {
-            ($expr: expr, $typ: expr, $m: literal) => {{
+            ($expr: expr, $typ: expr, $msg: literal) => {{
                 if $typ != infer!($expr) {
-                    return Err(format!("{}: {} != {}", $m, $typ, infer!($expr)));
+                    return Err(format!("{}: {} != {}", $msg, $typ, infer!($expr)));
                 }
             }};
         }
