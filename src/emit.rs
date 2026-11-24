@@ -20,10 +20,8 @@ impl Define {
         let asm = map!(ctx.global.def.clone(), |(_, func)| func.emit(ctx)).concat();
         let lib = map!(&ctx.global.extrn, |lib| format!("\textern {lib}\n")).concat();
 
-        Ok(format!(
-            "section .data\n{}\nsection .text\n\tglobal main\n{lib}\n{asm}",
-            ctx.global.data.clone()
-        ))
+        let data = format!("section .data\n{}\n", ctx.global.data);
+        Ok(format!("{data}section .text\n\tglobal main\n{lib}\n{asm}"))
     }
 }
 

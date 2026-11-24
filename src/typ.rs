@@ -53,7 +53,7 @@ impl Define {
 impl Expr {
     fn infer(&self, ctx: &mut Context) -> Result<Type, String> {
         macro_rules! infer {
-            ($ast: expr) => {{ $ast.clone().infer(ctx)? }};
+            ($val: expr) => {{ $val.clone().infer(ctx)? }};
         }
         macro_rules! typing {
             ($ret: expr) => {{
@@ -62,16 +62,11 @@ impl Expr {
                 Ok::<Type, String>(typ)
             }};
         }
-        macro_rules! expands {
-            ($value: expr) => {{
-                let expr = $value.clone();
-                ctx.local.expand.insert(self.clone(), expr.clone());
-                infer!(expr)
-            }};
-        }
         macro_rules! expand {
-            ($expr: expr) => {{
-                let _ = expands!($expr);
+            ($val: expr) => {{
+                let val = $val.clone();
+                ctx.local.expand.insert(self.clone(), val.clone());
+                infer!(val)
             }};
         }
         macro_rules! op {
@@ -80,7 +75,7 @@ impl Expr {
                 match (infer!($lhs), infer!($rhs)) {
                     (lhs, rhs) if lhs != rhs => Err(format!("{op} term: {lhs} != {rhs}")),
                     ($typ, ret @ $typ) => typing!(ret.clone()),
-                    (typ, _) => typing!(expands!(Expr::Call(
+                    (typ, _) => typing!(expand!(Expr::Call(
                         Box::new(method!(&typ, op)),
                         vec![*$lhs, *$rhs],
                     ))),
@@ -95,21 +90,22 @@ impl Expr {
             Expr::Print(is_output, args) => {
                 let (fmt, args) = map!({ args }, |x| x.fmtgen(ctx))?.into_iter().unzip();
                 let fmt = Expr::String(if is_output { fmt + "\\n" } else { fmt });
-                typing!(expands!(Expr::Call(
+                typing!(expand!(Expr::Call(
                     Box::new(var!(["g_strdup_printf", "printf"][is_output as usize])),
                     [vec![fmt], args].concat(),
                 )))
             }
             Expr::If(cond, then, els) => {
                 if let Expr::Let(bind, check) = *cond {
-                    return typing!(expands!(Expr::If(
+                    return typing!(expand!(Expr::If(
                         Box::new(Expr::Check(check.clone())),
                         Box::new(Expr::Block(vec![Expr::Let(bind, check), *then])),
                         els,
                     )));
                 }
-                if Type::Boolean != infer!(cond) {
-                    return Err(format!("if-else test: Bool != {}", infer!(cond)));
+                let typ = infer!(cond);
+                if Type::Boolean != typ {
+                    return Err(format!("if-else test: Bool != {typ}"));
                 }
                 match (infer!(then), els) {
                     (lhs, Some(rhs)) => match (lhs, infer!(rhs)) {
@@ -143,18 +139,18 @@ impl Expr {
                         Some(Box::new(expr)),
                     )
                 }
-                typing!(expands!(expr))
+                typing!(expand!(expr))
             }
             Expr::While(cond, body) => {
                 if let Expr::Let(bind, check) = *cond {
-                    return typing!(expands!(Expr::While(
+                    return typing!(expand!(Expr::While(
                         Box::new(Expr::Check(check.clone())),
                         Box::new(Expr::Block(vec![Expr::Let(bind, check), *body])),
                     )));
                 }
                 match infer!(cond) {
                     Type::Boolean => typing!(infer!(body)),
-                    cond => Err(format!("while-do test: Bool != {cond}")),
+                    typ => Err(format!("while-do test: Bool != {typ}")),
                 }
             }
             Expr::For(cnt, arr, body) => {
@@ -167,7 +163,7 @@ impl Expr {
                     Expr::Let(temp.clone(), inc),
                     *body,
                 ]));
-                typing!(expands!(Expr::Block(vec![
+                typing!(expand!(Expr::Block(vec![
                     Expr::Let(temp.clone(), offset(0)),
                     Expr::While(Box::new(Expr::Lt(temp.clone(), len!(arr))), each)
                 ])))
@@ -215,7 +211,7 @@ impl Expr {
                     let name = name.class(&class.remove_generic());
                     if ctx.global.lib.contains_key(&name) {
                         args.append(&mut class.generic_args());
-                        return typing!(expands!(Expr::Variable(Generic(name, args))));
+                        return typing!(expand!(Expr::Variable(Generic(name, args))));
                     }
                     ctx.local.class = None;
                 }
@@ -286,21 +282,16 @@ impl Expr {
                     ));
                 }
                 expr.push(*temp);
-                typing!(expands!(Expr::Block(expr)))
+                typing!(expand!(Expr::Block(expr)))
             }
-            Expr::Index(arr, idx) => {
-                let Type::Array(typ) = infer!(arr) else {
-                    return Err(format!("not array: {}", infer!(arr)));
-                };
-                match infer!(idx) {
-                    Type::Integer => {
-                        expand!(Expr::Read(array!(arr, idx), *typ.clone(), arr.clone()));
-                        typing!(*typ.clone())
-                    }
-                    typ => Err(format!("not index: {typ}")),
+            Expr::Index(arr, idx) => match (infer!(arr), infer!(idx)) {
+                (Type::Array(typ), Type::Integer) => {
+                    expand!(Expr::Read(array!(arr, idx), *typ.clone(), arr.clone()));
+                    typing!(*typ.clone())
                 }
-            }
-            Expr::Len(obj) => typing!(expands!(match infer!(obj) {
+                (typ, idx) => Err(format!("no index: {typ}[{idx}]")),
+            },
+            Expr::Len(obj) => typing!(expand!(match infer!(obj) {
                 Type::String => Expr::Call(Box::new(var!("strlen")), vec![*obj.clone()]),
                 Type::Array(_) => Expr::Read(offset(0), Type::Integer, obj),
                 typ => return Err(format!("no length: {typ}")),
@@ -315,7 +306,7 @@ impl Expr {
             }
             Expr::Enum(typ, key, val) => {
                 let acc = Box::new(Expr::Member(temp.clone(), key.clone()));
-                typing!(expands!(Expr::Block(vec![
+                typing!(expand!(Expr::Block(vec![
                     Expr::Let(temp.clone(), Box::new(Expr::New(typ.clone()))),
                     Expr::Let(acc, val.clone()),
                     *temp
@@ -325,7 +316,7 @@ impl Expr {
                 let typ = infer!(obj);
                 let Type::Class(name) = &typ else {
                     return match key.to_string().as_str() {
-                        "len" => typing!(expands!(Expr::Len(obj))),
+                        "len" => typing!(expand!(Expr::Len(obj))),
                         key => Err(format!("undefined: {typ}.{key}")),
                     };
                 };
@@ -341,14 +332,14 @@ impl Expr {
                 match class {
                     Object::Struct(layout) => {
                         let base = offset(layout.get_index_of(key).unwrap());
-                        expand!(Expr::Read(base, typ.clone(), obj.clone()));
+                        expand!(Expr::Read(base, typ.clone(), obj.clone()))
                     }
                     Object::Enum(_) => expand!(Expr::If(
                         Box::new(Expr::Check(Box::new(self.clone()))),
                         Box::new(Expr::Read(offset(8), typ.clone(), obj.clone())),
                         Some(Box::new(Expr::Null(typ.clone())))
                     )),
-                }
+                };
                 typing!(typ.solve(ctx))
             }
             Expr::Check(expr) => {
@@ -359,8 +350,8 @@ impl Expr {
                     let Some(tag) = layout.get_index_of(key) else {
                         return Err(format!("undefined: {name}.{key}"));
                     };
-                    let reading = Expr::Read(offset(0), Type::Integer, obj.clone());
-                    expand!(Expr::Eq(offset(tag), Box::new(reading)));
+                    let load = Expr::Read(offset(0), Type::Integer, obj.clone());
+                    expand!(Expr::Eq(offset(tag), Box::new(load)));
                     return typing!(Type::Boolean);
                 }
                 match infer!(expr) {
@@ -393,7 +384,7 @@ impl Expr {
                     typ => return Err(format!("not clonable: {typ}")),
                 };
                 let arg = vec![*temp.clone(), *expr, size];
-                typing!(expands!(Expr::Block(vec![
+                typing!(expand!(Expr::Block(vec![
                     Expr::Let(temp.clone(), Box::new(init)),
                     Expr::Call(Box::new(var!("memcpy", typ.clone())), arg),
                     *temp.clone()
