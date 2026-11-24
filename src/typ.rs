@@ -463,10 +463,8 @@ impl Type {
                 if let Define::Function((_, params), _) | Define::Declare((_, params), _) = &unify
                     && let Type::Function(Lambda((_, ret), Some(args))) = typ.clone()
                 {
-                    let head = (
-                        Generic(mangle.clone(), vec![]),
-                        params.keys().cloned().zip(args).collect(),
-                    );
+                    let params = params.keys().cloned().zip(args).collect();
+                    let head = (Generic(mangle.clone(), vec![]), params);
                     unify = match unify.clone() {
                         Define::Function(_, (body, _)) => Define::Function(head, (body, *ret)),
                         _ => Define::Declare(head, *ret),
