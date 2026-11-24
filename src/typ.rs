@@ -150,7 +150,7 @@ impl Expr {
                 }
                 match infer!(cond) {
                     Type::Boolean => typing!(infer!(body)),
-                    cond => Err(format!("while-do test: Bool != {cond}")),
+                    typ => Err(format!("while-do test: Bool != {typ}")),
                 }
             }
             Expr::For(cnt, arr, body) => {
