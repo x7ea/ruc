@@ -289,7 +289,7 @@ impl Expr {
                     expand!(Expr::Read(array!(arr, idx), *typ.clone(), arr.clone()));
                     typing!(*typ.clone())
                 }
-                (typ, idx) => Err(format!("{typ}[{idx}]")),
+                (typ, idx) => Err(format!("no index: {typ}[{idx}]")),
             },
             Expr::Len(obj) => typing!(expand!(match infer!(obj) {
                 Type::String => Expr::Call(Box::new(var!("strlen")), vec![*obj.clone()]),
