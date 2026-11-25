@@ -141,10 +141,10 @@ macro_rules! __split_internal {
     }};
 }
 
-pub fn left(tok: &Vec<String>, del: String) -> (String, String) {
+pub fn left(tok: &[String], del: String) -> (String, String) {
     (tok[0].clone(), tok[1..].join(&del))
 }
-pub fn right(tok: &Vec<String>, del: String) -> (String, String) {
+pub fn right(tok: &[String], del: String) -> (String, String) {
     (tok[..tok.len() - 1].join(&del), tok[tok.len() - 1].clone())
 }
 
