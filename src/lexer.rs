@@ -88,7 +88,7 @@ pub mod name {
             if let Some((class, name)) = name.split_once(".") {
                 return Ok(Name::new(name)?.class(&Type::parse(class)?));
             }
-            let validate = |x: char| x == '_' || x.is_ascii_alphabetic() || x.is_ascii_digit();
+            let validate = |x: char| x == '_' || x.is_ascii_alphanumeric();
             if !name.chars().all(validate) {
                 return Err(format!("invalid: {name}"));
             }
