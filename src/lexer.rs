@@ -45,20 +45,17 @@ pub fn lexer(src: &str, del: &str) -> Result<Vec<String>, String> {
                 current.push(c);
                 esc = true;
             }
-            _ => {
-                if src.get(idx..idx + del.len()) == Some(del) {
-                    if level != 0 || quote || esc {
-                        current += del;
-                    } else if !current.is_empty() {
-                        tokens.push(current.clone());
-                        current.clear();
-                    }
-                    idx += del.len();
-                    continue;
-                } else {
-                    current.push(c);
+            _ if src.get(idx..idx + del.len()) == Some(del) => {
+                if level != 0 || quote || esc {
+                    current += del;
+                } else if !current.is_empty() {
+                    tokens.push(current.clone());
+                    current.clear();
                 }
+                idx += del.len();
+                continue;
             }
+            _ => current.push(c),
         }
         idx += 1
     }
