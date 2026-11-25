@@ -498,7 +498,7 @@ impl Type {
         match self.clone() {
             Type::Function(Lambda((typ, ret), args)) => Type::Function(Lambda(
                 (typ, Box::new(ret.rewrite(old, new))),
-                args.and_then(|args| Some(map!(args, |x| x.rewrite(old, new)))),
+                args.map(|args| map!(args, |x| x.rewrite(old, new))),
             )),
             Type::Class(Generic(name, args)) => {
                 Type::Class(Generic(name, map!(args, |x| x.rewrite(old, new))))
