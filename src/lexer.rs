@@ -150,9 +150,9 @@ pub fn right(tok: &[String], del: String) -> (String, String) {
 
 #[macro_export]
 macro_rules! split {
-    ($token: expr, $del: expr) => {{ __split_internal!($token, $del, crate::lexer::left) }};
+    ($token: expr, $del: expr) => {{ __split_internal!($token, $del, $crate::lexer::left) }};
 }
 #[macro_export]
 macro_rules! rsplit {
-    ($token: expr, $del: expr) => {{ __split_internal!($token, $del, crate::lexer::right) }};
+    ($token: expr, $del: expr) => {{ __split_internal!($token, $del, $crate::lexer::right) }};
 }
