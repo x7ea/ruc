@@ -19,6 +19,9 @@ impl Define {
         ctx.global.used = reachable(&Name::new("main")?, ctx).into_iter().collect();
 
         let asm = map!(ctx.global.def.clone(), |(_, func)| func.emit(ctx)).concat();
+        let extrn = filter!(ctx.global.extrn, |x| ctx.global.used.contains(*x));
+        let lib = map!(extrn, |lib| format!("\textern {lib}\n")).concat();
+
         let data = format!("section .data\n{}\n", ctx.global.data);
         Ok(format!("{data}section .text\n\tglobal main\n{lib}\n{asm}"))
     }
@@ -36,50 +39,43 @@ pub const ABI: [&str; 6] = ["rdi", "rsi", "rdx", "rcx", "r8", "r9"];
 
 impl Define {
     fn emit(&self, ctx: &mut Context) -> String {
-        match self {
-            Define::Function((Generic(name, params), args), (body, _))
-                if params.is_empty() && ctx.global.used.contains(name) =>
-            {
-                ctx.local = ctx.table[name].clone();
-                let (mut ptr, mut alloc) = (8, String::new());
-                let (mut idx, mut xmm) = (0, 0);
-                for (arg, (_, typ)) in args.iter().enumerate() {
-                    let arg = (arg as isize - 4) * 8;
-                    if typ == &Type::Float {
-                        if xmm < 8 {
-                            alloc += &format!("\tmovsd [rbp-{ptr}], xmm{xmm}\n")
-                        } else {
-                            alloc +=
-                                &format!("\tmovsd xmm0, [rbp+{arg}]\n\tmovsd [rbp-{ptr}], xmm0\n")
-                        };
-                        xmm += 1;
-                    } else {
-                        if let Some(reg) = ABI.get(idx) {
-                            alloc += &format!("\tmov [rbp-{ptr}], {reg}\n")
-                        } else {
-                            alloc += &format!("\tmov rax, [rbp+{arg}]\n\tmov [rbp-{ptr}], rax\n")
-                        }
-                        idx += 1;
-                    }
-                    ptr += 8;
+        let Define::Function((Generic(name, params), args), (body, _)) = self
+            && params.is_empty()
+            && ctx.global.used.contains(name)
+        else {
+            return String::default();
+        };
+        ctx.local = ctx.table[name].clone();
+        let (mut ptr, mut alloc) = (8, String::new());
+        let (mut idx, mut xmm) = (0, 0);
+        for (arg, (_, typ)) in args.iter().enumerate() {
+            let arg = (arg as isize - 4) * 8;
+            if typ == &Type::Float {
+                if xmm < 8 {
+                    alloc += &format!("\tmovsd [rbp-{ptr}], xmm{xmm}\n")
+                } else {
+                    alloc += &format!("\tmovsd xmm0, [rbp+{arg}]\n\tmovsd [rbp-{ptr}], xmm0\n")
+                };
+                xmm += 1;
+            } else {
+                if let Some(reg) = ABI.get(idx) {
+                    alloc += &format!("\tmov [rbp-{ptr}], {reg}\n")
+                } else {
+                    alloc += &format!("\tmov rax, [rbp+{arg}]\n\tmov [rbp-{ptr}], rax\n")
                 }
-                let body = body.emit(ctx);
-                ctx.table.insert(name.clone(), ctx.local.clone());
-
-                let size = ctx.local.var.len() * 8;
-                let frame = format!(
-                    "\tpush rbp\n\tmov rbp, rsp\n\tsub rsp, {}\n",
-                    if size % 16 == 0 { size } else { size + 8 }
-                );
-                format!("{name}:\n{frame}{alloc}{body}\tleave\n\tret\n\n")
+                idx += 1;
             }
-            Define::Declare((Generic(name, _), _), _) | Define::Symbol(name, _)
-                if ctx.global.used.contains(name) =>
-            {
-                format!("\textern {name}\n")
-            }
-            _ => String::default(),
+            ptr += 8;
         }
+        let body = body.emit(ctx);
+        ctx.table.insert(name.clone(), ctx.local.clone());
+
+        let size = ctx.local.var.len() * 8;
+        let frame = format!(
+            "\tpush rbp\n\tmov rbp, rsp\n\tsub rsp, {}\n",
+            if size % 16 == 0 { size } else { size + 8 }
+        );
+        format!("{name}:\n{frame}{alloc}{body}\tleave\n\tret\n\n")
     }
 }
 
