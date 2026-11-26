@@ -308,12 +308,10 @@ macro_rules! transaction {
 macro_rules! new {
     ($layout: expr) => {{ Expr::Call(Box::new(var!("calloc")), vec![$layout, Expr::Integer(8)]) }};
 }
-
 #[macro_export]
 macro_rules! len {
     ($arr: expr) => {{ Box::new(Expr::Len($arr.clone())) }};
 }
-
 #[macro_export]
 macro_rules! array {
     ($arr: expr, $idx: expr) => {{
@@ -327,7 +325,6 @@ macro_rules! map {
     ($a: block, $f: expr) => {{ $a.iter().map($f).collect::<Result<Vec<_>, String>>() }};
     ($a: expr, $f: expr) => {{ $a.iter().map($f).collect::<Vec<_>>() }};
 }
-
 #[macro_export]
 macro_rules! filter {
     ($a: expr, $f: expr) => {{ $a.iter().filter($f).collect::<Vec<_>>() }};
@@ -338,7 +335,6 @@ macro_rules! var {
     ($name: expr) => {{ Expr::Variable(Generic(Name($name.to_string()), vec![])) }};
     ($name: expr, $arg: expr) => {{ Expr::Variable(Generic(Name($name.to_string()), vec![$arg])) }};
 }
-
 #[macro_export]
 macro_rules! method {
     ($typ: expr, $name: expr) => {{
