@@ -16,19 +16,19 @@ impl Define {
         ctx.global.def = program.iter().map(|x| (name!(x), x.clone())).collect();
 
         let _typ = map!({ &mut program }, |define| define.infer(ctx))?;
-        ctx.global.used = Define::used(&Name::new("main")?, ctx).into_iter().collect();
+        ctx.global.used = Self::reach(&Name::new("main")?, ctx).into_iter().collect();
 
         let asm = map!(ctx.global.def.clone(), |(_, func)| func.emit(ctx)).concat();
-        let ext = filter!(ctx.global.extrn, |x| ctx.global.used.contains(*x));
+        let ext = filter!(&ctx.global.extrn, |x| ctx.global.used.contains(*x));
         let lib = map!(ext, |lib| format!("\textern {lib}\n")).concat();
 
         let data = format!("section .data\n{}\n", ctx.global.data);
         Ok(format!("{data}section .text\n\tglobal main\n{lib}\n{asm}"))
     }
 
-    pub fn used(name: &Name, ctx: &mut Context) -> Vec<Name> {
+    pub fn reach(name: &Name, ctx: &mut Context) -> Vec<Name> {
         let used = match ctx.table.get(name).cloned() {
-            Some(func) => map!(filter!(func.used, |x| name != *x), |x| Self::used(x, ctx)).concat(),
+            Some(func) => map!(filter!(func.used, |x| name != x), |x| Self::reach(x, ctx)).concat(),
             None => vec![],
         };
         [used, vec![name.clone()]].concat()
@@ -323,7 +323,7 @@ macro_rules! map {
 }
 #[macro_export]
 macro_rules! filter {
-    ($arr: expr, $func: expr) => {{ $arr.iter().filter($func).collect::<Vec<_>>() }};
+    ($arr: expr, $func: expr) => {{ $arr.into_iter().filter($func).collect::<Vec<_>>() }};
 }
 
 #[macro_export]
