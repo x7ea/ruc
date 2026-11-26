@@ -29,7 +29,7 @@ impl Define {
 
 pub fn reachable(name: &Name, ctx: &mut Context) -> Vec<Name> {
     let used = match ctx.table.get(name).cloned() {
-        Some(func) => map!(func.used, |x| reachable(x, ctx)).concat(),
+        Some(func) => map!(filter!(func.used, |x| name != *x), |x| reachable(x, ctx)).concat(),
         None => vec![],
     };
     [used, vec![name.clone()]].concat()
