@@ -16,7 +16,7 @@ impl Define {
         ctx.global.def = program.iter().map(|x| (name!(x), x.clone())).collect();
 
         let _typ = map!({ &mut program }, |define| define.infer(ctx))?;
-        ctx.global.used = reachable(&Name::new("main")?, ctx).into_iter().collect();
+        ctx.global.used = Define::used(&Name::new("main")?, ctx).into_iter().collect();
 
         let asm = map!(ctx.global.def.clone(), |(_, func)| func.emit(ctx)).concat();
         let ext = filter!(ctx.global.extrn, |x| ctx.global.used.contains(*x));
@@ -26,9 +26,9 @@ impl Define {
         Ok(format!("{data}section .text\n\tglobal main\n{lib}\n{asm}"))
     }
 
-    pub fn reachable(name: &Name, ctx: &mut Context) -> Vec<Name> {
+    pub fn used(name: &Name, ctx: &mut Context) -> Vec<Name> {
         let used = match ctx.table.get(name).cloned() {
-            Some(func) => map!(filter!(func.used, |x| name != *x), |x| reachable(x, ctx)).concat(),
+            Some(func) => map!(filter!(func.used, |x| name != *x), |x| Self::used(x, ctx)).concat(),
             None => vec![],
         };
         [used, vec![name.clone()]].concat()
