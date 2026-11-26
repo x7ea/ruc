@@ -129,7 +129,7 @@ macro_rules! serial {
 }
 
 #[macro_export]
-macro_rules! __split_internal {
+macro_rules! __split {
     ($token: expr, $del: expr, $f: expr) => {{
         let token = lexer($token, $del)?;
         match token.len() {
@@ -148,9 +148,9 @@ pub fn right(tok: &[String], del: String) -> (String, String) {
 
 #[macro_export]
 macro_rules! split {
-    ($token: expr, $del: expr) => {{ __split_internal!($token, $del, $crate::lexer::left) }};
+    ($token: expr, $del: expr) => {{ __split!($token, $del, $crate::lexer::left) }};
 }
 #[macro_export]
 macro_rules! rsplit {
-    ($token: expr, $del: expr) => {{ __split_internal!($token, $del, $crate::lexer::right) }};
+    ($token: expr, $del: expr) => {{ __split!($token, $del, $crate::lexer::right) }};
 }
