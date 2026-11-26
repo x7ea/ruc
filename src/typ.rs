@@ -464,8 +464,8 @@ impl Type {
                     ctx.global.def.insert(mangle, unify.clone());
                 })?
             }
-            Type::Class(Generic(name, args)) => {
-                let Some((params, table)) = ctx.global.table.get(&name) else {
+            Type::Class(Generic(ref name, args)) => {
+                let Some((params, table)) = ctx.global.table.get(name) else {
                     return Err(format!("undefined: {name}"));
                 };
                 let (Object::Enum(mut layout) | Object::Struct(mut layout)) = table.clone();
