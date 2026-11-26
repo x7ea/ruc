@@ -18,7 +18,7 @@ impl Define {
         let _typ = map!({ &mut program }, |define| define.infer(ctx))?;
         ctx.global.used = reachable(&Name::new("main")?, ctx).into_iter().collect();
 
-        let asm = filter!(ctx.global.extrn, |x| ctx.global.used.contains(*x));
+        let asm = map!(ctx.global.def.clone(), |(_, func)| func.emit(ctx)).concat();
         let lib = filter!(ctx.global.extrn, |x| ctx.global.used.contains(*x));
         let lib = map!(lib, |lib| format!("\textern {lib}\n")).concat();
 
