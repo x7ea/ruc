@@ -45,7 +45,6 @@ impl Define {
         if !params.is_empty() || !ctx.global.used.contains(name) {
             return String::default();
         }
-
         ctx.local = ctx.table[name].clone();
         let (mut ptr, mut alloc) = (8, String::new());
         let (mut idx, mut xmm) = (0, 0);
