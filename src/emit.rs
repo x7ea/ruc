@@ -27,10 +27,11 @@ impl Define {
 }
 
 pub fn reachable(name: &Name, ctx: &mut Context) -> Vec<Name> {
-    match ctx.table.get(name).cloned() {
+    let used = match ctx.table.get(name).cloned() {
         Some(func) => map!(func.used, |x| reachable(x, ctx)).concat(),
-        None => vec![name.clone()],
-    }
+        None => vec![],
+    };
+    [used, vec![name.clone()]].concat()
 }
 
 pub const ABI: [&str; 6] = ["rdi", "rsi", "rdx", "rcx", "r8", "r9"];
