@@ -325,7 +325,7 @@ macro_rules! map {
 }
 #[macro_export]
 macro_rules! filter {
-    ($a: expr, $f: expr) => {{ $a.iter().filter($f).collect::<Vec<_>>() }};
+    ($arr: expr, $func: expr) => {{ $arr.iter().filter($func).collect::<Vec<_>>() }};
 }
 
 #[macro_export]
