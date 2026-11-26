@@ -26,8 +26,9 @@ impl Define {
 }
 
 fn reachable(name: &Name, ctx: &mut Context) -> Vec<Name> {
-    match ctx.table.get(name) {
-        Some(func) => map!(func.used, |x| reachable(x, ctx)),
+    match ctx.table.get(name).cloned() {
+        Some(func) => map!(func.used, |x| reachable(x, ctx)).concat(),
+        None => vec![],
     }
 }
 
