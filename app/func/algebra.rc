@@ -10,7 +10,7 @@ fn main() {
     let x.a = 3.14
     let x.b = true
 
-    let y.a = "Hoge"
+    let y.a = "x7ea"
     let y.b = 1968
 
     print x.a, x.b
