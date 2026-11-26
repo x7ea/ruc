@@ -13,10 +13,11 @@ impl Define {
             };
         }
         let ctx = &mut Context::default();
-        ctx.global.used = reachable(&Name::new("main")?, ctx).into_iter().collect();
         ctx.global.def = program.iter().map(|x| (name!(x), x.clone())).collect();
 
         let _typ = map!({ &mut program }, |define| define.infer(ctx))?;
+        ctx.global.used = reachable(&Name::new("main")?, ctx).into_iter().collect();
+        dbg!(&ctx.global.used);
         let asm = map!(ctx.global.def.clone(), |(_, func)| func.emit(ctx)).concat();
         let lib = map!(&ctx.global.extrn, |lib| format!("\textern {lib}\n")).concat();
 
@@ -28,7 +29,7 @@ impl Define {
 pub fn reachable(name: &Name, ctx: &mut Context) -> Vec<Name> {
     match ctx.table.get(name).cloned() {
         Some(func) => map!(func.used, |x| reachable(x, ctx)).concat(),
-        None => vec![],
+        None => vec![name.clone()],
     }
 }
 
