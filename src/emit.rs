@@ -13,7 +13,7 @@ impl Define {
             };
         }
         let ctx = &mut Context::default();
-        ctx.global.used.insert(Name::new("main")?);
+        ctx.global.used = IndexSet::from(reachable(&Name::new("main")?));
         ctx.global.def = program.iter().map(|x| (name!(x), x.clone())).collect();
 
         let _typ = map!({ &mut program }, |define| define.infer(ctx))?;
@@ -25,7 +25,7 @@ impl Define {
     }
 }
 
-fn reachable(name: &Name, ctx: &mut Context) -> Vec<Name> {
+pub fn reachable(name: &Name, ctx: &mut Context) -> Vec<Name> {
     match ctx.table.get(name).cloned() {
         Some(func) => map!(func.used, |x| reachable(x, ctx)).concat(),
         None => vec![],
