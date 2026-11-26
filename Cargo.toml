@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-vec1-float = { version = "1.12.1", features = ["serde"] }
+vec1 = { version = "1.12.1", features = ["serde"] }
 ordered-float = { version = "5.3.0", features = ["serde"] }
 indexmap = { version = "2.0", features = ["serde"] }
 derive_more = { version = "2.1.0", features = ["unwrap"] }
