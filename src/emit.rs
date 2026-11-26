@@ -25,6 +25,8 @@ impl Define {
     }
 }
 
+fn used(name: Name, ctx: &mut Context) -> Vec<Name> {}
+
 pub const ABI: [&str; 6] = ["rdi", "rsi", "rdx", "rcx", "r8", "r9"];
 
 impl Define {
