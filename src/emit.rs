@@ -13,16 +13,26 @@ impl Define {
             };
         }
         let ctx = &mut Context::default();
-        ctx.global.used.insert(Name::new("main")?);
         ctx.global.def = program.iter().map(|x| (name!(x), x.clone())).collect();
 
         let _typ = map!({ &mut program }, |define| define.infer(ctx))?;
+        ctx.global.used = reachable(&Name::new("main")?, ctx).into_iter().collect();
+
         let asm = map!(ctx.global.def.clone(), |(_, func)| func.emit(ctx)).concat();
-        let lib = map!(&ctx.global.extrn, |lib| format!("\textern {lib}\n")).concat();
+        let lib = filter!(ctx.global.extrn, |x| ctx.global.used.contains(*x));
+        let lib = map!(lib, |lib| format!("\textern {lib}\n")).concat();
 
         let data = format!("section .data\n{}\n", ctx.global.data);
         Ok(format!("{data}section .text\n\tglobal main\n{lib}\n{asm}"))
     }
+}
+
+pub fn reachable(name: &Name, ctx: &mut Context) -> Vec<Name> {
+    let used = match ctx.table.get(name).cloned() {
+        Some(func) => map!(filter!(func.used, |x| name != *x), |x| reachable(x, ctx)).concat(),
+        None => vec![],
+    };
+    [used, vec![name.clone()]].concat()
 }
 
 pub const ABI: [&str; 6] = ["rdi", "rsi", "rdx", "rcx", "r8", "r9"];
@@ -35,6 +45,7 @@ impl Define {
         if !params.is_empty() || !ctx.global.used.contains(name) {
             return String::default();
         }
+
         ctx.local = ctx.table[name].clone();
         let (mut ptr, mut alloc) = (8, String::new());
         let (mut idx, mut xmm) = (0, 0);
@@ -48,10 +59,9 @@ impl Define {
                 };
                 xmm += 1;
             } else {
-                if let Some(reg) = ABI.get(idx) {
-                    alloc += &format!("\tmov [rbp-{ptr}], {reg}\n")
-                } else {
-                    alloc += &format!("\tmov rax, [rbp+{arg}]\n\tmov [rbp-{ptr}], rax\n")
+                match ABI.get(idx) {
+                    Some(reg) => alloc += &format!("\tmov [rbp-{ptr}], {reg}\n"),
+                    None => alloc += &format!("\tmov rax, [rbp+{arg}]\n\tmov [rbp-{ptr}], rax\n"),
                 }
                 idx += 1;
             }
@@ -297,12 +307,10 @@ macro_rules! transaction {
 macro_rules! new {
     ($layout: expr) => {{ Expr::Call(Box::new(var!("calloc")), vec![$layout, Expr::Integer(8)]) }};
 }
-
 #[macro_export]
 macro_rules! len {
     ($arr: expr) => {{ Box::new(Expr::Len($arr.clone())) }};
 }
-
 #[macro_export]
 macro_rules! array {
     ($arr: expr, $idx: expr) => {{
@@ -313,8 +321,12 @@ macro_rules! array {
 
 #[macro_export]
 macro_rules! map {
-    ($a: block, $f: expr) => {{ $a.iter().map($f).collect::<Result<Vec<_>, String>>() }};
-    ($a: expr, $f: expr) => {{ $a.iter().map($f).collect::<Vec<_>>() }};
+    ($arr: block, $func: expr) => {{ $arr.iter().map($func).collect::<Result<Vec<_>, String>>() }};
+    ($arr: expr, $func: expr) => {{ $arr.iter().map($func).collect::<Vec<_>>() }};
+}
+#[macro_export]
+macro_rules! filter {
+    ($a: expr, $f: expr) => {{ $a.iter().filter($f).collect::<Vec<_>>() }};
 }
 
 #[macro_export]
@@ -322,7 +334,6 @@ macro_rules! var {
     ($name: expr) => {{ Expr::Variable(Generic(Name($name.to_string()), vec![])) }};
     ($name: expr, $arg: expr) => {{ Expr::Variable(Generic(Name($name.to_string()), vec![$arg])) }};
 }
-
 #[macro_export]
 macro_rules! method {
     ($typ: expr, $name: expr) => {{

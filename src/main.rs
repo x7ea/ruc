@@ -152,5 +152,6 @@ pub struct Function {
     typed: IndexMap<Expr, Type>,
     expand: IndexMap<Expr, Expr>,
     class: Option<Type>,
+    used: IndexSet<Name>,
     ret: Type,
 }

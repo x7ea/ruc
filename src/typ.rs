@@ -103,16 +103,13 @@ impl Expr {
                         els,
                     )));
                 }
-                let typ = infer!(cond);
-                if Type::Boolean != typ {
-                    return Err(format!("if-else test: Bool != {typ}"));
-                }
-                match (infer!(then), els) {
-                    (lhs, Some(rhs)) => match (lhs, infer!(rhs)) {
+                match (infer!(cond), infer!(then), els) {
+                    (Type::Boolean, lhs, Some(rhs)) => match (lhs, infer!(rhs)) {
                         (lhs, rhs) if lhs == rhs => typing!(lhs),
                         (lhs, rhs) => Err(format!("if-else term: {lhs} != {rhs}")),
                     },
-                    (_, None) => typing!(Type::Void),
+                    (Type::Boolean, _, None) => typing!(Type::Void),
+                    (typ, _, _) => Err(format!("if-else test: Bool != {typ}")),
                 }
             }
             Expr::Match(val, pats) => {
@@ -130,14 +127,11 @@ impl Expr {
                 let mut expr = Expr::Null(Type::Any);
                 for (key, bind, ret) in pats {
                     let acc = Box::new(Expr::Member(val.clone(), key.clone()));
-                    expr = Expr::If(
-                        Box::new(match bind {
-                            Some(bind) => Expr::Let(Box::new(bind.clone()), acc),
-                            None => Expr::Check(acc),
-                        }),
-                        Box::new(ret.clone()),
-                        Some(Box::new(expr)),
-                    )
+                    let case = match bind {
+                        Some(bind) => Expr::Let(Box::new(bind.clone()), acc),
+                        None => Expr::Check(acc),
+                    };
+                    expr = Expr::If(Box::new(case), Box::new(ret.clone()), Some(Box::new(expr)))
                 }
                 typing!(expand!(expr))
             }
@@ -218,7 +212,7 @@ impl Expr {
                 if let Some(typ) = ctx.global.lib.get(&name).cloned() {
                     let args = if name.is_generic() { vec![] } else { args };
                     let var = Expr::Variable(Generic(name.clone(), map!(args, |x| x.solve(ctx))));
-                    ctx.global.used.insert(name.clone());
+                    ctx.local.used.insert(name.clone());
                     if self != &var {
                         ctx.local.expand.insert(self.clone(), var);
                     }
@@ -466,12 +460,12 @@ impl Type {
                     if let Define::Function(_, _) = unify {
                         typ = unify.infer(ctx)?;
                     }
-                    ctx.global.used.insert(mangle.clone());
+                    ctx.local.used.insert(mangle.clone());
                     ctx.global.def.insert(mangle, unify.clone());
                 })?
             }
-            Type::Class(Generic(name, args)) => {
-                let Some((params, table)) = ctx.global.table.get(&name) else {
+            Type::Class(Generic(ref name, args)) => {
+                let Some((params, table)) = ctx.global.table.get(name) else {
                     return Err(format!("undefined: {name}"));
                 };
                 let (Object::Enum(mut layout) | Object::Struct(mut layout)) = table.clone();
