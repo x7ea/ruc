@@ -19,8 +19,8 @@ impl Define {
         ctx.global.used = reachable(&Name::new("main")?, ctx).into_iter().collect();
 
         let asm = map!(ctx.global.def.clone(), |(_, func)| func.emit(ctx)).concat();
-        let extrn = filter!(ctx.global.extrn, |x| ctx.global.used.contains(*x));
-        let lib = map!(extrn, |lib| format!("\textern {lib}\n")).concat();
+        let ext = filter!(ctx.global.extrn, |x| ctx.global.used.contains(*x));
+        let lib = map!(ext, |lib| format!("\textern {lib}\n")).concat();
 
         let data = format!("section .data\n{}\n", ctx.global.data);
         Ok(format!("{data}section .text\n\tglobal main\n{lib}\n{asm}"))
