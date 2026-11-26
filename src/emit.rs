@@ -20,7 +20,7 @@ impl Define {
 
         let asm = map!(ctx.global.def.clone(), |(_, func)| func.emit(ctx)).concat();
         let lib = filter!(ctx.global.extrn, |x| ctx.global.used.contains(*x));
-        let lib = map!(|lib| format!("\textern {lib}\n")).concat();
+        let lib = map!(lib, |lib| format!("\textern {lib}\n")).concat();
 
         let data = format!("section .data\n{}\n", ctx.global.data);
         Ok(format!("{data}section .text\n\tglobal main\n{lib}\n{asm}"))
@@ -42,6 +42,9 @@ impl Define {
         let Define::Function((Generic(name, params), args), (body, _)) = self else {
             return String::default();
         };
+        if !params.is_empty() || !ctx.global.used.contains(name) {
+            return String::default();
+        }
 
         ctx.local = ctx.table[name].clone();
         let (mut ptr, mut alloc) = (8, String::new());
