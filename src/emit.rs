@@ -13,7 +13,7 @@ impl Define {
             };
         }
         let ctx = &mut Context::default();
-        ctx.global.used = IndexSet::from(reachable(&Name::new("main")?, ctx));
+        ctx.global.used = reachable(&Name::new("main")?, ctx).into_iter().collect();
         ctx.global.def = program.iter().map(|x| (name!(x), x.clone())).collect();
 
         let _typ = map!({ &mut program }, |define| define.infer(ctx))?;
