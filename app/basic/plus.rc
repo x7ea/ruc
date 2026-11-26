@@ -1,6 +1,8 @@
 use std
 
+fn inc(n: Float): Float n + 1.0
+
 fn main() {
     let x = input().atof()
-    print x, " + 1 = ", x + 1.0
+    print x, " + 1 = ", x.inc()
 }
