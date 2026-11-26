@@ -19,8 +19,8 @@ impl Define {
         ctx.global.used = reachable(&Name::new("main")?, ctx).into_iter().collect();
 
         let asm = map!(ctx.global.def.clone(), |(_, func)| func.emit(ctx)).concat();
-        let extrn = filter!(ctx.global.extrn, |x| ctx.global.used.contains(*x));
-        let lib = map!(extrn, |lib| format!("\textern {lib}\n")).concat();
+        let lib = filter!(ctx.global.extrn, |x| ctx.global.used.contains(*x));
+        let lib = map!(|lib| format!("\textern {lib}\n")).concat();
 
         let data = format!("section .data\n{}\n", ctx.global.data);
         Ok(format!("{data}section .text\n\tglobal main\n{lib}\n{asm}"))
@@ -39,12 +39,10 @@ pub const ABI: [&str; 6] = ["rdi", "rsi", "rdx", "rcx", "r8", "r9"];
 
 impl Define {
     fn emit(&self, ctx: &mut Context) -> String {
-        let Define::Function((Generic(name, params), args), (body, _)) = self
-            && params.is_empty()
-            && ctx.global.used.contains(name)
-        else {
+        let Define::Function((Generic(name, params), args), (body, _)) = self else {
             return String::default();
         };
+
         ctx.local = ctx.table[name].clone();
         let (mut ptr, mut alloc) = (8, String::new());
         let (mut idx, mut xmm) = (0, 0);
