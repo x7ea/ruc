@@ -59,10 +59,9 @@ impl Define {
                 };
                 xmm += 1;
             } else {
-                if let Some(reg) = ABI.get(idx) {
-                    alloc += &format!("\tmov [rbp-{ptr}], {reg}\n")
-                } else {
-                    alloc += &format!("\tmov rax, [rbp+{arg}]\n\tmov [rbp-{ptr}], rax\n")
+                match ABI.get(idx) {
+                    Some(reg) => alloc += &format!("\tmov [rbp-{ptr}], {reg}\n"),
+                    None => alloc += &format!("\tmov rax, [rbp+{arg}]\n\tmov [rbp-{ptr}], rax\n"),
                 }
                 idx += 1;
             }
