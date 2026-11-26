@@ -25,19 +25,17 @@ impl Define {
         let data = format!("section .data\n{}\n", ctx.global.data);
         Ok(format!("{data}section .text\n\tglobal main\n{lib}\n{asm}"))
     }
-}
 
-pub fn reachable(name: &Name, ctx: &mut Context) -> Vec<Name> {
-    let used = match ctx.table.get(name).cloned() {
-        Some(func) => map!(filter!(func.used, |x| name != *x), |x| reachable(x, ctx)).concat(),
-        None => vec![],
-    };
-    [used, vec![name.clone()]].concat()
-}
+    pub fn reachable(name: &Name, ctx: &mut Context) -> Vec<Name> {
+        let used = match ctx.table.get(name).cloned() {
+            Some(func) => map!(filter!(func.used, |x| name != *x), |x| reachable(x, ctx)).concat(),
+            None => vec![],
+        };
+        [used, vec![name.clone()]].concat()
+    }
 
-pub const ABI: [&str; 6] = ["rdi", "rsi", "rdx", "rcx", "r8", "r9"];
+    pub const ABI: [&str; 6] = ["rdi", "rsi", "rdx", "rcx", "r8", "r9"];
 
-impl Define {
     fn emit(&self, ctx: &mut Context) -> String {
         let Define::Function((Generic(name, params), args), (body, _)) = self else {
             return String::default();
@@ -58,7 +56,7 @@ impl Define {
                 };
                 xmm += 1;
             } else {
-                match ABI.get(idx) {
+                match Define::ABI.get(idx) {
                     Some(reg) => alloc += &format!("\tmov [rbp-{ptr}], {reg}\n"),
                     None => alloc += &format!("\tmov rax, [rbp+{arg}]\n\tmov [rbp-{ptr}], rax\n"),
                 }
@@ -158,7 +156,7 @@ impl Expr {
                         }
                         xmm += 1;
                     } else {
-                        if let Some(reg) = ABI.get(idx) {
+                        if let Some(reg) = Define::ABI.get(idx) {
                             mov += &format!("\tpop {reg}\n");
                         }
                         idx += 1;
