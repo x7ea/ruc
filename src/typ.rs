@@ -127,14 +127,11 @@ impl Expr {
                 let mut expr = Expr::Null(Type::Any);
                 for (key, bind, ret) in pats {
                     let acc = Box::new(Expr::Member(val.clone(), key.clone()));
-                    expr = Expr::If(
-                        Box::new(match bind {
-                            Some(bind) => Expr::Let(Box::new(bind.clone()), acc),
-                            None => Expr::Check(acc),
-                        }),
-                        Box::new(ret.clone()),
-                        Some(Box::new(expr)),
-                    )
+                    let case = match bind {
+                        Some(bind) => Expr::Let(Box::new(bind.clone()), acc),
+                        None => Expr::Check(acc),
+                    };
+                    expr = Expr::If(Box::new(case), Box::new(ret.clone()), Some(Box::new(expr)))
                 }
                 typing!(expand!(expr))
             }
