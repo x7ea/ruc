@@ -39,12 +39,12 @@ pub const ABI: [&str; 6] = ["rdi", "rsi", "rdx", "rcx", "r8", "r9"];
 
 impl Define {
     fn emit(&self, ctx: &mut Context) -> String {
-        let Define::Function((Generic(name, params), args), (body, _)) = self else {
+        let Define::Function((Generic(name, params), args), (body, _)) = self
+            && params.is_empty()
+            && ctx.global.used.contains(name)
+        else {
             return String::default();
         };
-        if !params.is_empty() {
-            return String::default();
-        }
         ctx.local = ctx.table[name].clone();
         let (mut ptr, mut alloc) = (8, String::new());
         let (mut idx, mut xmm) = (0, 0);
