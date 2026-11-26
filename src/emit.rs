@@ -25,7 +25,11 @@ impl Define {
     }
 }
 
-fn used(name: Name, ctx: &mut Context) -> Vec<Name> {}
+fn reachable(name: &Name, ctx: &mut Context) -> Vec<Name> {
+    match ctx.table.get(name) {
+        Some(func) => map!(func.used, |x| reachable(x, ctx)),
+    }
+}
 
 pub const ABI: [&str; 6] = ["rdi", "rsi", "rdx", "rcx", "r8", "r9"];
 
