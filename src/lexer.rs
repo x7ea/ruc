@@ -76,7 +76,7 @@ pub mod name {
         "let", "new", "clone", "if", "then", "else", "for", "while", "do", "match",
     ];
 
-    #[derive(Debug, Clone, Default, PartialEq, Eq, Hash)]
+    #[derive(Debug, Clone, Default, PartialEq, Eq, Hash, Serialize)]
     pub struct Name(pub String);
 
     impl Name {
