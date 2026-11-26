@@ -17,9 +17,10 @@ impl Define {
 
         let _typ = map!({ &mut program }, |define| define.infer(ctx))?;
         ctx.global.used = reachable(&Name::new("main")?, ctx).into_iter().collect();
-        dbg!(&ctx.global.used);
-        let asm = map!(ctx.global.def.clone(), |(_, func)| func.emit(ctx)).concat();
-        let lib = map!(&ctx.global.extrn, |lib| format!("\textern {lib}\n")).concat();
+
+        let asm = filter!(ctx.global.extrn, |x| ctx.global.used.contains(*x));
+        let lib = filter!(ctx.global.extrn, |x| ctx.global.used.contains(*x));
+        let lib = map!(lib, |lib| format!("\textern {lib}\n")).concat();
 
         let data = format!("section .data\n{}\n", ctx.global.data);
         Ok(format!("{data}section .text\n\tglobal main\n{lib}\n{asm}"))
@@ -41,7 +42,7 @@ impl Define {
         let Define::Function((Generic(name, params), args), (body, _)) = self else {
             return String::default();
         };
-        if !params.is_empty() || !ctx.global.used.contains(name) {
+        if !params.is_empty() {
             return String::default();
         }
         ctx.local = ctx.table[name].clone();
@@ -324,6 +325,11 @@ macro_rules! array {
 macro_rules! map {
     ($a: block, $f: expr) => {{ $a.iter().map($f).collect::<Result<Vec<_>, String>>() }};
     ($a: expr, $f: expr) => {{ $a.iter().map($f).collect::<Vec<_>>() }};
+}
+
+#[macro_export]
+macro_rules! filter {
+    ($a: expr, $f: expr) => {{ $a.iter().filter($f).collect::<Vec<_>>() }};
 }
 
 #[macro_export]
