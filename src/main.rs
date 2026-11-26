@@ -10,7 +10,6 @@ use {
 use derive_more::Unwrap;
 use indexmap::{IndexMap, IndexSet};
 use ordered_float::OrderedFloat as Float;
-use serde::Serialize;
 use std::{
     fmt::{self, Debug, Display},
     io::{Read, Write, stdin, stdout},
@@ -37,7 +36,7 @@ fn main() {
 }
 
 // Abstract Syntax Tree (AST)
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum Define {
     Function(Signature, (Expr, Type)),
     Declare(Signature, Type),
@@ -45,7 +44,7 @@ pub enum Define {
     Class(Generic, Object),
 }
 
-#[derive(Debug, Clone, Hash, PartialEq, Eq, AsRefStr, Serialize)]
+#[derive(Debug, Clone, Hash, PartialEq, Eq, AsRefStr)]
 pub enum Expr {
     Print(bool, Vec<Expr>),
     Block(Vec<Expr>),
@@ -99,7 +98,7 @@ pub enum Expr {
     Write(Box<Expr>, Box<Expr>, Box<Expr>),
 }
 
-#[derive(Clone, Default, Eq, Hash, Unwrap, AsRefStr, Serialize)]
+#[derive(Clone, Default, Eq, Hash, Unwrap, AsRefStr)]
 pub enum Type {
     String,
     Integer,
@@ -113,28 +112,28 @@ pub enum Type {
     Any,
 }
 
-#[derive(Debug, Clone, Hash, PartialEq, Eq, Serialize)]
+#[derive(Debug, Clone, Hash, PartialEq, Eq)]
 pub struct Lambda((Vec<Type>, Box<Type>), Option<Vec<Type>>);
 
-#[derive(Debug, Clone, Hash, Default, PartialEq, Eq, Serialize)]
+#[derive(Debug, Clone, Hash, Default, PartialEq, Eq)]
 pub struct Generic(Name, Vec<Type>);
 
 type Signature = (Generic, IndexMap<Name, Type>);
 
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum Object {
     Struct(IndexMap<Name, Type>),
     Enum(IndexMap<Name, Type>),
 }
 
-#[derive(Debug, Default, Serialize)]
+#[derive(Debug, Default)]
 pub struct Context {
     global: Global,
     local: Function,
     table: IndexMap<Name, Function>,
 }
 
-#[derive(Debug, Default, Serialize)]
+#[derive(Debug, Default)]
 pub struct Global {
     idx: usize,
     data: String,
@@ -146,7 +145,7 @@ pub struct Global {
     used: IndexSet<Name>,
 }
 
-#[derive(Debug, Default, Clone, Serialize)]
+#[derive(Debug, Default, Clone)]
 pub struct Function {
     var: IndexMap<Name, Type>,
     scope: IndexMap<Name, Type>,
