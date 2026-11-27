@@ -39,6 +39,9 @@ enum Option<T> {
 
 fn range(min: Int, max: Int): [Int] {
     let is_rev = max < min
+    if max == min then {
+        let max = min + 1
+    }
     let this = [Int; abs(max - min)]
     let index = 0
     while index < this.len do {
