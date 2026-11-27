@@ -7,21 +7,19 @@ struct User<Message> {
 
 fn User<Message>(name: Str, inject: Message): User<Message> {
     let this = new User<Message>
-    let id = format name, "@example.com"
+    let id = name + "@example.com"
     let this.contact = inject
     let this.name = id
     this
 }
 
 struct Email { address: Str }
-fn Email.send(this: Email) {
-    print "Send: ", this.address
-}
+fn Email.edit(this: Email, update: Str) let this.address = update
+fn Email.access(this: Email) print "Send: ", this.address
 
 struct Phone { number: Int }
-fn Phone.send(this: Phone) {
-    print "Call: ", this.number
-}
+fn Phone.edit(this: Phone, update: Int) let this.number = update
+fn Phone.access(this: Phone) print "Call: ", this.number
 
 fn main() {
     let me = User<Email>("x7ea", new Email)
