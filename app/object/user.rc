@@ -1,14 +1,19 @@
 use std
 
-struct User<T> {
+struct User<Message> {
     name: Str,
-    email: T
+    contact: Message
 }
 
-fn User(name: Str): User {
-    let this = new User
+fn User(name: Str, contact: Message): User {
+    let this = new User<Message>
     let this.name = name
+    let this.contact = contact
     this
+}
+
+fn inject<Message>(this: User,) {
+    let this.contact =　msg
 }
 
 struct Email { address: Str }
@@ -21,13 +26,6 @@ fn Phone.send(this: Email) {
     print "Call: ", this.number
 }
 
-fn User.email(this: User, age: Float) {
-    let this.age = age
-}
-
-fn User.print(this: User): Str {
-    format this.name, " (", this.age, ")"
-}
 
 fn main() {
     let me = User("x7ea")
