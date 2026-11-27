@@ -7,7 +7,7 @@ struct User<Message> {
 
 fn User<Message>(name: Str, inject: Message): User<Message> {
     let this = new User<Message>
-    let id = format name, ".example.com"
+    let id = format name, "@example.com"
     let this.contact = inject
     let this.name = id
     this
