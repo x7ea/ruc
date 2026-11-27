@@ -5,30 +5,27 @@ struct User<Message> {
     contact: Message
 }
 
-fn User(name: Str, contact: Message): User {
-    let this = new User<Message>
+fn User(name: Str): User {
+    let this = new User
     let this.name = name
-    let this.contact = contact
     this
 }
 
-fn inject<Message>(this: User,) {
-    let this.contact =　msg
+fn inject<Message>(this: User, contact: Message) {
+    let this.contact = contact
 }
-
 struct Email { address: Str }
 fn Email.send(this: Email) {
     print "Send: ", this.address
 }
 
 struct Phone { number: Int }
-fn Phone.send(this: Email) {
+fn Phone.send(this: Phone) {
     print "Call: ", this.number
 }
 
-
 fn main() {
     let me = User("x7ea")
-    me.set_age(17.4)
-    print me
+    me.inject(new Phone)
+    me.contact.send()
 }
