@@ -1,7 +1,7 @@
 use crate::*;
 
 impl Define {
-    pub fn compile(mut program: &mut [Define]) -> Result<String, String> {
+    pub fn compile(mut program: &[Define]) -> Result<String, String> {
         macro_rules! name {
             ($define: expr) => {
                 match $define.clone() {
