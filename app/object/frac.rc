@@ -29,6 +29,12 @@ fn Frac.add(a: Frac, b: Frac): Frac {
     frac(num, den)
 }
 
+fn Frac.sub(a: Frac, b: Frac): Frac {
+    let num = (a.num * b.den) - (b.num * a.den)
+    let den = a.den * b.den
+    frac(num, den)
+}
+
 fn Frac.mul(a: Frac, b: Frac): Frac '
     frac(a.num * b.num, a.den * b.den)
 
