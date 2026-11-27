@@ -198,8 +198,8 @@ impl Expr {
                 format!("{new}\tpush rax\n{len}\tmov r10, rax\n\tpop rax\n\tmov qword [rax], r10\n")
             }
             Expr::Check(obj) => {
-                expanding_optimized_code!();
-                format!("{}\tcmp rax, 0\n\tsetne al\n\tmovzx rax, al\n", emit!(obj))
+                let (_, obj) = (expanding_optimized_code!(), emit!(obj));
+                format!("{obj}\tcmp rax, 0\n\tsetne al\n\tmovzx rax, al\n")
             }
             Expr::Read(offset, typ, addr) => {
                 let [l1, addr, offset] = [label!(), emit!(addr), emit!(offset)];
