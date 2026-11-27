@@ -42,7 +42,6 @@ fn Frac.mul(a: Frac, b: Frac): Frac {
 fn Frac.div(a: Frac, b: Frac): Frac {
     frac(a.num * b.den, a.den * b.num)
 }
-
 fn Frac.print(this: Frac): Str {
     let num = this.num / this.gcd()
     let den = this.den / this.gcd()
