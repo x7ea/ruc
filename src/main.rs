@@ -60,7 +60,7 @@ pub enum Expr {
     Call(Box<Expr>, Vec<Expr>),
     Return(Box<Expr>),
     // Array
-    Sequence(Vec1<Expr>),
+    Array(Vec1<Expr>),
     Index(Box<Expr>, Box<Expr>),
     Len(Box<Expr>),
     // Object
