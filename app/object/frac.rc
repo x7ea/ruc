@@ -63,6 +63,6 @@ fn main() {
     let x = frac(3, 8) * frac(5, 2)
     print x.toFloat(), " = ", x
 
-    let x = frac(2, 3) / frac(3, 2)
-    print x.toFloat(), " = ", x
+    let x = frac(5, 2) / frac(3, 2)
+    print x.toFloat()
 }
