@@ -125,9 +125,9 @@ impl Expr {
                 let cond = format!("{}\tcmp rax, 0\n", emit!(cond));
                 match els {
                     None => format!("{cond}\tje {a}\n{then}{a}:\n"),
-                    Some(case) => {
-                        let (b, case) = (label!(), emit!(case));
-                        format!("{cond}\tje {b}\n{then}\tjmp {a}\n{b}:\n{case}{a}:\n")
+                    Some(els) => {
+                        let (b, els) = (label!(), emit!(els));
+                        format!("{cond}\tje {b}\n{then}\tjmp {a}\n{b}:\n{els}{a}:\n")
                     }
                 }
             }
