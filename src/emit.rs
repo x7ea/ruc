@@ -301,11 +301,15 @@ macro_rules! new {
     ($layout: expr) => {{ Expr::Call(Box::new(var!("calloc")), vec![$layout, Expr::Integer(8)]) }};
 }
 #[macro_export]
+macro_rules! int {
+    ($val: expr) => {{ Box::new(Expr::Integer($val as i64)) }};
+}
+#[macro_export]
 macro_rules! len {
     ($arr: expr) => {{ Box::new(Expr::Len($arr.clone())) }};
 }
 #[macro_export]
-macro_rules! array {
+macro_rules! round {
     ($arr: expr, $idx: expr) => {{
         let idx = Box::new(Expr::Mod($idx.clone(), len!($arr)));
         Box::new(Expr::Add(idx, Box::new(Expr::Integer(1))))
