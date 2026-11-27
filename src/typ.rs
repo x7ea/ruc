@@ -273,8 +273,7 @@ impl Expr {
                     let acc = Box::new(Expr::Index(temp.clone(), offset(idx)));
                     expr.push(Expr::Let(acc, Box::new(val.clone())));
                 }
-                expr.push(*temp);
-                typing!(expand!(Expr::Block(expr)))
+                typing!(expand!(Expr::Block([expr, vec![*temp]].concat())))
             }
             Expr::Index(arr, idx) => match (infer!(arr), infer!(idx)) {
                 (Type::Array(typ), Type::Integer) => {
