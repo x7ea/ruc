@@ -84,6 +84,7 @@ impl Expr {
             ($typ: pat, $lhs: expr, $rhs: expr, $ret: expr) => {{ op!($typ, $lhs, $rhs).and_then(|_| typing!($ret.clone())) }};
         }
         let temp = Box::new(var!(format!("temp_{self:?}")));
+
         match self.clone() {
             Expr::Print(is_output, args) => {
                 let (fmt, args) = map!({ args }, |x| x.fmtgen(ctx))?.into_iter().unzip();
