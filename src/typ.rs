@@ -299,12 +299,9 @@ impl Expr {
                 typing!(typ.solve(ctx))
             }
             Expr::Enum(typ, key, val) => {
-                let acc = Box::new(Expr::Member(temp.clone(), key.clone()));
-                typing!(expand!(Expr::Block(vec![
-                    Expr::Let(temp.clone(), Box::new(Expr::New(typ.clone()))),
-                    Expr::Let(acc, val.clone()),
-                    *temp
-                ])))
+                let init = Expr::Let(temp.clone(), Box::new(Expr::New(typ.clone())));
+                let acc = Expr::Let(Box::new(Expr::Member(temp.clone(), key.clone())), val);
+                typing!(expand!(Expr::Block(vec![init, acc, *temp])))
             }
             Expr::Member(obj, ref key) => {
                 let typ = infer!(obj);
