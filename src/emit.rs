@@ -121,13 +121,13 @@ impl Expr {
 
         match self {
             Expr::If(cond, then, els) => {
-                let (_, l1, then) = (code!(), label!(), emit!(then));
+                let (_, a, then) = (code!(), label!(), emit!(then));
                 let cond = format!("{}\tcmp rax, 0\n", emit!(cond));
                 match els {
-                    None => format!("{cond}\tje {l1}\n{then}{l1}:\n"),
+                    None => format!("{cond}\tje {a}\n{then}{a}:\n"),
                     Some(case) => {
-                        let (l2, case) = (label!(), emit!(case));
-                        format!("{cond}\tje {l2}\n{then}\tjmp {l1}\n{l2}:\n{case}{l1}:\n")
+                        let (b, case) = (label!(), emit!(case));
+                        format!("{cond}\tje {b}\n{then}\tjmp {a}\n{b}:\n{case}{a}:\n")
                     }
                 }
             }
