@@ -14,6 +14,7 @@ fn User(name: Str): User {
 fn inject<Message>(this: User, contact: Message) {
     let this.contact = contact
 }
+
 struct Email { address: Str }
 fn Email.send(this: Email) {
     print "Send: ", this.address
@@ -26,6 +27,6 @@ fn Phone.send(this: Phone) {
 
 fn main() {
     let me = User("x7ea")
-    me.inject(new Phone)
+    me.inject<Phone>(new Phone)
     me.contact.send()
 }
