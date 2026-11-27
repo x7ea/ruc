@@ -148,8 +148,9 @@ impl Expr {
                 }
             }
             Expr::For(cnt, arr, body) => {
-                let Type::Array(_) = infer!(arr) else {
-                    return Err(format!("not iterable: {}", infer!(arr)));
+                let typ = infer!(arr);
+                let Type::Array(_) = typ else {
+                    return Err(format!("not iterable: {typ}"));
                 };
                 let inc = Box::new(Expr::Add(temp.clone(), offset(1)));
                 let each = Box::new(Expr::Block(vec![
