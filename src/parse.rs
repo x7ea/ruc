@@ -153,7 +153,7 @@ impl Expr {
             let Ok(arr) = serial!(arr, Expr::parse).try_into() else {
                 return Err(format!("empty array: {src}"));
             };
-            Ok(Expr::Sequence(arr))
+            Ok(Expr::Array(arr))
         } else if let Ok(i) = src.parse::<i64>() {
             Ok(Expr::Integer(i))
         } else if let Ok(f) = src.parse::<f64>() {
