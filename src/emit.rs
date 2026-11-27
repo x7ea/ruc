@@ -121,7 +121,7 @@ impl Expr {
 
         match self {
             Expr::If(cond, then, els) => {
-                let (_, l1, then) = (optimize!(), label!(), emit!(then));
+                let (_, l1, then) = (code!(), label!(), emit!(then));
                 let cond = format!("{}\tcmp rax, 0\n", emit!(cond));
                 match els {
                     None => format!("{cond}\tje {l1}\n{then}{l1}:\n"),
@@ -132,8 +132,8 @@ impl Expr {
                 }
             }
             Expr::While(test, body) => {
-                let (_, l1, l2, c1, c2) = (code!(), label!(), label!(), emit!(test), emit!(body));
-                format!("{l1}:\n{c1}\tcmp rax, 0\n\tje {l2}\n{c2}\tjmp {l1}\n{l2}:\n")
+                let (_, l1, l2, test, lp) = (code!(), label!(), label!(), emit!(test), emit!(body));
+                format!("{l1}:\n{test}\tcmp rax, 0\n\tje {l2}\n{lp}\tjmp {l1}\n{l2}:\n")
             }
             Expr::Block(lines) => map!(&lines, |code| emit!(code)).concat(),
             Expr::Return(val) => format!("{}\tleave\n\tret\n", emit!(val)),
