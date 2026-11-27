@@ -26,9 +26,11 @@ fn Frac.gcd(this: Frac): Int {
 fn Frac.mul(a: Frac, b: Frac): Frac '
     frac(a.num * b.num, a.den * b.den)
 
-fn Frac.print(this: Frac): Str '
-    format this.num, "/", this.den
-
+fn Frac.print(this: Frac): Str {
+    let num = this.num / this.gcd()
+    let den = this.den / this.gcd()
+    format num, "/", den
+}
 fn Frac.toFloat(this: Frac): Float {
     let num = this.num.toFloat()
     let den = this.den.toFloat()
@@ -37,6 +39,6 @@ fn Frac.toFloat(this: Frac): Float {
 
 fn main() {
     let x = frac(32, 6)
-    print x.gcd()
+    print x
     print x.toFloat()
 }
