@@ -18,6 +18,6 @@ fn Email.access(this: Email) print "Send: ", this.address
 
 fn main() {
     let me = User<Email>("x7ea", new Email)
-    me.contact.edit("x7ea@example.com")
+    me.contact.edit(me.name + "@example.com")
     me.contact.access()
 }
