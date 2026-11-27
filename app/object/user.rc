@@ -11,20 +11,21 @@ fn User<Message>(inject: Message): User<Message> {
     this
 }
 
-struct Email { address: Str }
-fn Email.edit(this: Email, update: Str) let this.address = update
-fn Email.access(this: Email) print "Send: ", this.address
 
-struct Phone { number: Int }
-fn Phone.edit(this: Phone, update: Int) let this.number = update
-fn Phone.access(this: Phone) print "Call: ", this.number
+struct Email {
+    address: Str
+}
+
+fn Email.edit(this: Email, update: Str) {
+    let this.address = update
+}
+
+fn Email.access(this: Email) {
+    print "Send: ", this.address
+}
 
 fn main() {
     let me = User<Email>(new Email)
     me.contact.edit("x7ea@example.com")
     me.contact.access()
-
-    let a = User<Phone>(new Phone)
-    a.contact.edit(00000000)
-    a.contact.access()
 }
