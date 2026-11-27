@@ -11,7 +11,6 @@ fn User<Message>(inject: Message): User<Message> {
     this
 }
 
-
 struct Email {
     address: Str
 }
