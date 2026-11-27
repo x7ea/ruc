@@ -121,8 +121,7 @@ impl Expr {
 
         match self {
             Expr::If(cond, then, els) => {
-                expanding_optimized_code!();
-                let [l1, then] = [label!(), emit!(then)];
+                let [_, l1, then] = [expanding_optimized_code!(), label!(), emit!(then)];
                 let cond = format!("{}\tcmp rax, 0\n", emit!(cond));
                 match els {
                     None => format!("{cond}\tje {l1}\n{then}{l1}:\n"),
