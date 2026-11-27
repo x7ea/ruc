@@ -82,7 +82,7 @@ impl Expr {
         macro_rules! emit {
             ($ast: expr) => {{ $ast.clone().emit(ctx) }};
         }
-        macro_rules! optimize {
+        macro_rules! code {
             () => {
                 if let Some(expr) = ctx.local.expand.get(self) {
                     return emit!(expr);
@@ -132,9 +132,8 @@ impl Expr {
                 }
             }
             Expr::While(test, body) => {
-                optimize!();
-                let [l1, l2, test, body] = [label!(), label!(), emit!(test), emit!(body)];
-                format!("{l1}:\n{test}\tcmp rax, 0\n\tje {l2}\n{body}\tjmp {l1}\n{l2}:\n")
+                let (_, l1, l2, c1, c2) = (code!(), label!(), label!(), emit!(test), emit!(body));
+                format!("{l1}:\n{c1}\tcmp rax, 0\n\tje {l2}\n{c2}\tjmp {l1}\n{l2}:\n")
             }
             Expr::Block(lines) => map!(&lines, |code| emit!(code)).concat(),
             Expr::Return(val) => format!("{}\tleave\n\tret\n", emit!(val)),
