@@ -265,7 +265,7 @@ impl Expr {
                 }
                 other => Err(format!("assign target: {}", infer!(other))),
             },
-            Expr::Sequence(array) => {
+            Expr::Array(array) => {
                 let init = Box::new(Expr::Init(infer!(array[0]), offset(array.len())));
                 let mut expr = vec![Expr::Let(temp.clone(), init)];
                 for (idx, val) in array.iter().enumerate() {
