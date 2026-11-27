@@ -86,7 +86,7 @@ impl Expr {
             () => {
                 if let Some(expr) = ctx.local.expand.get(self) {
                     return emit!(expr);
-                };
+                }
             };
         }
         macro_rules! op {
@@ -245,13 +245,13 @@ impl Expr {
             Expr::Mul(lhs, rhs) => op!("mul", lhs, rhs),
             Expr::Div(lhs, rhs) if typ!(self) == Type::Float => op!("div", lhs, rhs),
             Expr::Div(lhs, rhs) => {
-                let (lhs, rhs) = (emit!(lhs), emit!(rhs));
+                let (_, lhs, rhs) = (expanding_optimized_code!(), emit!(lhs), emit!(rhs));
                 format!("{lhs}\tpush rax\n{rhs}\tmov rsi, rax\n\tpop rax\n\tcqo\n\tidiv rsi\n")
             }
-            Expr::Mod(_, _) => format!(
-                "{}\tadd rdx, rsi\n\tmov rax, rdx\n\tcqo\n\tidiv rsi\n\tmov rax, rdx\n",
-                emit!(expr!(self))
-            ),
+            Expr::Mod(_, _) => {
+                let (_, div) = (expanding_optimized_code!(), emit!(expr!(self)));
+                format!("{div}\tadd rdx, rsi\n\tmov rax, rdx\n\tcqo\n\tidiv rsi\n\tmov rax, rdx\n")
+            }
             Expr::Eq(lhs, rhs) => cmp!("e", lhs, rhs),
             Expr::Ne(lhs, rhs) => cmp!("ne", lhs, rhs),
             Expr::Gt(lhs, rhs) => cmp!("g", lhs, rhs),
