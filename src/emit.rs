@@ -132,9 +132,8 @@ impl Expr {
                 }
             }
             Expr::While(test, body) => {
-                let (_, l1, l2, test, body) =
-                    (code!(), label!(), label!(), emit!(test), emit!(body));
-                format!("{l1}:\n{test}\tcmp rax, 0\n\tje {l2}\n{body}\tjmp {l1}\n{l2}:\n")
+                let (_, a, b, test, body) = (code!(), label!(), label!(), emit!(test), emit!(body));
+                format!("{a}:\n{test}\tcmp rax, 0\n\tje {b}\n{body}\tjmp {a}\n{b}:\n")
             }
             Expr::Block(lines) => map!(&lines, |code| emit!(code)).concat(),
             Expr::Return(val) => format!("{}\tleave\n\tret\n", emit!(val)),
