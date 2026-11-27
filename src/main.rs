@@ -59,7 +59,7 @@ pub enum Expr {
     Let(Box<Expr>, Box<Expr>),
     Call(Box<Expr>, Vec<Expr>),
     Return(Box<Expr>),
-    // Array
+    // Collection
     Array(Vec1<Expr>),
     Index(Box<Expr>, Box<Expr>),
     Len(Box<Expr>),
