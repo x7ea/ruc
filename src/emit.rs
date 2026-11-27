@@ -247,8 +247,9 @@ impl Expr {
                 let (_, lhs, rhs) = (expanding_optimized_code!(), emit!(lhs), emit!(rhs));
                 format!("{lhs}\tpush rax\n{rhs}\tmov rsi, rax\n\tpop rax\n\tcqo\n\tidiv rsi\n")
             }
-            Expr::Mod(_, _) => {
-                let (_, div) = (expanding_optimized_code!(), emit!(expr!(self)));
+            Expr::Mod(lhs, rhs) => {
+                expanding_optimized_code!();
+                let div = emit!(Expr::Div(lhs.clone(), rhs.clone()));
                 format!("{div}\tadd rdx, rsi\n\tmov rax, rdx\n\tcqo\n\tidiv rsi\n\tmov rax, rdx\n")
             }
             Expr::Eq(lhs, rhs) => cmp!("e", lhs, rhs),
