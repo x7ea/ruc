@@ -82,7 +82,7 @@ impl Expr {
         macro_rules! emit {
             ($ast: expr) => {{ $ast.clone().emit(ctx) }};
         }
-        macro_rules! expanding_optimized_code {
+        macro_rules! code {
             () => {
                 if let Some(expr) = ctx.local.expand.get(self) {
                     return emit!(expr);
