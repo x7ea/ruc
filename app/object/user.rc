@@ -5,9 +5,10 @@ struct User<Message> {
     contact: Message
 }
 
-fn User<Message>(inject: Message): User<Message> {
+fn User<Message>(name: Str, inject: Message): User<Message> {
     let this = new User<Message>
     let this.contact = inject
+    let this.name = name
     this
 }
 
@@ -24,7 +25,7 @@ fn Email.access(this: Email) {
 }
 
 fn main() {
-    let me = User<Email>(new Email)
+    let me = User<Email>("x7ea", new Email)
     me.contact.edit("x7ea@example.com")
     me.contact.access()
 }
