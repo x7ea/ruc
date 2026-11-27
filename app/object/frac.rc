@@ -16,9 +16,9 @@ fn Frac.gcd(this: Frac): Int {
     let a = abs(this.num)
     let b = abs(this.den)
     while b != 0 do {
-        let t = a % b
+        let r = a % b
         let a = b
-        let b = t
+        let b = r
     }
     a
 }
@@ -35,6 +35,10 @@ fn Frac.sub(a: Frac, b: Frac): Frac {
     frac(num, den)
 }
 
+fn Frac.not(this: Frac): Frac {
+    frac(this.den, this.num)
+}
+
 fn Frac.mul(a: Frac, b: Frac): Frac {
     frac(a.num * b.num, a.den * b.den)
 }
@@ -44,8 +48,8 @@ fn Frac.div(a: Frac, b: Frac): Frac {
 }
 
 fn Frac.print(this: Frac): Str {
-    let num = this.num / this.gcd()
-    let den = this.den / this.gcd()
+    let num = this.num
+    let den = this.den
     format num, "/", den
 }
 
