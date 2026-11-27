@@ -21,6 +21,6 @@ fn Phone.access(this: Phone) print "Call: ", this.number
 
 fn main() {
     let me = User<Email>(new Email)
-    me.contact.edit("aa")
+    me.contact.edit("x7ea@example.com")
     me.contact.access()
 }
