@@ -25,6 +25,7 @@ fn Phone.send(this: Phone) {
 
 fn main() {
     let me = User<Email>("x7ea", new Email)
-    print me.name
     me.contact.send()
+    let m = User<Phone>("x7ea", new Phone)
+    m.contact.send()
 }
