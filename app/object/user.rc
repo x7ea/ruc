@@ -7,6 +7,7 @@ struct User<Message> {
 
 fn User<Message>(name: Str, inject: Message): User<Message> {
     let this = new User<Message>
+    let name = format name, "@example.com"
     let this.name = name
     let this.contact = inject
     this
@@ -24,5 +25,6 @@ fn Phone.send(this: Phone) {
 
 fn main() {
     let me = User<Email>("x7ea", new Email)
+    print me.name
     me.contact.send()
 }
