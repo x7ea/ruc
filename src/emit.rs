@@ -82,7 +82,7 @@ impl Expr {
         macro_rules! emit {
             ($ast: expr) => {{ $ast.clone().emit(ctx) }};
         }
-        macro_rules! code {
+        macro_rules! optimize {
             () => {
                 if let Some(expr) = ctx.local.expand.get(self) {
                     return emit!(expr);
@@ -121,8 +121,7 @@ impl Expr {
 
         match self {
             Expr::If(cond, then, els) => {
-                expanding_optimized_code!();
-                let [l1, then] = [label!(), emit!(then)];
+                let (_, l1, then) = (optimize!(), label!(), emit!(then));
                 let cond = format!("{}\tcmp rax, 0\n", emit!(cond));
                 match els {
                     None => format!("{cond}\tje {l1}\n{then}{l1}:\n"),
@@ -133,7 +132,7 @@ impl Expr {
                 }
             }
             Expr::While(test, body) => {
-                expanding_optimized_code!();
+                optimize!();
                 let [l1, l2, test, body] = [label!(), label!(), emit!(test), emit!(body)];
                 format!("{l1}:\n{test}\tcmp rax, 0\n\tje {l2}\n{body}\tjmp {l1}\n{l2}:\n")
             }
@@ -167,7 +166,7 @@ impl Expr {
                 format!("{push}{mov}{func}\tmov r10, rax\n{len}\tcall r10\n")
             }
             Expr::Variable(var @ Generic(name, _)) => {
-                let (_, env) = (expanding_optimized_code!(), &ctx.local.var);
+                let (_, env) = (optimize!(), &ctx.local.var);
                 if let Some(addr) = env.get_index_of(name) {
                     let (typ, addr) = (env[name].clone(), (addr + 1) * 8);
                     match typ {
@@ -197,7 +196,7 @@ impl Expr {
                 format!("{new}\tpush rax\n{len}\tmov r10, rax\n\tpop rax\n\tmov qword [rax], r10\n")
             }
             Expr::Check(obj) => {
-                let (_, obj) = (expanding_optimized_code!(), emit!(obj));
+                let (_, obj) = (optimize!(), emit!(obj));
                 format!("{obj}\tcmp rax, 0\n\tsetne al\n\tmovzx rax, al\n")
             }
             Expr::Read(offset, typ, addr) => {
@@ -244,12 +243,11 @@ impl Expr {
             Expr::Mul(lhs, rhs) => op!("mul", lhs, rhs),
             Expr::Div(lhs, rhs) if typ!(self) == Type::Float => op!("div", lhs, rhs),
             Expr::Div(lhs, rhs) => {
-                let (_, lhs, rhs) = (expanding_optimized_code!(), emit!(lhs), emit!(rhs));
+                let (_, lhs, rhs) = (optimize!(), emit!(lhs), emit!(rhs));
                 format!("{lhs}\tpush rax\n{rhs}\tmov rsi, rax\n\tpop rax\n\tcqo\n\tidiv rsi\n")
             }
             Expr::Mod(lhs, rhs) => {
-                expanding_optimized_code!();
-                let div = emit!(Expr::Div(lhs.clone(), rhs.clone()));
+                let (_, div) = (optimize!(), emit!(Expr::Div(lhs.clone(), rhs.clone())));
                 format!("{div}\tadd rdx, rsi\n\tmov rax, rdx\n\tcqo\n\tidiv rsi\n\tmov rax, rdx\n")
             }
             Expr::Eq(lhs, rhs) => cmp!("e", lhs, rhs),
@@ -261,10 +259,7 @@ impl Expr {
             Expr::And(lhs, rhs) => op!("and", lhs, rhs),
             Expr::Or(lhs, rhs) => op!("or", lhs, rhs),
             Expr::Xor(lhs, rhs) => op!("xor", lhs, rhs),
-            Expr::Not(val) => {
-                let (_, val) = (expanding_optimized_code!(), emit!(val));
-                format!("{val}\tcmp rax, 0\n\tsete al\n\tmovzx rax, al\n")
-            }
+            Expr::Not(val) => format!("{}\tcmp rax, 0\n\tsete al\n\tmovzx rax, al\n", emit!(val)),
             _ => emit!(expr!(self)),
         }
     }
