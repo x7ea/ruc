@@ -35,10 +35,6 @@ fn Frac.sub(a: Frac, b: Frac): Frac {
     frac(num, den)
 }
 
-fn Frac.not(this: Frac): Frac {
-    frac(this.den, this.num)
-}
-
 fn Frac.mul(a: Frac, b: Frac): Frac {
     frac(a.num * b.num, a.den * b.den)
 }
@@ -48,8 +44,8 @@ fn Frac.div(a: Frac, b: Frac): Frac {
 }
 
 fn Frac.print(this: Frac): Str {
-    let num = this.num
-    let den = this.den
+    let num = this.num / this.gcd()
+    let den = this.den / this.gcd()
     format num, "/", den
 }
 
@@ -61,14 +57,5 @@ fn Frac.toFloat(this: Frac): Float {
 
 fn main() {
     let x = frac(2, 3) + frac(5, 3)
-    print x.toFloat(), " = ", x
-
-    let x = frac(5, 3) - frac(3, 3)
-    print x.toFloat(), " = ", x
-
-    let x = frac(3, 8) * frac(5, 2)
-    print x.toFloat(), " = ", x
-
-    let x = frac(5, 2) / frac(3, 2)
     print x.toFloat(), " = ", x
 }
