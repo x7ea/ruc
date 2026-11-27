@@ -5,11 +5,9 @@ struct User<Message> {
     contact: Message
 }
 
-fn User<Message>(name: Str, inject: Message): User<Message> {
+fn User<Message>(inject: Message): User<Message> {
     let this = new User<Message>
-    let id = name + "@example.com"
     let this.contact = inject
-    let this.name = id
     this
 }
 
@@ -22,8 +20,10 @@ fn Phone.edit(this: Phone, update: Int) let this.number = update
 fn Phone.access(this: Phone) print "Call: ", this.number
 
 fn main() {
-    let me = User<Email>("x7ea", new Email)
-    me.contact.send()
-    let m = User<Phone>("x7ea", new Phone)
-    m.contact.send()
+    let me = User<Email>(new Email)
+    me.contact.edit("aa")
+    me.contact.access()
+
+    let m = User<Phone>(new Phone)
+    m.contact.access()
 }
