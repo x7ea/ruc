@@ -393,7 +393,7 @@ impl Expr {
             | Expr::Mul(lhs, rhs)
             | Expr::Div(lhs, rhs) => op!(Type::Integer | Type::Float, lhs, rhs),
             Expr::Mod(lhs, rhs) => {
-                expand!(Expr::Div(lhs.clone(), rhs.clone()));
+                infer!(Expr::Div(lhs.clone(), rhs.clone()));
                 op!(Type::Integer, lhs, rhs)
             }
             Expr::Eq(lhs, rhs)
