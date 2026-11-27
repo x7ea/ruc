@@ -260,8 +260,8 @@ impl Expr {
             Expr::And(lhs, rhs) => op!("and", lhs, rhs),
             Expr::Or(lhs, rhs) => op!("or", lhs, rhs),
             Expr::Xor(lhs, rhs) => op!("xor", lhs, rhs),
-            Expr::Not(term) => {
-                let (_, val) = (expanding_optimized_code!(), emit!(term));
+            Expr::Not(val) => {
+                let (_, val) = (expanding_optimized_code!(), emit!(val));
                 format!("{val}\tcmp rax, 0\n\tsete al\n\tmovzx rax, al\n")
             }
             _ => emit!(expr!(self)),
