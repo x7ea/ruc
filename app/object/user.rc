@@ -12,17 +12,9 @@ fn User<Message>(name: Str, inject: Message): User<Message> {
     this
 }
 
-struct Email {
-    address: Str
-}
-
-fn Email.edit(this: Email, update: Str) {
-    let this.address = update
-}
-
-fn Email.access(this: Email) {
-    print "Send: ", this.address
-}
+struct Email { address: Str }
+fn Email.edit(this: Email, update: Str) let this.address = update
+fn Email.access(this: Email) print "Send: ", this.address
 
 fn main() {
     let me = User<Email>("x7ea", new Email)
