@@ -15,6 +15,15 @@ fn frac(num: Int, den: Int): Frac {
 fn Frac.mul(a: Frac, b: Frac): Frac '
     frac(a.num * b.num, a.den * b.den)
 
+fn Frac.gcd(this: Frac): Int {
+    while this.den != 0 do {
+        let temp = this.num % this.den
+        let this.num = this.den
+        let this.den = temp
+    }
+    this.num
+}
+
 fn Frac.print(this: Frac): Str '
     format this.num, "/", this.den
 
