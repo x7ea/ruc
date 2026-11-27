@@ -167,8 +167,7 @@ impl Expr {
                 format!("{push}{mov}{func}\tmov r10, rax\n{len}\tcall r10\n")
             }
             Expr::Variable(var @ Generic(name, _)) => {
-                expanding_optimized_code!();
-                let env = &ctx.local.var;
+                let (_, env) = (expanding_optimized_code!(), &ctx.local.var);
                 if let Some(addr) = env.get_index_of(name) {
                     let (typ, addr) = (env[name].clone(), (addr + 1) * 8);
                     match typ {
