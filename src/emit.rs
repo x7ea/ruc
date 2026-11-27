@@ -16,8 +16,8 @@ impl Define {
         ctx.global.def = program.iter().map(|x| (name!(x), x.clone())).collect();
 
         let _typ = map!({ &mut program }, |define| define.infer(ctx))?;
-        let reachable = Define::reach(&Name::new("main")?, ctx);
-        ctx.global.used = reachable.into_iter().collect();
+        let valid = Define::reach(&Name::new("main")?, ctx);
+        ctx.global.used = valid.into_iter().collect();
 
         let asm = map!(ctx.global.def.clone(), |(_, func)| func.emit(ctx)).concat();
         let ext = filter!(&ctx.global.extrn, |x| ctx.global.used.contains(*x));
