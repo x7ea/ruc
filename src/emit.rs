@@ -197,9 +197,9 @@ impl Expr {
                 format!("{obj}\tcmp rax, 0\n\tsetne al\n\tmovzx rax, al\n")
             }
             Expr::Read(offset, typ, addr) => {
-                let [l1, addr, offset] = [label!(), emit!(addr), emit!(offset)];
+                let [guard, addr, offset] = [label!(), emit!(addr), emit!(offset)];
                 format!(
-                    "{addr}\tpxor xmm0, xmm0\n\tcmp rax, 0\n\tje {l1}\n\tpush rax\n{offset}\tpop r10\n\tlea rax, [r10+rax*8]\n{}{l1}:\n",
+                    "{addr}\tpxor xmm0, xmm0\n\tcmp rax, 0\n\tje {guard}\n\tpush rax\n{offset}\tpop r10\n\tlea rax, [r10+rax*8]\n{}{guard}:\n",
                     match typ {
                         Type::Float => "\tmovsd xmm0, [rax]\n",
                         _ => "\tmov rax, [rax]\n",
@@ -207,9 +207,9 @@ impl Expr {
                 )
             }
             Expr::Write(offset, val, addr) => {
-                let [l1, addr, offset, val] = [label!(), emit!(addr), emit!(offset), emit!(val)];
+                let [guard, addr, offset, val] = [label!(), emit!(addr), emit!(offset), emit!(val)];
                 format!(
-                    "{addr}\tpxor xmm0, xmm0\n\tcmp rax, 0\n\tje {l1}\n\tpush rax\n{offset}\tpop r10\n\tlea r10, [r10+rax*8]\n\tpush r10\n{val}\tpop r10\n{}{l1}:\n",
+                    "{addr}\tpxor xmm0, xmm0\n\tcmp rax, 0\n\tje {guard}\n\tpush rax\n{offset}\tpop r10\n\tlea r10, [r10+rax*8]\n\tpush r10\n{val}\tpop r10\n{}{guard}:\n",
                     match typ!(self) {
                         Type::Float => "\tmovsd [r10], xmm0\n",
                         _ => "\tmov [r10], rax\n",
