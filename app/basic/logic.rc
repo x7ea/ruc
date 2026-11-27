@@ -1,8 +1,10 @@
 use std
 
 fn main() {
-    print true & false ; AND
-    print true | false ; OR
+    print true & false  ; AND
+    print true | false  ; OR
+    print true ^ false  ; XOR
+    print !true         ; NOT
 
-    print !(true ^ false) | true & false
+    print !(true ^ false) | true & !false
 }
