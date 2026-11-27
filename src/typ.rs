@@ -270,10 +270,8 @@ impl Expr {
                 let init = Box::new(Expr::Init(typ, offset(array.len())));
                 let mut expr = vec![Expr::Let(temp.clone(), init)];
                 for (idx, val) in array.iter().enumerate() {
-                    expr.push(Expr::Let(
-                        Box::new(Expr::Index(temp.clone(), offset(idx))),
-                        Box::new(val.clone()),
-                    ));
+                    let acc = Box::new(Expr::Index(temp.clone(), offset(idx)));
+                    expr.push(Expr::Let(acc, Box::new(val.clone())));
                 }
                 expr.push(*temp);
                 typing!(expand!(Expr::Block(expr)))
