@@ -83,7 +83,8 @@ impl Expr {
             }};
             ($typ: pat, $lhs: expr, $rhs: expr, $ret: expr) => {{ op!($typ, $lhs, $rhs).and_then(|_| typing!($ret.clone())) }};
         }
-        let temp = Box::new(var!(format!("temp_{self:?}")));
+        let temp = Box::new(var!(format!("temp_{}", ctx.global.idx)));
+        ctx.global.idx += 1;
 
         match self.clone() {
             Expr::Print(is_output, args) => {
