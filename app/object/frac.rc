@@ -48,6 +48,6 @@ fn Frac.toFloat(this: Frac): Float {
 }
 
 fn main() {
-    let x = frac(2, 3) * frac(7, 2)
+    let x = frac(2, 3) + frac(3, 6)
     print x.toFloat(), " = ", x
 }
