@@ -165,7 +165,7 @@ impl Expr {
                 format!("{push}{mov}{func}\tmov r10, rax\n{len}\tcall r10\n")
             }
             Expr::Variable(var @ Generic(name, _)) => {
-                let (_, env) = (optimize!(), &ctx.local.var);
+                let (_, env) = (code!(), &ctx.local.var);
                 if let Some(addr) = env.get_index_of(name) {
                     let (typ, addr) = (env[name].clone(), (addr + 1) * 8);
                     match typ {
@@ -195,7 +195,7 @@ impl Expr {
                 format!("{new}\tpush rax\n{len}\tmov r10, rax\n\tpop rax\n\tmov qword [rax], r10\n")
             }
             Expr::Check(obj) => {
-                let (_, obj) = (optimize!(), emit!(obj));
+                let (_, obj) = (code!(), emit!(obj));
                 format!("{obj}\tcmp rax, 0\n\tsetne al\n\tmovzx rax, al\n")
             }
             Expr::Read(offset, typ, addr) => {
@@ -242,11 +242,11 @@ impl Expr {
             Expr::Mul(lhs, rhs) => op!("mul", lhs, rhs),
             Expr::Div(lhs, rhs) if typ!(self) == Type::Float => op!("div", lhs, rhs),
             Expr::Div(lhs, rhs) => {
-                let (_, lhs, rhs) = (optimize!(), emit!(lhs), emit!(rhs));
+                let (_, lhs, rhs) = (code!(), emit!(lhs), emit!(rhs));
                 format!("{lhs}\tpush rax\n{rhs}\tmov rsi, rax\n\tpop rax\n\tcqo\n\tidiv rsi\n")
             }
             Expr::Mod(lhs, rhs) => {
-                let (_, div) = (optimize!(), emit!(Expr::Div(lhs.clone(), rhs.clone())));
+                let (_, div) = (code!(), emit!(Expr::Div(lhs.clone(), rhs.clone())));
                 format!("{div}\tadd rdx, rsi\n\tmov rax, rdx\n\tcqo\n\tidiv rsi\n\tmov rax, rdx\n")
             }
             Expr::Eq(lhs, rhs) => cmp!("e", lhs, rhs),
