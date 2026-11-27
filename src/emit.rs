@@ -120,7 +120,7 @@ impl Expr {
         }
 
         match self {
-            Expr::If(cond, then, els) => {
+            Expr::If(cond, then, Some(els)) => {
                 let (_, a, then) = (code!(), label!(), emit!(then));
                 let cond = format!("{}\tcmp rax, 0\n", emit!(cond));
                 match els {
@@ -130,6 +130,11 @@ impl Expr {
                         format!("{cond}\tje {b}\n{then}\tjmp {a}\n{b}:\n{els}{a}:\n")
                     }
                 }
+            }
+            Expr::If(cond, then, Some(els)) => {
+                let (_, a, b) = (code!(), label!(), label!());
+                let (cond, then, els) = (emit!(cond), emit!(then), emit!(els));
+                format!("{cond}\tcmp rax, 0\n{cond}\tje {b}\n{then}\tjmp {a}\n{b}:\n{els}{a}:\n")
             }
             Expr::While(test, body) => {
                 let (_, a, b, test, body) = (code!(), label!(), label!(), emit!(test), emit!(body));
