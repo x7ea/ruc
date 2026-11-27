@@ -23,4 +23,8 @@ fn main() {
     let me = User<Email>(new Email)
     me.contact.edit("x7ea@example.com")
     me.contact.access()
+
+    let a = User<Phone>(new Phone)
+    a.contact.edit(00000000)
+    a.contact.access()
 }
