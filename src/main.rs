@@ -35,7 +35,6 @@ fn main() {
     ok!(stdout().write_all(asm.as_bytes()));
 }
 
-// Abstract Syntax Tree (AST)
 #[derive(Debug, Clone, PartialEq)]
 pub enum Define {
     Function(Signature, (Expr, Type)),
@@ -46,52 +45,43 @@ pub enum Define {
 
 #[derive(Debug, Clone, Hash, PartialEq, Eq, AsRefStr)]
 pub enum Expr {
-    Print(bool, Vec<Expr>),
-    Block(Vec<Expr>),
-    // Literal
     Integer(i64),
     Float(Float<f64>),
     Boolean(bool),
     String(String),
     Null(Type),
-    // Reference
     Variable(Generic),
     Let(Box<Expr>, Box<Expr>),
     Call(Box<Expr>, Vec<Expr>),
     Return(Box<Expr>),
-    // Collection
     Array(Vec1<Expr>),
     Index(Box<Expr>, Box<Expr>),
     Len(Box<Expr>),
-    // Object
     New(Type),
     Enum(Type, Name, Box<Expr>),
     Member(Box<Expr>, Name),
     Check(Box<Expr>),
-    // Control
+    Print(bool, Vec<Expr>),
+    Block(Vec<Expr>),
     If(Box<Expr>, Box<Expr>, Option<Box<Expr>>),
     Match(Box<Expr>, Vec<(Name, Option<Expr>, Expr)>),
     For(Box<Expr>, Box<Expr>, Box<Expr>),
     While(Box<Expr>, Box<Expr>),
-    // Operator
     Add(Box<Expr>, Box<Expr>),
     Sub(Box<Expr>, Box<Expr>),
     Mul(Box<Expr>, Box<Expr>),
     Div(Box<Expr>, Box<Expr>),
     Mod(Box<Expr>, Box<Expr>),
-    // Compare
     Eq(Box<Expr>, Box<Expr>),
     Ne(Box<Expr>, Box<Expr>),
     Gt(Box<Expr>, Box<Expr>),
     Lt(Box<Expr>, Box<Expr>),
     Ge(Box<Expr>, Box<Expr>),
     Le(Box<Expr>, Box<Expr>),
-    // Logical
     And(Box<Expr>, Box<Expr>),
     Or(Box<Expr>, Box<Expr>),
     Xor(Box<Expr>, Box<Expr>),
     Not(Box<Expr>),
-    // Low-layer IR
     Clone(Box<Expr>),
     Init(Type, Box<Expr>),
     Read(Box<Expr>, Type, Box<Expr>),
