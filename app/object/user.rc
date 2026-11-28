@@ -34,9 +34,9 @@ fn Phone.access(this: Phone) '
     print "Call: ", this.number
 
 fn main() {
-    let a = User<Email>("x7ea", new Email)
-    let b = User<Phone>("n5dap", new Phone)
+    let my = User<Email>("x7ea", new Email)
+    my.verify()
 
-    a.verify()
-    b.verify()
+    sub.contact.edit(1145141919)
+    sub.contact.access()
 }
