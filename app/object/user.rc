@@ -12,6 +12,11 @@ fn User<T>(name: Str, inject: T): User<T> {
     this
 }
 
+fn User.verify<T>(this: User<T>) {
+    this.contact.edit(this.name + "@example.com")
+    this.contact.access()
+}
+
 struct Email {
     address: Str
 }
@@ -29,7 +34,9 @@ fn Phone.access(this: Phone) '
     print "Call: ", this.number
 
 fn main() {
-    let my = User<Email>("x7ea", new Email)
-    my.contact.edit(my.name + "@example.com")
-    my.contact.access()
+    let a = User<Email>("x7ea", new Email)
+    let b = User<Phone>("n5dap", new Phone)
+
+    a.verify()
+    b.verify()
 }
