@@ -20,6 +20,14 @@ fn Email.edit(this: Email, update: Str) '
 fn Email.access(this: Email) '
     print "Send: ", this.address
 
+struct Phone {
+    number: Int
+}
+fn Phone.edit(this: Phone, update: Int) '
+    let this.number = update
+fn Phone.access(this: Phone) '
+    print "Call: ", this.number
+
 fn main() {
     let my = User<Email>("x7ea", new Email)
     my.contact.edit(my.name + "@example.com")
